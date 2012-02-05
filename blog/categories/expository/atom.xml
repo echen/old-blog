@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: expository | My Octopress Blog]]></title>
+  <title><![CDATA[Category: expository | Edwin Chen's Blog]]></title>
   <link href="http://echen.github.com/blog/categories/expository/atom.xml" rel="self"/>
   <link href="http://echen.github.com/"/>
-  <updated>2012-02-04T19:38:08-08:00</updated>
+  <updated>2012-02-05T00:33:30-08:00</updated>
   <id>http://echen.github.com/</id>
   <author>
-    <name><![CDATA[Your Name]]></name>
+    <name><![CDATA[Edwin Chen]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -46,7 +46,7 @@
 <p>Restricted Boltzmann Machines, and neural networks in general, work by updating the states of some neurons given the states of others, so let's talk about how the states of individual units change. Assuming we know the connection weights in our RBM (we'll explain how to learn these below), to update the state of unit $i$:</p>
 
 <ul>
-<li>Compute the <strong>activation energy</strong> $a_i = \sum_j w<em>{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w</em>{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$'s neighbors send it a message, and we compute the sum of all these messages.</li>
+<li>Compute the <strong>activation energy</strong> $a_i = \sum_j w_{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w_{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$'s neighbors send it a message, and we compute the sum of all these messages.</li>
 <li>Let $p_i = \sigma(a_i)$, where $\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p_i$ is close to 1 for large positive activation energies, and $p_i$ is close to 0 for negative activation energies.</li>
 <li>We then turn unit $i$ on with probability $p_i$, and turn it off with probability $1 - p_i$.</li>
 <li>(In layman's terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)</li>
@@ -67,9 +67,9 @@
 
 <ul>
 <li>Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.</li>
-<li>Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w<em>{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e</em>{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they're both on).</li>
+<li>Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w_{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e_{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they're both on).</li>
 <li>Now <strong>reconstruct</strong> the visible units in a similar manner: for each visible unit, compute its activation energy $a_i$, and update its state. (Note that this <em>reconstruction</em> may not match the original preferences.) Then update the hidden units again, and compute $Negative(e_{ij}) = x_i * x_j$ for each edge.</li>
-<li>Update the weight of each edge $e<em>{ij}$ by setting $w</em>{ij} = w<em>{ij} + L * (Positive(e</em>{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.</li>
+<li>Update the weight of each edge $e_{ij}$ by setting $w_{ij} = w_{ij} + L * (Positive(e_{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.</li>
 <li>Repeat over all training examples.</li>
 </ul>
 
@@ -84,7 +84,7 @@
 </ul>
 
 
-<p>So by adding $Positive(e<em>{ij}) - Negative(e</em>{ij})$ to each edge weight, we're helping the network's daydreams better match the reality of our training examples.</p>
+<p>So by adding $Positive(e_{ij}) - Negative(e_{ij})$ to each edge weight, we're helping the network's daydreams better match the reality of our training examples.</p>
 
 <p>(You may hear this update rule called <strong>contrastive divergence</strong>, which is basically a funky term for "approximate gradient descent".)</p>
 
@@ -128,9 +128,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
 <ul>
 <li>Above, $Negative(e_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units <em>once</em> and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network's daydreams more accurately.</li>
-<li>Instead of using $Positive(e<em>{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 <em>states</em>, we could also let $x_i$ and/or $x_j$ be activation <em>probabilities</em>. Similarly for $Negative(e</em>{ij})$.</li>
+<li>Instead of using $Positive(e_{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 <em>states</em>, we could also let $x_i$ and/or $x_j$ be activation <em>probabilities</em>. Similarly for $Negative(e_{ij})$.</li>
 <li>We could penalize larger edge weights, in order to get a sparser or more regularized model.</li>
-<li>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e<em>{ij}) - Negative(e</em>{ij})$) and the step previously taken.</li>
+<li>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e_{ij}) - Negative(e_{ij})$) and the step previously taken.</li>
 <li>Instead of using only one training example in each epoch, we could use <em>batches</em> of examples in each epoch, and only update the network's weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.</li>
 </ul>
 
@@ -280,15 +280,15 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
 <p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations</p>
 
-<p>$ X_t = a X<em>{t-1} + b Y</em>{t-1} + u_t $
-$ Y_t = c X<em>{t-1} + d Y</em>{t-1} + v_t $</p>
+<p>$ X_t = a X_{t-1} + b Y_{t-1} + u_t $
+$ Y_t = c X_{t-1} + d Y_{t-1} + v_t $</p>
 
 <p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
 
-<p>$ \Delta X_t = \alpha_1 (Y<em>{t-1} - \beta X</em>{t-1}) + u_t $
-$ \Delta Y_t = \alpha_2 (Y<em>{t-1} - \beta X</em>{t-1}) + v_t $</p>
+<p>$ \Delta X_t = \alpha_1 (Y_{t-1} - \beta X_{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
 
-<p>where $ Y<em>{t-1} - \beta X</em>{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y<em>{t-1} - \beta X</em>{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+<p>where $ Y_{t-1} - \beta X_{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y_{t-1} - \beta X_{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
 
 <h1>Summary</h1>
 

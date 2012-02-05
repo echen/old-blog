@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Quick Introduction to ggplot2 - My Octopress Blog</title>
-  <meta name="author" content="Your Name">
+  <title>Quick Introduction to ggplot2 - Edwin Chen's Blog</title>
+  <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="For a much better-looking version of this post, see my Github repository, which also contains some of the example datasets I use and a literate &hellip;">
+  <meta name="description" content="For a better-looking version of this post, see my Github repository, which also contains some of the example datasets I use and a literate &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -24,7 +24,7 @@
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <link href="/feed" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -35,15 +35,13 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">My Octopress Blog</a></h1>
-  
-    <h2>A blogging framework for hackers.</h2>
+  <h1><a href="/">Edwin Chen's Blog</a></h1>
   
 </hgroup>
 
 </header>
   <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  <li><a href="/feed" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
   
@@ -67,7 +65,7 @@
   
   <header>
     
-      <h1 class="entry-title">Quick Introduction to Ggplot2</h1>
+      <h1 class="entry-title">Quick Introduction to ggplot2</h1>
     
     
       <p class="meta">
@@ -85,12 +83,14 @@
 
 <time datetime="2012-01-17T10:28:55-08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2012</time>
         
+         | <a href="#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>For a much better-looking version of this post, see my <a href="https://github.com/echen/ggplot2-tutorial">Github repository</a>, which also contains some of the <a href="https://github.com/echen/ggplot2-tutorial/tree/master/data">example datasets</a> I use and a <a href="https://github.com/echen/ggplot2-tutorial/blob/master/ggplot2-tutorial.R">literate programming version</a> of this tutorial.</p>
+<div class="entry-content"><p>For a better-looking version of this post, see my <a href="https://github.com/echen/ggplot2-tutorial">Github repository</a>, which also contains some of the <a href="https://github.com/echen/ggplot2-tutorial/tree/master/data">example datasets</a> I use and a <a href="https://github.com/echen/ggplot2-tutorial/blob/master/ggplot2-tutorial.R">literate programming version</a> of this tutorial.</p>
 
 <h1>Introduction</h1>
 
@@ -104,7 +104,10 @@
 
 <p>Given Fisher&#8217;s <a href="http://en.wikipedia.org/wiki/Iris_flower_data_set">iris</a> data set and one simple command&#8230;</p>
 
-<p>Liquid error: ClassNotFound: no lexer for alias &#8216;R&#8217; found</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">,</span> color <span class="o">=</span> Species<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>&#8230;we can produce this plot of sepal length vs. petal length, colored by species.</p>
 
@@ -120,40 +123,60 @@
 
 <p>Vectors are a core data structure in R, and are created with <code>c()</code>. Elements in a vector must be of the same type.</p>
 
-<pre><code>numbers = c(23, 13, 5, 7, 31)
-names = c("edwin", "alice", "bob")
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>numbers <span class="o">=</span> c<span class="p">(</span><span class="m">23</span><span class="p">,</span> <span class="m">13</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">7</span><span class="p">,</span> <span class="m">31</span><span class="p">)</span>
+</span><span class='line'>names <span class="o">=</span> c<span class="p">(</span><span class="s">&quot;edwin&quot;</span><span class="p">,</span> <span class="s">&quot;alice&quot;</span><span class="p">,</span> <span class="s">&quot;bob&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Elements are indexed starting at 1, and are accessed with <code>[]</code> notation.</p>
 
-<pre><code>numbers[1] # 23
-names[1] # edwin
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>numbers<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="c1"># 23</span>
+</span><span class='line'>names<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="c1"># edwin</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Data frames</h2>
 
 <p><a href="http://www.r-tutor.com/r-introduction/data-frame">Data frames</a> are like matrices, but with named columns of different types (similar to <a href="http://code.google.com/p/sqldf/">database tables</a>).</p>
 
-<pre><code>books = data.frame(
-    title = c("harry potter", "war and peace", "lord of the rings"), # column named "title"
-    author = c("rowling", "tolstoy", "tolkien"),
-    num_pages = c("350", "875", "500")
-)
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>books <span class="o">=</span> data.frame<span class="p">(</span>
+</span><span class='line'>  title <span class="o">=</span> c<span class="p">(</span><span class="s">&quot;harry potter&quot;</span><span class="p">,</span> <span class="s">&quot;war and peace&quot;</span><span class="p">,</span> <span class="s">&quot;lord of the rings&quot;</span><span class="p">),</span> <span class="c1"># column named &quot;title&quot;</span>
+</span><span class='line'>  author <span class="o">=</span> c<span class="p">(</span><span class="s">&quot;rowling&quot;</span><span class="p">,</span> <span class="s">&quot;tolstoy&quot;</span><span class="p">,</span> <span class="s">&quot;tolkien&quot;</span><span class="p">),</span>
+</span><span class='line'>  num_pages <span class="o">=</span> c<span class="p">(</span><span class="s">&quot;350&quot;</span><span class="p">,</span> <span class="s">&quot;875&quot;</span><span class="p">,</span> <span class="s">&quot;500&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>You can access columns of a data frame with <code>$</code>.</p>
 
-<pre><code>books$title # c("harry potter", "war and peace", "lord of the rings")
-books$author[1] # "rowling"
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>books<span class="p">$</span>title <span class="c1"># c(&quot;harry potter&quot;, &quot;war and peace&quot;, &quot;lord of the rings&quot;)</span>
+</span><span class='line'>books<span class="p">$</span>author<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="c1"># &quot;rowling&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>You can also create new columns with <code>$</code>.</p>
 
-<pre><code>books$num_bought_today = c(10, 5, 8)
-books$num_bought_yesterday = c(18, 13, 20)
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>books<span class="p">$</span>num_bought_today <span class="o">=</span> c<span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">8</span><span class="p">)</span>
+</span><span class='line'>books<span class="p">$</span>num_bought_yesterday <span class="o">=</span> c<span class="p">(</span><span class="m">18</span><span class="p">,</span> <span class="m">13</span><span class="p">,</span> <span class="m">20</span><span class="p">)</span>
+</span><span class='line'>  
+</span><span class='line'>books<span class="p">$</span>total\_num\_bought <span class="o">=</span> books<span class="p">$</span>num_bought_today <span class="o">+</span> books<span class="p">$</span>num_bought_yesterday
+</span></code></pre></td></tr></table></div></figure>
 
-books$total_num_bought = books$num_bought_today + books$num_bought_yesterday
-</code></pre>
 
 <h2>read.table</h2>
 
@@ -163,20 +186,29 @@ books$total_num_bought = books$num_bought_today + books$num_bought_yesterday
 
 <p>For example, consider the <a href="https://github.com/echen/r-tutorial/blob/master/data/students.tsv"><code>data/students.tsv</code></a> file (with columns describing each student&#8217;s age, test score, and name).</p>
 
-<pre><code>13   100 alice
-14   95  bob
-13   82  eve
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'><span class="m">13</span>   <span class="m">100</span> alice
+</span><span class='line'><span class="m">14</span>   <span class="m">95</span>  bob
+</span><span class='line'><span class="m">13</span>   <span class="m">82</span>  eve
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>We can import this file into R using <a href="http://stat.ethz.ch/R-manual/R-devel/library/utils/html/read.table.html"><code>read.table()</code></a>.</p>
 
-<pre><code>students = read.table("data/students.tsv", 
-    header = F, # file does not contain a header (`F` is short for `FALSE`),
-                # so we must manually specify column names                    
-    sep = "\t", # file is tab-delimited        
-    col.names = c("age", "score", "name") # column names
-)
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>students <span class="o">=</span> read.table<span class="p">(</span><span class="s">&quot;data/students.tsv&quot;</span><span class="p">,</span>
+</span><span class='line'>  header <span class="o">=</span> <span class="k-Variable">F</span><span class="p">,</span> <span class="c1"># file does not contain a header (`F` is short for `FALSE`), so we must manually specify column names                    </span>
+</span><span class='line'>  sep <span class="o">=</span> <span class="s">&quot;\t&quot;</span><span class="p">,</span> <span class="c1"># file is tab-delimited        </span>
+</span><span class='line'>  col.names <span class="o">=</span> c<span class="p">(</span><span class="s">&quot;age&quot;</span><span class="p">,</span> <span class="s">&quot;score&quot;</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">)</span> <span class="c1"># column names</span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>We can now access the different columns in the data frame with <code>students$age</code>, <code>students$score</code>, and <code>students$name</code>.</p>
 
@@ -184,19 +216,29 @@ books$total_num_bought = books$num_bought_today + books$num_bought_yesterday
 
 <p>For an example of a file in a different format, look at the <a href="https://github.com/echen/r-tutorial/blob/master/data/studentsWithHeader.tsv"><code>data/studentsWithHeader.tsv</code></a> file.</p>
 
-<pre><code>age,score,name
-13,100,alice
-14,95,bob
-13,82,eve
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>age<span class="p">,</span>score<span class="p">,</span>name
+</span><span class='line'><span class="m">13</span><span class="p">,</span><span class="m">100</span><span class="p">,</span>alice
+</span><span class='line'><span class="m">14</span><span class="p">,</span><span class="m">95</span><span class="p">,</span>bob
+</span><span class='line'><span class="m">13</span><span class="p">,</span><span class="m">82</span><span class="p">,</span>eve
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>Here we have the same data, but now the file is comma-delimited and contains a header. We can import this file with</p>
 
-<pre><code>students = read.table("data/students.tsv", 
-    sep = ",",
-    header = T  # first line contains column names, so we can
-)               # immediately call `students$age`                    
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>students <span class="o">=</span> read.table<span class="p">(</span><span class="s">&quot;data/students.tsv&quot;</span><span class="p">,</span>
+</span><span class='line'>  sep <span class="o">=</span> <span class="s">&quot;,&quot;</span><span class="p">,</span>
+</span><span class='line'>  header <span class="o">=</span> <span class="k-Variable">T</span>  <span class="c1"># first line contains column names, so we can immediately call `students$age`        </span>
+</span><span class='line'><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>(Note: there is also a <code>read.csv</code> function that uses <code>sep = ","</code> by default.)</p>
 
@@ -204,10 +246,14 @@ books$total_num_bought = books$num_bought_today + books$num_bought_yesterday
 
 <p>There are many more options that <code>read.table</code> can take. For a list of these, just type <code>help(read.table)</code> (or <code>?read.table</code>) at the prompt to access documentation.</p>
 
-<pre><code># These work for other functions as well.
-help(read.table)
-?read.table
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'><span class="c1"># These work for other functions as well.</span>
+</span><span class='line'>help<span class="p">(</span>read.table<span class="p">)</span>
+</span><span class='line'>?read.table
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h1>ggplot2</h1>
 
@@ -217,13 +263,17 @@ help(read.table)
 
 <p>One of R&#8217;s greatest strengths is its excellent set of <a href="http://cran.r-project.org/web/packages/available_packages_by_name.html">packages</a>. To install a package, you can use the <code>install.packages()</code> function.</p>
 
-<pre><code>install.packages("ggplot2")
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>install.packages<span class="p">(</span><span class="s">&quot;ggplot2&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>To load a package into your current R session, use <code>library()</code>.</p>
 
-<pre><code>library(ggplot2)
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>library<span class="p">(</span>ggplot2<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <h2>Scatterplots with qplot()</h2>
 
@@ -231,58 +281,89 @@ help(read.table)
 
 <p>What does the data frame contain? We can use the <code>head</code> function to look at the first few rows.</p>
 
-<pre><code>head(iris) # by default, head displays the first 6 rows. see `?head`
-head(iris, n = 10) # we can also explicitly set the number of rows to display
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>head<span class="p">(</span>iris<span class="p">)</span> <span class="c1"># by default, head displays the first 6 rows. see `?head`</span>
+</span><span class='line'>head<span class="p">(</span>iris<span class="p">,</span> n <span class="o">=</span> <span class="m">10</span><span class="p">)</span> <span class="c1"># we can also explicitly set the number of rows to display</span>
+</span><span class='line'>
+</span><span class='line'>Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+</span><span class='line'>         <span class="m">5.1</span>         <span class="m">3.5</span>          <span class="m">1.4</span>         <span class="m">0.2</span>  setosa
+</span><span class='line'>         <span class="m">4.9</span>         <span class="m">3.0</span>          <span class="m">1.4</span>         <span class="m">0.2</span>  setosa
+</span><span class='line'>         <span class="m">4.7</span>         <span class="m">3.2</span>          <span class="m">1.3</span>         <span class="m">0.2</span>  setosa
+</span><span class='line'>         <span class="m">4.6</span>         <span class="m">3.1</span>          <span class="m">1.5</span>         <span class="m">0.2</span>  setosa
+</span><span class='line'>         <span class="m">5.0</span>         <span class="m">3.6</span>          <span class="m">1.4</span>         <span class="m">0.2</span>  setosa
+</span><span class='line'>         <span class="m">5.4</span>         <span class="m">3.9</span>          <span class="m">1.7</span>         <span class="m">0.4</span>  setosa
+</span></code></pre></td></tr></table></div></figure>
 
-  Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-           5.1         3.5          1.4         0.2  setosa
-           4.9         3.0          1.4         0.2  setosa
-           4.7         3.2          1.3         0.2  setosa
-           4.6         3.1          1.5         0.2  setosa
-           5.0         3.6          1.4         0.2  setosa
-           5.4         3.9          1.7         0.4  setosa
-</code></pre>
 
 <p>(The data frame actually contains three types of species: setosa, versicolor, and virginica.)</p>
 
 <p>Let&#8217;s plot <code>Sepal.Length</code> against <code>Petal.Length</code> using ggplot2&#8217;s <code>qplot()</code> function.</p>
 
-<pre><code>qplot(Sepal.Length, Petal.Length, data = iris)
-# Plot Sepal.Length vs. Petal.Length, using data from the `iris` data frame.
-# * First argument `Sepal.Length` goes on the x-axis.
-# * Second argument `Petal.Length` goes on the y-axis.
-# * `data = iris` means to look for this data in the `iris` data frame.    
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">)</span>
+</span><span class='line'><span class="c1"># Plot Sepal.Length vs. Petal.Length, using data from the `iris` data frame.</span>
+</span><span class='line'><span class="c1"># * First argument `Sepal.Length` goes on the x-axis.</span>
+</span><span class='line'><span class="c1"># * Second argument `Petal.Length` goes on the y-axis.</span>
+</span><span class='line'><span class="c1"># * `data = iris` means to look for this data in the `iris` data frame.    </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal.png" alt="Sepal Length vs. Petal Length" /></a></p>
 
 <p>To see where each species is located in this graph, we can color each point by adding a <code>color = Species</code> argument.</p>
 
-<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species) # dude!
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">,</span> color <span class="o">=</span> Species<span class="p">)</span> <span class="c1"># dude!</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-specied.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-specied.png" alt="Sepal vs. Petal, Colored by Species" /></a></p>
 
 <p>Similarly, we can let the size of each point denote sepal width, by adding a <code>size = Sepal.Width</code> argument.</p>
 
-<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species, size = Petal.Width)
-# We see that Iris setosa flowers have the narrowest petals.
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">,</span> color <span class="o">=</span> Species<span class="p">,</span> size <span class="o">=</span> Petal.Width<span class="p">)</span>
+</span><span class='line'><span class="c1"># We see that Iris setosa flowers have the narrowest petals.</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-sized.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-sized.png" alt="Sepal vs. Petal, Sized by Petal Width" /></a></p>
 
-<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species, size = Petal.Width, alpha = I(0.7))
-# By setting the alpha of each point to 0.7, we reduce the effects of overplotting.
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">,</span> color <span class="o">=</span> Species<span class="p">,</span> size <span class="o">=</span> Petal.Width<span class="p">,</span> alpha <span class="o">=</span> I<span class="p">(</span><span class="m">0.7</span><span class="p">))</span>
+</span><span class='line'><span class="c1"># By setting the alpha of each point to 0.7, we reduce the effects of overplotting.</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-alpha.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-alpha.png" alt="Sepal vs. Petal, with Transparency" /></a></p>
 
 <p>Finally, let&#8217;s fix the axis labels and add a title to the plot.</p>
 
-<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species,
-    xlab = "Sepal Length", ylab = "Petal Length", 
-    main = "Sepal vs. Petal Length in Fisher's Iris data")
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">,</span> color <span class="o">=</span> Species<span class="p">,</span>
+</span><span class='line'>  xlab <span class="o">=</span> <span class="s">&quot;Sepal Length&quot;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&quot;Petal Length&quot;</span><span class="p">,</span>
+</span><span class='line'>  main <span class="o">=</span> <span class="s">&quot;Sepal vs. Petal Length in Fisher&#39;s Iris data&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-titled.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-titled.png" alt="Sepal vs. Petal, Titled" /></a></p>
 
@@ -290,54 +371,83 @@ head(iris, n = 10) # we can also explicitly set the number of rows to display
 
 <p>In the scatterplot examples above, we implicitly used a <em>point</em> <strong>geom</strong>, the default when you supply two arguments to <code>qplot()</code>.</p>
 
-<pre><code># These two invocations are equivalent.
-qplot(Sepal.Length, Petal.Length, data = iris, geom = "point")
-qplot(Sepal.Length, Petal.Length, data = iris)
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'><span class="c1"># These two invocations are equivalent.</span>
+</span><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">,</span> geom <span class="o">=</span> <span class="s">&quot;point&quot;</span><span class="p">)</span>
+</span><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p>But we can also easily use other types of geoms to create more kinds of plots.</p>
 
 <h3>Barcharts: geom = &#8220;bar&#8221;</h3>
 
-<pre><code>movies = data.frame(
-    director = c("spielberg", "spielberg", "spielberg", "jackson", "jackson"),
-    movie = c("jaws", "avatar", "schindler's list", "lotr", "king kong"),
-    minutes = c(124, 163, 195, 600, 187)
-)
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>movies <span class="o">=</span> data.frame<span class="p">(</span>
+</span><span class='line'>  director <span class="o">=</span> c<span class="p">(</span><span class="s">&quot;spielberg&quot;</span><span class="p">,</span> <span class="s">&quot;spielberg&quot;</span><span class="p">,</span> <span class="s">&quot;spielberg&quot;</span><span class="p">,</span> <span class="s">&quot;jackson&quot;</span><span class="p">,</span> <span class="s">&quot;jackson&quot;</span><span class="p">),</span>
+</span><span class='line'>  movie <span class="o">=</span> c<span class="p">(</span><span class="s">&quot;jaws&quot;</span><span class="p">,</span> <span class="s">&quot;avatar&quot;</span><span class="p">,</span> <span class="s">&quot;schindler&#39;s list&quot;</span><span class="p">,</span> <span class="s">&quot;lotr&quot;</span><span class="p">,</span> <span class="s">&quot;king kong&quot;</span><span class="p">),</span>
+</span><span class='line'>  minutes <span class="o">=</span> c<span class="p">(</span><span class="m">124</span><span class="p">,</span> <span class="m">163</span><span class="p">,</span> <span class="m">195</span><span class="p">,</span> <span class="m">600</span><span class="p">,</span> <span class="m">187</span><span class="p">)</span>
+</span><span class='line'><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1"># Plot the number of movies each director has.</span>
+</span><span class='line'>qplot<span class="p">(</span>director<span class="p">,</span> data <span class="o">=</span> movies<span class="p">,</span> geom <span class="o">=</span> <span class="s">&quot;bar&quot;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&quot;# movies&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="c1"># By default, the height of each bar is simply a count.</span>
+</span></code></pre></td></tr></table></div></figure>
 
-# Plot the number of movies each director has.
-qplot(director, data = movies, geom = "bar", ylab = "# movies")
-# By default, the height of each bar is simply a count.
-</code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/num-movies.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/num-movies.png" alt="# Movies" /></a></p>
 
-<pre><code># But we can also supply a different weight.
-# Here the height of each bar is the total running time of the director's movies.
-qplot(director, weight = minutes, data = movies, geom = "bar", ylab = "total length (min.)")
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'><span class="c1"># But we can also supply a different weight.</span>
+</span><span class='line'><span class="c1"># Here the height of each bar is the total running time of the director&#39;s movies.</span>
+</span><span class='line'>qplot<span class="p">(</span>director<span class="p">,</span> weight <span class="o">=</span> minutes<span class="p">,</span> data <span class="o">=</span> movies<span class="p">,</span> geom <span class="o">=</span> <span class="s">&quot;bar&quot;</span><span class="p">,</span> ylab <span class="o">=</span> <span class="s">&quot;total length (min.)&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/total-length.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/total-length.png" alt="Total Running Time" /></a></p>
 
 <h3>Line charts: geom = &#8220;line&#8221;</h3>
 
-<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, geom = "line", color = Species) 
-# Using a line geom doesn't really make sense here, but hey.
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'>qplot<span class="p">(</span>Sepal.Length<span class="p">,</span> Petal.Length<span class="p">,</span> data <span class="o">=</span> iris<span class="p">,</span> geom <span class="o">=</span> <span class="s">&quot;line&quot;</span><span class="p">,</span> color <span class="o">=</span> Species<span class="p">)</span>
+</span><span class='line'><span class="c1"># Using a line geom doesn&#39;t really make sense here, but hey.</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-lined.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-lined.png" alt="Sepal vs. Petal, Lined" /></a></p>
 
-<pre><code># `Orange` is another built-in data frame that describes the growth of orange trees.
-qplot(age, circumference, data = Orange, geom = "line",
-    colour = Tree,
-    main = "How does orange tree circumference vary with age?")
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'><span class="c1"># `Orange` is another built-in data frame that describes the growth of orange trees.</span>
+</span><span class='line'>qplot<span class="p">(</span>age<span class="p">,</span> circumference<span class="p">,</span> data <span class="o">=</span> Orange<span class="p">,</span> geom <span class="o">=</span> <span class="s">&quot;line&quot;</span><span class="p">,</span>
+</span><span class='line'>  colour <span class="o">=</span> Tree<span class="p">,</span>
+</span><span class='line'>  main <span class="o">=</span> <span class="s">&quot;How does orange tree circumference vary with age?&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/orange-tree-growth.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/orange-tree-growth.png" alt="Orange Tree Growth" /></a></p>
 
-<pre><code># We can also plot both points and lines.
-qplot(age, circumference, data = Orange, geom = c("point", "line"), colour = Tree)
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'><span class="c1"># We can also plot both points and lines.</span>
+</span><span class='line'>qplot<span class="p">(</span>age<span class="p">,</span> circumference<span class="p">,</span> data <span class="o">=</span> Orange<span class="p">,</span> geom <span class="o">=</span> c<span class="p">(</span><span class="s">&quot;point&quot;</span><span class="p">,</span> <span class="s">&quot;line&quot;</span><span class="p">),</span> colour <span class="o">=</span> Tree<span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/orange-tree-pointed.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/orange-tree-pointed.png" alt="Orange Tree with Points" /></a></p>
 
@@ -372,7 +482,7 @@ qplot(age, circumference, data = Orange, geom = c("point", "line"), colour = Tre
       
   
 
-<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+<span class="byline author vcard">Posted by <span class="fn">Edwin Chen</span></span>
 
       
 
@@ -394,9 +504,13 @@ qplot(age, circumference, data = Orange, geom = c("point", "line"), colour = Tre
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2012/01/17/quick-introduction-to-ggplot2/" data-via="" data-counturl="http://echen.github.com/blog/2012/01/17/quick-introduction-to-ggplot2/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2012/01/17/quick-introduction-to-ggplot2/" data-via="edchedch" data-counturl="http://echen.github.com/blog/2012/01/17/quick-introduction-to-ggplot2/" >Tweet</a>
   
   
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
   
 </div>
 
@@ -415,6 +529,18 @@ qplot(age, circumference, data = Orange, geom = c("point", "line"), colour = Tre
 <aside class="sidebar">
   
     <section>
+  <h1>Edwin Chen</h1>
+  
+  <p>Data scientist at <a href="https://twitter.com/#!/edchedch">Twitter</a>. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
+  
+  <p>I like math, statistics, machine learning, and linguistics.</p>
+
+  <p>Email: hello[at]echen.me<br/>
+  Twitter: <a href="https://twitter.com/#!/edchedch">@edchedch</a><br/>
+  Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
+
+  <p>Available for consulting work, so feel free to contact me about projects.</p>
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
@@ -438,11 +564,54 @@ qplot(age, circumference, data = Orange, geom = c("point", "line"), colour = Tre
         <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
       </li>
     
+      <li class="post">
+        <a href="/blog/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/">Topic Modeling the Sarah Palin Emails</a>
+      </li>
+    
   </ul>
 </section>
 
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("edchedch", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/edchedch" class="twitter-follow-button" data-show-count="true">Follow @edchedch</a>
+  
+</section>
 
 
+<section class="googleplus googleplus-hidden">
+  <h1>
+    <a href="https://plus.google.com/113804726252165471503?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
 
 
 
@@ -453,16 +622,46 @@ qplot(age, circumference, data = Orange, geom = c("point", "line"), colour = Tre
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - Your Name -
+  Copyright &copy; 2012 - Edwin Chen -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
 </footer>
   
 
+<script type="text/javascript">
+      var disqus_shortname = 'edwinchen';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
 
 
 
@@ -482,3 +681,19 @@ qplot(age, circumference, data = Orange, geom = c("point", "line"), colour = Tre
 
 </body>
 </html>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>

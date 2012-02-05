@@ -5,8 +5,8 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>My Octopress Blog</title>
-  <meta name="author" content="Your Name">
+  <title>Edwin Chen's Blog</title>
+  <meta name="author" content="Edwin Chen">
 
   
   <meta name="description" content="Given a set of datapoints, we often want to know how many clusters the datapoints form. Two practical algorithms for determining the number of &hellip;">
@@ -24,7 +24,7 @@
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <link href="/feed" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -35,15 +35,13 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">My Octopress Blog</a></h1>
-  
-    <h2>A blogging framework for hackers.</h2>
+  <h1><a href="/">Edwin Chen's Blog</a></h1>
   
 </hgroup>
 
 </header>
   <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  <li><a href="/feed" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
   
@@ -87,6 +85,8 @@
 
 
 <time datetime="2011-03-19T04:22:16-07:00" pubdate data-updated="true">Mar 19<span>th</span>, 2011</time>
+        
+         | <a href="/blog/2011/03/19/counting-clusters/#disqus_thread">Comments</a>
         
       </p>
     
@@ -172,6 +172,8 @@
 
 <time datetime="2011-03-14T04:28:39-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
         
+         | <a href="/blog/2011/03/14/prime-numbers-and-the-riemann-zeta-function/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -185,14 +187,14 @@
 
 <h1>Mathematical Terms</h1>
 
-<p>Let $ \pi(x) $ denote the number of primes less than or equal to x. Recall <a href="http://en.wikipedia.org/wiki/Prime_number_theorem#The_prime-counting_function_in_terms_of_the_logarithmic_integral">Gauss&#8217;s approximation</a>: $ \pi(x) \approx \int_2<sup>x</sup> \frac{1}{\log t} \,dt $ (aka, the &#8220;probability that a number n is prime&#8221; is approximately $ \frac{1}{\log n} $).</p>
+<p>Let $ \pi(x) $ denote the number of primes less than or equal to x. Recall <a href="http://en.wikipedia.org/wiki/Prime_number_theorem#The_prime-counting_function_in_terms_of_the_logarithmic_integral">Gauss&#8217;s approximation</a>: $ \pi(x) \approx \int_2^x \frac{1}{\log t} \,dt $ (aka, the &#8220;probability that a number n is prime&#8221; is approximately $ \frac{1}{\log n} $).</p>
 
 <p>Riemann improved on Gauss&#8217;s approximation by discovering an <em>exact</em> formula $ P(x) = A(x) - E(x) $ for counting the primes, where</p>
 
 <ul>
-<li>$ P(x) = \sum_{p<sup>k</sup> &lt; x} \frac{1}{k} $ performs a weighted count of the prime powers less than or equal to x. [Think of this as a generalization of the prime counting function.]</li>
-<li>$ A(x) = \int_0<sup>x</sup> \frac{1}{\log t} \,dt+ \int_x<sup>{\infty}</sup> \frac{1}{t(t<sup>2</sup>  -1) \log t} \,dt $ $ - \log 2 $ is a kind of generalization of Gauss&#8217;s approximation.</li>
-<li>$ E(x) = \sum_{z : \zeta(z) = 0} \int_0<sup>{x<sup>z}</sup></sup> \frac{1}{\log t} \,dt $ is an error-correcting factor that depends on the zeroes of the Riemann zeta function.</li>
+<li>$ P(x) = \sum_{p^k &lt; x} \frac{1}{k} $ performs a weighted count of the prime powers less than or equal to x. [Think of this as a generalization of the prime counting function.]</li>
+<li>$ A(x) = \int_0^x \frac{1}{\log t} \,dt+ \int_x^{\infty} \frac{1}{t(t^2  -1) \log t} \,dt $ $ - \log 2 $ is a kind of generalization of Gauss&#8217;s approximation.</li>
+<li>$ E(x) = \sum_{z : \zeta(z) = 0} \int_0^{x^z} \frac{1}{\log t} \,dt $ is an error-correcting factor that depends on the zeroes of the Riemann zeta function.</li>
 </ul>
 
 
@@ -200,14 +202,14 @@
 
 <p>Let&#8217;s dig a little deeper. Instead of using Riemann&#8217;s formula, I&#8217;m going to use an equivalent version</p>
 
-<p>$$ \psi(x) = (x + \sum<em>{n = 1}<sup>{\infty}</sup> \frac{x<sup>{-2n}}{2n}</sup> - \log 2\pi) - \sum</em>{z : \zeta(z) = 0} \frac{x<sup>z}{z}</sup> $$</p>
+<p>$$ \psi(x) = (x + \sum_{n = 1}^{\infty} \frac{x^{-2n}}{2n} - \log 2\pi) - \sum_{z : \zeta(z) = 0} \frac{x^z}{z} $$</p>
 
-<p>where  $ \psi(x) = \sum_{p<sup>k</sup> \le x} \log p $. Envisioning this formula to be in the same $P(x) = A(x) - E(x)$ form as above, this time where</p>
+<p>where  $ \psi(x) = \sum_{p^k \le x} \log p $. Envisioning this formula to be in the same $P(x) = A(x) - E(x)$ form as above, this time where</p>
 
 <ul>
-<li>$ P(x) = \psi(x) = \sum_{p<sup>k</sup> \le x} \log p $ is another kind of count of the primes.</li>
-<li>$ A(x) = x + \sum_{n = 1}<sup>{\infty}</sup> \frac{x<sup>{-2n}}{2n}</sup> - \log 2\pi $ is another kind of approximation to $P(x)$.</li>
-<li>$ E(x) = \sum_{z : \zeta(z) = 0} \frac{x<sup>z}{z}</sup> $ is another error-correction factor that depends on the zeroes of the Riemann zeta function.</li>
+<li>$ P(x) = \psi(x) = \sum_{p^k \le x} \log p $ is another kind of count of the primes.</li>
+<li>$ A(x) = x + \sum_{n = 1}^{\infty} \frac{x^{-2n}}{2n} - \log 2\pi $ is another kind of approximation to $P(x)$.</li>
+<li>$ E(x) = \sum_{z : \zeta(z) = 0} \frac{x^z}{z} $ is another error-correction factor that depends on the zeroes of the Riemann zeta function.</li>
 </ul>
 
 
@@ -215,9 +217,9 @@
 
 <p>Now since $ \psi(x) $ is a step function that jumps at the prime powers, its derivative $ \psi&#8217;(x) $ has spikes at the prime powers and is zero everywhere else. So consider</p>
 
-<p>$$ \psi&#8217;(x) = 1 - \frac{1}{x(x<sup>2</sup> - 1)} - \sum_z x<sup>{z-1}</sup> $$</p>
+<p>$$ \psi&#8217;(x) = 1 - \frac{1}{x(x^2 - 1)} - \sum_z x^{z-1} $$</p>
 
-<p>It&#8217;s well-known that the zeroes of the Riemann zeta function are symmetric about the real axis, so the (non-trivial) zeroes come in conjugate pairs $ z, \bar{z} $. But $ x<sup>{z-1}</sup> + x<sup>{\bar{z}</sup> - 1} $ is just a wave whose amplitude depends on the real part of z and whose frequency depends on the imaginary part (i.e., if $ z = a + bi $, then $ x<sup>{z-1}</sup> + x<sup>{\bar{z}-1}</sup> = 2x<sup>{a-1}</sup> cos (b \log x) $), which means $ \psi&#8217;(x) $ can be decomposed into a sum of zeta-zero waves. Note that because of the $2x<sup>{a-1}$</sup> term in front, the amplitude of these waves depends only on the real part $a$ of the conjugate zeroes.</p>
+<p>It&#8217;s well-known that the zeroes of the Riemann zeta function are symmetric about the real axis, so the (non-trivial) zeroes come in conjugate pairs $ z, \bar{z} $. But $ x^{z-1} + x^{\bar{z} - 1} $ is just a wave whose amplitude depends on the real part of z and whose frequency depends on the imaginary part (i.e., if $ z = a + bi $, then $ x^{z-1} + x^{\bar{z}-1} = 2x^{a-1} cos (b \log x) $), which means $ \psi&#8217;(x) $ can be decomposed into a sum of zeta-zero waves. Note that because of the $2x^{a-1}$ term in front, the amplitude of these waves depends only on the real part $a$ of the conjugate zeroes.</p>
 
 <p>For example, here are plots of $ \psi&#8217;(x) $ using 10, 50, and 200 pairs of zeroes:</p>
 
@@ -259,6 +261,8 @@
 
 
 <time datetime="2011-03-14T04:27:32-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+         | <a href="/blog/2011/03/14/hacker-news-analysis/#disqus_thread">Comments</a>
         
       </p>
     
@@ -374,6 +378,8 @@
 
 <time datetime="2011-03-14T04:27:10-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
         
+         | <a href="/blog/2011/03/14/least-angle-regression-for-the-hungry-layman/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -451,6 +457,8 @@
 
 <time datetime="2011-03-14T04:26:14-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
         
+         | <a href="/blog/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -498,6 +506,8 @@
 
 
 <time datetime="2011-03-14T04:25:46-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+         | <a href="/blog/2011/03/14/laymans-introduction-to-random-forests/#disqus_thread">Comments</a>
         
       </p>
     
@@ -547,6 +557,8 @@
 
 <time datetime="2011-03-14T04:24:37-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
         
+         | <a href="/blog/2011/03/14/laymans-introduction-to-measure-theory/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -586,7 +598,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights/">Netflix Prize Summary: Scalable Collaborative Filtering With Jointly Derived Neighborhood Interpolation Weights</a></h1>
+      <h1 class="entry-title"><a href="/blog/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights/">Netflix Prize Summary: Scalable Collaborative Filtering with Jointly Derived Neighborhood Interpolation Weights</a></h1>
     
     
       <p class="meta">
@@ -603,6 +615,8 @@
 
 
 <time datetime="2011-03-14T04:23:04-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+         | <a href="/blog/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights/#disqus_thread">Comments</a>
         
       </p>
     
@@ -638,11 +652,11 @@
 <p>The lesson is that when using existing ratings, we should normalize out these types of effects, so that ratings are as comparable as possible.</p>
 
 <p>Another way of thinking about this is that we are simply building a regression model. That is, for each user u, we have a model
-$r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ are common explanatory variables and we want to estimate $\theta_u$; and similarly for each item i. Once we&#8217;ve estimated the $\theta_u$, we can use the fancier neighborhood models on the specific ratings.</p>
+$r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are common explanatory variables and we want to estimate $\theta_u$; and similarly for each item i. Once we&#8217;ve estimated the $\theta_u$, we can use the fancier neighborhood models on the specific ratings.</p>
 
 <p>For example, suppose we want to predict Bob&#8217;s rating of Titanic. We&#8217;ve built a regression model with two explanatory variables, whether the movie was Oscar-nominated (1 if so, -1 if not) and whether the movie contains Kate Winslet (1 if so, -1 if not), and we&#8217;ve determined that Bob&#8217;s weights on these two variables are -2 (Bob tends to hate Oscar movies) and +1.5 (Bob likes Kate Winslet). Similarly, his friend John has weights +1 and -0.5 for these two variables (John likes Oscars, but dislikes Kate Winslet). So if we know that John rated Titanic a 4, then we have 4 = 1(1) + -0.5(1) + (John&#8217;s specific rating), so John&#8217;s specific rating of Titanic is 3.5. If we use John&#8217;s rating alone to estimate Bob&#8217;s, we might guess that Bob would rate Titanic -2(1) + 1.5(1) + (John&#8217;s specific rating) = 3.0.</p>
 
-<p>To estimate the $\theta_u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $\hat{\theta_u} = \frac{\sum r<em>{ui} x</em>{ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $\theta_u \sim N(\mu, \sigma<sup>2)$,</sup> and $\hat{\theta_u} | \theta_u \sim N(\theta_u, \sigma_u<sup>2)$,</sup> leading to $E(\theta_u | \hat{\theta_u}) = \frac{\sigma<sup>2</sup> \hat{\theta_u} + \sigma_u<sup>2</sup> \mu}{\sigma<sup>2</sup> + \sigma_u<sup>2}$.</sup></p>
+<p>To estimate the $\theta_u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $\hat{\theta_u} = \frac{\sum r_{ui} x_{ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $\theta_u \sim N(\mu, \sigma^2)$, and $\hat{\theta_u} | \theta_u \sim N(\theta_u, \sigma_u^2)$, leading to $E(\theta_u | \hat{\theta_u}) = \frac{\sigma^2 \hat{\theta_u} + \sigma_u^2 \mu}{\sigma^2 + \sigma_u^2}$.</p>
 
 <p>In practice, the explanatory variables Bell and Koren found to work well included the overall mean of all ratings, each movie&#8217;s specific mean, each user&#8217;s specific mean, time since movie release, time since user join, and number of ratings for each movie.</p>
 
@@ -658,13 +672,13 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <p>We&#8217;ll see how using an optimization method to derive weights (as opposed to deriving weights via a similarity function) overcomes these two limitations.</p>
 
-<p>Recall our problem: we want to predict $r<em>{ui}$, user u&#8217;s rating of item i, and what we have is a set $N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $w</em>{ij}$ such that $r<em>{ui} = \sum</em>{j \in N(i; u) w<em>{ij} r</em>{uj}}$. A natural approach, then, is simply to choose our weights to minimize $\min_w \sum<em>{v \neq u} \left( r</em>{vi} - \sum<em>{j \in N(i; u)} w</em>{ij} r_{vj}\right)<sup>2$.</sup></p>
+<p>Recall our problem: we want to predict $r_{ui}$, user u&#8217;s rating of item i, and what we have is a set $N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $w_{ij}$ such that $r_{ui} = \sum_{j \in N(i; u) w_{ij} r_{uj}}$. A natural approach, then, is simply to choose our weights to minimize $\min_w \sum_{v \neq u} \left( r_{vi} - \sum_{j \in N(i; u)} w_{ij} r_{vj}\right)^2$.</p>
 
 <p>Notice how this optimization solves our two problems above: it&#8217;s not only a more principled approach (we choose our weights by minimizing squared error), but by deriving weights simultaneously, we overcome interaction effects.</p>
 
-<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $Aw = b$, where A is a $K \times K$ matrix defined by $A<em>{jk} = \sum</em>{v \neq u} r<em>{vj} r</em>{vk}$ and $b$ is a vector defined by $b_j = \sum<em>{v \neq u} r</em>{vj} r_{vi}$.</p>
+<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $Aw = b$, where A is a $K \times K$ matrix defined by $A_{jk} = \sum_{v \neq u} r_{vj} r_{vk}$ and $b$ is a vector defined by $b_j = \sum_{v \neq u} r_{vj} r_{vi}$.</p>
 
-<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $\bar{A}<em>{jk} = \frac{\sum</em>{v \in U(j,k)} r<em>{vj} r</em>{vk}}{|U(j, k)|}$, where $U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $\hat{A}<em>{jk} = \frac{|U(J,K)|\bar{A}</em>{jk} + \beta A<em>{\mu}}{|U(j,k)| + \beta}$, where $\beta$ is a shrinkage parameter and $A</em>{\mu}$ is the mean over all $\bar{A}$, and similarly for b.</p>
+<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $\bar{A}_{jk} = \frac{\sum_{v \in U(j,k)} r_{vj} r_{vk}}{|U(j, k)|}$, where $U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $\hat{A}_{jk} = \frac{|U(J,K)|\bar{A}_{jk} + \beta A_{\mu}}{|U(j,k)| + \beta}$, where $\beta$ is a shrinkage parameter and $A_{\mu}$ is the mean over all $\bar{A}$, and similarly for b.</p>
 
 <p>Note that another benefit of our optimization-derived weights is that the weights of neighbors are no longer constrained to sum to 1. Thus, if an item simply has no strong neighbors, the neighbors&#8217; prediction will have only a small effect.</p>
 
@@ -684,7 +698,7 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <p>To get around the first limitation, we can project users into a lower-dimensional space (say, by using a singular value decomposition), where we can use a space-partitioning data structure (e.g., a kd-tree) or a nearest-neighbor algorithm (e.g., locality sensitive hashing) to find neighboring users.</p>
 
-<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $\min_w \sum<em>{j \neq i} s</em>{ij} \left( r<em>{uj} - \sum</em>{v \in N(u, i)} w<em>{uv} r</em>{vj} \right)<sup>2,$</sup> where the $s_{ij}$ are item-item similarities.</p>
+<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $\min_w \sum_{j \neq i} s_{ij} \left( r_{uj} - \sum_{v \in N(u, i)} w_{uv} r_{vj} \right)^2,$ where the $s_{ij}$ are item-item similarities.</p>
 
 <h2>Appendix: Shrinkage</h2>
 
@@ -731,6 +745,8 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <time datetime="2011-03-14T04:21:52-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
         
+         | <a href="/blog/2011/03/14/summary-factorization-meets-the-neighborhood/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -760,13 +776,13 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <p>Recall the previous paper, where we modeled each rating $r_{ui}$ as</p>
 
-<p>$$r<em>{ui} = b</em>{ui}+ \sum<em>{N \in N(i; u)} (r</em>{uj} - b<em>{uj}) w</em>{ij},$$</p>
+<p>$$r_{ui} = b_{ui}+ \sum_{N \in N(i; u)} (r_{uj} - b_{uj}) w_{ij},$$</p>
 
 <p>where $N(i; u)$ is the k items most similar to i among the items user u rated, and the $w_{ij}$ are parameters to be learned by solving a regularized least squares problem.</p>
 
-<p>This paper makes several enhancements to that model. First, we replace $N(i; u)$ with $R<sup>k(i;</sup> u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $N<sup>k(i;</sup> u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
+<p>This paper makes several enhancements to that model. First, we replace $N(i; u)$ with $R^k(i; u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $N^k(i; u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
 
-<p>$$r<em>{ui} = b</em>{ui} + \sum<em>{j \in R<sup>k(i;</sup> u)} (r</em>{uj} - b<em>{uj}) w</em>{ij} + \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij},$$</p>
+<p>$$r_{ui} = b_{ui} + \sum_{j \in R^k(i; u)} (r_{uj} - b_{uj}) w_{ij} + \sum_{j \in N^k(i; u)} c_{ij},$$</p>
 
 <p>where the $c_{ij}$ are another set of parameters to learn.</p>
 
@@ -776,7 +792,7 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <p>Nonetheless, this dichotomy between power users and newbie users is perhaps overemphasized by our current model, so we moderate the dichotomy by modifying our model to be</p>
 
-<p>$$r<em>{ui} = b</em>{ui} + |R<sup>k(i;</sup> u)|<sup>{-0.5}</sup> \sum<em>{j \in R<sup>k(i;</sup> u)} (r</em>{uj} - b<em>{uj}) w</em>{ij} + |N<sup>k(i;</sup> u)|<sup>{-0.5}</sup> \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij}.$$</p>
+<p>$$r_{ui} = b_{ui} + |R^k(i; u)|^{-0.5} \sum_{j \in R^k(i; u)} (r_{uj} - b_{uj}) w_{ij} + |N^k(i; u)|^{-0.5} \sum_{j \in N^k(i; u)} c_{ij}.$$</p>
 
 <p>Parameters are determined by solving a regularized least squares problem.</p>
 
@@ -784,7 +800,7 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <p>Typical SVD approaches are based on the following rule:</p>
 
-<p>$$r<em>{ui} = b</em>{ui} + p_u<sup>T</sup> q_i,$$</p>
+<p>$$r_{ui} = b_{ui} + p_u^T q_i,$$</p>
 
 <p>where $p_u$ is a user-factors vector and $q_i$ is an item-factors vector. We describe two enhancements.</p>
 
@@ -792,7 +808,7 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <p>One suggestion is to replace $p_u$ with</p>
 
-<p>$$|R(u)|<sup>{-0.5}</sup> + \sum<em>{j \in R(u)} (r</em>{uj} - b<em>{uj}) x_j + |N(u)|<sup>{-0.5}</sup> \sum</em>{j \in N(u)} y_j,$$</p>
+<p>$$|R(u)|^{-0.5} + \sum_{j \in R(u)} (r_{uj} - b_{uj}) x_j + |N(u)|^{-0.5} \sum_{j \in N(u)} y_j,$$</p>
 
 <p>where $R(u)$ is the set of items user u has rated, and $N(u)$ is the set of items user u has provided implicit feedback for. In other words, this model represents users through the items they prefer, rather than expressing users in a latent feature space. This model has several advantages:</p>
 
@@ -806,13 +822,13 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <h2>SVD++</h2>
 
-<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $p_u$ with $p_u + |N(u)|<sup>{-0.5}</sup> \sum_{j \in N(u)} y_j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
+<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $p_u$ with $p_u + |N(u)|^{-0.5} \sum_{j \in N(u)} y_j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
 
 <h1>An Integrated Model</h1>
 
 <p>An integrated model incorporating baseline estimates, the neighborhood approach, and the latent factor approach is as follows:</p>
 
-<p>$$r<em>{ui} = \left[\mu + b_u + b_i\right] +\left[q_i<sup>T</sup> \big(p_u + \sqrt{|N(u)|}\sum</em>{j \in N(u)} y_j \big)\right] + \left[\sqrt{|R<sup>k(i;u)}</sup> \sum<em>{j \in R<sup>k(i;</sup> u)}(r</em>{uj} - b<em>{uj})w</em>{ij}+\sqrt{|N<sup>k(i;u)|}</sup> \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij}\right].$$</p>
+<p>$$r_{ui} = \left[\mu + b_u + b_i\right] +\left[q_i^T \big(p_u + \sqrt{|N(u)|}\sum_{j \in N(u)} y_j \big)\right] + \left[\sqrt{|R^k(i;u)} \sum_{j \in R^k(i; u)}(r_{uj} - b_{uj})w_{ij}+\sqrt{|N^k(i;u)|} \sum_{j \in N^k(i; u)} c_{ij}\right].$$</p>
 
 <p>Note that we have used $(\mu + b_u + b_i)$ as our baseline estimate. We also used the SVD++ model, but we could use the Asymmetric-SVD model instead.</p>
 
@@ -856,6 +872,8 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <time datetime="2011-03-14T04:21:12-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
         
+         | <a href="/blog/2011/03/14/pca-transpose-trick/#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -865,23 +883,23 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 <p>Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
 
-<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A<sup>T</sup> A$.</p>
+<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A^T A$.</p>
 
-<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A<sup>T</sup> A$ is computationally difficult. How can we make this problem more tractable?</p>
+<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A^T A$ is computationally difficult. How can we make this problem more tractable?</p>
 
-<p>It turns out that the eigenvectors of $A<sup>T</sup> A$ have a simple relationship with the eigenvectors of $A A<sup>T$,</sup> so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A<sup>T$</sup> instead. More precisely, <strong>if $v$ is an eigenvector of $A A<sup>T$,</sup> then $A<sup>Tv$</sup> is an eigenvector of $A<sup>T</sup> A$ with the same eigenvalue</strong>.</p>
+<p>It turns out that the eigenvectors of $A^T A$ have a simple relationship with the eigenvectors of $A A^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A^T$, then $A^Tv$ is an eigenvector of $A^T A$ with the same eigenvalue</strong>.</p>
 
 <h1>Proof</h1>
 
-<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A<sup>T$</sup> with eigenvalue $\lambda$. Then</p>
+<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A^T$ with eigenvalue $\lambda$. Then</p>
 
-<p>$(A A<sup>T)</sup> v = \lambda v$</p>
+<p>$(A A^T) v = \lambda v$</p>
 
-<p>$A<sup>T(A</sup> A<sup>T</sup> v) = A<sup>T(\lambda</sup> v)$</p>
+<p>$A^T(A A^T v) = A^T(\lambda v)$</p>
 
-<p>$(A<sup>T</sup> A)(A<sup>T</sup> v) = \lambda (A<sup>T</sup> v)$</p>
+<p>$(A^T A)(A^T v) = \lambda (A^T v)$</p>
 
-<p>so $A<sup>Tv$</sup> is an eigenvector of $A<sup>T</sup> A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A<sup>T</sup> A$ directly, we can instead find the eigenvectors of $A A<sup>T$</sup> and multiply these on the left by $A<sup>T$.</sup></p>
+<p>so $A^Tv$ is an eigenvector of $A^T A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A^T A$ directly, we can instead find the eigenvectors of $A A^T$ and multiply these on the left by $A^T$.</p>
 
 <h1>Pseudocode</h1>
 
@@ -890,7 +908,7 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 <ul>
 <li>Let $A$ be an $m \times n$ matrix with observations in rows and dimensions in the columns.</li>
 <li>From each column of $A$, subtract the column&#8217;s mean, so that each column now has zero mean.</li>
-<li>We now need to find the eigenvectors of the covariance matrix $A<sup>T</sup> A$. If $A A<sup>T$</sup> is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A<sup>T$.</sup> Then $A<sup>T</sup> v$ are the eigenvectors of $A<sup>T</sup> A$.</li>
+<li>We now need to find the eigenvectors of the covariance matrix $A^T A$. If $A A^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A^T$. Then $A^T v$ are the eigenvectors of $A^T A$.</li>
 </ul>
 
 
@@ -915,6 +933,18 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 <aside class="sidebar">
   
     <section>
+  <h1>Edwin Chen</h1>
+  
+  <p>Data scientist at <a href="https://twitter.com/#!/edchedch">Twitter</a>. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
+  
+  <p>I like math, statistics, machine learning, and linguistics.</p>
+
+  <p>Email: hello[at]echen.me<br/>
+  Twitter: <a href="https://twitter.com/#!/edchedch">@edchedch</a><br/>
+  Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
+
+  <p>Available for consulting work, so feel free to contact me about projects.</p>
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
@@ -938,11 +968,54 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
         <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
       </li>
     
+      <li class="post">
+        <a href="/blog/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/">Topic Modeling the Sarah Palin Emails</a>
+      </li>
+    
   </ul>
 </section>
 
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("edchedch", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/edchedch" class="twitter-follow-button" data-show-count="true">Follow @edchedch</a>
+  
+</section>
 
 
+<section class="googleplus googleplus-hidden">
+  <h1>
+    <a href="https://plus.google.com/113804726252165471503?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
 
 
 
@@ -952,16 +1025,46 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2012 - Your Name -
+  Copyright &copy; 2012 - Edwin Chen -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
 </footer>
   
 
+<script type="text/javascript">
+      var disqus_shortname = 'edwinchen';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
 
 
 
@@ -981,3 +1084,19 @@ $r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ ar
 
 </body>
 </html>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
