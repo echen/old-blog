@@ -1,0 +1,585 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/page/4">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/summary-factorization-meets-the-neighborhood/">Netflix Prize Summary: Factorization Meets the Neighborhood</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:21:52-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually, I hope to have a more integrated tutorial, but here&#8217;s a rough draft for now.)</p>
+
+<p>This is a summary of Koren&#8217;s 2008 <a href="public.research.att.com/~volinsky/netflix/kdd08koren.pdf">Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering Model</a>.</p>
+
+<p>There are two approaches to collaborative filtering: neighborhood methods and latent factor models.</p>
+
+<ul>
+<li><p>Neighborhood models are most effective at detecting very localized relationships (e.g., that people who like X-Men also like Spiderman), but poor at detecting a user&#8217;s overall signals.</p></li>
+<li><p>Latent factor models are best at estimating overall structure (e.g., that a user likes horror movies), but are poor at detecting strong associations among small sets of closely related items.</p></li>
+</ul>
+
+
+<p>Since the two approaches have complementary strengths and weaknesses, we should integrate the two; this integration is the focus of this paper.</p>
+
+<h1>Preliminaries</h1>
+
+<p>As mentioned in previous papers, we should normalize out common effects from movies. Throughout the rest of this paper, Koren uses a baseline estimate of overall rating mean + user deviation from average + movie deviation from average for the rating of user i on movie i; estimation of the latter two parameters are done by solving a regularized least squares problem.</p>
+
+<p>Koren then describes using a binary matrix (1 for rated, 0 for not rated) as a source of implicit feedback. This is useful because the mere fact that a user rated many science fiction movies (say) suggests that the user likes science fiction movies.</p>
+
+<h1>A Neighborhood Model</h1>
+
+<p>Recall the previous paper, where we modeled each rating $latex r _ {ui}$ as</p>
+
+<p>$latex r _ {ui} = b _ {ui}+ \sum _ {N \in N(i; u)} (r _ {uj} - b _ {uj}) w _ {ij},$</p>
+
+<p>where $latex N(i; u)$ is the k items most similar to i among the items user u rated, and the $latex w _ {ij}$ are parameters to be learned by solving a regularized least squares problem.</p>
+
+<p>This paper makes several enhancements to that model. First, we replace $latex N(i; u)$ with $latex R ^ k(i; u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $latex N ^ k(i; u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
+
+<p>$latex r _ {ui} = b _ {ui} + \sum _ {j \in R ^ k(i; u)} (r _ {uj} - b _ {uj}) w _ {ij} + \sum _ {j \in N ^ k(i; u)} c _ {ij},$</p>
+
+<p>where the $latex c _ {ij}$ are another set of parameters to learn.</p>
+
+<p>Notice that by taking the intersection of the k items most similar to i with the items user u rated (giving perhaps a set of size less than k), rather than taking the k items most similar to i among the items user u rated, we let our model be influenced not only by what a user rates, but also by what a user does not rate. For example, if a user does not rate LOTR 1 or LOTR 2, his predicted rating for LOTR 3 is penalized.</p>
+
+<p>This implies that our current model encourages greater deviations from baseline estimates for users that provided many ratings or plenty of implicit feedback. In other words, for well-modeled users with a lot of input, we are willing to predict quirkier and less common recommendations; users we have less information about, on the other hand, receive safer, baseline estimates.</p>
+
+<p>Nonetheless, this dichotomy between power users and newbie users is perhaps overemphasized by our current model, so we moderate the dichotomy by modifying our model to be</p>
+
+<p>$latex r _ {ui} = b _ {ui} + |R ^ k(i; u)| ^ {-0.5} \sum _ {j \in R ^ k(i; u)} (r _ {uj} - b _ {uj}) w _ {ij} + |N ^ k(i; u)| ^ {-0.5} \sum _ {j \in N ^ k(i; u)} c _ {ij}.$</p>
+
+<p>Parameters are determined by solving a regularized least squares problem.</p>
+
+<h1>Latent Factor Models Revisited</h1>
+
+<p>Typical SVD approaches are based on the following rule:</p>
+
+<p>$latex r _ {ui} = b _ {ui} + p _ u ^ T q _ i,$</p>
+
+<p>where $latex p _ u$ is a user-factors vector and $latex q _ i$ is an item-factors vector. We describe two enhancements.</p>
+
+<h2>Asymmetric-SVD</h2>
+
+<p>One suggestion is to replace $latex p _ u$ with</p>
+
+<p>$latex |R(u)| ^ {-0.5} + \sum _ {j \in R(u)} (r _ {uj} - b _ {uj}) x _ j + |N(u)| ^ {-0.5} \sum _ {j \in N(u)} y _ j,$</p>
+
+<p>where $latex R(u)$ is the set of items user u has rated, and $latex N(u)$ is the set of items user u has provided implicit feedback for. In other words, this model represents users through the items they prefer, rather than expressing users in a latent feature space. This model has several advantages:</p>
+
+<ul>
+<li><p>Asymmetric-SVD does not parameterize users, so we do not need to wait to retrain the model when a user comes in. Instead, we can handle new users as soon as they provide feedback.</p></li>
+<li><p>Predictions are a direct function of past feedback, so we can easily explain predictions. (When using a pure latent feature solution, however, explainability is difficult.)</p></li>
+</ul>
+
+
+<p>As usual, parameters are learned via a regularized least-squares minimization.</p>
+
+<h2>SVD++</h2>
+
+<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $latex p _ u$ with $latex p _ u + |N(u)| ^ {-0.5} \sum _ {j \in N(u)} y _ j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
+
+<h1>An Integrated Model</h1>
+
+<p>An integrated model incorporating baseline estimates, the neighborhood approach, and the latent factor approach is as follows:</p>
+
+<p>$latex r _ {ui} = \left[\mu + b _ u + b _ i\right] +\left[q _ i ^ T \big(p _ u + \sqrt{|N(u)|}\sum _ {j \in N(u)} y _ j \big)\right] + \left[\sqrt{|R ^ k(i;u)} \sum _ {j \in R ^ k(i; u)}(r _ {uj} - b _ {uj})w _ {ij}+\sqrt{|N ^ k(i;u)|} \sum _ {j \in N ^ k(i; u)} c _ {ij}\right].$</p>
+
+<p>Note that we have used $latex (\mu + b _ u + b _ i)$ as our baseline estimate. We also used the SVD++ model, but we could use the Asymmetric-SVD model instead.</p>
+
+<p>This rule provides a 3-tier model for recommendations:</p>
+
+<ul>
+<li><p>The first baseline group describes general properties of the item and user. For example, it may say that &#8220;The Sixth Sense&#8221; movie is known to be a good movie in general, and that Joe rates like the average user.</p></li>
+<li><p>The next latent factor group may say that since &#8220;The Sixth Sense&#8221; and Joe rate high on the Psychological Thrillers Scale, Joe may like The Sixth Sense because he likes this genre of movies in general.</p></li>
+<li><p>The final neighborhood tier makes fine-grained adjustments that are hard to file, such as the fact that Joe rated low the movie &#8220;Signs&#8221;, a similar psychological thriller by the same director.</p></li>
+</ul>
+
+
+<p>As usual, model parameters are determined by minimizing the regularized squared error function through gradient descent.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/pca-transpose-trick/">PCA Transpose Trick</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:21:12-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>A simpler eigenvector calculation</h1>
+
+<p>Suppose we want to perform PCA on an $latex m \times n$ observation matrix $latex A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
+
+<p>Let&#8217;s suppose we have already normalized the columns of $latex A$ to have zero mean, so that to find the PCA of $latex A$, we need to compute the eigenvectors of the $latex n \times n$ covariance matrix $latex A ^ T A$.</p>
+
+<p>It&#8217;s often the case that $latex n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $latex n \times n$ matrix $latex A ^ T A$ is computationally difficult. How can we make this problem more tractable?</p>
+
+<p>It turns out that the eigenvectors of $latex A ^ T A$ have a simple relationship with the eigenvectors of $latex A A ^ T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $latex m \times m$ matrix $latex A A ^ T$ instead. More precisely, <strong>if $latex v$ is an eigenvector of $latex A A ^ T$, then $latex A ^ Tv$ is an eigenvector of $latex A ^ T A$ with the same eigenvalue</strong>.</p>
+
+<h1>Proof</h1>
+
+<p>Here&#8217;s a proof of the above fact. Let $latex v$ be an eigenvector of $latex A A ^ T$ with eigenvalue $latex \lambda$. Then</p>
+
+<p>$latex (A A ^ T) v = \lambda v$</p>
+
+<p>$latex A ^ T(A A ^ T v) = A ^ T(\lambda v)$</p>
+
+<p>$latex (A ^ T A)(A ^ T v) = \lambda (A ^ T v)$</p>
+
+<p>so $latex A ^ Tv$ is an eigenvector of $latex A ^ T A$, with eigenvalue $latex \lambda$. Thus, instead of finding the eigenvectors of $latex A ^ T A$ directly, we can instead find the eigenvectors of $latex A A ^ T$ and multiply these on the left by $latex A ^ T$.</p>
+
+<h1>Pseudocode</h1>
+
+<p>To summarize, here&#8217;s how to perform a PCA using this trick:</p>
+
+<ul>
+<li><p>Let $latex A$ be an $latex m \times n$ matrix with observations in rows and dimensions in the columns.</p></li>
+<li><p>From each column of $latex A$, subtract the column&#8217;s mean, so that each column now has zero mean.</p></li>
+<li><p>We now need to find the eigenvectors of the covariance matrix $latex A ^ T A$. If $latex A A ^ T$ is a smaller matrix, it will be easier to find the eigenvectors $latex v$ of $latex A A ^ T$. Then $latex A ^ T v$ are the eigenvectors of $latex A ^ T A$.</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/collocations-in-the-wheel-of-time/">Collocations in the Wheel of Time</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:19:36-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I went yesterday to a talk on the use of collocations in information retrieval, so I decided to try generating some collocations of my own. I&#8217;ve had a digital copy of the Wheel of Time idling around my computer for a while, so I used that as my dataset.</p>
+
+<h1>What is a collocation?</h1>
+
+<p>A collocation is basically a set of words that occur together more often than chance, particularly when the meaning of the phrase they form has some degree of non-compositionality. For example, &#8220;green frog&#8221; isn&#8217;t a collocation (it simply means, well, a frog that is green), while phrases like &#8220;New York&#8221;, &#8220;make a decision&#8221;, and &#8220;ice cream&#8221; are.</p>
+
+<h1>Collocation Algorithm</h1>
+
+<p>Surprisingly, the stupid-simple algorithm of taking the top N bigrams without stopwords works fairly well.</p>
+
+<pre><code>collocation     count
+aes sedai       535
+dark one        196
+two rivers      186
+emonds field    152
+tar valon       150
+dont know       92
+one power       63
+master gill     63
+common room     61
+rand thought    59
+false dragon    55
+moiraine sedai  55
+green man       54
+rand looked     47
+deep breath     47
+looked around   45
+one hand        44
+fal dara        43
+shadar logoth   43
+dark ones       41
+even more       40
+aes sedais      39
+thom merrilin   37
+first time      37
+one another     36
+</code></pre>
+
+<p>As we can see in the above table, phrases like &#8220;aes sedai&#8221;, &#8220;dark one&#8221;, and &#8220;two rivers&#8221; are highly ranked collocations, as they should be.</p>
+
+<p>However, there are a couple false positives and poor rankings: &#8220;dont know&#8221; and &#8220;rand thought&#8221; aren&#8217;t really collocations, and while &#8220;common room&#8221; is a collocation, it probably shouldn&#8217;t be ranked higher than &#8220;shadar logoth&#8221;. So let&#8217;s see if we can do a little better.</p>
+
+<h1>Ranking Collocations</h1>
+
+<p>One easy way of improving our collocations is to use a t-statistic to measure the strength of collocation.</p>
+
+<p>(Note that using the t-statistic as a significance test to <em>find</em> collocations is pretty useless, since almost all bigrams show significance at even obscenely low alpha levels (because language isn&#8217;t random), but it could be used to <em>rank</em> collocations.)</p>
+
+<pre><code>collocation     count   t-statistic
+aes sedai       535     23.10211862394927
+dark one        196     13.860521362953332
+two rivers      186     13.615459778209466
+emonds field    152     12.323718154590404
+tar valon       150     12.244452473366913
+dont know       92      9.516646625330717
+master gill     63      7.930564321120657
+one power       63      7.854015842542644
+common room     61      7.803239461942459
+false dragon    55      7.413095406607586
+green man       54      7.315379491245222
+rand thought    59      7.313973672504267
+moiraine sedai  55      7.217000758676086
+deep breath     47      6.846741606876571
+looked around   45      6.593645173571997
+shadar logoth   43      6.556984737299105
+fal dara        43      6.556752559170743
+rand looked     47      6.452169813860899
+dark ones       41      6.385667051407403
+one hand        44      6.370313000597064
+aes sedais      39      6.233831744841447
+thom merrilin   37      6.075408500541748
+even more       40      6.04920369742659
+first time      37      5.991228217950062
+bel tine        35      5.915727507160708
+</code></pre>
+
+<p>However, ranking with the t-statistic doesn&#8217;t appear to help much in this case. The reason might be that the t-statistic assumes a sample from a normal distribution, and our probabilities are too low for the normal approximation to kick in.</p>
+
+<p>So let&#8217;s instead use a chi-square statistic, which non-parametrically measures the deviation between our observed pair count and the expected null pair count. And here we do see an improvement in our collocations:</p>
+
+<pre><code>collocation     count   t-statistic             chi-square-statistic / 1000
+shayol ghul     33      5.744257564397729       310.6960000000001
+shadar logoth   43      6.556984737299105       310.696
+tar valon       150     12.244452473366913      308.63741770798373
+bel tine        35      5.915727507160708       302.0645834523452
+dai shan        18      4.242504132149704       294.34263164315354
+lews therin     30      5.476925875837552       291.27562521808125
+aes sedai       535     23.10211862394927       258.5338408522448
+fal dara        43      6.556752559170743       247.39731703714295
+emonds field    152     12.323718154590404      230.60908878892494
+amyrlin seat    18      4.242244674325305       147.16231884576544
+cenn buie       24      4.898228520718306       125.04423333965258
+false dragon    55      7.413095406607586       108.46072265958233
+taren ferry     35      5.914487027562771       107.48605331880918
+true source     33      5.742973327787289       100.04535811321102
+two rivers      186     13.615459778209466      94.53034990989171
+womens circle   19      4.358127670566016       91.54402382607543
+mistress alys   22      4.689129771670375       71.04890022543866
+queens blessing 22      4.689123595619235       70.74665912266121
+master gill     63      7.930564321120657       66.67757296412702
+common room     61      7.803239461942459       61.20963448192468
+padan fain      19      4.357584935157578       57.20889364602492
+four kings      21      4.5806220400573965      45.61709876735164
+captain domon   20      4.470309309018544       45.36645244865389
+trolloc wars    23      4.792872111791751       35.13663301361639
+deep breath     47      6.846741606876571       34.10366973274088
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture/">Topological Combinatorics and the Evasiveness Conjecture</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:17:41-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The Kahn, Saks, and Sturtevant approach to the Evasiveness Conjecture (see the original paper <a href="http://www.springerlink.com/index/R521072311641L41.pdf">here</a>) is an epic application of pure mathematics to computer science. I&#8217;ll give an overview of the approach here, and probably try to add some more information on the problem in other posts.</p>
+
+<p><strong>tl;dr</strong> The KSS approach provides an <strong>algebraic-topological attack to a combinatorial hypothesis</strong>, and <strong>reduces a graph complexity problem to a problem of contractibility</strong> and (not) finding fixed points.</p>
+
+<p>First, the <strong>Evasiveness Conjecture states that any (non-trivial) monotone graph property is evasive</strong>. In other words, if you&#8217;re trying to figure out whether an undirected n-vertex graph satisfies a certain property (e.g., whether the graph contains a triangle or is connected), and this property is monotone (meaning that if you add more edges to the graph, then it still satisfies the property), then if all you&#8217;re allowed to do is ask questions of the form &#8220;Is edge (i, j) in the graph?&#8221;, then you need to query for every single edge before you can determine whether the graph satisfies the property or not. For example, if you want to figure out whether a graph G contains a clique of size 5, then you need to know whether each of the n(n-1)/2 possible edges is in the graph or not before you can answer for certain.</p>
+
+<p>Next, <strong>given any monotone graph property on n-vertex graphs, we can associate it with a simplicial complex S</strong> (basically, an n-dimensional structure formed by gluing together a bunch of hypertriangles), by taking the complex to be the set of all n-vertex graphs that don&#8217;t satisfy the property.</p>
+
+<p>Kahn, Saks, and Sturtevant then prove that <strong>if a monotone graph property is not evasive, then its associated simplicial complex is contractible</strong>, and thus (by the Lefschetz Fixed-Point theorem) any auto-simplicial map on the complex (a function from the complex to itself that preserves faces) has a fixed point.</p>
+
+<p>Thus, <strong>we can prove that a monotone graph property is evasive by finding a simplicial map that has no fixed point</strong> (which we can do by showing that no orbit of the map is a face of the complex). This approach has been used to prove things like the evasiveness of graph properties when the number of vertices is prime or a prime power, and the evasiveness of all bipartite graph properties.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/02/15/an-overview-of-item-to-item-collaborative-filtering-with-amazons-recommendation-system/">Item-to-Item Collaborative Filtering With Amazon&#8217;s Recommendation System</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-15T04:15:11-08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Introduction</h1>
+
+<p>In making its product recommendations, Amazon makes heavy use of an item-to-item collaborative filtering approach. This essentially means that for each item X, Amazon builds a neighborhood of related items S(X); whenever you buy/look at an item, Amazon then recommends you items from that item&#8217;s neighborhood. That&#8217;s why when you sign in to Amazon and look at the front page, your recommendations are mostly of the form &#8220;You viewed&#8230; Customers who viewed this also viewed&#8230;&#8221;.</p>
+
+<h1>Other approaches.</h1>
+
+<p>The item-to-item approach can be contrasted to:</p>
+
+<ul>
+<li><p><strong>A user-to-user collaborative filtering approach</strong>. This finds users similar to you (e.g., it could find users who bought a lot of items in common with you), and suggest items that they&#8217;ve bought but you haven&#8217;t.</p></li>
+<li><p><strong>A global, latent factorization approach</strong>. Rather than looking at individual items in isolation (in the item-to-item approach, if you and I both buy a book X, Amazon will make essentially the same recommendations based on X, regardless of what we&#8217;ve bought in the past), a global approach would look at all the items you&#8217;ve bought, and try to detect properties that characterize what you like. For example, if you buy a lot of science fiction books and also a lot of romance books, a global-approach algorithm might try to recommend you books with both science fiction and romance elements.</p></li>
+</ul>
+
+
+<h1>Pros/cons of the item-to-item approach:</h1>
+
+<ul>
+<li><p><strong>Pros over the user-to-user approach</strong>: Amazon (and most applications) has many more users than items, so it&#8217;s computationally simpler to find similar items than it is to find similar users. Finding similar users is also a difficult algorithmic task, since individual users often have a very wide range of tastes, but individual items usually belong to relatively few genres.</p></li>
+<li><p><strong>Pros over the factorization approach</strong>: Simpler to implement. Faster to update recommendations: as soon as you buy a new book, Amazon can make a new recommendation in the item-to-item approach, whereas a factorization approach would have to wait until the factorization has been recomputed. The item-to-item approach can also be more easily leveraged in several areas, not only in the recommendations made to you, but also in the &#8220;similar items/other customers also bought&#8221; section when you look at a particular item.</p></li>
+<li><p><strong>Cons of the item-to-item approach</strong>: You don&#8217;t get very much diversity or surprise in item-to-item recommendations, so recommendations tend to be kind of &#8220;obvious&#8221; and boring.</p></li>
+</ul>
+
+
+<h1>How to find similar items</h1>
+
+<p>Since the item-to-item approach makes crucial use of similar items, here&#8217;s a high-level view of how to do it. First, associate each item with the set of users who have bought/looked at it. The similarity between any two items could then be a normalized measure of the number of users they have in common (i.e., the Jaccard index) or the cosine distance between the two items (imagine each item as a vector, with a 1 in the ith element if user i has bought it, and 0 otherwise).</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/3/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

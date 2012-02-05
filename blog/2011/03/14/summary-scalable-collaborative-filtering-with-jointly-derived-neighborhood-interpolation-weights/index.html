@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Netflix Prize Summary: Scalable Collaborative Filtering with Jointly Derived Neighborhood Interpolation Weights - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Netflix Prize Summary: Scalable Collaborative Filtering With Jointly Derived Neighborhood Interpolation Weights</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:23:04-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually, I hope to have a more integrated tutorial, but here&#8217;s a rough draft for now.)</p>
+
+<p>This is a summary of Bell and Koren&#8217;s 2007 <a href="public.research.att.com/~volinsky/netflix/BellKorICDM07.pdf">Scalable Collaborative Filtering with Jointly Derived Neighborhood Interpolation Weights</a> paper.</p>
+
+<p><strong>tl;dr</strong> This paper&#8217;s main innovation is deriving neighborhood weights by solving a least squares problem, instead of using a standard similarity function to compute weights.</p>
+
+<p>This paper improves upon the standard neighborhood approach to collaborative filtering in three areas: better data normalization, better neighbor weights (this is the key section), and better use of user data. I&#8217;ll first review the standard neighborhood approach, and follow with a description of these enhancements.</p>
+
+<h2>Background: Standard Neighborhood Approach to Collaborative Filtering</h2>
+
+<p>Recall that there are two types of neighborhood approaches:</p>
+
+<ul>
+<li><p>User-based approaches: to predict user i&#8217;s rating of item j, take the users most similar to user i, and perform a weighted average of their ratings of item j.</p></li>
+<li><p>Item-based approaches: to predict user i&#8217;s rating of item j, perform a weighted average of user i&#8217;s ratings of items similar to item j.</p></li>
+</ul>
+
+
+<p>For example, to predict how you would rate the first Harry Potter movie, the user-based approach looks at how your friends rated the first Harry Potter movie, while the item-based approach looks at how you rated movies like Lord of the Rings and Twilight.</p>
+
+<h2>Better Data Normalization</h2>
+
+<p>Suppose I ask my friend Chris whether I should watch the latest Twilight movie. He tells me he would rate it 4.0/5 stars. Great, that&#8217;s a high rating, so that means I should watch it &#8211; or does it? It turns out that Chris is a super cheerful guy who&#8217;s never met a movie he didn&#8217;t like, and his average rating for a movie is actually 4.5/5 stars. So Twilight is actually less than average for him, and hence 4.0/5 stars from Chris isn&#8217;t actually that hearty a recommendation.</p>
+
+<p>As another example, suppose you look at doctor ratings on Yelp. They&#8217;re abnormally high: the average is far from 3/5 stars. Why is this? Maybe it&#8217;s harder for people to change doctors than it is to go to a new restaurant, so people might not want to rate a doctor poorly when they know they&#8217;ll have to see the doctor again. Thus, an average rating of 5 stars on a McDonalds restaurant is much more impressive than an average of 5 stars on Dr. Joe.</p>
+
+<p>The lesson is that when using existing ratings, we should normalize out these types of effects, so that ratings are as comparable as possible.</p>
+
+<p>Another way of thinking about this is that we are simply building a regression model. That is, for each user u, we have a model
+$latex r _ {ui} = (\sum \theta _ u x _ {ui}) + SpecificRating$, where the $latex x _ {ui}$ are common explanatory variables and we want to estimate $latex \theta _ u$; and similarly for each item i. Once we&#8217;ve estimated the $latex \theta _ u$, we can use the fancier neighborhood models on the specific ratings.</p>
+
+<p>For example, suppose we want to predict Bob&#8217;s rating of Titanic. We&#8217;ve built a regression model with two explanatory variables, whether the movie was Oscar-nominated (1 if so, -1 if not) and whether the movie contains Kate Winslet (1 if so, -1 if not), and we&#8217;ve determined that Bob&#8217;s weights on these two variables are -2 (Bob tends to hate Oscar movies) and +1.5 (Bob likes Kate Winslet). Similarly, his friend John has weights +1 and -0.5 for these two variables (John likes Oscars, but dislikes Kate Winslet). So if we know that John rated Titanic a 4, then we have 4 = 1(1) + -0.5(1) + (John&#8217;s specific rating), so John&#8217;s specific rating of Titanic is 3.5. If we use John&#8217;s rating alone to estimate Bob&#8217;s, we might guess that Bob would rate Titanic -2(1) + 1.5(1) + (John&#8217;s specific rating) = 3.0.</p>
+
+<p>To estimate the $latex \theta _ u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $latex \hat{\theta _ u} = \frac{\sum r _ {ui} x _ {ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $latex \theta _ u \sim N(\mu, \sigma ^ 2)$, and $latex \hat{\theta _ u} | \theta _ u \sim N(\theta _ u, \sigma _ u ^ 2)$, leading to $latex E(\theta _ u | \hat{\theta _ u}) = \frac{\sigma ^ 2 \hat{\theta _ u} + \sigma _ u ^ 2 \mu}{\sigma ^ 2 + \sigma _ u ^ 2}$.</p>
+
+<p>In practice, the explanatory variables Bell and Koren found to work well included the overall mean of all ratings, each movie&#8217;s specific mean, each user&#8217;s specific mean, time since movie release, time since user join, and number of ratings for each movie.</p>
+
+<h2>Better Neighbor Weights</h2>
+
+<p>Let&#8217;s consider some deficiencies of the neighborhood approach:</p>
+
+<ul>
+<li><p>Suppose I want to use the first LOTR movie to predict ratings of the first Harry Potter movie. To do this, I need to say how much weight the first LOTR movie should have in this prediction. But how do I choose this weight? Standard neighborhood approaches essentially pick arbitrary similarity functions (e.g., Pearson correlation, cosine distance) as the weight, possibly testing several similarity functions to see which gives the best performance, but is there a more principled approach to choosing weights?</p></li>
+<li><p>The standard neighborhood approach ignores the fact that neighbors aren&#8217;t independent. For example, suppose all three LOTR movies are neighbors of the first HP movie. Since the three LOTR movies are so similar to each other, the standard approach is overcounting their information. Here&#8217;s an analogy: suppose I ask five of my friends where I should eat tonight. Three of them live together (boyfriend, girlfriend, and roommate), and they all recently took a trip together to Japan and are sick of Japanese food, so they vehemently recommend against sushi. Thus, my friends&#8217; recommendations have a stronger bias than would appear if I asked five friends who didn&#8217;t know each other at all.</p></li>
+</ul>
+
+
+<p>We&#8217;ll see how using an optimization method to derive weights (as opposed to deriving weights via a similarity function) overcomes these two limitations.</p>
+
+<p>Recall our problem: we want to predict $latex r _ {ui}$, user u&#8217;s rating of item i, and what we have is a set $latex N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $latex w _ {ij}$ such that $latex r _ {ui} = \sum _ {j \in N(i; u) w _ {ij} r _ {uj}}$. A natural approach, then, is simply to choose our weights to minimize $latex \min _ w \sum _ {v \neq u} \left( r _ {vi} - \sum _ {j \in N(i; u)} w _ {ij} r _ {vj}\right) ^ 2$.</p>
+
+<p>Notice how this optimization solves our two problems above: it&#8217;s not only a more principled approach (we choose our weights by minimizing squared error), but by deriving weights simultaneously, we overcome interaction effects.</p>
+
+<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $latex Aw = b$, where A is a $latex K \times K$ matrix defined by $latex A _ {jk} = \sum _ {v \neq u} r _ {vj} r _ {vk}$ and $latex b$ is a vector defined by $latex b _ j = \sum _ {v \neq u} r _ {vj} r _ {vi}$.</p>
+
+<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $latex \bar{A} _ {jk} = \frac{\sum _ {v \in U(j,k)} r _ {vj} r _ {vk}}{|U(j, k)|}$, where $latex U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $latex \hat{A} _ {jk} = \frac{|U(J,K)|\bar{A} _ {jk} + \beta A _ {\mu}}{|U(j,k)| + \beta}$, where $latex \beta$ is a shrinkage parameter and $latex A _ {\mu}$ is the mean over all $latex \bar{A}$, and similarly for b.</p>
+
+<p>Note that another benefit of our optimization-derived weights is that the weights of neighbors are no longer constrained to sum to 1. Thus, if an item simply has no strong neighbors, the neighbors&#8217; prediction will have only a small effect.</p>
+
+<p>Also, when engineering these methods in practice, we should precompute all item-item similarities and all entries in the matrix $latex A$.</p>
+
+<h2>Better Use of User Data</h2>
+
+<p>Neighborhood models typically follow the item-based approach for two reasons:</p>
+
+<ul>
+<li><p>There are typically many more users than items, and new users come in much more frequently than new items, so it is easier to compute all pairs of item-item similarities.</p></li>
+<li><p>Users have diverse tastes, so they aren&#8217;t as similar to each other. For example, Alice and Eve may both like horror movies, but disagree on comedies.</p></li>
+</ul>
+
+
+<p>But there are various reasons we might want to use a user-based approach <em>in addition to</em> an item-based approach (say, a user hasn&#8217;t rated many items yet, but we can find similar users based on other types of data, such as browsing history; or, we want to predict user u&#8217;s rating on item i, but user u hasn&#8217;t rated any items similar to i), so let&#8217;s see if we can get around these limitations.</p>
+
+<p>To get around the first limitation, we can project users into a lower-dimensional space (say, by using a singular value decomposition), where we can use a space-partitioning data structure (e.g., a kd-tree) or a nearest-neighbor algorithm (e.g., locality sensitive hashing) to find neighboring users.</p>
+
+<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $latex \min _ w \sum _ {j \neq i} s _ {ij} \left( r _ {uj} - \sum _ {v \in N(u, i)} w _ {uv} r _ {vj} \right) ^ 2,$ where the $latex s _ {ij}$ are item-item similarities.</p>
+
+<h2>Appendix: Shrinkage</h2>
+
+<p>Parameter shrinkage is used a couple times in the paper, so let&#8217;s explain what it means.</p>
+
+<p>Suppose that we want to estimate the probability of a coin. If we flip it once and see heads, then the maximum-likelihood estimate of heads is 1. But (as is typical for maximum-likelihood estimates), this is severe overfitting, and what we should do instead is shrink this maximum-likelihood estimate to a prior estimate of the probability of heads, say 1/2. (Note that shrinkage doesn&#8217;t necessarily mean decreasing the number, just moving it towards a prior estimate).</p>
+
+<p>How should we perform this shrinkage? If our maximum-likelihood estimate of our parameter $latex \theta$ is $latex x$ and our prior mean is $latex \mu$, a natural estimation of $latex \theta$ is to use a weighted mean $latex \alpha x + (1 - \alpha)\mu$, where $latex \alpha$ is some measure of the degree of belief in our maximum likelihood estimate.</p>
+
+<p>This weighted average approach has several interpretations:</p>
+
+<ul>
+<li><p>We can also view it as a shrinkage of our maximum likelihood estimate to our prior mean: $latex \alpha x + (1 - \alpha)\mu = x + (1 - \alpha) (\mu - x)$</p></li>
+<li><p>We can also view it as a Bayesian posterior: if we use a prior $latex \theta \sim N(\mu, \tau)$ (where $latex \tau$ is the precision of our Gaussian, not the variance) and a conditional distribution $latex x | \theta \sim N(\theta, \tau _ x)$, then the posterior mean of $latex \theta$ is $latex \theta = \frac{\tau _ x}{\tau _ x + \tau}x + \frac{\tau}{\tau _ x + \tau}\mu,$ which is equivalent to the form above.</p></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:23:04-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/expository/'>expository</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights/" data-via="" data-counturl="http://echen.github.com/blog/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/03/14/summary-factorization-meets-the-neighborhood/" title="Previous Post: Netflix Prize Summary: Factorization Meets the Neighborhood">&laquo; Netflix Prize Summary: Factorization Meets the Neighborhood</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/03/14/laymans-introduction-to-measure-theory/" title="next Post: Layman's Introduction to Measure Theory">Layman's Introduction to Measure Theory &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

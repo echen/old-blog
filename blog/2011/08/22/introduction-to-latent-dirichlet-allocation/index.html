@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Introduction to Latent Dirichlet Allocation - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Introduction Suppose you have the following set of sentences: I like to eat broccoli and bananas.
+I ate a banana and spinach smoothie for breakfast. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/08/22/introduction-to-latent-dirichlet-allocation">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Introduction to Latent Dirichlet Allocation</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-22T10:50:49-07:00" pubdate data-updated="true">Aug 22<span>nd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Introduction</h1>
+
+<p>Suppose you have the following set of sentences:</p>
+
+<ul>
+<li><p>I like to eat broccoli and bananas.</p></li>
+<li><p>I ate a banana and spinach smoothie for breakfast.</p></li>
+<li><p>Chinchillas and kittens are cute.</p></li>
+<li><p>My sister adopted a kitten yesterday.</p></li>
+<li><p>Look at this cute hamster munching on a piece of broccoli.</p></li>
+</ul>
+
+
+<p>What is latent Dirichlet allocation? It&#8217;s a way of automatically discovering <strong>topics</strong> that these sentences contain. For example, given these sentences and asked for 2 topics, LDA might produce something like</p>
+
+<ul>
+<li><p><strong>Sentences 1 and 2</strong>: 100% Topic A</p></li>
+<li><p><strong>Sentences 3 and 4</strong>: 100% Topic B</p></li>
+<li><p><strong>Sentence 5</strong>: 60% Topic A, 40% Topic B</p></li>
+<li><p><strong>Topic A</strong>: 30% broccoli, 15% bananas, 10% breakfast, 10% munching, &#8230; (at which point, you could interpret topic A to be about food)</p></li>
+<li><p><strong>Topic B</strong>: 20% chinchillas, 20% kittens, 20% cute, 15% hamster, &#8230; (at which point, you could interpret topic B to be about cute animals)</p></li>
+</ul>
+
+
+<p>The question, of course, is: how does LDA perform this discovery?</p>
+
+<h1>LDA Model</h1>
+
+<p>In more detail, LDA represents documents as <strong>mixtures of topics</strong> that spit out words with certain probabilities. It assumes that documents are produced in the following fashion: when writing each document, you</p>
+
+<ul>
+<li><p>Decide on the number of words N the document will have (say, according to a Poisson distribution).</p></li>
+<li><p>Choose a topic mixture for the document (according to a Dirichlet distribution over a fixed set of K topics). For example, assuming that we have the two food and cute animal topics above, you might choose the document to consist of 1/3 food and 2/3 cute animals.</p></li>
+<li><p>Generate each word w_i in the document by:</p>
+
+<ul>
+<li><p>First picking a topic (according to the multinomial distribution that you sampled above; for example, you might pick the food topic with 1/3 probability and the cute animals topic with 2/3 probability).</p></li>
+<li><p>Using the topic to generate the word itself (according to the topic&#8217;s multinomial distribution). For example, if we selected the food topic, we might generate the word &#8220;broccoli&#8221; with 30% probability, &#8220;bananas&#8221; with 15% probability, and so on.</p></li>
+</ul>
+</li>
+</ul>
+
+
+<p>Assuming this generative model for a collection of documents, LDA then tries to backtrack from the documents to find a set of topics that are likely to have generated the collection.</p>
+
+<h2>Example</h2>
+
+<p>Let&#8217;s make an example. According to the above process, when generating some particular document D, you might</p>
+
+<ul>
+<li><p>Pick 5 to be the number of words in D.</p></li>
+<li><p>Decide that D will be 1/2 about food and 1/2 about cute animals.</p></li>
+<li><p>Pick the first word to come from the food topic, which then gives you the word &#8220;broccoli&#8221;.</p></li>
+<li><p>Pick the second word to come from the cute animals topic, which gives you &#8220;panda&#8221;.</p></li>
+<li><p>Pick the third word to come from the cute animals topic, giving you &#8220;adorable&#8221;.</p></li>
+<li><p>Pick the fourth word to come from the food topic, giving you &#8220;cherries&#8221;.</p></li>
+<li><p>Pick the fifth word to come from the food topic, giving you &#8220;eating&#8221;.</p></li>
+</ul>
+
+
+<p>So the document generated under the LDA model will be &#8220;broccoli panda adorable cherries eating&#8221; (note that LDA is a bag-of-words model).</p>
+
+<h1>Learning</h1>
+
+<p>So now suppose you have a set of documents. You&#8217;ve chosen some fixed number of K topics to discover, and want to use LDA to learn the topic representation of each document and the words associated to each topic. How do you do this? One way (known as collapsed Gibbs sampling) is the following:</p>
+
+<ul>
+<li><p>Go through each document, and randomly assign each word in the document to one of the K topics.</p></li>
+<li><p>Notice that this random assignment already gives you both topic representations of all the documents and word distributions of all the topics (albeit not very good ones).</p></li>
+<li><p>So to improve on them, for each document d&#8230;</p>
+
+<ul>
+<li><p>Go through each word w in d&#8230;</p>
+
+<ul>
+<li><p>And for each topic t, compute two things: 1) p(topic t | document d) = the proportion of words in document d that are currently assigned to topic t, and 2) p(word w | topic t) = the proportion of assignments to topic t over all documents that come from this word w. Reassign w a new topic, where we choose topic t with probability p(topic t | document d) * p(word w | topic t) (according to our generative model, this is essentially the probability that topic t generated word w, so it makes sense that we resample the current word&#8217;s topic with this probability). (Also, I&#8217;m glossing over a couple of things here, in particular the use of priors/pseudocounts in these probabilities.)</p></li>
+<li><p>In other words, in this step, we&#8217;re assuming that all topic assignments except for the current word in question are correct, and then updating the assignment of the current word using our model of how documents are generated.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>After repeating the previous step a large number of times, you&#8217;ll eventually reach a roughly steady state where your assignments are pretty good. So use these assignments to estimate the topic mixtures of each document (by counting the proportion of words assigned to each topic within that document) and the words associated to each topic (by counting the proportion of words assigned to each topic overall).</p></li>
+</ul>
+
+
+<h1>Layman&#8217;s Explanation</h1>
+
+<p>In case the discussion above was a little eye-glazing, here&#8217;s another way to look at LDA in a different domain.</p>
+
+<p>Suppose you&#8217;ve just moved to a new city. You&#8217;re a hipster and an anime fan, so you want to know where the other hipsters and anime geeks tend to hang out. Of course, as a hipster, you know you can&#8217;t just <em>ask</em>, so what do you do?</p>
+
+<p>Here&#8217;s the scenario: you scope out a bunch of different establishments (<strong>documents</strong>) across town, making note of the people (<strong>words</strong>) hanging out in each of them (e.g., Alice hangs out at the mall and at the park, Bob hangs out at the movie theater and the park, and so on). Crucially, you don&#8217;t know the typical interest groups (<strong>topics</strong>) of each establishment, nor do you know the different interests of each person.</p>
+
+<p>So you pick some number K of categories to learn (i.e., you want to learn the K most important kinds of categories people fall into), and start by making a guess as to why you see people where you do. For example, you initially guess that Alice is at the mall because people with interests in X like to hang out there; when you see her at the park, you guess it&#8217;s because her friends with interests in Y like to hang out there; when you see Bob at the movie theater, you randomly guess it&#8217;s because the Z people in this city really like to watch movies; and so on.</p>
+
+<p>Of course, your random guesses are very likely to be incorrect (they&#8217;re random guesses, after all!), so you want to improve on them. One way of doing so is to:</p>
+
+<ul>
+<li><p>Pick a place and a person (e.g., Alice at the mall).</p></li>
+<li><p>Why is Alice likely to be at the mall? Probably because other people at the mall with the same interests sent her a message telling her to come.</p></li>
+<li><p>In other words, the more people with interests in X there are at the mall and the stronger Alice is associated with interest X (at all the other places she goes to), the more likely it is that Alice is at the mall because of interest X.</p></li>
+<li><p>So make a new guess as to why Alice is at the mall, choosing an interest with some probability according to how likely you think it is.</p></li>
+</ul>
+
+
+<p>Go through each place and person over and over again. Your guesses keep getting better and better (after all, if you notice that lots of geeks hang out at the bookstore, and you suspect that Alice is pretty geeky herself, then it&#8217;s a good bet that Alice is at the bookstore because her geek friends told her to go there; and now that you have a better idea of why Alice is probably at the bookstore, you can use this knowledge in turn to improve your guesses as to why everyone else is where they are), and eventually you can stop updating. Then take a snapshot (or multiple snapshots) of your guesses, and use it to get all the information you want:</p>
+
+<ul>
+<li><p>For each category, you can count the people assigned to that category to figure out what people have this particular interest. By looking at the people themselves, you can interpret the category as well (e.g., if category X contains lots of tall people wearing jerseys and carrying around basketballs, you might interpret X as the &#8220;basketball players&#8221; group).</p></li>
+<li><p>For each place P and interest category C, you can compute the proportions of people at P because of C (under the current set of assignments), and these give you a representation of P. For example, you might learn that the people who hang out at Barnes &amp; Noble consist of 10% hipsters, 50% anime fans, 10% jocks, and 30% college students.</p></li>
+</ul>
+
+
+<h1>Real-World Example</h1>
+
+<p>Finally, I applied LDA to a set of Sarah Palin&#8217;s emails a little while ago (see <a href="http://blog.echen.me/2011/06/27/topic-modeling-the-sarah-palin-emails/">here</a> for the blog post, or <a href="http://sarah-palin.heroku.com/">here</a> for an app that allows you to browse through the emails by the LDA-learned categories), so let&#8217;s give a brief recap. Here are some of the topics that the algorithm learned:</p>
+
+<ul>
+<li><p><strong>Trig/Family/Inspiration</strong>: family, web, mail, god, son, from, congratulations, children, life, child, down, trig, baby, birth, love, you, syndrome, very, special, bless, old, husband, years, thank, best, &#8230;</p></li>
+<li><p><strong>Wildlife/BP Corrosion</strong>: game, fish, moose, wildlife, hunting, bears, polar, bear, subsistence, management, area, board, hunt, wolves, control, department, year, use, wolf, habitat, hunters, caribou, program, denby, fishing, &#8230;</p></li>
+<li><p><strong>Energy/Fuel/Oil/Mining:</strong> energy, fuel, costs, oil, alaskans, prices, cost, nome, now, high, being, home, public, power, mine, crisis, price, resource, need, community, fairbanks, rebate, use, mining, villages, &#8230;</p></li>
+<li><p><strong>Gas</strong>: gas, oil, pipeline, agia, project, natural, north, producers, companies, tax, company, energy, development, slope, production, resources, line, gasline, transcanada, said, billion, plan, administration, million, industry, &#8230;</p></li>
+<li><p><strong>Education/Waste</strong>: school, waste, education, students, schools, million, read, email, market, policy, student, year, high, news, states, program, first, report, business, management, bulletin, information, reports, 2008, quarter, &#8230;</p></li>
+<li><p><strong>Presidential Campaign/Elections</strong>: mail, web, from, thank, you, box, mccain, sarah, very, good, great, john, hope, president, sincerely, wasilla, work, keep, make, add, family, republican, support, doing, p.o, &#8230;</p></li>
+</ul>
+
+
+<p>Here&#8217;s an example of an email which fell 99% into the Trig/Family/Inspiration category (particularly representative words are highlighted in blue):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/palin-browser/trig-email.png"><img src="http://dl.dropbox.com/u/10506/blog/palin-browser/trig-email.png" alt="Trig Email" /></a></p>
+
+<p>And here&#8217;s an excerpt from an email which fell 10% into the Presidential Campaign/Election category (in red) and 90% into the Wildlife/BP Corrosion category (in green):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/palin-browser/wildlife-presidency-email.png"><img src="http://dl.dropbox.com/u/10506/blog/palin-browser/wildlife-presidency-email.png" alt="Wildlife-Presidency Email" /></a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-22T10:50:49-07:00" pubdate data-updated="true">Aug 22<span>nd</span>, 2011</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/08/22/introduction-to-latent-dirichlet-allocation/" data-via="" data-counturl="http://echen.github.com/blog/2011/08/22/introduction-to-latent-dirichlet-allocation/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/" title="Previous Post: Tweets vs. Likes: What gets shared on Twitter vs. Facebook?">&laquo; Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/" title="next Post: Information Transmission in a Social Network: Dissecting the Spread of a Quora Post">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

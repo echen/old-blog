@@ -1,0 +1,261 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Topic Modeling the Sarah Palin Emails - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="LDA-based Email Browser Earlier this month, several thousand emails from Sarah Palin&#8217;s time as governor of Alaska were released. The emails &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/06/27/topic-modeling-the-sarah-palin-emails">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Topic Modeling the Sarah Palin Emails</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-27T17:19:42-07:00" pubdate data-updated="true">Jun 27<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>LDA-based Email Browser</h1>
+
+<p>Earlier this month, several thousand emails from Sarah Palin&#8217;s time as governor of Alaska were <a href="http://sunlightlabs.com/blog/2011/sarahs-inbox/">released</a>. The emails weren&#8217;t organized in any fashion, though, so to make them easier to browse, I&#8217;ve been working on some topic modeling (in particular, using latent Dirichlet allocation) to separate the documents into different groups.</p>
+
+<p>I threw up <a href="http://sarah-palin.heroku.com/">a simple demo app</a> to view the organized documents <a href="http://sarah-palin.heroku.com/">here</a>.</p>
+
+<h1>What is Latent Dirichlet Allocation?</h1>
+
+<p>Briefly, given a set of documents, LDA tries to learn the latent topics underlying the set. It represents each document as a mixture of topics (generated from a Dirichlet distribution), each of which emits words with a certain probability.</p>
+
+<p>For example, given the sentence &#8220;I listened to Justin Bieber and Lady Gaga on the radio while driving around in my car&#8221;, an LDA model might represent this sentence as 75% about music (a topic which, say, emits the words <em>Bieber</em> with 10% probability, <em>Gaga</em> with 5% probability, <em>radio</em> with 1% probability, and so on) and 25% about cars (which might emit <em>driving</em> with 15% probability and <em>cars</em> with 10% probability).</p>
+
+<p>If you&#8217;re familiar with latent semantic analysis, you can think of LDA as a generative version.</p>
+
+<p>(For a more in-depth explanation, I wrote an introduction to LDA <a href="http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/">here</a>.)</p>
+
+<h1>Sarah Palin Email Topics</h1>
+
+<p>Here&#8217;s a sample of the topics learnt by the model, as well as the top words for each topic. (Names, of course, are based on my own interpretation.)</p>
+
+<ul>
+<li><p><a href="http://sarah-palin.heroku.com/topics/24"><strong>Wildlife/BP Corrosion</strong></a>: game, fish, moose, wildlife, hunting, bears, polar, bear, subsistence, management, area, board, hunt, wolves, control, department, year, use, wolf, habitat, hunters, caribou, program, denby, fishing, …</p></li>
+<li><p><a href="http://sarah-palin.heroku.com/topics/0"><strong>Energy/Fuel/Oil/Mining</strong></a>: energy, fuel, costs, oil, alaskans, prices, cost, nome, now, high, being, home, public, power, mine, crisis, price, resource, need, community, fairbanks, rebate, use, mining, villages, …</p></li>
+<li><p><a href="http://sarah-palin.heroku.com/topics/19"><strong>Trig/Family/Inspiration</strong></a>: family, web, mail, god, son, from, congratulations, children, life, child, down, trig, baby, birth, love, you, syndrome, very, special, bless, old, husband, years, thank, best, …</p></li>
+<li><p><a href="http://sarah-palin.heroku.com/topics/6"><strong>Gas</strong></a>: gas, oil, pipeline, agia, project, natural, north, producers, companies, tax, company, energy, development, slope, production, resources, line, gasline, transcanada, said, billion, plan, administration, million, industry, …</p></li>
+<li><p><a href="http://sarah-palin.heroku.com/topics/12"><strong>Education/Waste</strong></a>: school, waste, education, students, schools, million, read, email, market, policy, student, year, high, news, states, program, first, report, business, management, bulletin, information, reports, 2008, quarter, …</p></li>
+<li><p><a href="http://sarah-palin.heroku.com/topics/15"><strong>Presidential Campaign/Elections</strong></a>: mail, web, from, thank, you, box, mccain, sarah, very, good, great, john, hope, president, sincerely, wasilla, work, keep, make, add, family, republican, support, doing, p.o, …</p></li>
+</ul>
+
+
+<p>Here&#8217;s a sample email from the wildlife topic:</p>
+
+<p><a href="http://sarah-palin.heroku.com/emails/6719"><img src="http://dl.dropbox.com/u/10506/blog/palin-browser/wildlife-email.png" alt="Wildlife Email" /></a></p>
+
+<p>I also thought the classification for <a href="http://sarah-palin.heroku.com/emails/12900">this email</a> was really neat: the LDA model labeled it as 10% in the <a href="http://sarah-palin.heroku.com/topics/15">Presidential Campaign/Elections</a> topic and 90% in the <a href="http://sarah-palin.heroku.com/topics/24">Wildlife</a> topic, and it&#8217;s precisely a wildlife-based protest against Palin as a choice for VP:</p>
+
+<p><a href="http://sarah-palin.heroku.com/emails/12900"><img src="http://dl.dropbox.com/u/10506/blog/palin-browser/wildlife-vp.png" alt="Wildlife-VP Protest" /></a></p>
+
+<h1>Future Analysis</h1>
+
+<p>In a future post, I&#8217;ll perhaps see if we can glean any interesting patterns from the email topics. For example, for a quick graph now, if we look at the percentage of emails in the <a href="http://sarah-palin.heroku.com/topics/19">Trig/Family/Inspiration topic</a> across time, we see that there&#8217;s a spike in April 2008 &#8211; exactly (and unsurprisingly) the month in which Trig was born.</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/palin-browser/trig-topic.png"><img src="http://dl.dropbox.com/u/10506/blog/palin-browser/trig-topic.png" alt="Trig" /></a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-27T17:19:42-07:00" pubdate data-updated="true">Jun 27<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/projects/'>projects</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/" data-via="" data-counturl="http://echen.github.com/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/06/14/spork-spoon-or-fork/" title="Previous Post: Spork: Spoon or Fork?">&laquo; Spork: Spoon or Fork?</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/" title="next Post: Visualizing Miss USA 2011: Should Evolution be Taught in Schools?">Visualizing Miss USA 2011: Should Evolution be Taught in Schools? &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

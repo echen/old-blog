@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Filtering for English Tweets: Unsupervised Language Detection on Twitter - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="(See a demo here.) While working on a Twitter sentiment analysis project, I ran into the problem of needing to filter out all non-English tweets. ( &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/05/01/unsupervised-language-detection-algorithms">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Filtering for English Tweets: Unsupervised Language Detection on Twitter</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-01T16:28:07-07:00" pubdate data-updated="true">May 1<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>(See a demo <a href="http://babel-fett.heroku.com/">here</a>.)</p>
+
+<p>While working on a Twitter sentiment analysis project, I ran into the problem of needing to filter out all non-English tweets. (Asking the Twitter API for English-only tweets doesn&#8217;t seem to work, as it nonetheless returns tweets in Spanish, Portuguese, Dutch, Russian, and a couple other languages.)</p>
+
+<p>Since I didn&#8217;t have any labeled data, I thought it would be fun to build an <strong>unsupervised</strong> language classifier. In particular, using an EM algorithm to build a naive Bayes model of English vs. non-English n-gram probabilities turned out to work quite well, so here&#8217;s a description.</p>
+
+<h1>EM Algorithm</h1>
+
+<p>Let&#8217;s recall the naive Bayes algorithm: given a tweet (a set of <em>character</em> n-grams), we estimate its language to be the language $latex L$ that maximizes</p>
+
+<p>$latex P(language = L | ngrams) \propto P(ngrams | language = L) P(language = L)$</p>
+
+<p>Thus, we need to estimate $latex P(ngram | language = L)$ and $latex P(language = L)$.</p>
+
+<p>This would be easy <strong>if we knew the language of each tweet</strong>, since we could estimate</p>
+
+<ul>
+<li><p>$latex P(xyz| language = English)$ as #(number of times &#8220;xyz&#8221; is a trigram in the English tweets) / #(total trigrams in the English tweets)</p></li>
+<li><p>$latex P(language = English)$ as the proportion of English tweets.</p></li>
+</ul>
+
+
+<p>Or, it would also be easy <strong>if we knew the n-gram probabilities for each language</strong>, since we could use Bayes&#8217; theorem to compute the language <em>probabilities</em> for each tweet, and then take a weighted variant of the previous paragraph.</p>
+
+<p><strong>The problem is that we know neither of these.</strong> So what the EM algorithm says is that that we can simply <strong>guess</strong>:</p>
+
+<ul>
+<li><p>Pretend we know the language of each tweet (by randomly assigning them at the beginning).</p></li>
+<li><p>Using this guess, we can compute the n-gram probabilities for each language.</p></li>
+<li><p>Using the n-gram probabilities for each language, we can recompute the language probabilities of each tweet.</p></li>
+<li><p>Using these recomputed language probabilities, we can recompute the n-gram probabilities.</p></li>
+<li><p>And so on, recomputing the language probabilities and n-gram probabilities over and over. While our guesses will be off in the beginning, the probabilities will eventually converge to (locally) minimize the likelihood. (In my tests, my language detector would sometimes correctly converge to an English detector, and sometimes it would converge to an English-and-Dutch detector.)</p></li>
+</ul>
+
+
+<h2>EM Analogy for the Layman</h2>
+
+<p>Why does this work? Suppose you suddenly move to New York, and you want a way to differentiate between tourists and New Yorkers based on their activities. Initially, you don&#8217;t know who&#8217;s a tourist and who&#8217;s a New Yorker, and you don&#8217;t know which are touristy activities and which are not. So you randomly place people into two groups A and B. (You randomly assign all tweets to a language)</p>
+
+<p>Now, given all the people in group A, you notice that a large number of them visit the Statue of Liberty; similarly, you notice that a large number of people in group B walk really quickly. (You notice that one set of words often has the n-gram &#8220;ing&#8221;, and that another set of words often has the n-gram &#8220;ias&#8221;; that is, you fix the language probabilities for each tweet, and recompute the n-gram probabilities for each language.)</p>
+
+<p>So you start to put people visiting the Statue of Liberty in group A, and you start to put fast walkers in group B. (You fix the n-gram probabilities for each language, and recompute the language probabilities for each tweet.)</p>
+
+<p>With your new A and B groups, you notice more differentiating factors: group A people tend to carry along cameras, and group B people tend to be more finance-savvy.</p>
+
+<p>So you start to put camera-carrying folks in group A, and finance-savvy folks in group B.</p>
+
+<p>And so on. Eventually, you settle on two groups of people and differentiating activities: people who walk slowly and visit the Statue of Liberty, and busy-looking people who walk fast and don&#8217;t visit. Assuming there are more native New Yorkers than tourists, you can then guess that the natives are the larger group.</p>
+
+<h1>Results</h1>
+
+<p>I wrote some Ruby code to implement the above algorithm, and trained it on half a million tweets, using English and &#8220;not English&#8221; as my two languages. The results looked surprisingly good from just eyeballing:</p>
+
+<p><a href="https://img.skitch.com/20110303-qfrnb8gstgheh4xech4iutfskd.jpg"><img src="https://img.skitch.com/20110303-qfrnb8gstgheh4xech4iutfskd.jpg" alt="Example Results" /></a></p>
+
+<p>But in order to get some hard metrics and to tune parameters (e.g., n-gram size), I needed a labeled dataset. So I pulled a set of English-language and Spanish-language documents from Project Gutenberg, and split them to form training and test sets (the training set consisted of 2000 lines of English and 1000 lines of Spanish, and  1000 lines of English and 1000 lines of Spanish for the test set).</p>
+
+<p>Trained on bigrams, the detector resulted in:</p>
+
+<ul>
+<li><p>991 true positives (English lines correctly classified as English)</p></li>
+<li><p>9 false negatives (English lines incorrectly classified as Spanish</p></li>
+<li><p>11 false positives (Spanish lines incorrectly classified as English)</p></li>
+<li><p>989 true negatives (Spanish lines correctly classified as English)</p></li>
+</ul>
+
+
+<p>for a precision of 0.989 and a recall of 0.991.</p>
+
+<p>Trained on trigrams, the detector resulted in:</p>
+
+<ul>
+<li><p>992 true positives</p></li>
+<li><p>8 false negatives</p></li>
+<li><p>10 false positives</p></li>
+<li><p>990 true negatives</p></li>
+</ul>
+
+
+<p>for a precision of 0.990 and a recall of 0.992.</p>
+
+<p>Also, when I looked at the sentences the detector was making errors on, I saw that they almost always consisted of only one or two words (e.g., the incorrectly classified sentences were lines like &#8220;inmortal&#8221;, &#8220;autumn&#8221;, and &#8220;salir&#8221;). So the detector pretty much never made a mistake on a normal sentence!</p>
+
+<h1>Code/Demo</h1>
+
+<p>I put the code on <a href="https://github.com/echen/unsupervised-language-identification">my Github account</a>, and a quick <a href="http://babel-fett.heroku.com/">demo app</a>, trained on trigrams from tweets with lang=&#8221;en&#8221; according to the Twitter API, is <a href="http://babel-fett.heroku.com/">here</a>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-01T16:28:07-07:00" pubdate data-updated="true">May 1<span>st</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/projects/'>projects</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/05/01/unsupervised-language-detection-algorithms/" data-via="" data-counturl="http://echen.github.com/blog/2011/05/01/unsupervised-language-detection-algorithms/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/05/01/eigensheep/" title="Previous Post: Eigensheep">&laquo; Eigensheep</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/05/05/twss-building-a-thats-what-she-said-classifier/" title="next Post: TWSS: Building a That's What She Said Classifier">TWSS: Building a That's What She Said Classifier &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

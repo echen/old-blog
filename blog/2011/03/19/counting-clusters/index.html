@@ -1,0 +1,267 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Counting Clusters - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Given a set of datapoints, we often want to know how many clusters the datapoints form. Two practical algorithms for determining the number of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/03/19/counting-clusters">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Counting Clusters</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-19T04:22:16-07:00" pubdate data-updated="true">Mar 19<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Given a set of datapoints, we often want to know how many clusters the datapoints form. Two practical algorithms for determining the number of clusters are the gap statistic and the prediction strength.</p>
+
+<h1>Gap Statistic</h1>
+
+<p>The gap statistic algorithm (from <a href="http://www.stanford.edu/~hastie/Papers/gap.pdf">Estimating the number of clusters in a data set via the gap statistic</a>) works as follows.</p>
+
+<p>For each i from 1 up to some maximum number of clusters:</p>
+
+<ol>
+<li><p>Run a k-means algorithm on the original dataset to find i clusters, and sum the distance of all points from their cluster mean. Call this sum the <em>dispersion</em>.</p></li>
+<li><p>Generate a set of reference datasets (of the same size as the original). One simple way of generating a reference dataset is to sample uniformly from the original dataset&#8217;s bounding rectangle; a more sophisticated approach is take into account the original dataset&#8217;s shape by sampling, say, from a rectangle formed from the original dataset&#8217;s principal components.</p></li>
+<li><p>Calculate the dispersion of each of these reference datasets, and take their mean.</p></li>
+<li><p>Define the ith <em>gap</em> by [log(mean dispersion of reference datasets) - log(dispersion of original dataset)].</p></li>
+</ol>
+
+
+<p>Once we&#8217;ve calculated all the gaps (note that we can add confidence intervals as well; see the original paper for the formula), we can select the number of clusters to be the one that gives the maximum gap.</p>
+
+<p>For example, here I&#8217;ve generated three Gaussian clusters:</p>
+
+<p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d.png" alt="Three Gaussian Clusters" /></a></p>
+
+<p>And running the gap statistic algorithm, we see that it correctly detects the number of clusters to be three:</p>
+
+<p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png" alt="Gap Statistic on Three Gaussian Clusters" /></a></p>
+
+<p>(For a sample R implementation of the gap statistic, see <a href="https://github.com/echen/gap-statistic">here</a>.)</p>
+
+<h1>Prediction Strength</h1>
+
+<p>Another cluster-counting algorithm is the prediction strength algorithm (from <a href="http://www-stat.stanford.edu/~tibs/ftp/predstr.ps">Cluster validation by prediction strength</a>). To run it, for each i from 1 up to some maximum number of clusters:</p>
+
+<ol>
+<li><p>Divide the dataset into two groups, a training set and a test set.</p></li>
+<li><p>Run a k-means algorithm on each set to find i clusters.</p></li>
+<li><p>For each <em>test</em> cluster, count the proportion of pairs of points in that cluster that would remain in the same cluster, if each were assigned to its closest <em>training</em> cluster mean.</p></li>
+<li><p>The minimum over these proportions is the prediction strength for i clusters.</p></li>
+</ol>
+
+
+<p>Once we&#8217;ve calculated the prediction strength for each number of clusters, we select the number of clusters to be the maximum i such that the prediction strength for i is greater than some threshold. (The paper suggests 0.8 - 0.9 as a good threshold, and I&#8217;ve seen 0.8 work well in practice.)</p>
+
+<p>Here&#8217;s the prediction strength algorithm run on the same example above:</p>
+
+<p><a href="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png"><img src="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png" alt="Prediction Strength on Three Gaussian Clusters" /></a></p>
+
+<p>(Again, for a sample R implementation of the prediction strength, see <a href="https://github.com/echen/prediction-strength">here</a>.)</p>
+
+<p>In practice, I tend to prefer using the gap statistic algorithm, since it&#8217;s a little easier to code and it doesn&#8217;t require selecting an arbitrary threshold like the prediction strength does. I&#8217;ve also found that it gives slightly better results (though the original prediction strength paper has the opposite finding).</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-19T04:22:16-07:00" pubdate data-updated="true">Mar 19<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/expository/'>expository</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/03/19/counting-clusters/" data-via="" data-counturl="http://echen.github.com/blog/2011/03/19/counting-clusters/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/03/14/prime-numbers-and-the-riemann-zeta-function/" title="Previous Post: Prime Numbers and the Riemann Zeta Function">&laquo; Prime Numbers and the Riemann Zeta Function</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/03/22/harry-potter-and-the-keyword-chaos-unsupervised-statistically-significant-phrases/" title="next Post: Harry Potter and the Keyword Chaos: Unsupervised Statistically Significant Phrases">Harry Potter and the Keyword Chaos: Unsupervised Statistically Significant Phrases &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

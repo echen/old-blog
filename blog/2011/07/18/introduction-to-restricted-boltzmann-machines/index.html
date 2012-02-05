@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Introduction to Restricted Boltzmann Machines - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Introduction Suppose you ask a bunch of users to rate a set of movies on a 0-100 scale. In classical factor analysis, you could then try to explain &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/07/18/introduction-to-restricted-boltzmann-machines">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Introduction to Restricted Boltzmann Machines</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-18T09:32:52-07:00" pubdate data-updated="true">Jul 18<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Introduction</h1>
+
+<p>Suppose you ask a bunch of users to rate a set of movies on a 0-100 scale. In classical <a href="http://en.wikipedia.org/wiki/Factor_analysis">factor analysis</a>, you could then try to explain each movie and user in terms of a set of latent <em>factors</em>. For example, movies like Star Wars and Lord of the Rings might have strong associations with a latent science fiction and fantasy factor, and users who like Wall-E and Toy Story might have strong associations with a latent Pixar factor.</p>
+
+<p>Restricted Boltzmann Machines essentially perform a <em>binary</em> version of factor analysis. (This is one way of thinking about RBMs; there are, of course, others, and lots of different ways to use RBMs, but I&#8217;ll adopt this approach for this post.) Instead of users rating a set of movies on a continuous scale, they simply tell you whether they like a movie or not, and the RBM will try to discover latent factors that can explain the activation of these movie choices.</p>
+
+<p>More technically, a Restricted Boltzmann Machine is a <strong>stochastic neural network</strong> (<em>neural network</em> meaning we have neuron-like units whose binary activations depend on the neighbors they&#8217;re connected to; <em>stochastic</em> meaning these activations have a probabilistic element) consisting of:</p>
+
+<ul>
+<li><p>One layer of <strong>visible units</strong> (users&#8217; movie preferences whose states we know and set);</p></li>
+<li><p>One layer of <strong>hidden units</strong> (the latent factors we try to learn); and</p></li>
+<li><p>A bias unit (whose state is always on, and is a way of adjusting for the different inherent popularities of each movie).</p></li>
+</ul>
+
+
+<p>Furthermore, each visible unit is connected to all the hidden units (this connection is undirected, so each hidden unit is also connected to all the visible units), and the bias unit is connected to all the visible units and all the hidden units. To make learning easier, we restrict the network so that no visible unit is connected to any other visible unit and no hidden unit is connected to any other hidden unit.</p>
+
+<p>For example, suppose we have a set of six movies (Harry Potter, Avatar, LOTR 3, Gladiator, Titanic, and Glitter) and we ask users to tell us which ones they want to watch. If we want to learn two latent units underlying movie preferences &#8211; for example, two natural groups in our set of six movies appear to be SF/fantasy (containing Harry Potter, Avatar, and LOTR 3) and Oscar winners (containing LOTR 3, Gladiator, and Titanic), so we might hope that our latent units will correspond to these categories &#8211; then our RBM would look like the following:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/rbms/rbm-example.png"><img src="http://dl.dropbox.com/u/10506/blog/rbms/rbm-example.png" alt="RBM Example" /></a></p>
+
+<p>(Note the resemblance to a factor analysis graphical model.)</p>
+
+<h1>State Activation</h1>
+
+<p>Restricted Boltzmann Machines, and neural networks in general, work by updating the states of some neurons given the states of others, so let&#8217;s talk about how the states of individual units change. Assuming we know the connection weights in our RBM (we&#8217;ll explain how to learn these below), to update the state of unit $latex i$:</p>
+
+<ul>
+<li><p>Compute the <strong>activation energy</strong> $latex a _ i = \sum _ j w _ {ij} x _ j$ of unit $latex i$, where the sum runs over all units $latex j$ that unit $latex i$ is connected to, $latex w _ {ij}$ is the weight of the connection between $latex i$ and $latex j$, and $latex x _ j$ is the 0 or 1 state of unit $latex j$. In other words, all of unit $latex i$&#8217;s neighbors send it a message, and we compute the sum of all these messages.</p></li>
+<li><p>Let $latex p _ i = \sigma(a _ i)$, where $latex \sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $latex p _ i$ is close to 1 for large positive activation energies, and $latex p _ i$ is close to 0 for negative activation energies.</p></li>
+<li><p>We then turn unit $latex i$ on with probability $latex p _ i$, and turn it off with probability $latex 1 - p _ i$.</p></li>
+<li><p>(In layman&#8217;s terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)</p></li>
+</ul>
+
+
+<p>For example, let&#8217;s suppose our two hidden units really do correspond to SF/fantasy and Oscar winners.</p>
+
+<ul>
+<li><p>If Alice has told us her six binary preferences on our set of movies, we could then ask our RBM which of the hidden units her preferences activate (i.e., ask the RBM to explain her preferences in terms of latent factors). So the six movies send messages to the hidden units, telling them to update themselves. (Note that even if Alice has declared she wants to watch Harry Potter, Avatar, and LOTR 3, this doesn&#8217;t guarantee that the SF/fantasy hidden unit will turn on, but only that it will turn on with high <em>probability</em>. This makes a bit of sense: in the real world, Alice wanting to watch all three of those movies makes us highly suspect she likes SF/fantasy in general, but there&#8217;s a small chance she wants to watch them for other reasons. Thus, the RBM allows us to <em>generate</em> models of people in the messy, real world.)</p></li>
+<li><p>Conversely, if we know that one person likes SF/fantasy (so that the SF/fantasy unit is on), we can then ask the RBM which of the movie units that hidden unit turns on (i.e., ask the RBM to generate a set of movie recommendations). So the hidden units send messages to the movie units, telling them to update their states. (Again, note that the SF/fantasy unit being on doesn&#8217;t guarantee that we&#8217;ll always recommend all three of Harry Potter, Avatar, and LOTR 3 because, hey, not everyone who likes science fiction liked Avatar.)</p></li>
+</ul>
+
+
+<h1>Learning Weights</h1>
+
+<p>So how do we learn the connection weights in our network? Suppose we have a bunch of training examples, where each training example is a binary vector with six elements corresponding to a user&#8217;s movie preferences. Then for each epoch, do the following:</p>
+
+<ul>
+<li><p>Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.</p></li>
+<li><p>Next, update the states of the hidden units using the logistic activation rule described above: for the $latex j$th hidden unit, compute its activation energy $latex a _ j = \sum _ i w _ {ij} x _ i$, and set $latex x _ j$ to 1 with probability $latex \sigma(a _ j)$ and to 0 with probability $latex 1 - \sigma(a _ j)$. Then for each edge $latex e _ {ij}$, compute $latex Positive(e _ {ij}) = x _ i * x _ j$ (i.e., for each pair of units, measure whether they&#8217;re both on).</p></li>
+<li><p>Now <strong>reconstruct</strong> the visible units in a similar manner: for each visible unit, compute its activation energy $latex a _ i$, and update its state. (Note that this <em>reconstruction</em> may not match the original preferences.) Then update the hidden units again, and compute $latex Negative(e _ {ij}) = x _ i * x _ j$ for each edge.</p></li>
+<li><p>Update the weight of each edge $latex e _ {ij}$ by setting $latex w _ {ij} = w _ {ij} + L * (Positive(e _ {ij}) - Negative(e _ {ij}))$, where $latex L$ is a learning rate.</p></li>
+<li><p>Repeat over all training examples.</p></li>
+</ul>
+
+
+<p>Continue until the network converges (i.e., the error between the training examples and their reconstructions falls below some threshold) or we reach some maximum number of epochs.</p>
+
+<p>Why does this update rule make sense? Note that</p>
+
+<ul>
+<li><p>In the first phase, $latex Positive(e _ {ij})$ measures the association between the $latex i$th and $latex j$th unit that we <em>want</em> the network to learn from our training examples;</p></li>
+<li><p>In the &#8220;reconstruction&#8221; phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $latex Negative(e _ {ij})$ measures the association that the network <em>itself</em> generates (or &#8220;daydreams&#8221; about) when no units are fixed to training data.</p></li>
+</ul>
+
+
+<p>So by adding $latex Positive(e _ {ij}) - Negative(e _ {ij})$ to each edge weight, we&#8217;re helping the network&#8217;s daydreams better match the reality of our training examples.</p>
+
+<p>(You may hear this update rule called <strong>contrastive divergence</strong>, which is basically a funky term for &#8220;approximate gradient descent&#8221;.)</p>
+
+<h1>Examples</h1>
+
+<p>I wrote <a href="https://github.com/echen/restricted-boltzmann-machines">a simple RBM implementation</a> in Python (the code is heavily commented, so take a look if you&#8217;re still a little fuzzy on how everything works), so let&#8217;s use it to walk through some examples.</p>
+
+<p>First, I trained the RBM using some fake data.</p>
+
+<ul>
+<li><p>Alice: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.</p></li>
+<li><p>Bob: (Harry Potter = 1, Avatar = 0, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). SF/fantasy fan, but doesn&#8217;t like Avatar.</p></li>
+<li><p>Carol: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.</p></li>
+<li><p>David: (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Big Oscar winners fan.</p></li>
+<li><p>Eric:  (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Oscar winners fan, except for Titanic.</p></li>
+<li><p>Fred: (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Big Oscar winners fan.</p></li>
+</ul>
+
+
+<p>The network learned the following weights:</p>
+
+<pre><code>&lt;code&gt;                 Bias Unit       Hidden 1        Hidden 2
+Bias Unit       -0.08257658     -0.19041546      1.57007782 
+Harry Potter    -0.82602559     -7.08986885      4.96606654 
+Avatar          -1.84023877     -5.18354129      2.27197472 
+LOTR 3           3.92321075      2.51720193      4.11061383 
+Gladiator        0.10316995      6.74833901     -4.00505343 
+Titanic         -0.97646029      3.25474524     -5.59606865 
+Glitter         -4.44685751     -2.81563804     -2.91540988
+&lt;/code&gt;
+</code></pre>
+
+<p>Note that the first hidden unit seems to correspond to the Oscar winners, and the second hidden unit seems to correspond to the SF/fantasy movies, just as we were hoping.</p>
+
+<p>What happens if we give the RBM a new user, George, who has (Harry Potter = 0, Avatar = 0, LOTR 3 = 0, Gladiator = 1, Titanic = 1, Glitter = 0) as his preferences? It turns the Oscar winners unit on (but not the SF/fantasy unit), correctly guessing that George probably likes movies that are Oscar winners.</p>
+
+<p>What happens if we activate only the SF/fantasy unit, and run the RBM a bunch of different times? In my trials, it turned on Harry Potter, Avatar, and LOTR 3 three times; it turned on Avatar and LOTR 3, but not Harry Potter, once; and it turned on Harry Potter and LOTR 3, but not Avatar, twice. Note that, based on our training examples, these generated preferences do indeed match what we might expect real SF/fantasy fans want to watch.</p>
+
+<h1>Modifications</h1>
+
+<p>I tried to keep the connection-learning algorithm I described above pretty simple, so here are some modifications that often appear in practice:</p>
+
+<ul>
+<li><p>Above, $latex Negative(e _ {ij})$ was determined by taking the product of the $latex i$th and $latex j$th units after reconstructing the visible units <em>once</em> and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&#8217;s daydreams more accurately.</p></li>
+<li><p>Instead of using $latex Positive(e _ {ij})=x _ i * x _ j$, where $latex x _ i$ and $latex x _ j$ are binary 0 or 1 <em>states</em>, we could also let $latex x _ i$ and/or $latex x _ j$ be activation <em>probabilities</em>. Similarly for $latex Negative(e _ {ij})$.</p></li>
+<li><p>We could penalize larger edge weights, in order to get a sparser or more regularized model.</p></li>
+<li><p>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $latex L * (Positive(e _ {ij}) - Negative(e _ {ij})$) and the step previously taken.</p></li>
+<li><p>Instead of using only one training example in each epoch, we could use <em>batches</em> of examples in each epoch, and only update the network&#8217;s weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.</p></li>
+</ul>
+
+
+<h1>Further</h1>
+
+<p>If you&#8217;re interested in learning more about Restricted Boltzmann Machines, here are some good links.</p>
+
+<ul>
+<li><p><a href="http://www.cs.toronto.edu/~hinton/absps/guideTR.pdf">A Practical guide to training restricted Boltzmann machines</a>, by Geoffrey Hinton.</p></li>
+<li><p>A talk by Andrew Ng on <a href="http://www.youtube.com/watch?v=ZmNOAtZIgIk">Unsupervised Feature Learning and Deep Learning</a>.</p></li>
+<li><p><a href="http://www.machinelearning.org/proceedings/icml2007/papers/407.pdf">Restricted Boltzmann Machines for Collaborative Filtering</a>. I found this paper hard to read, but it&#8217;s an interesting application to the Netflix Prize.</p></li>
+<li><p><a href="http://arxiv.org/abs/0908.4425">Geometry of the Restricted Boltzmann Machine</a>. A very readable introduction to RBMs, &#8220;starting with the observation that its Zariski closure is a Hadamard power of the first secant variety of the Segre variety of projective lines&#8221;. (I kid, I kid.)</p></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-18T09:32:52-07:00" pubdate data-updated="true">Jul 18<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/expository/'>expository</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/07/18/introduction-to-restricted-boltzmann-machines/" data-via="" data-counturl="http://echen.github.com/blog/2011/07/18/introduction-to-restricted-boltzmann-machines/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/" title="Previous Post: Visualizing Miss USA 2011: Should Evolution be Taught in Schools?">&laquo; Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/" title="next Post: Tweets vs. Likes: What gets shared on Twitter vs. Facebook?">Tweets vs. Likes: What gets shared on Twitter vs. Facebook? &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

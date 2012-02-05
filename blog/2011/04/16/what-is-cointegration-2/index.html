@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Introduction to Cointegration and Pairs Trading - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Introduction Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&#8217;t know each other (they&#8217;re independent &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/04/16/what-is-cointegration-2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Introduction to Cointegration and Pairs Trading</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-16T03:44:14-07:00" pubdate data-updated="true">Apr 16<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Introduction</h1>
+
+<p>Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&#8217;t know each other (they&#8217;re independent), so there&#8217;s no meaningful relationship between their paths.</p>
+
+<p>But suppose instead you have a drunk walking with her dog. This time there <em>is</em> a connection. What&#8217;s the nature of this connection? Notice that although each path individually is still an unpredictable random walk, given the location of one of the drunk or dog, we have a pretty good idea of where the other is; that is, the distance between the two is fairly predictable. (For example, if the dog wanders too far away from his owner, she&#8217;ll tend to move in his direction to avoid losing him, so the two stay close together despite a tendency to wander around on their own.) We describe this relationship by saying that the drunk and her dog form a cointegrating pair.</p>
+
+<p>In more technical terms, if we have two non-stationary time series X and Y that become stationary when differenced (these are called integrated of order one series, or I(1) series; random walks are one example) such that some linear combination of X and Y is stationary (aka, I(0)), then we say that X and Y are cointegrated. In other words, while neither X nor Y alone hovers around a constant value, some combination of them does, so we can think of cointegration as describing a particular kind of long-run equilibrium relationship. (The definition of cointegration can be extended to multiple time series, with higher orders of integration.)</p>
+
+<p>Other examples of cointegrated pairs:</p>
+
+<ul>
+<li><p>Income and consumption: as income increases/decreases, so too does consumption.</p></li>
+<li><p>Size of police force and amount of criminal activity</p></li>
+<li><p>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</p></li>
+<li><p>Number of patients entering or leaving a hospital</p></li>
+</ul>
+
+
+<h1>An application</h1>
+
+<p>So why do we care about cointegration? In quantitative finance, cointegration forms the basis of the pairs trading strategy: suppose we have two cointegrated stocks X and Y, with the particular (for concreteness) cointegrating relationship X - 2Y = Z, where Z is a stationary series of zero mean. For example, X could be McDonald&#8217;s, Y could be Burger King, and the cointegration relationship would mean that X tends to be priced twice as high as Y, so that when X is more than twice the price of Y, we expect X to move down or Y to move up in the near future (and analogously, if X is less than twice the price of Y, we expect X to move up or Y to move down). This suggests the following trading strategy: if X - 2Y > d, for some positive threshold d, then we should sell X and buy Y (since we expect X to decrease in price and Y to increase), and similarly, if X - 2Y &lt; -d, then we should buy X and sell Y.</p>
+
+<h1>Spurious regression</h1>
+
+<p>But why do we need the notion of cointegration at all? Why can&#8217;t we simply use, say, the R-squared between X or Y to see if X and Y have some kind of relationship? The reason is that standard regression analysis fails when dealing with non-stationary variables, leading to spurious regressions that suggest relationships even when there are none.</p>
+
+<p>For example, suppose we regress two independent random walks against each other, and test for a linear relationship. A large percentage of the time, we&#8217;ll find high R-squared values and low p-values when using standard OLS statistics, even though there&#8217;s absolutely no relationship between the two random walks. As an illustration, here I simulated 1000 pairs of random walks of length 100, and found p-values less than 0.05 in 77% of the cases:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png"><img src="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png" alt="Spurious Regression" /></a></p>
+
+<h1>A Cointegration Test</h1>
+
+<p>So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:</p>
+
+<ul>
+<li><p>Check that $latex X _ t $ and $latex Y _ t $ are both I(1).</p></li>
+<li><p>Estimate the cointegrating relationship $latex Y _ t = aX _ t + e _ t $ by ordinary least squares.</p></li>
+<li><p>Check that the cointegrating residuals $latex e _ t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</p></li>
+</ul>
+
+
+<h1>Error-correction and Granger representation</h1>
+
+<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $latex X _ t, Y _ t $, with autoregressive representations</p>
+
+<p>$latex X _ t = a X _ {t-1} + b Y _ {t-1} + u _ t $
+$latex Y _ t = c X _ {t-1} + d Y _ {t-1} + v _ t $</p>
+
+<p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
+
+<p>$latex \Delta X _ t = \alpha _ 1 (Y _ {t-1} - \beta X _ {t-1}) + u _ t $
+$latex \Delta Y _ t = \alpha _ 2 (Y _ {t-1} - \beta X _ {t-1}) + v _ t $</p>
+
+<p>where $latex Y _ {t-1} - \beta X _ {t-1} \sim I(0) $ is the cointegrating relationship. Regarding $latex Y _ {t-1} - \beta X _ {t-1} $ as the extent of disequilibrium from the long-run relationship, and the $latex \alpha _ i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+
+<h1>Summary</h1>
+
+<p>So, just to summarize a bit, cointegration is an equilibrium relationship between time series that individually aren&#8217;t in equilbrium (you can kind of contrast this with (Pearson) correlation, which describes a linear relationship), and it&#8217;s useful because it allows us to incorporate both short-term dynamics (deviations from equilibrium) and long-run expectations (corrections to equilibrium).</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-16T03:44:14-07:00" pubdate data-updated="true">Apr 16<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/expository/'>expository</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/04/16/what-is-cointegration-2/" data-via="" data-counturl="http://echen.github.com/blog/2011/04/16/what-is-cointegration-2/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/04/16/monads-typeclasses-and-celebrities/" title="Previous Post: Introduction to Monads and Typeclasses in Haskell">&laquo; Introduction to Monads and Typeclasses in Haskell</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/04/18/twifferences-between-californians-and-new-yorkers/" title="next Post: Twifferences Between Californians and New Yorkers">Twifferences Between Californians and New Yorkers &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,1177 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="There&#8217;s an adorable scene in WALL-E where, unable to decide whether a spork belongs with his spoon collection or fork collection, WALL-E places &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/page/2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/06/14/spork-spoon-or-fork/">Spork: Spoon or Fork?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-06-14T23:32:04-07:00" pubdate data-updated="true">Jun 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>There&#8217;s an adorable scene in <em>WALL-E</em> where, unable to decide whether a spork belongs with his spoon collection or fork collection, WALL-E places it in the middle.</p>
+
+<p>[youtube=http://www.youtube.com/watch?v=ruJ76-o5lxU]</p>
+
+<p>This led me to the following timeless question: is a spork more spoon or fork?</p>
+
+<p>To answer, I did a little digging. First, I pulled images of spoons and forks from <a href="http://www.bing.com/images">Bing</a> (natch) and used these to train a spoon-vs.-fork SVM (using the excellent <a href="http://scikit-learn.sourceforge.net/">scikit-learn</a> package).</p>
+
+<p>Using leave-one-out cross-validation, the classifier showed roughly 85% accuracy: 4 out of 20 spoons were misclassified as forks, and 2 out of 20 forks were misclassified as spoons. Not bad, considering the limited dataset and lack of tuning.</p>
+
+<p>Finally, I applied the classifier to my spork images.</p>
+
+<p>The results? 2 out of 20 sporks were classified as forks and the remaining 18 were classified as spoons, thereby definitively proving that <strong>a spork is 10% fork and 90% spoon</strong>.</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/spork/spork-decomposition.png"><img src="http://dl.dropbox.com/u/10506/blog/spork/spork-decomposition.png" alt="Spork Decomposition" /></a></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/05/05/twss-building-a-thats-what-she-said-classifier/">TWSS: Building a That&#8217;s What She Said Classifier</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-05T00:09:17-07:00" pubdate data-updated="true">May 5<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>There&#8217;s been a <a href="www.cs.washington.edu/homes/brun/pubs/pubs/Kiddon11.pdf">fun paper</a> on <a href="http://www.urbandictionary.com/define.php?term=that's%20what%20she%20said">That&#8217;s What She Said</a> identification making the rounds recently, so I spent some time over the weekend building my own classifier.</p>
+
+<p><strong>tl;dr</strong> A simple unigram Naive Bayes model works pretty well, with performance on the lines of 0.969 precision and 0.823 recall. There&#8217;s a demo <a href="http://twss-classifier.heroku.com/">here</a>. I also ran the classifier over some fairy tale text.</p>
+
+<h1>Naive Bayes Classifier</h1>
+
+<p>To start, I used a super simple Naive Bayes classifier, trained on unigrams (with add-one smoothing). (See the appendix at the end for details.)</p>
+
+<h3>Unigram vs. Bigram Model</h3>
+
+<p>Here are the most predictive features, after training a Naive Bayes model with unigrams:</p>
+
+<pre><code>&lt;code&gt;unigram         p(twss|unigram)
+pull            0.9724889822144924
+bigger          0.9614677503890157
+wet             0.959004244327654
+hard            0.9527628206878138
+stick           0.9505783678914388
+hole            0.9443870318715991
+oh              0.9432941279908561
+replied         0.943294127990856
+fast            0.943294127990856
+longer          0.9397415371025485
+&lt;/code&gt;
+</code></pre>
+
+<p>Just to compare, here are some of the most predictive features in a bigram model (I added START and END tokens to the beginning and end of each sentence, in order to have some contextual features):</p>
+
+<pre><code>&lt;code&gt;bigram          p(twss|bigram)
+it in           0.9801434151851175
+START wow       0.9705079286853889
+START oh        0.9473580156961879
+its too         0.9350522640444204
+pull out        0.9187779331523677
+too big         0.9187779331523677
+START man       0.9113755525471394
+hard END        0.9113755525471394
+put it          0.9071442285463515
+that thing      0.9024886021363793
+stick it        0.9024886021363793
+my god          0.9024886021363793
+go in           0.8916207044791409
+START ugh       0.8916207044791409
+make it         0.8916207044791409
+its so          0.8916207044791409
+&lt;/code&gt;
+</code></pre>
+
+<p>Amusingly, sentences starting with <em>wow</em>, <em>oh</em>, and <em>ugh</em>, tend to be good candidates for TWSS sentences, as well as sentences containing <em>it&#8217;s too</em> and <em>it&#8217;s so</em>.</p>
+
+<p>Here&#8217;s a precision-recall curve comparing the two models. We see that, on our datasets, a unigram classifier handily beats a bigram classifier:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/twss/precision-recall.png"><img src="http://dl.dropbox.com/u/10506/blog/twss/precision-recall.png" alt="Precision-Recall" /></a></p>
+
+<h1>Faerie Tail</h1>
+
+<p>Although our classifier gives excellent performance on our test set, one question is how well it generalizes to other sources of data.</p>
+
+<p>I didn&#8217;t have another set of positive examples to draw from, but I took a set of fairy tales on Project Gutenberg to form a new batch of negative examples. On this new set of fairy tale sentences, the classifier misclassified only 81 out of 912 of the examples (assuming they should all be classified as &#8220;not TWSS&#8221;), which is a pretty low error rate of 8.89%.</p>
+
+<p>What do these misclassifications look like? Here are some of the false positives it made:</p>
+
+<h3>Aladdin</h3>
+
+<ul>
+<li><p>&#8220;The African magician carries it carefully wrapt up in his bosom,&#8221; said the princess; &#8220;and this I can assure you, because he pulled it out before me, and showed it to me in triumph.&#8221;</p></li>
+<li><p>It is vanished; but I had no concern in its removal.</p></li>
+<li><p>&#8220;My son,&#8221; said he, &#8220;what a man you are to do such surprising things always in the twinkling of an eye!&#8221;</p></li>
+<li><p>&#8220;Sire,&#8221; replied Aladdin, &#8220;I have not the least reason to complain of your conduct, since you did nothing but what your duty required.&#8221;</p></li>
+<li><p>&#8220;With your leave, mother,&#8221; replied Aladdin, &#8220;I shall now take care how I sell a lamp which may be so serviceable both to you and me.&#8221;</p></li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png"><img src="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png" alt="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png" /></a></p>
+
+<h3>Hansel and Gretel</h3>
+
+<ul>
+<li><p>&#8220;Oh dear,&#8221; he said, &#8220;do let me go and see the hunt; I cannot restrain myself.&#8221;</p></li>
+<li><p>When they awoke it was dark night, and poor Grethel began to cry, and said, &#8220;Oh, how shall we get out of the wood?&#8221; But Hansel comforted her.</p></li>
+<li><p>&#8220;But remember,&#8221; she said, &#8220;I must lock the cottage door against those huntsmen, so when you come back in the evening, and knock, I shall not admit you, unless you say, &#8216;Dear little sister let me in.&#8217;</p></li>
+</ul>
+
+
+<h3>Snow White</h3>
+
+<ul>
+<li><p>One was too long, another too short; so she tried them all till she came to the seventh, and that was so comfortable that she laid herself down, and was soon fast asleep.</p></li>
+<li><p>&#8220;Oh yes, I will try,&#8221; said Snow-white.</p></li>
+</ul>
+
+
+<p>Note that a lot of these really are TWSS sentences! (Now we know where <a href="http://www.snopes.com/disney/films/mermaid.asp">those Disney artists</a> got their inspiration.) So the classifier appears to generalize surprisingly well.</p>
+
+<h1>A Demo</h1>
+
+<p>I created <a href="http://twss-classifier.heroku.com/">a small Sinatra app</a> to play around with the classifier, and deployed it <a href="http://twss-classifier.heroku.com/">here</a>.</p>
+
+<h1>Appendix: Details</h1>
+
+<h3>Datasets</h3>
+
+<p>To grab some TWSS examples, my first thought was to turn to <a href="http://search.twitter.com/search?q=twss">twitter</a>. However, the twitter data turned out to be incredibly noisy (lots of junk obscuring not terribly funny examples), so taking a cue from the K&amp;B paper, I pulled data from three sources:</p>
+
+<ul>
+<li><p>First, I scraped <a href="http://twssstories.com">twss stories</a> for positive training data (sentences for which a TWSS response is appropriate). Since only the last part in quotes from each submission is truly relevant to being a TWSS, I kept the quote and threw away the rest of each submission.</p></li>
+<li><p>Next, I scraped <a href="http://textsfromlastnight.com">Texts from Last Night</a> and <a href="http://www.fmylife.com">FMyLife</a> for negative training data. Since TWSS jokes are usually made in response to <em>sentences</em> (the last sentence you say), I split each submission into sentences, and each sentence formed a single negative training example.</p></li>
+</ul>
+
+
+<p>Finally, I normalized each sentence by converting to lowercase and removing any punctuation.</p>
+
+<h3>The Algorithm</h3>
+
+<p>To train and test the classifier, I used the examples I gathered to form training and test sets, each consisting of:</p>
+
+<ul>
+<li><p>1000 positive examples from twss stories.</p></li>
+<li><p>500 negative examples from Texts from Last Night.</p></li>
+<li><p>500 negative examples from FMyLife.</p></li>
+</ul>
+
+
+<h3>Performance of the Unigram Model</h3>
+
+<p>Since we want to optimize for precision (we hope the things we classify as TWSS sentences really are TWSS sentences) over recall (it&#8217;s fine if we don&#8217;t always respond TWSS to every TWSS sentence), let&#8217;s use 0.99 probability as our threshold for classifying a sentence as TWSS. (This is equivalent to setting a low prior for the probability of being a TWSS.)</p>
+
+<p>With this threshold, a unigram Naive Bayes classifier has the following performance on a test set:</p>
+
+<ul>
+<li><p>True positives: 823</p></li>
+<li><p>False negatives: 177</p></li>
+<li><p>True negatives: 974</p></li>
+<li><p>False positives: 26</p></li>
+<li><p>Precision = 0.969</p></li>
+<li><p>Recall = 0.823</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/05/01/unsupervised-language-detection-algorithms/">Filtering for English Tweets: Unsupervised Language Detection on Twitter</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-01T16:28:07-07:00" pubdate data-updated="true">May 1<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(See a demo <a href="http://babel-fett.heroku.com/">here</a>.)</p>
+
+<p>While working on a Twitter sentiment analysis project, I ran into the problem of needing to filter out all non-English tweets. (Asking the Twitter API for English-only tweets doesn&#8217;t seem to work, as it nonetheless returns tweets in Spanish, Portuguese, Dutch, Russian, and a couple other languages.)</p>
+
+<p>Since I didn&#8217;t have any labeled data, I thought it would be fun to build an <strong>unsupervised</strong> language classifier. In particular, using an EM algorithm to build a naive Bayes model of English vs. non-English n-gram probabilities turned out to work quite well, so here&#8217;s a description.</p>
+
+<h1>EM Algorithm</h1>
+
+<p>Let&#8217;s recall the naive Bayes algorithm: given a tweet (a set of <em>character</em> n-grams), we estimate its language to be the language $latex L$ that maximizes</p>
+
+<p>$latex P(language = L | ngrams) \propto P(ngrams | language = L) P(language = L)$</p>
+
+<p>Thus, we need to estimate $latex P(ngram | language = L)$ and $latex P(language = L)$.</p>
+
+<p>This would be easy <strong>if we knew the language of each tweet</strong>, since we could estimate</p>
+
+<ul>
+<li><p>$latex P(xyz| language = English)$ as #(number of times &#8220;xyz&#8221; is a trigram in the English tweets) / #(total trigrams in the English tweets)</p></li>
+<li><p>$latex P(language = English)$ as the proportion of English tweets.</p></li>
+</ul>
+
+
+<p>Or, it would also be easy <strong>if we knew the n-gram probabilities for each language</strong>, since we could use Bayes&#8217; theorem to compute the language <em>probabilities</em> for each tweet, and then take a weighted variant of the previous paragraph.</p>
+
+<p><strong>The problem is that we know neither of these.</strong> So what the EM algorithm says is that that we can simply <strong>guess</strong>:</p>
+
+<ul>
+<li><p>Pretend we know the language of each tweet (by randomly assigning them at the beginning).</p></li>
+<li><p>Using this guess, we can compute the n-gram probabilities for each language.</p></li>
+<li><p>Using the n-gram probabilities for each language, we can recompute the language probabilities of each tweet.</p></li>
+<li><p>Using these recomputed language probabilities, we can recompute the n-gram probabilities.</p></li>
+<li><p>And so on, recomputing the language probabilities and n-gram probabilities over and over. While our guesses will be off in the beginning, the probabilities will eventually converge to (locally) minimize the likelihood. (In my tests, my language detector would sometimes correctly converge to an English detector, and sometimes it would converge to an English-and-Dutch detector.)</p></li>
+</ul>
+
+
+<h2>EM Analogy for the Layman</h2>
+
+<p>Why does this work? Suppose you suddenly move to New York, and you want a way to differentiate between tourists and New Yorkers based on their activities. Initially, you don&#8217;t know who&#8217;s a tourist and who&#8217;s a New Yorker, and you don&#8217;t know which are touristy activities and which are not. So you randomly place people into two groups A and B. (You randomly assign all tweets to a language)</p>
+
+<p>Now, given all the people in group A, you notice that a large number of them visit the Statue of Liberty; similarly, you notice that a large number of people in group B walk really quickly. (You notice that one set of words often has the n-gram &#8220;ing&#8221;, and that another set of words often has the n-gram &#8220;ias&#8221;; that is, you fix the language probabilities for each tweet, and recompute the n-gram probabilities for each language.)</p>
+
+<p>So you start to put people visiting the Statue of Liberty in group A, and you start to put fast walkers in group B. (You fix the n-gram probabilities for each language, and recompute the language probabilities for each tweet.)</p>
+
+<p>With your new A and B groups, you notice more differentiating factors: group A people tend to carry along cameras, and group B people tend to be more finance-savvy.</p>
+
+<p>So you start to put camera-carrying folks in group A, and finance-savvy folks in group B.</p>
+
+<p>And so on. Eventually, you settle on two groups of people and differentiating activities: people who walk slowly and visit the Statue of Liberty, and busy-looking people who walk fast and don&#8217;t visit. Assuming there are more native New Yorkers than tourists, you can then guess that the natives are the larger group.</p>
+
+<h1>Results</h1>
+
+<p>I wrote some Ruby code to implement the above algorithm, and trained it on half a million tweets, using English and &#8220;not English&#8221; as my two languages. The results looked surprisingly good from just eyeballing:</p>
+
+<p><a href="https://img.skitch.com/20110303-qfrnb8gstgheh4xech4iutfskd.jpg"><img src="https://img.skitch.com/20110303-qfrnb8gstgheh4xech4iutfskd.jpg" alt="Example Results" /></a></p>
+
+<p>But in order to get some hard metrics and to tune parameters (e.g., n-gram size), I needed a labeled dataset. So I pulled a set of English-language and Spanish-language documents from Project Gutenberg, and split them to form training and test sets (the training set consisted of 2000 lines of English and 1000 lines of Spanish, and  1000 lines of English and 1000 lines of Spanish for the test set).</p>
+
+<p>Trained on bigrams, the detector resulted in:</p>
+
+<ul>
+<li><p>991 true positives (English lines correctly classified as English)</p></li>
+<li><p>9 false negatives (English lines incorrectly classified as Spanish</p></li>
+<li><p>11 false positives (Spanish lines incorrectly classified as English)</p></li>
+<li><p>989 true negatives (Spanish lines correctly classified as English)</p></li>
+</ul>
+
+
+<p>for a precision of 0.989 and a recall of 0.991.</p>
+
+<p>Trained on trigrams, the detector resulted in:</p>
+
+<ul>
+<li><p>992 true positives</p></li>
+<li><p>8 false negatives</p></li>
+<li><p>10 false positives</p></li>
+<li><p>990 true negatives</p></li>
+</ul>
+
+
+<p>for a precision of 0.990 and a recall of 0.992.</p>
+
+<p>Also, when I looked at the sentences the detector was making errors on, I saw that they almost always consisted of only one or two words (e.g., the incorrectly classified sentences were lines like &#8220;inmortal&#8221;, &#8220;autumn&#8221;, and &#8220;salir&#8221;). So the detector pretty much never made a mistake on a normal sentence!</p>
+
+<h1>Code/Demo</h1>
+
+<p>I put the code on <a href="https://github.com/echen/unsupervised-language-identification">my Github account</a>, and a quick <a href="http://babel-fett.heroku.com/">demo app</a>, trained on trigrams from tweets with lang=&#8221;en&#8221; according to the Twitter API, is <a href="http://babel-fett.heroku.com/">here</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/05/01/eigensheep/">Eigensheep</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-01T15:23:31-07:00" pubdate data-updated="true">May 1<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Aaron Koblin&#8217;s <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were <em>ordered</em>, so inspired by the use of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a> in facial recognition, I decided to try projecting the sheep onto two dimensions.</p>
+
+<h1>Principal Sheep Components</h1>
+
+<p>After screenshotting the first 50 sheep from the market and normalizing their size and color, here&#8217;s what a PCA projection looks like (<a href="http://dl.dropbox.com/u/10506/eigensheep.png">click</a> for a larger view):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/eigensheep.png"><img src="http://dl.dropbox.com/u/10506/eigensheep.png" alt="Projected Sheep" /></a></p>
+
+<p>Notice how the stroke widths get thicker as we move to the right (i.e., <strong>the first principal component seems to measure the blackness of the sheep</strong>), and the amount of wool on the sheep&#8217;s body increases as we move up (i.e., <strong>the second principal component seems to measure the wooliness of the sheep</strong>).</p>
+
+<p>It&#8217;s also pretty neat how all the sheep with black heads and black legs (sheep 35, 16, 32, 31, and 19) get clumped together:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png"><img src="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png" alt="Projected Sheep, Black Heads/Legs Circled" /></a></p>
+
+<p>And I think the sheep on the left (next to and inside the dense cluster) seem much more poorly drawn &#8211; they look more like camels, dogs, unicorns, or bugs than actual sheep.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/04/27/choosing-a-machine-learning-classifier/">Choosing a Machine Learning Classifier</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-27T18:43:15-07:00" pubdate data-updated="true">Apr 27<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best bet is to test out a couple different ones (making sure to try different parameters within each algorithm as well), and select the best one by cross-validation. But if you&#8217;re simply looking for a &#8220;good enough&#8221; algorithm for your problem, or a place to start, here are some general guidelines I&#8217;ve found to work well over the years.</p>
+
+<h1>How large is your training set?</h1>
+
+<p>If your training set is small, high bias/low variance classifiers (e.g., Naive Bayes) have an advantage over low bias/high variance classifiers (e.g., kNN), since the latter will overfit. But low bias/high variance classifiers start to win out as your training set grows (they have lower asymptotic error), since high bias classifiers aren&#8217;t powerful enough to provide accurate models.</p>
+
+<p>You can also think of this as a generative model vs. discriminative model distinction.</p>
+
+<h1>Advantages of some particular algorithms</h1>
+
+<p><strong>Advantages of Naive Bayes:</strong> Super simple, you&#8217;re just doing a bunch of counts. If the NB conditional independence assumption actually holds, a Naive Bayes classifier will converge quicker than discriminative models like logistic regression, so you need less training data. And even if the NB assumption doesn&#8217;t hold, a NB classifier still often does a great job in practice. A good bet if  want something fast and easy that performs pretty well. Its main disadvantage is that it can&#8217;t learn interactions between features (e.g., it can&#8217;t learn that although you love movies with Brad Pitt and Tom Cruise, you hate movies where they&#8217;re together).</p>
+
+<p><strong>Advantages of Logistic Regression:</strong> Lots of ways to regularize your model, and you don&#8217;t have to worry as much about your features being correlated, like you do in Naive Bayes. You also have a nice probabilistic interpretation, unlike decision trees or SVMs, and you can easily update your model to take in new data (using an online gradient descent method), again unlike decision trees or SVMs. Use it if you want a probabilistic framework (e.g., to easily adjust classification thresholds, to say when you&#8217;re unsure, or to get confidence intervals) or if you expect to receive more training data in the future that you want to be able to quickly incorporate into your model.</p>
+
+<p><strong>Advantages of Decision Trees:</strong> Easy to interpret and explain (for some people &#8211; I&#8217;m not sure I fall into this camp). They easily handle feature interactions and they&#8217;re non-parametric, so you don&#8217;t have to worry about outliers or whether the data is linearly separable (e.g., decision trees easily take care of cases where you have class A at the low end of some feature x, class B in the mid-range of feature x, and A again at the high end). One disadvantage is that they don&#8217;t support online learning, so you have to rebuild your tree when new examples come on. Another disadvantage is that they easily overfit, but that&#8217;s where ensemble methods like random forests (or boosted trees) come in. Plus, random forests are often the winner for lots of problems in classification (usually slightly ahead of SVMs, I believe), they&#8217;re fast and scalable, and you don&#8217;t have to worry about tuning a bunch of parameters like you do with SVMs, so they seem to be quite popular these days.</p>
+
+<p><strong>Advantages of SVMs:</strong> High accuracy, nice theoretical guarantees regarding overfitting, and with an appropriate kernel they can work well even if you&#8217;re data isn&#8217;t linearly separable in the base feature space. Especially popular in text classification problems where very high-dimensional spaces are the norm. Memory-intensive, hard to interpret, and kind of annoying to run and tune, though, so I think random forests are starting to steal the crown.</p>
+
+<h1>But&#8230;</h1>
+
+<p>Recall, though, that better data often beats better algorithms, and designing good features goes a long way. And if you have a huge dataset, then whichever classification algorithm you use might not matter so much in terms of classification performance (so choose your algorithm based on speed or ease of use instead).</p>
+
+<p>And to reiterate what I said above, if you really care about accuracy, you should definitely try a bunch of different classifiers and select the best one by cross-validation. Or, to take a lesson from the Netflix Prize (and Middle Earth), just use an ensemble method to choose them all.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/04/25/kickstarter-data-analysis-success-and-pricing/">Kickstarter Data Analysis: Success and Pricing</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-25T21:19:40-07:00" pubdate data-updated="true">Apr 25<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://www.kickstarter.com/">Kickstarter</a> is an online crowdfunding platform for launching creative projects. When starting a new project, project owners specify a deadline and the minimum amount of money they need to raise. They receive the money (less a transaction fee) only if they reach or exceed that minimum; otherwise, no money changes hands.</p>
+
+<p>What&#8217;s particularly fun about Kickstarter is that in contrast to <a href="http://www.kiva.org/">that other microfinance site</a>, Kickstarter projects don&#8217;t ask for loans; instead, patrons receive pre-specified rewards unique to each project. For example, someone donating money to help an artist record an album might receive a digital copy of the album if they donate 20 dollars, or a digital copy plus a signed physical cd if they donate 50 dollars.</p>
+
+<p>There are <a href="http://www.kickstarter.com/discover/hall-of-fame?ref=sidebar">a bunch</a> of <a href="http://www.kickstarter.com/projects/1104350651/tiktok-lunatik-multi-touch-watch-kits">neat</a> <a href="http://www.kickstarter.com/projects/2024077040/neil-gaimans-the-price">projects</a>, and I&#8217;m tempted to put one of my own on there soon, so I thought it would be fun to gather some data from the site and see what makes a project successful.</p>
+
+<h1>Categories</h1>
+
+<p>I started by scraping the categories section.</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png" alt="Successful projects by category" /></a></p>
+
+<p>In true indie fashion, the artsy categories tend to dominate. (I&#8217;m surprised/disappointed how little love the Technology category gets.)</p>
+
+<h1>Ending Soon</h1>
+
+<p>The categories section really only provides a history of <em>successful</em> projects, though, so to get some data on unsuccessful projects as well, I took a look at the <a href="http://www.kickstarter.com/discover/ending-soon?ref=sidebar">Ending Soon</a> section of projects whose deadlines are about to pass.</p>
+
+<p>It looks like about 50% of all Kickstarter projects get successfully funded by the deadline:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png" alt="Successful projects as deadline approaches" /></a></p>
+
+<p>Interestingly, most of the final funding seems to happen in the final few days: with just 5 days left, only about 20% of all projects have been funded. (In other words, with just 5 days left, 60% of the projects that will eventually be successful are still unfunded.) So the approaching deadline seems to really spur people to donate. I wonder if it&#8217;s because of increased publicity in the final few days (the project owners begging everyone for help!) or if it&#8217;s simply procrastination in action (perhaps people want to wait to see if their donation is really necessary)?</p>
+
+<p>Lesson: if you&#8217;re still not fully funded with only a couple days remaining, don&#8217;t despair.</p>
+
+<h1>Success vs. Failure</h1>
+
+<p>What factors lead a project to succeed? Are there any quantitative differences between projects that eventually get funded and those that don&#8217;t?</p>
+
+<p>Two simple (if kind of obvious) things I noticed are that unsuccessful projects tend to require a larger amount of money:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png" alt="Unsuccessful projects tend to ask for more money" /></a></p>
+
+<p>and unsuccessful projects also tend to raise less money in absolute terms (i.e., it&#8217;s not just that they ask for too much money to reach their goal &#8211; they&#8217;re simply not receiving enough money as well):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png" alt="Unsuccessful projects received less money" /></a></p>
+
+<p>Not terribly surprising, but it&#8217;s good to confirm (and I&#8217;m still working on finding other predictors).</p>
+
+<h1>Pledge Rewards</h1>
+
+<p>There&#8217;s a lot of interesting work in behavioral economics on pricing and choice &#8211; for example, the <a href="http://youarenotsosmart.com/2010/07/27/anchoring-effect/">anchoring effect</a> suggests that when building a menu, you should <a href="http://www.neurosciencemarketing.com/blog/articles/neuro-menus-and-restaurant-psychology.htm">include an expensive item</a> to make other menu items look reasonably priced in comparison, and the <a href="http://en.wikipedia.org/wiki/The_Paradox_of_Choice:_Why_More_Is_Less">paradox of choice </a> suggests that too many choices lead to a decision freeze &#8211; so one aspect of the Kickstarter data I was especially interested in was how pricing of rewards affects donations. For example, does pricing the lowest reward at 25 dollars lead to more money donated (people don&#8217;t lowball at 5 dollars instead) or less money donated (25 dollars is more money than most people are willing to give)? And what happens if a new reward at 5 dollars is added &#8211; again, does it lead to more money (now people can donate something they can afford) or less money (the people that would have paid 25 dollars switch to a 5 dollar donation)?</p>
+
+<p>First, here&#8217;s a look at the total number of pledges at each price. (More accurately, it&#8217;s the number of claimed rewards at each price.) [Update: the original version of this graph was wrong, but I&#8217;ve since fixed it.]</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png" alt="Pledge Amounts" /></a></p>
+
+<p>Surprisingly, 5 dollar and 1 dollar donations are actually not the most common contribution.</p>
+
+<p>To investigate pricing effects, I started by looking at all (successful) projects that had a reward priced at 1 dollar, and compared the number of donations at 1 dollar with the number of donations at the next lowest reward.</p>
+
+<p>Up to about 15-20 dollars, there&#8217;s a steady increase in the proportion of people who choose the second reward over the first reward, but after that, the proportion decreases.</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png" alt="Anchoring" /></a></p>
+
+<p>So this perhaps suggests that if you&#8217;re going to price your lowest reward at 1 dollar, your next reward should cost roughly 20 dollars (or slightly more, to maximize your total revenue). Pricing above 20 dollars is a little too expensive for the folks who want to support you, but aren&#8217;t rich enough to throw gads of money; maybe rewards below 20 dollars aren&#8217;t good enough to merit the higher donation.</p>
+
+<p>Next, I&#8217;m planning on digging a little deeper into pricing effects and what makes a project successful, so I&#8217;ll hopefully have some more Kickstarter analysis in a future post.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression/">A Mathematical Introduction to Least Angle Regression</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-21T00:16:36-07:00" pubdate data-updated="true">Apr 21<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(For a layman&#8217;s introduction, see <a href="/2011/03/14/least-angle-regression-for-the-hungry-layman/">here</a>.)</p>
+
+<p>Least Angle Regression (aka LARS) is a <strong>model selection method</strong> for linear regression (when you&#8217;re worried about overfitting or want your model to be easily interpretable). To motivate it, let&#8217;s consider some other model selection methods:</p>
+
+<ul>
+<li><p><strong>Forward selection</strong> starts with no variables in the model, and at each step it adds to the model the variable with the most explanatory power, stopping if the explanatory power falls below some threshold. This is a fast and simple method, but it can also be too greedy: we fully add variables at each step, so correlated predictors don&#8217;t get much of a chance to be included in the model. (For example, suppose we want to build a model for the deliciousness of a PB&amp;J sandwich, and two of our variables are the amount of peanut butter and the amount of jelly. We&#8217;d like both variables to appear in our model, but since amount of peanut butter is (let&#8217;s assume) strongly correlated with the amount of jelly, once we fully add peanut butter to our model, jelly doesn&#8217;t add much explanatory power anymore, and so it&#8217;s unlikely to be added.)</p></li>
+<li><p><strong>Forward stagewise regression</strong> tries to remedy the greediness of forward selection by only partially adding variables. Whereas forward selection finds the variable with the most explanatory power and goes all out in adding it to the model, forward stagewise finds the variable with the most explanatory power and updates its weight by only epsilon in the correct direction. (So we might first increase the weight of peanut butter a little bit, then increase the weight of peanut butter again, then increase the weight of jelly, then increase the weight of bread, and then increase the weight of peanut butter once more.) The problem now is that we have to make a ton of updates, so forward stagewise can be very inefficient.</p></li>
+</ul>
+
+
+<p>LARS, then, is essentially forward stagewise made fast. Instead of making tiny hops in the direction of one variable at a time, LARS makes optimally-sized leaps in optimal directions. These directions are chosen to make equal angles (equal correlations) with each of the variables currently in our model. (We like peanut butter best, so we start eating it first; as we eat more, we get a little sick of it, so jelly starts looking equally appetizing, and we start eating peanut butter and jelly simultaneously; later, we add bread to the mix, etc.)</p>
+
+<p>In more detail, LARS works as follows:</p>
+
+<ul>
+<li><p>Assume for simplicity that we&#8217;ve standardized our explanatory variables to have zero mean and unit variance, and that our response variable also has zero mean.</p></li>
+<li><p>Start with no variables in your model.</p></li>
+<li><p>Find the variable $latex x _ 1 $ most correlated with the residual. (Note that the variable most correlated with the residual is equivalently the one that makes the least angle with the residual, whence the name.)</p></li>
+<li><p>Move in the direction of this variable until some other variable $latex x _ 2 $ is just as correlated.</p></li>
+<li><p>At this point, start moving in a direction such that the residual stays equally correlated with $latex x _ 1 $ and $latex x _ 2 $ (i.e., so that the residual makes equal angles with both variables), and keep moving until some variable $latex x _ 3 $ becomes equally correlated with our residual.</p></li>
+<li><p>And so on, stopping when we&#8217;ve decided our model is big enough.</p></li>
+</ul>
+
+
+<p>For example, consider the following image (slightly simplified from the <a href="http://www.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf">original LARS paper</a>; $latex x _ 1, x _ 2$ are our variables, and $latex y$ is our response):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png"><img src="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png" alt="LARS Example" /></a></p>
+
+<p>Our model starts at $latex \hat{\mu _ 0} $.</p>
+
+<ul>
+<li><p>The residual (the green line) makes a smaller angle with $latex x _ 1 $ than with $latex x _ 2 $, so we start moving in the direction of $latex x _ 1 $.
+At $latex \hat{\mu _ 1} $, the residual now makes equal angles with $latex x _ 1, x _ 2 $, and so we start moving in a new direction that preserves this equiangularity/equicorrelation.</p></li>
+<li><p>If there were more variables, we&#8217;d change directions again once a new variable made equal angles with our residual, and so on.</p></li>
+</ul>
+
+
+<p>So when should you use LARS, as opposed to some other regularization method like lasso? There&#8217;s not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don&#8217;t usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/04/18/twifferences-between-californians-and-new-yorkers/">Twifferences Between Californians and New Yorkers</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-18T03:41:39-07:00" pubdate data-updated="true">Apr 18<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>How do people in Silicon Valley compare to those in New York City? For a data-driven answer, I pulled a couple days&#8217; worth of Twitter data around the two areas.</p>
+
+<h2>Silicon Valley vs. NYC</h2>
+
+<p>So let&#8217;s take a look. To compare the two places, I trained a simple Naive Bayes model on user profiles. Here are the words most predictive of being from Silicon Valley vs. NYC:</p>
+
+<h3>Silicon Valley</h3>
+
+<pre><code>&lt;code&gt;word                    Prob(Silicon Valley | word)
+cloud                   0.9053263586466359
+stanford                0.8947378473880241
+hacker                  0.8759014372329466
+dev                     0.8684686297323906
+giants                  0.8522440881548609
+mac                     0.8453052631578948
+support                 0.8453052631578948
+ux                      0.8453052631578948
+engineer                0.8321693229113796
+software                0.8223647630482606
+google                  0.8199372672025093
+yahoo                   0.8095254553623891
+ui                      0.7978356566397651
+board                   0.7978356566397651
+programmer              0.7978356566397651
+health                  0.7946855178965604
+game                    0.7846171884159925
+bike                    0.7846171884159925
+gadgets                 0.7846171884159925
+surfer                  0.7846171884159925
+lead                    0.7846171884159925
+green                   0.7758225129356634
+product                 0.7707827422373662
+engineering             0.7662790401791395
+data                    0.7662790401791395
+biz                     0.7522143788498717
+games                   0.7503363731499477
+cto                     0.7474653744372272
+startup                 0.7474653744372272
+cofounder               0.745373899785155 
+team                    0.7399904460289096
+mobile                  0.7395369397321055
+entrepreneur            0.7346495409451503
+before                  0.7320595099183198
+corporate               0.7320595099183198
+companies               0.7320595099183198
+enterprise              0.7320595099183198
+careers                 0.7320595099183197
+help                    0.7320595099183197
+jobs                    0.7226147417213892
+systems                 0.7183120188916491
+dude                    0.7183120188916491
+solutions               0.7146518581802648
+startups                0.7146518581802648
+instructor              0.7146518581802648
+founder                 0.7136727946906866
+advocate                0.7119786767011602
+community               0.7107516339869281
+local                   0.7083355385022493
+cyclist                 0.7083355385022493
+formerly                0.7083355385022493
+tech                    0.7034995094145681
+dad                     0.699465571148113 
+developer               0.6933557437157872
+evangelist              0.6886440677966102
+architect               0.6886440677966102
+experience              0.6875894616006009
+designer                0.6861009534875773
+app                     0.6861009534875773
+gamer                   0.6701428216249068
+geek                    0.6699839438296025
+friend                  0.6692937011181566
+married                 0.6692937011181566
+past                    0.6670653907496013
+yoga                    0.6670653907496013
+baseball                0.6670653907496013
+iphone                  0.65665476702241  
+guy                     0.6396064208138196
+running                 0.6323876017254413
+&lt;/code&gt;
+</code></pre>
+
+<h3>New York City</h3>
+
+<pre><code>&lt;code&gt;word                    Prob(New York | word)
+bbm                     0.9235374771480804
+mets                    0.9165294616574365
+teamfollowback          0.9165294616574365
+nyu                     0.9165294616574365
+columbia                0.8848747591522158
+actress                 0.8682158330051202
+chick                   0.845920058942715 
+theatre                 0.8010386109569492
+money                   0.7935205183585313
+publishing              0.7854119457864808
+moment                  0.7854119457864808
+self                    0.7854119457864808
+ya                      0.7545697268432944
+intern                  0.7545697268432944
+makeup                  0.7512175173798283
+financial               0.7512175173798283
+studio                  0.7329822041337483
+records                 0.7329822041337483
+magazine                0.7272706101537029
+history                 0.7249169653720938
+fashion                 0.718105290117341 
+myself                  0.7118622174381054
+soul                    0.7072308553828924
+peace                   0.7072308553828924
+dancer                  0.7017521519889981
+night                   0.687114269683935 
+president               0.6871142696839349
+event                   0.6577157178660937
+dreams                  0.6577157178660937
+model                   0.6577157178660937
+read                    0.6577157178660937
+journalism              0.6577157178660937
+filmmaker               0.6530588061027995
+news                    0.6466488313151225
+mother                  0.6466488313151224
+entertainment           0.6466488313151224
+party                   0.640842613712599 
+political               0.640842613712599 
+producer                0.6372663804691904
+communications          0.6222197132211811
+actor                   0.6169228655604573
+journalist              0.616094753936313 
+website                 0.6133083363295495
+radio                   0.6133083363295495
+executive               0.6058707124010555
+&lt;/code&gt;
+</code></pre>
+
+<p>Some findings:</p>
+
+<ul>
+<li><p>Silicon Valley is much more <strong>tech</strong>- (<em>cloud, hacker, dev, engineer, software, programmer</em>) and <strong>startup</strong>-driven (<em>startup, entrepreneur, founder</em>). New York is much more into <strong>arts/entertainment</strong> (<em>actress, theatre, publishing, studio, records, magazine, journalism, filmmaker, news</em>) and <strong>finance</strong> (<em>money, financial</em>). (Another way to look at it: Silicon Valley higher-ups call themselves <em>ctos</em> and <em>founders</em> and sit on <em>boards</em>, while New York higher-ups call themselves <em>presidents</em> and <em>executives</em>.)</p></li>
+<li><p>New Yorkers care a lot about <strong>looks</strong> (<em>makeup, fashion</em>). Silicon Valley folks care a lot about <strong>sports</strong>, <strong>health</strong>, and the <strong>outdoors</strong> (<em>bike, surfer, cyclist, yoga, running, health</em>).</p></li>
+<li><p>Silicon Valley folks describe themselves through their <strong>past</strong> (<em>before, formerly, past, former</em>). New Yorkers describe themselves through their <strong>future</strong> (<em>dreams</em>).</p></li>
+<li><p>Silicon Valley is big on <strong>community</strong> (<em>support, team, help, helping, community</em>). New York is focused on the <strong>individual</strong> (<em>self, myself</em>).</p></li>
+<li><p>Silicon Valley has a larger proportion of <strong>men</strong> (<em>dad, geek, dude, guy</em>). New York has the <strong>women</strong> (<em>mother, chick</em>).</p></li>
+<li><p>New York uses BlackBerrys (<em>bbm</em> is short for BlackBerry Messenger), while Silicon Valley uses <em>iPhones</em>.</p></li>
+<li><p>Silicon Valley is more into the <strong>locavore</strong> movement (<em>green, local</em>).</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/04/16/what-is-cointegration-2/">Introduction to Cointegration and Pairs Trading</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-16T03:44:14-07:00" pubdate data-updated="true">Apr 16<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Introduction</h1>
+
+<p>Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&#8217;t know each other (they&#8217;re independent), so there&#8217;s no meaningful relationship between their paths.</p>
+
+<p>But suppose instead you have a drunk walking with her dog. This time there <em>is</em> a connection. What&#8217;s the nature of this connection? Notice that although each path individually is still an unpredictable random walk, given the location of one of the drunk or dog, we have a pretty good idea of where the other is; that is, the distance between the two is fairly predictable. (For example, if the dog wanders too far away from his owner, she&#8217;ll tend to move in his direction to avoid losing him, so the two stay close together despite a tendency to wander around on their own.) We describe this relationship by saying that the drunk and her dog form a cointegrating pair.</p>
+
+<p>In more technical terms, if we have two non-stationary time series X and Y that become stationary when differenced (these are called integrated of order one series, or I(1) series; random walks are one example) such that some linear combination of X and Y is stationary (aka, I(0)), then we say that X and Y are cointegrated. In other words, while neither X nor Y alone hovers around a constant value, some combination of them does, so we can think of cointegration as describing a particular kind of long-run equilibrium relationship. (The definition of cointegration can be extended to multiple time series, with higher orders of integration.)</p>
+
+<p>Other examples of cointegrated pairs:</p>
+
+<ul>
+<li><p>Income and consumption: as income increases/decreases, so too does consumption.</p></li>
+<li><p>Size of police force and amount of criminal activity</p></li>
+<li><p>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</p></li>
+<li><p>Number of patients entering or leaving a hospital</p></li>
+</ul>
+
+
+<h1>An application</h1>
+
+<p>So why do we care about cointegration? In quantitative finance, cointegration forms the basis of the pairs trading strategy: suppose we have two cointegrated stocks X and Y, with the particular (for concreteness) cointegrating relationship X - 2Y = Z, where Z is a stationary series of zero mean. For example, X could be McDonald&#8217;s, Y could be Burger King, and the cointegration relationship would mean that X tends to be priced twice as high as Y, so that when X is more than twice the price of Y, we expect X to move down or Y to move up in the near future (and analogously, if X is less than twice the price of Y, we expect X to move up or Y to move down). This suggests the following trading strategy: if X - 2Y > d, for some positive threshold d, then we should sell X and buy Y (since we expect X to decrease in price and Y to increase), and similarly, if X - 2Y &lt; -d, then we should buy X and sell Y.</p>
+
+<h1>Spurious regression</h1>
+
+<p>But why do we need the notion of cointegration at all? Why can&#8217;t we simply use, say, the R-squared between X or Y to see if X and Y have some kind of relationship? The reason is that standard regression analysis fails when dealing with non-stationary variables, leading to spurious regressions that suggest relationships even when there are none.</p>
+
+<p>For example, suppose we regress two independent random walks against each other, and test for a linear relationship. A large percentage of the time, we&#8217;ll find high R-squared values and low p-values when using standard OLS statistics, even though there&#8217;s absolutely no relationship between the two random walks. As an illustration, here I simulated 1000 pairs of random walks of length 100, and found p-values less than 0.05 in 77% of the cases:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png"><img src="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png" alt="Spurious Regression" /></a></p>
+
+<h1>A Cointegration Test</h1>
+
+<p>So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:</p>
+
+<ul>
+<li><p>Check that $latex X _ t $ and $latex Y _ t $ are both I(1).</p></li>
+<li><p>Estimate the cointegrating relationship $latex Y _ t = aX _ t + e _ t $ by ordinary least squares.</p></li>
+<li><p>Check that the cointegrating residuals $latex e _ t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</p></li>
+</ul>
+
+
+<h1>Error-correction and Granger representation</h1>
+
+<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $latex X _ t, Y _ t $, with autoregressive representations</p>
+
+<p>$latex X _ t = a X _ {t-1} + b Y _ {t-1} + u _ t $
+$latex Y _ t = c X _ {t-1} + d Y _ {t-1} + v _ t $</p>
+
+<p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
+
+<p>$latex \Delta X _ t = \alpha _ 1 (Y _ {t-1} - \beta X _ {t-1}) + u _ t $
+$latex \Delta Y _ t = \alpha _ 2 (Y _ {t-1} - \beta X _ {t-1}) + v _ t $</p>
+
+<p>where $latex Y _ {t-1} - \beta X _ {t-1} \sim I(0) $ is the cointegrating relationship. Regarding $latex Y _ {t-1} - \beta X _ {t-1} $ as the extent of disequilibrium from the long-run relationship, and the $latex \alpha _ i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+
+<h1>Summary</h1>
+
+<p>So, just to summarize a bit, cointegration is an equilibrium relationship between time series that individually aren&#8217;t in equilbrium (you can kind of contrast this with (Pearson) correlation, which describes a linear relationship), and it&#8217;s useful because it allows us to incorporate both short-term dynamics (deviations from equilibrium) and long-run expectations (corrections to equilibrium).</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/04/16/monads-typeclasses-and-celebrities/">Introduction to Monads and Typeclasses in Haskell</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-16T03:40:23-07:00" pubdate data-updated="true">Apr 16<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>My favorite problems are the ones that you can turn into a mini-lesson on something new. I realized the following problem could make a nice introduction to the Maybe monad and typeclasses in Haskell, so I&#8217;m going to try lessonizing it here.</p>
+
+<h1>Finding Celebrities</h1>
+
+<p>The problem is this: suppose you have a group of people, and you want to find a &#8220;celebrity&#8221; among them, where a celebrity is defined as a person P such that everybody else knows P, but P knows no one. (Note that, by the definition of celebrity, there can be at most one celebrity in a group.) So you&#8217;re given a group of people, a black box oracle that tells you whether person X knows person Y, and you want to efficiently find a celebrity in the group (if such a celebrity exists).</p>
+
+<p>The solution I came up with is the following two-step algorithm:</p>
+
+<ul>
+<li><p>Step 1 finds a candidate celebrity. We keep a temporary candidate C and walk through the group: if C knows the current person P under our pointer, then C can&#8217;t be a celebrity, so we change the temporary candidate to be P and move on; otherwise, if C does not know the current person P, then we keep C as our candidate and move to the next person on the list.</p></li>
+<li><p>Step 2 checks that our candidate celebrity C is actually a celebrity. We walk through the list of people, and check that for every other person P, P knows C but C does not know P.</p></li>
+</ul>
+
+
+<p>Let&#8217;s code this up now in Haskell. Since the algorithm has two steps, let&#8217;s code up each step individually.</p>
+
+<pre><code>-- Step 1
+findCandidate :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
+findCandidate [] _ = Nothing
+findCandidate (x:[]) _ = Just x
+findCandidate (x:y:rest) knows =
+    if x `knows` y
+        then findCandidate (y:rest) knows
+        else findCandidate (x:rest) knows
+
+-- Step2
+checkCandidate :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Person -&gt; Maybe Person
+checkCandidate [] _ candidate = Just candidate
+checkCandidate (x:xs) knows candidate
+    | x == candidate = checkCandidate xs knows candidate
+    | otherwise      =
+        if (x `knows` candidate) &amp;&amp; (not $ candidate `knows` x)
+            then checkCandidate xs knows candidate
+            else Nothing
+</code></pre>
+
+<p>Now how do we combine the first two steps? A first approach might be the following:</p>
+
+<pre><code>badFindCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
+badFindCelebrity xs knows = checkCandidate xs knows (findCandidate xs knows)
+</code></pre>
+
+<p>But this doesn&#8217;t work! There&#8217;s a <em>type mismatch</em> in our definition: <code>checkCandidate</code> takes a <code>Person</code> in its last argument, but <code>findCandidate xs knows</code> returns something of type <code>Maybe Person</code>.</p>
+
+<p>How do we fix this? One approach would be to do some checking of our candidate celebrity: if it&#8217;s <code>Nothing</code>, then don&#8217;t even bother passing it to <code>checkCandidate</code> and just fail immediately; otherwise, extract the person from its <code>Just x</code> wrapper, and pass this extraction to <code>checkCandidate</code>. This works as follows:</p>
+
+<pre><code>messyFindCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
+messyFindCelebrity xs knows =
+    case findCandidate xs knows of
+        Nothing -&gt; Nothing
+        Just x  -&gt; checkCandidate xs knows x
+</code></pre>
+
+<p>This isn&#8217;t too bad, but what if we later want to add some additional checks? For example, instead of finding any old celebrity, we might want to find only celebrities that have recently starred in a movie, in which case we&#8217;d have to modify our algorithm to:</p>
+
+<pre><code>recentMovie :: Person -&gt; Maybe Person
+recentMovie x = ...
+
+messyFindCelebrity' :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
+messyFindCelebrity' xs knows =
+    case findCandidate xs knows of
+        Nothing -&gt; Nothing
+        Just x  -&gt; case checkCandidate xs knows x of
+        Nothing -&gt; Nothing
+        Just y  -&gt; recentMovie y
+</code></pre>
+
+<h1>Maybe Monad</h1>
+
+<p>Enter the Maybe monad. Instead of forcing us to make these <code>Nothing</code> checks and <code>Just x</code> extractions ourselves, the Maybe monad has a &#8220;chaining&#8221; operator <code>&gt;&gt;=</code> that performs checks and extractions automatically. That is, <code>Nothing &gt;&gt;= f</code> is always <code>Nothing</code>, and <code>Just x &gt;&gt;= f</code> returns <code>f x</code>, so we can rewrite our <code>findCelebrity</code> method as:</p>
+
+<pre><code>findCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
+findCelebrity xs knows =
+    findCandidate xs knows &gt;&gt;= checkCandidate xs knows
+</code></pre>
+
+<p>Or, in the sugared <code>do</code> syntax:</p>
+
+<pre><code>findCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
+findCelebrity xs knows = do
+    candidate &lt;- findCandidate xs knows
+    celebrity &lt;- checkCandidate xs knows candidate
+    return celebrity
+</code></pre>
+
+<p>So that&#8217;s the Maybe monad.</p>
+
+<h1>Typeclasses</h1>
+
+<p>Now let&#8217;s see if we can generalize our solution a bit. In our algorithm above, we didn&#8217;t really make use of the fact that we were dealing with <code>Person</code> data types. The only assumption we made was that we could test whether two Persons were equal, in the <code>x == candidate</code> check of <code>checkCandidate</code>*. Thus, if we replace the <code>Person</code> data type in all our type signatures with a data type that supports equality testing, our function will be a bit more general and work just as well.</p>
+
+<p>To do this, we write</p>
+
+<pre><code>findCandidate :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; Maybe a
+checkCandidate :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; a -&gt; Maybe a
+findCelebrity :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; Maybe a
+</code></pre>
+
+<p><code>Eq a</code> simply means that <code>a</code> is a type that supports equality testing, i.e., given any two objects <code>x</code> and <code>y</code> of type <code>a</code>, writing <code>x == y</code> works. So now our <code>findCelebrity</code> function can not only find celebrities in a group of Persons, but also find things like the majority or minority in a group of integers (if we use <code>(&lt;)</code> or <code>(&gt;)</code> as our oracle), and sources or sinks in a graph.</p>
+
+<p>*Note that we can actually get rid of this equality testing assumption, by making <code>findCandidate</code> return a list of rejected persons (in addition to the candidate celebrity) that we check against in <code>checkCandidate</code>.</p>
+
+<h1>An evasive segue</h1>
+
+<p>So there&#8217;s an introduction to the Maybe monad and typeclasses (that maybe you could have discovered yourself!). For just one more quick intro, note that the celebrity question provides a counterexample to the <a href="http://blog.echen.me/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture">Evasiveness Conjecture</a> on <em>non-monotone</em> graphs, showing why the monotonicity assumption in the conjecture is indeed necessary.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/3/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

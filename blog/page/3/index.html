@@ -1,0 +1,1103 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="One of my all-time favorite graphs is the following visualization of the distribution of the primes (showing that the primes are more spread out than &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/page/3">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/22/harry-potter-and-the-keyword-chaos-unsupervised-statistically-significant-phrases/">Harry Potter and the Keyword Chaos: Unsupervised Statistically Significant Phrases</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-22T04:20:23-07:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>One of my all-time favorite graphs is the following visualization of the distribution of the primes (showing that the primes are more spread out than the random, clumpy points of a Poisson process):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png"><img src="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png" alt="Distribution of Primes" /></a></p>
+
+<p>So I was pretty intrigued when I ran across <a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">this paper</a> (<a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">Level statistics of words: Finding keywords in literary texts and symbolic sequences</a>) using similar quantumish, random matrixish ideas to extract the important phrases from a text.</p>
+
+<h1>The Paper</h1>
+
+<p>Statistical phrase extraction (e.g., the &#8220;statistically improbable phrases&#8221; you see on Amazon) is usually done by comparing a target text against a baseline corpus. The authors of this paper, however, describe an <em>unsupervised</em> phrase extraction method given only the target text itself, by making use of the spatial distribution of the phrases (which gets thrown out in typical bag-of-word models).</p>
+
+<p>The idea is that uninformative words and phrases (e.g., &#8220;the&#8221; and &#8220;but&#8221;) have a more random and uniform distribution than important words and phrases (e.g., names of main characters), which will tend to form clusters. (Funnily, the quantum chaos paper containing the primes graph reverses these characterizations: there, the primes are the ones that are repellent and spread out, while the random numbers are the ones that form clusters.)</p>
+
+<p>Thus, the cluster-tendency of a phrase should be a reasonable measure of its importance.</p>
+
+<h1>Implementation</h1>
+
+<p>I wrote a quick Ruby script to calculate the level statistics on the first Harry Potter book.</p>
+
+<p>Here are the top 25 unigrams extracted (ordered using the sigma_normalized statistic from the paper; I played around with the paper&#8217;s C number as well, but it didn&#8217;t give as good results):</p>
+
+<pre><code>&lt;code&gt;
+phrase      count   sigma_normalized
+dudley      117     5.886458836973907
+vernon      105     5.425462371919648
+uncle       121     4.96291028279975
+yeh         100     4.483340310689477
+mirror      46      4.4123632519944564
+platform    20      3.7698278374021283
+wood        53      3.698871282864937
+aunt        65      3.682665094335877
+hagrid      336     3.532997146829891
+ter         78      3.4935220547292394
+petunia     57      3.3847272743671764
+dragon      31      3.319790040957389
+fang        16      3.1175440675916763
+unicorn     22      3.109138726006347
+bludgers    13      3.0336322222301035
+o           31      2.973718095050078
+malfoy      112     2.965094959118159
+voldemort   31      2.957883190702609
+percy       36      2.946348443571833
+path        12      2.9430416987716383
+dursley     54      2.9266934668788025
+christmas   25      2.926196222714648
+anythin     13      2.8753724174699626
+quirrell    91      2.8351538706894868
+crate       12      2.8171552951153913
+&lt;/code&gt;
+</code></pre>
+
+<p>It looks more impressive when you compare with the bottom 25 unigrams (filtered to counts of at least 50, to make the unigrams more comparable to those above):</p>
+
+<pre><code>&lt;code&gt;
+phrase      count   sigma_normalized
+few         55      0.858973690529759
+seemed      72      0.8660034944771483
+might       54      0.8691077527153204
+after       68      0.8700202208036406
+way         94      0.8893865470583092
+come        95      0.8897833973429081
+before      107     0.9158168210798949
+good        82      0.9208260024379561
+suddenly    69      0.9223289856683224
+only        111     0.9262797404590966
+put         58      0.9320218173468643
+must        57      0.932224843054271
+while       60      0.9367996846919046
+asked       60      0.9386801898266576
+left        82      0.9509973378264027
+trying      65      0.9511509393516154
+saw         62      0.9524243012100968
+even        105     0.9563651096306485
+really      73      0.9569234100328665
+voice       59      0.957685122636835
+away        71      0.9611639088841413
+where       100     0.9657416499349912
+every       53      0.9659213894654203
+harrys      113     0.9746316711628271
+long        71      0.9794359046955133
+&lt;/code&gt;
+</code></pre>
+
+<p>Similarly, here are the top bigrams:</p>
+
+<pre><code>&lt;code&gt;phrase                  count   sigma_normalized
+uncle vernon            97      5.2050164080560615
+the mirror              35      3.8911699122647163
+professor mcgonagall    89      3.570490871211533
+aunt petunia            52      3.3541554249859917
+the library             21      3.2822285085324374
+nine and                13      3.052813340938423
+the twins               12      3.0493973437585256
+the potters             12      2.962214857171763
+the boy                 26      2.86158988074687
+said hagrid             89      2.76691520812392
+the stone               48      2.7118270594517413
+and dudley              15      2.705365860880404
+the giant               15      2.682345959043539
+the troll               18      2.6613701424473386
+mr dursley              30      2.607508647153971
+said uncle              13      2.5996349710103055
+sorcerers stone         14      2.564840300637567
+the quaffle             16      2.533417641354809
+said dumbledore         27      2.5200215250194193
+said hermione           42      2.509101121058932
+and threequarters       9       2.4248478008322967
+the crate               9       2.377194502184057
+the cloak               22      2.368960931129895
+the forest              23      2.3607725433338675
+mr potter               12      2.3429313549690285
+&lt;/code&gt;
+</code></pre>
+
+<p>And the bottom bigrams (filtered to counts of at least 25):</p>
+
+<pre><code>&lt;code&gt;
+phrase      count   sigma_normalized
+for a       38      0.6706459452115997
+the way     34      0.7417616427971635
+to harry    31      0.7671160112200728
+a few       45      0.7699093885203201
+off the     32      0.7949383886682402
+to him      27      0.7958792937430593
+was going   36      0.811227023007951
+up to       39      0.8122786875347693
+but it      32      0.8336661901803439
+up the      40      0.8365345579027479
+if you      34      0.8422559552361845
+which was   28      0.8552087965411528
+of course   35      0.8621365585531023
+by the      43      0.8625237028663237
+the other   52      0.8876800348745395
+with a      55      0.8903321479589525
+ and        51      0.9016112133824481
+his face    31      0.9018554880700214
+and he      47      0.9038362537361607
+with the    56      0.9048625952654603
+but i       32      0.9110050643857517
+had to      43      0.9235463968235097
+at last     28      0.9255524776918606
+i know      27      0.9294114876847764
+he could    47      0.9358967550241238
+&lt;/code&gt;
+</code></pre>
+
+<p>So interestingly, while the method doesn&#8217;t do a great job of capturing the most important phrases (I&#8217;m not really sure why it should, in any case, as I&#8217;d guess main characters and themes would appear pretty evenly throughout the text), it does seem to pick out minor characters and objects (like the Dudleys), which seems to make a bit more sense.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/19/counting-clusters/">Counting Clusters</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-19T04:22:16-07:00" pubdate data-updated="true">Mar 19<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Given a set of datapoints, we often want to know how many clusters the datapoints form. Two practical algorithms for determining the number of clusters are the gap statistic and the prediction strength.</p>
+
+<h1>Gap Statistic</h1>
+
+<p>The gap statistic algorithm (from <a href="http://www.stanford.edu/~hastie/Papers/gap.pdf">Estimating the number of clusters in a data set via the gap statistic</a>) works as follows.</p>
+
+<p>For each i from 1 up to some maximum number of clusters:</p>
+
+<ol>
+<li><p>Run a k-means algorithm on the original dataset to find i clusters, and sum the distance of all points from their cluster mean. Call this sum the <em>dispersion</em>.</p></li>
+<li><p>Generate a set of reference datasets (of the same size as the original). One simple way of generating a reference dataset is to sample uniformly from the original dataset&#8217;s bounding rectangle; a more sophisticated approach is take into account the original dataset&#8217;s shape by sampling, say, from a rectangle formed from the original dataset&#8217;s principal components.</p></li>
+<li><p>Calculate the dispersion of each of these reference datasets, and take their mean.</p></li>
+<li><p>Define the ith <em>gap</em> by [log(mean dispersion of reference datasets) - log(dispersion of original dataset)].</p></li>
+</ol>
+
+
+<p>Once we&#8217;ve calculated all the gaps (note that we can add confidence intervals as well; see the original paper for the formula), we can select the number of clusters to be the one that gives the maximum gap.</p>
+
+<p>For example, here I&#8217;ve generated three Gaussian clusters:</p>
+
+<p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d.png" alt="Three Gaussian Clusters" /></a></p>
+
+<p>And running the gap statistic algorithm, we see that it correctly detects the number of clusters to be three:</p>
+
+<p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png" alt="Gap Statistic on Three Gaussian Clusters" /></a></p>
+
+<p>(For a sample R implementation of the gap statistic, see <a href="https://github.com/echen/gap-statistic">here</a>.)</p>
+
+<h1>Prediction Strength</h1>
+
+<p>Another cluster-counting algorithm is the prediction strength algorithm (from <a href="http://www-stat.stanford.edu/~tibs/ftp/predstr.ps">Cluster validation by prediction strength</a>). To run it, for each i from 1 up to some maximum number of clusters:</p>
+
+<ol>
+<li><p>Divide the dataset into two groups, a training set and a test set.</p></li>
+<li><p>Run a k-means algorithm on each set to find i clusters.</p></li>
+<li><p>For each <em>test</em> cluster, count the proportion of pairs of points in that cluster that would remain in the same cluster, if each were assigned to its closest <em>training</em> cluster mean.</p></li>
+<li><p>The minimum over these proportions is the prediction strength for i clusters.</p></li>
+</ol>
+
+
+<p>Once we&#8217;ve calculated the prediction strength for each number of clusters, we select the number of clusters to be the maximum i such that the prediction strength for i is greater than some threshold. (The paper suggests 0.8 - 0.9 as a good threshold, and I&#8217;ve seen 0.8 work well in practice.)</p>
+
+<p>Here&#8217;s the prediction strength algorithm run on the same example above:</p>
+
+<p><a href="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png"><img src="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png" alt="Prediction Strength on Three Gaussian Clusters" /></a></p>
+
+<p>(Again, for a sample R implementation of the prediction strength, see <a href="https://github.com/echen/prediction-strength">here</a>.)</p>
+
+<p>In practice, I tend to prefer using the gap statistic algorithm, since it&#8217;s a little easier to code and it doesn&#8217;t require selecting an arbitrary threshold like the prediction strength does. I&#8217;ve also found that it gives slightly better results (though the original prediction strength paper has the opposite finding).</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/prime-numbers-and-the-riemann-zeta-function/">Prime Numbers and the Riemann Zeta Function</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:28:39-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lots of people know that the <a href="http://en.wikipedia.org/wiki/Riemann_hypothesis">Riemann Hypothesis</a> has <em>something</em> to do with prime numbers, but most introductions fail to say what or why. I&#8217;ll try to give one angle of explanation.</p>
+
+<h1>Layman&#8217;s Terms</h1>
+
+<p>Suppose you have a bunch of friends, each with an instrument that plays at a frequency equal to the imaginary part of a zero of the Riemann zeta function. If the Riemann Hypothesis holds, you can create a song that sounds exactly at the prime-powered beats, by simply telling all your friends to play at the same volume.</p>
+
+<h1>Mathematical Terms</h1>
+
+<p>Let $latex \pi(x) $ denote the number of primes less than or equal to x. Recall <a href="http://en.wikipedia.org/wiki/Prime_number_theorem#The_prime-counting_function_in_terms_of_the_logarithmic_integral">Gauss&#8217;s approximation</a>: $latex \pi(x) \approx \int _ 2 ^ x \frac{1}{\log t} \,dt $ (aka, the &#8220;probability that a number n is prime&#8221; is approximately $latex \frac{1}{\log n} $).</p>
+
+<p>Riemann improved on Gauss&#8217;s approximation by discovering an <em>exact</em> formula $latex P(x) = A(x) - E(x) $ for counting the primes, where</p>
+
+<ul>
+<li><p>$latex P(x) = \sum _ {p ^ k &lt; x} \frac{1}{k} $ performs a weighted count of the prime powers less than or equal to x. [Think of this as a generalization of the prime counting function.]</p></li>
+<li><p>$latex A(x) = \int _ 0 ^ x \frac{1}{\log t} \,dt+ \int _ x ^ {\infty} \frac{1}{t(t ^ 2  -1) \log t} \,dt $ $latex - \log 2 $ is a kind of generalization of Gauss&#8217;s approximation.</p></li>
+<li><p>$latex E(x) = \sum _ {z : \zeta(z) = 0} \int _ 0 ^ {x ^ z} \frac{1}{\log t} \,dt $ is an error-correcting factor that depends on the zeroes of the Riemann zeta function.</p></li>
+</ul>
+
+
+<p>In other words, if we use a simple Gauss-like approximation to the distribution of the primes, the zeroes of the Riemann zeta function sweep up after our errors.</p>
+
+<p>Let&#8217;s dig a little deeper. Instead of using Riemann&#8217;s formula, I&#8217;m going to use an equivalent version</p>
+
+<p>$latex \psi(x) = (x + \sum _ {n = 1} ^ {\infty} \frac{x ^ {-2n}}{2n} - \log 2\pi) - \sum _ {z : \zeta(z) = 0} \frac{x ^ z}{z} $</p>
+
+<p>where  $latex \psi(x) = \sum _ {p ^ k \le x} \log p $. Envisioning this formula to be in the same $latex P(x) = A(x) - E(x)$ form as above, this time where</p>
+
+<ul>
+<li><p>$latex P(x) = \psi(x) = \sum _ {p ^ k \le x} \log p $ is another kind of count of the primes.</p></li>
+<li><p>$latex A(x) = x + \sum _ {n = 1} ^ {\infty} \frac{x ^ {-2n}}{2n} - \log 2\pi $ is another kind of approximation to $latex P(x)$.</p></li>
+<li><p>$latex E(x) = \sum _ {z : \zeta(z) = 0} \frac{x ^ z}{z} $ is another error-correction factor that depends on the zeroes of the Riemann zeta function.</p></li>
+</ul>
+
+
+<p>we can again interpret it as an error-correcting formula for counting the primes.</p>
+
+<p>Now since $latex \psi(x) $ is a step function that jumps at the prime powers, its derivative $latex \psi&#8217;(x) $ has spikes at the prime powers and is zero everywhere else. So consider</p>
+
+<p>$latex \psi&#8217;(x) = 1 - \frac{1}{x(x ^ 2 - 1)} - \sum _ z x ^ {z-1} $</p>
+
+<p>It&#8217;s well-known that the zeroes of the Riemann zeta function are symmetric about the real axis, so the (non-trivial) zeroes come in conjugate pairs $latex z, \bar{z} $. But $latex x ^ {z-1} + x ^ {\bar{z} - 1} $ is just a wave whose amplitude depends on the real part of z and whose frequency depends on the imaginary part (i.e., if $latex z = a + bi $, then $latex x ^ {z-1} + x ^ {\bar{z}-1} = 2x ^ {a-1} cos (b \log x) $), which means $latex \psi&#8217;(x) $ can be decomposed into a sum of zeta-zero waves. Note that because of the $latex 2x ^ {a-1}$ term in front, the amplitude of these waves depends only on the real part $latex a$ of the conjugate zeroes.</p>
+
+<p>For example, here are plots of $latex \psi&#8217;(x) $ using 10, 50, and 200 pairs of zeroes:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/riemann-hypothesis/10.png"><img src="http://dl.dropbox.com/u/10506/blog/riemann-hypothesis/10.png" alt="10 Pairs" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/riemann-hypothesis/50.png"><img src="http://dl.dropbox.com/u/10506/blog/riemann-hypothesis/50.png" alt="50 Pairs" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/riemann-hypothesis/200.png"><img src="http://dl.dropbox.com/u/10506/blog/riemann-hypothesis/200.png" alt="50 Pairs" /></a></p>
+
+<p>So when the Riemann Hypothesis says that all the non-trivial zeroes have real part 1/2, it&#8217;s hypothesizing that the non-trivial zeta-zero waves have equal amplitude, i.e., they make equal contributions to counting the primes.</p>
+
+<p><strong>In Fourier-poetic terms</strong>, when Flying Spaghetti Monster composed the music of the primes, he built the notes out of the zeroes of the Riemann zeta function. If the Riemann Hypothesis holds, he made all the non-trivial notes equally loud.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/hacker-news-analysis/">Hacker News Analysis</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:27:32-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I was playing around with the <a href="http://api.ihackernews.com/?db">Hacker News database</a> <a href="http://ronnieroller.com/">Ronnie Roller</a> made (thanks!), so I thought I&#8217;d post some of the things I looked at.</p>
+
+<h1>Activity on the Site</h1>
+
+<p>My first question was how activity on the site has increased over time. I looked at number of posts, points on posts, comments on posts, and number of users.</p>
+
+<h2>Posts</h2>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/posts_by_month.png" alt="Hacker News Posts by Month" /></p>
+
+<p>This looks like a strong linear fit, with an increase of 292 posts every month.</p>
+
+<h2>Comments</h2>
+
+<p>For comments, I fit a quadratic regression:</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/comments_by_month.png" alt="Hacker News Comments by Month" /></p>
+
+<h2>Points</h2>
+
+<p>A quadratic regression was also a better fit for points by month:</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/points_by_month.png" alt="Hacker News Points by Month" /></p>
+
+<h2>Users</h2>
+
+<p>And again for the number of distinct users with a submission:</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/users.png" alt="Hacker News Users by Month" /></p>
+
+<h1>Points and Comments</h1>
+
+<p>My next question was how points and comments related. Intuitively, posts with more points should have more comments, but it&#8217;s nice to check (maybe really good posts are kind of boring, so don&#8217;t lead to much discussion).</p>
+
+<p>First, I plotted the points and comments of each individual post:</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/all_points_vs_comments.png" alt="All Points vs. Comments" /></p>
+
+<p>As expected, there’s an overall positive correlation between points and comments. Interestingly, there are quite a few high-points posts with no comments.</p>
+
+<p>The plot’s quite noisy, though, so let’s try cleaning it up a bit, by taking the median number of comments per points level (and removing posts at the higher end, where we have little data):</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/points_vs_median_comments.png" alt="Points vs. Median Comments" /></p>
+
+<p>We see that posts with more points do tend to have more comments. Also, variance in number of comments is indicated by size and color, so (unsurprisingly) posts with more points have larger variance in their number of comments.</p>
+
+<h1>Quality of Posts</h1>
+
+<p>Another question was whether the quality of posts has degraded over time.</p>
+
+<p>First, I computed a normalized &#8220;score&#8221; for each post, where a post&#8217;s score is defined as the number of points divided by the number of distinct users who made a submission in the same month. (The denominator is a rough proxy for the number of active users, and the goal of the score is to provide a way to compare posts across time.)</p>
+
+<p>While the median score has declined over time (as perhaps should be expected, since only a fixed number of items can reach the front page):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/hn-analysis/median-score.png"><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/median-score.png" alt="Median Score" /></a></p>
+
+<p>the absolute <em>number</em> of quality posts, defined as posts with a score greater than the (admittedly arbitrarily chosen) threshold 0.01, has increased (until possibly a dip starting in 2010):</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/num_quality_posts2.png" alt="Number of Quality Posts" /></p>
+
+<p>(Of course, without some further analysis, it&#8217;s not clear how well this score measures quality of posts, so take these numbers with a grain of salt.)</p>
+
+<h1>Company Trends</h1>
+
+<p>Also, I wanted to see how certain topics have trended over time, so I looked at how mentions of some of the big-name companies (Google, Facebook, Microsoft, Yahoo, Twitter, Apple) have changed. For each company, I plotted the percentage of posts with the company&#8217;s name in the title, and also made a smoothed plot comparing all six at the end. Note that Microsoft and Yahoo seem to be trending slightly downward, and Apple seems to be trending upward.</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_microsoft.png" alt="Mentions of Microsoft" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_yahoo.png" alt="Mentions of Yahoo" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_google.png" alt="Mentions of Google" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_facebook.png" alt="Mentions of Facebook" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_twitter.png" alt="Mentions of Twitter" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_apple.png" alt="Mentions of Apple" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/all_trends2.png" alt="All Trends" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/least-angle-regression-for-the-hungry-layman/">A Layman&#8217;s Explanation of Least Angle Regression</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:27:10-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(I wrote up a more mathematical explanation of least angle regression <a href="/2011/04/21/a-mathematical-introduction-to-least-angle-regression/">here</a>.)</p>
+
+<p>Suppose you&#8217;re at a buffet. You don&#8217;t want to just grab everything and overeat (overfit), so how do you decide which dishes to take? Here are some possibilities.</p>
+
+<h1>Forward Selection</h1>
+
+<p>On your first trip to the buffet, take a plateful of your favorite dish, bring it back, and eat it. On your second trip, take a plateful of the dish that <em>now</em> looks most appetizing, bring it back, and eat it. And so on.</p>
+
+<p>The problem with this method is the following: suppose your favorite food is spaghetti, followed closely by macaroni. Ideally, you&#8217;d like to take half a plate of spaghetti and slightly less than half a plate of macaroni, but under this method, you have to first take and eat a plateful of spaghetti, and now you&#8217;re sick of pasta and don&#8217;t want macaroni anymore.</p>
+
+<h1>Forward Stagewise</h1>
+
+<p>To remedy the greediness of the above method, another option is to take smaller morsels at a time. On your first trip to the buffet, you take a thimbleful of your favorite dish; on your next trip to the buffet, you take a thimbleful of the currently most appetizing dish; and so on again.</p>
+
+<p>Now, after getting your thimbleful of spaghetti, pasta still looks delicious to you, so you can get your thimbleful of macaroni as well.</p>
+
+<p>The problem with this method is that because you&#8217;re only eating a thimbleful at a time, you have to make many trips to the buffet and so dinner takes forever.</p>
+
+<h1>Least Angle Regression</h1>
+
+<p>A much more efficient method works as follows. Suppose your favorite dishes are, in order, spaghetti, macaroni, salad, and chili. On your first trip, you grab a bunch of spaghetti. You know that as you eat spaghetti, you start to get slightly sick of it, so it becomes less and less appetizing, until eventually it becomes just as appetizing as macaroni (but still more appetizing than salad and chili). So only grab an amount X of spaghetti, so that after eating X, spaghetti and macaroni are equally appetizing.</p>
+
+<p>On your second trip, spaghetti and macaroni are equally appetizing. Grab both spaghetti and macaroni, in proportions such that spaghetti and macaroni stay equally appetizing while you eat. Again, you know exactly how much spaghetti and macaroni you can eat until salad becomes just as appetizing, so only grab this amount.</p>
+
+<p>On your third trip, spaghetti, macaroni, and salad look equally delicious. Again, grab the three foods in proportions that stay equally appetizing while you eat, and only grab enough to make chili look just as tasty.</p>
+
+<p>And so on.</p>
+
+<p>Note that:</p>
+
+<ul>
+<li><p>This method works better than forward selection, because we get to eat both spaghetti and macaroni.</p></li>
+<li><p>This method works much faster than forward stagewise, because we make much fewer trips. (If we want to eat $latex n$ dishes, we only need to make $latex n$ trips.)</p></li>
+<li><p>We&#8217;re always eating whatever looks most appetizing to us.</p></li>
+</ul>
+
+
+<h1>Reversing the Analogy</h1>
+
+<p>Replace buffet with linear regression and dishes with variables, and you now have three tasty model selection methods to choose from.</p>
+
+<p>For a more mathematical explanation of least angle regression, see <a href="http://edchedch.wordpress.com/2011/04/21/a-mathematical-introduction-to-least-angle-regression/">here</a>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan/">Piiikaaachuuuuuu vs. KHAAAAAN!</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:26:14-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This is a fun image I found on <a href="http://www.neilkodner.com/2011/01/world-cup-2010-analysis-of-95gb-of-tweets-containing-goal/">Neil Kodner&#8217;s blog</a>:</p>
+
+<p><a href="//www.flickr.com/photos/squidnews/3200285750/"><img src="http://farm4.static.flickr.com/3134/3200285750_d2bd0a62fd.jpg" alt="KH(Ax)N" /></a></p>
+
+<p>But I&#8217;ve never actually watched any of the Star Trek movies, so I decided to recreate the graph with Pikachu instead:</p>
+
+<p><a href="https://img.skitch.com/20110224-1x8ptj7bbajk6an2xj462w7jb.jpg"><img src="https://img.skitch.com/20110224-1x8ptj7bbajk6an2xj462w7jb.jpg" alt="pikachu-graph1" /></a></p>
+
+<p>Here&#8217;s a smoothed version to better compare the counts between different letters:</p>
+
+<p><a href="https://img.skitch.com/20110224-1w8xnbfi3s3tmgexupmw1s2kxu.jpg"><img src="https://img.skitch.com/20110224-1w8xnbfi3s3tmgexupmw1s2kxu.jpg" alt="pikachu-graph2" /></a></p>
+
+<p>Unsurprisingly, people like to elongate the &#8220;u&#8221; in &#8220;pikachu&#8221; a lot better than they like to elongate the &#8220;a&#8221; and &#8220;i&#8221;, though I&#8217;m surprised just how many &#8220;pikachuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu&#8221;s are out there.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/laymans-introduction-to-random-forests/">Layman&#8217;s Introduction to Random Forests</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:25:46-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Suppose you&#8217;re very indecisive, so whenever you want to watch a movie, you ask your friend Willow if she thinks you&#8217;ll like it. In order to answer, Willow first needs to figure out what movies you like, so you give her a bunch of movies and tell her whether you liked each one or not (i.e., you give her a labeled training set). Then, when you ask her if she thinks you&#8217;ll like movie X or not, she plays a 20 questions-like game with IMDB, asking questions like &#8220;Is X a romantic movie?&#8221;, &#8220;Does Johnny Depp star in X?&#8221;, and so on. She asks more informative questions first (i.e., she maximizes the information gain of each question), and gives you a yes/no answer at the end.</p>
+
+<p>Thus, <strong>Willow is a decision tree for your movie preferences</strong>.</p>
+
+<p>But Willow is only human, so she doesn&#8217;t always generalize your preferences very well (i.e., she overfits). In order to get more accurate recommendations, you&#8217;d like to ask a bunch of your friends, and watch movie X if most of them say they think you&#8217;ll like it. That is, instead of asking only Willow, you want to ask Woody, Apple, and Cartman as well, and they vote on whether you&#8217;ll like a movie (i.e., <strong>you build an ensemble classifier</strong>, aka a forest in this case).</p>
+
+<p>Now you don&#8217;t want each of your friends to do the same thing and give you the same answer, so you first give each of them slightly different data. After all, you&#8217;re not absolutely sure of your preferences yourself &#8211; you told Willow you loved Titanic, but maybe you were just happy that day because it was your birthday, so maybe some of your friends shouldn&#8217;t use the fact that you liked Titanic in making their recommendations. Or maybe you told her you loved Cinderella, but actually you <em>really really</em> loved it, so some of your friends should give Cinderella more weight. So instead of giving your friends the same data you gave Willow, you give them slightly perturbed versions. You don&#8217;t change your love/hate decisions, you just say you love/hate some movies a little more or less (formally, <strong>you give each of your friends a bootstrapped version of your original training data</strong>). For example, whereas you told Willow that you liked Black Swan and Harry Potter and disliked Avatar, you tell Woody that you liked Black Swan so much you watched it twice, you disliked Avatar, and don&#8217;t mention Harry Potter at all.</p>
+
+<p>By using this ensemble, you hope that while each of your friends gives somewhat idiosyncratic recommendations (Willow thinks you like vampire movies more than you do, Woody thinks you like Pixar movies, and Cartman thinks you just hate everything), the errors get canceled out in the majority. Thus, <strong>your friends now form a bagged (bootstrap aggregated) forest of your movie preferences</strong>.</p>
+
+<p>There&#8217;s still one problem with your data, however. While you loved both Titanic and Inception, it wasn&#8217;t because you like movies that star Leonardio DiCaprio. Maybe you liked both movies for other reasons. Thus, you don&#8217;t want your friends to all base their recommendations on whether Leo is in a movie or not. So when each friend asks IMDB a question, only a random subset of the possible questions is allowed (i.e., <strong>when you&#8217;re building a decision tree, at each node you use some randomness in selecting the attribute to split on</strong>, say by randomly selecting an attribute or by selecting an attribute from a random subset). This means your friends aren&#8217;t allowed to ask whether Leonardo DiCaprio is in the movie whenever they want. So whereas previously you injected randomness at the data level, by perturbing your movie preferences slightly, now you&#8217;re injecting randomness at the model level, by making your friends ask different questions at different times.</p>
+
+<p>And so <strong>your friends now form a random forest</strong>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/a-kernel-density-approach-to-outlier-detection/">A Kernel Density Approach to Outlier Detection</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:25:09-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I describe a kernel density approach to outlier detection on small datasets. In particular, my model is the set of prices for a given item that can be found online.</p>
+
+<h1>Introduction</h1>
+
+<p>Suppose you&#8217;re searching online for the cheapest place to buy a stats book you need for class.</p>
+
+<p>You initially find the following prices:</p>
+
+<pre><code>$50 - Amazon
+$55 - Barnes &amp; Noble
+$52 - Walmart
+$50 - Borders
+</code></pre>
+
+<p>You&#8217;re about to buy it from Amazon when you whimsically decide to try searching again. This time you find an eBay listing for the book at the low price of $30.</p>
+
+<p>Should you buy it from eBay? Or is the listing just a scam? What if, instead, the price distribution of the other sellers were more widely dispersed?</p>
+
+<pre><code>$50 - Amazon
+$75 - Barnes &amp; Noble
+$60 - Walmart
+$90 - Borders
+</code></pre>
+
+<p>In other words, given the price distribution of the other sellers, you&#8217;d like to know how likely it is that a price of $30 is legitimate.</p>
+
+<p>I describe a solution to this problem based on kernel density estimation.</p>
+
+<h1>Other Approaches</h1>
+
+<p>Let&#8217;s consider some other approaches first. Suppose we have a set of prices $latex {x _ {min}} cup {x _ 1, ldots, x _ n}$, where $latex x _ {min}$ is strictly less than all the other prices in $latex X = {x _ 1, ldots, x _ n}$.</p>
+
+<h2>A Normal Approach</h2>
+
+<p>One simple approach to determining how cautious we should be of the price $latex x _ {min}$ is to calculate the mean $latex mu _ X$ and standard deviation $latex sigma _ X$ of $latex X$, and flag $latex x _ {min}$ if it falls some number of standard deviations below the mean.</p>
+
+<p>However, this approach is flawed for several reasons. First, what if the prices in $latex X$ are all equal, say $latex X = {$50, $50, $50}$, so that $latex sigma_x = 0$? Then any $latex x_{min} &lt; 50$ will be flagged, even $latex x _ {min} = $49$, which we don&#8217;t want.</p>
+
+<p>A simple heuristic (say, flag $latex x _ {min}$ only if it also falls at least $latex 10%$ below $latex mu _ X$) can fix this problem, though, so a more glaring problem is that the approach assumes prices follow a normal distribution, which they often do not. For example, bimodal distributions such as the following</p>
+
+<pre><code>$20 - Amazon
+$25 - Barnes &amp; Noble
+$22 - Walmart
+$21 - Borders
+
+$45 - eBay
+$40 - Books Inc.
+$43 - Waldenbooks
+</code></pre>
+
+<p>often arise, in which sellers seem to fall into two sets, one with higher prices and one with lower. (For example, perhaps a paperback version of a book was just released, and the megastore booksellers have slashed the price of the hardback version accordingly, while the small-scale booksellers have yet to react.)</p>
+
+<p>In general, it is unclear what distribution prices fall into (they do not have a lognormal distribution either), so it seems that we must look at non-parametric approaches instead.</p>
+
+<h2>An IQR Approach</h2>
+
+<p>One non-parametric method (which we all learn in grade school) is the interquartile method, in which we calculate the interquartile range of $latex X$ (the difference between the price falling in the $latex 75$th percentile of $latex X$ and the price falling in the $latex 25$th percentile of $latex X$) and view $latex x _ {min}$ with caution if it falls below $latex mu _ X - cIQR(X)$ for some positive constant $latex c$.</p>
+
+<p>Again, though, this method fails. For example, in the bimodal distribution above, the 75th percentile of the prices is 41.50 and the 25th percentile is 21.5, giving a rather large interquartile range of 20.00. Even with a conservative choice of $latex c = 1.5$, we flag outliers only if they fall below $latex mu _ X - 1.5($20) = $latex 30.86 - 1.5($20) = $latex 0.86$, which doesn&#8217;t seem correct.</p>
+
+<p>We need, then, a non-parametric approach which also takes into account the dispersion and clusters of prices.</p>
+
+<h1>A Kernel Density Approach</h1>
+
+<p>Recall that the kernel density estimate of a price $latex x$ given prices $latex X = {x _ 1, ldots, x _ n}$ is</p>
+
+<p>$latex KDE(x) = frac{1}{n} sum _ {i = 1} ^ n Kleft(frac{x - x _ i}{h}right),$</p>
+
+<p>where $latex K$ is some kernel function and $latex h$ is a bandwidth parameter.</p>
+
+<p>In my tests, I used a Gaussian kernel with bandwidth $latex 0.1x _ i$,</p>
+
+<p>$latex Kleft(frac{x - x _ i}{0.1x _ i}right) = frac{1}{sqrt{2pi}} e ^ {frac{-(x - x _ i) ^ 2}{2(0.1x _ i) ^ 2}}.$</p>
+
+<p>For example, given a set of original prices $latex {50, 55, 52, 50, 90, 95, 93}$</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kde-outlier-detection/original%20prices.png"><img src="http://dl.dropbox.com/u/10506/blog/kde-outlier-detection/original%20prices.png" alt="Original Prices" /></a></p>
+
+<p>here are the kernel density estimates of a new set of prices:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kde-outlier-detection/kernel%20density%20estimates.png"><img src="http://dl.dropbox.com/u/10506/blog/kde-outlier-detection/kernel%20density%20estimates.png" alt="Kernel Density Estimate of New Prices" /></a></p>
+
+<p>Notice the two humps around 50 and 90, which match the two clusters in our original set of prices.</p>
+
+<p>Finally, to take care of cases where all prices were widely dispersed, I compared the kernel density estimate of $latex x _ {min}$ to the average kernel density estimate over all prices in $latex X$:</p>
+
+<p>$latex OutlierScore(x _ {min}) = frac{KDE(x _ {min})}{frac{1}{n}sum _ {x _ i in X} KDE(x _ i) },$</p>
+
+<p>and flagged $latex x _ {min}$ if its outlier score fell below some threshold.</p>
+
+<h2>Adding Sophistication with Local Comparisons</h2>
+
+<p>While the attempt above accounts for price dispersion in our outlier score by dividing against the average kernel density estimate of all prices, a better approach (e.g., in the case of bimodal distributions) would be to take the average only over points $latex N(x _ {min})$ near $latex x _ {min}$:
+$latex OutlierScore(x _ {min}) = frac{KDE(x _ {min})}{frac{1}{|N(x _ {min})|}sum _ {x _ i in N(x _ {min})} KDE(x _ i) }.$</p>
+
+<p>For example, I experimented both with taking the $latex m$ nearest neighbors of $latex x _ {min}$, and with performing a $latex k$-means clustering on the prices and taking the points in the same cluster as $latex x _ {min}$, where I estimated $latex k$ using the gap statistic and prediction strength tests.</p>
+
+<p>Although this method didn&#8217;t produce significantly better results than the method that ignored clusters in prices, perhaps due to the relative rarity of distinct price groups in small datasets, the method should be more robust as the number of online retailers and prices per item grows.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/laymans-introduction-to-measure-theory/">Layman&#8217;s Introduction to Measure Theory</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:24:37-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Measure theory studies ways of generalizing the notions of length/area/volume. Even in 2 dimensions, it might not be clear how to measure the area of the following fairly tame shape:</p>
+
+<p><img src="http://d2o7bfz2il9cb7.cloudfront.net/main-qimg-809c3bdb18539dfa2917ee766a0a6159" alt="What's the area of this shape?" /></p>
+
+<p>much less the &#8220;area&#8221; of even weirder shapes in higher dimensions or different spaces entirely.</p>
+
+<p>For example, suppose you want to measure the length of a book (so that you can get a good sense of how long it takes to read). What&#8217;s a good measure? One possibility is to measure a book&#8217;s length in <em>pages</em>. Since books provide page counts, this is a fairly easy measure to get. However, different versions of the same book (e.g., hardcover and paperback versions) tend to have different page counts, so this page measure doesn&#8217;t satisfy the nice property of version invariance (which we would like to have, since hardcover and paperback versions of the same book take the same time to read). Also, not all books even have page counts (think Kindle books), so this measure doesn&#8217;t allow us to measure the length of all books we might want to read.</p>
+
+<p>Another, possibly better measure is to measure a book&#8217;s length in terms of the number of <em>words</em> it contains. Now we do have version invariance (hardcover and paperback versions contain the same number of words) and we can measure the length of Kindle books as well. We can even do things like add two books together, and the measure/number of words of the concatenated books will pleasantly equal the sum of the measures/number of words of each book alone.</p>
+
+<p>However, what happens when we try to measure a picture book&#8217;s length in words? We can&#8217;t &#8211; picture books are too pathological. Maybe we could say that a picture book has measure zero (since a picture book has no words), but then we get unhappy things like books of measure zero taking a really long time to read (imagine a really long picture book). So maybe a better option is to say that picture books are simply unmeasurable. Whenever someone asks for the length of a picture book, we ignore them, and this way our measure will continue to be a good approximation of reading time and we get to keep our other nice properties as well.</p>
+
+<p>Similarly, measure theory asks questions like:</p>
+
+<ul>
+<li><p>How do we define a measure on our space? (Jordan measure and Lebesgue measure are two different options in Euclidean space.)</p></li>
+<li><p>What properties does our measure satisfy? (For example, does it satisfy translational invariance, rotational invariance, additivity?)</p></li>
+<li><p>Which objects are measurable/which objects can we say it&#8217;s okay not to measure in order to preserve nice properties of our measure? (The Banach-Tarski ball can be rigidly reassembled into two copies of the same shape and size as the original, so we don&#8217;t want it to be measurable, since then we would lose additivity properties.)</p></li>
+</ul>
+
+
+<p>And once we&#8217;ve defined a &#8220;generalized area&#8221; (our measure), we can try to generalize other mathematical concepts as well. For example, recall that the (Riemann) integral that you learn in calculus measures the area under a curve. What happens if we replace the &#8220;area&#8221; in the Riemann integral with our new, generalized measure (e.g., to get the Lebesgue integral)? Measure theory also helps make certain probability statements mathematically precise (e.g., we can say exactly what it means that a fair coin flipped infinitely often will &#8220;almost never&#8221; land heads more than 50% of the time).</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights/">Netflix Prize Summary: Scalable Collaborative Filtering With Jointly Derived Neighborhood Interpolation Weights</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:23:04-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually, I hope to have a more integrated tutorial, but here&#8217;s a rough draft for now.)</p>
+
+<p>This is a summary of Bell and Koren&#8217;s 2007 <a href="public.research.att.com/~volinsky/netflix/BellKorICDM07.pdf">Scalable Collaborative Filtering with Jointly Derived Neighborhood Interpolation Weights</a> paper.</p>
+
+<p><strong>tl;dr</strong> This paper&#8217;s main innovation is deriving neighborhood weights by solving a least squares problem, instead of using a standard similarity function to compute weights.</p>
+
+<p>This paper improves upon the standard neighborhood approach to collaborative filtering in three areas: better data normalization, better neighbor weights (this is the key section), and better use of user data. I&#8217;ll first review the standard neighborhood approach, and follow with a description of these enhancements.</p>
+
+<h2>Background: Standard Neighborhood Approach to Collaborative Filtering</h2>
+
+<p>Recall that there are two types of neighborhood approaches:</p>
+
+<ul>
+<li><p>User-based approaches: to predict user i&#8217;s rating of item j, take the users most similar to user i, and perform a weighted average of their ratings of item j.</p></li>
+<li><p>Item-based approaches: to predict user i&#8217;s rating of item j, perform a weighted average of user i&#8217;s ratings of items similar to item j.</p></li>
+</ul>
+
+
+<p>For example, to predict how you would rate the first Harry Potter movie, the user-based approach looks at how your friends rated the first Harry Potter movie, while the item-based approach looks at how you rated movies like Lord of the Rings and Twilight.</p>
+
+<h2>Better Data Normalization</h2>
+
+<p>Suppose I ask my friend Chris whether I should watch the latest Twilight movie. He tells me he would rate it 4.0/5 stars. Great, that&#8217;s a high rating, so that means I should watch it &#8211; or does it? It turns out that Chris is a super cheerful guy who&#8217;s never met a movie he didn&#8217;t like, and his average rating for a movie is actually 4.5/5 stars. So Twilight is actually less than average for him, and hence 4.0/5 stars from Chris isn&#8217;t actually that hearty a recommendation.</p>
+
+<p>As another example, suppose you look at doctor ratings on Yelp. They&#8217;re abnormally high: the average is far from 3/5 stars. Why is this? Maybe it&#8217;s harder for people to change doctors than it is to go to a new restaurant, so people might not want to rate a doctor poorly when they know they&#8217;ll have to see the doctor again. Thus, an average rating of 5 stars on a McDonalds restaurant is much more impressive than an average of 5 stars on Dr. Joe.</p>
+
+<p>The lesson is that when using existing ratings, we should normalize out these types of effects, so that ratings are as comparable as possible.</p>
+
+<p>Another way of thinking about this is that we are simply building a regression model. That is, for each user u, we have a model
+$latex r _ {ui} = (\sum \theta _ u x _ {ui}) + SpecificRating$, where the $latex x _ {ui}$ are common explanatory variables and we want to estimate $latex \theta _ u$; and similarly for each item i. Once we&#8217;ve estimated the $latex \theta _ u$, we can use the fancier neighborhood models on the specific ratings.</p>
+
+<p>For example, suppose we want to predict Bob&#8217;s rating of Titanic. We&#8217;ve built a regression model with two explanatory variables, whether the movie was Oscar-nominated (1 if so, -1 if not) and whether the movie contains Kate Winslet (1 if so, -1 if not), and we&#8217;ve determined that Bob&#8217;s weights on these two variables are -2 (Bob tends to hate Oscar movies) and +1.5 (Bob likes Kate Winslet). Similarly, his friend John has weights +1 and -0.5 for these two variables (John likes Oscars, but dislikes Kate Winslet). So if we know that John rated Titanic a 4, then we have 4 = 1(1) + -0.5(1) + (John&#8217;s specific rating), so John&#8217;s specific rating of Titanic is 3.5. If we use John&#8217;s rating alone to estimate Bob&#8217;s, we might guess that Bob would rate Titanic -2(1) + 1.5(1) + (John&#8217;s specific rating) = 3.0.</p>
+
+<p>To estimate the $latex \theta _ u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $latex \hat{\theta _ u} = \frac{\sum r _ {ui} x _ {ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $latex \theta _ u \sim N(\mu, \sigma ^ 2)$, and $latex \hat{\theta _ u} | \theta _ u \sim N(\theta _ u, \sigma _ u ^ 2)$, leading to $latex E(\theta _ u | \hat{\theta _ u}) = \frac{\sigma ^ 2 \hat{\theta _ u} + \sigma _ u ^ 2 \mu}{\sigma ^ 2 + \sigma _ u ^ 2}$.</p>
+
+<p>In practice, the explanatory variables Bell and Koren found to work well included the overall mean of all ratings, each movie&#8217;s specific mean, each user&#8217;s specific mean, time since movie release, time since user join, and number of ratings for each movie.</p>
+
+<h2>Better Neighbor Weights</h2>
+
+<p>Let&#8217;s consider some deficiencies of the neighborhood approach:</p>
+
+<ul>
+<li><p>Suppose I want to use the first LOTR movie to predict ratings of the first Harry Potter movie. To do this, I need to say how much weight the first LOTR movie should have in this prediction. But how do I choose this weight? Standard neighborhood approaches essentially pick arbitrary similarity functions (e.g., Pearson correlation, cosine distance) as the weight, possibly testing several similarity functions to see which gives the best performance, but is there a more principled approach to choosing weights?</p></li>
+<li><p>The standard neighborhood approach ignores the fact that neighbors aren&#8217;t independent. For example, suppose all three LOTR movies are neighbors of the first HP movie. Since the three LOTR movies are so similar to each other, the standard approach is overcounting their information. Here&#8217;s an analogy: suppose I ask five of my friends where I should eat tonight. Three of them live together (boyfriend, girlfriend, and roommate), and they all recently took a trip together to Japan and are sick of Japanese food, so they vehemently recommend against sushi. Thus, my friends&#8217; recommendations have a stronger bias than would appear if I asked five friends who didn&#8217;t know each other at all.</p></li>
+</ul>
+
+
+<p>We&#8217;ll see how using an optimization method to derive weights (as opposed to deriving weights via a similarity function) overcomes these two limitations.</p>
+
+<p>Recall our problem: we want to predict $latex r _ {ui}$, user u&#8217;s rating of item i, and what we have is a set $latex N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $latex w _ {ij}$ such that $latex r _ {ui} = \sum _ {j \in N(i; u) w _ {ij} r _ {uj}}$. A natural approach, then, is simply to choose our weights to minimize $latex \min _ w \sum _ {v \neq u} \left( r _ {vi} - \sum _ {j \in N(i; u)} w _ {ij} r _ {vj}\right) ^ 2$.</p>
+
+<p>Notice how this optimization solves our two problems above: it&#8217;s not only a more principled approach (we choose our weights by minimizing squared error), but by deriving weights simultaneously, we overcome interaction effects.</p>
+
+<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $latex Aw = b$, where A is a $latex K \times K$ matrix defined by $latex A _ {jk} = \sum _ {v \neq u} r _ {vj} r _ {vk}$ and $latex b$ is a vector defined by $latex b _ j = \sum _ {v \neq u} r _ {vj} r _ {vi}$.</p>
+
+<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $latex \bar{A} _ {jk} = \frac{\sum _ {v \in U(j,k)} r _ {vj} r _ {vk}}{|U(j, k)|}$, where $latex U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $latex \hat{A} _ {jk} = \frac{|U(J,K)|\bar{A} _ {jk} + \beta A _ {\mu}}{|U(j,k)| + \beta}$, where $latex \beta$ is a shrinkage parameter and $latex A _ {\mu}$ is the mean over all $latex \bar{A}$, and similarly for b.</p>
+
+<p>Note that another benefit of our optimization-derived weights is that the weights of neighbors are no longer constrained to sum to 1. Thus, if an item simply has no strong neighbors, the neighbors&#8217; prediction will have only a small effect.</p>
+
+<p>Also, when engineering these methods in practice, we should precompute all item-item similarities and all entries in the matrix $latex A$.</p>
+
+<h2>Better Use of User Data</h2>
+
+<p>Neighborhood models typically follow the item-based approach for two reasons:</p>
+
+<ul>
+<li><p>There are typically many more users than items, and new users come in much more frequently than new items, so it is easier to compute all pairs of item-item similarities.</p></li>
+<li><p>Users have diverse tastes, so they aren&#8217;t as similar to each other. For example, Alice and Eve may both like horror movies, but disagree on comedies.</p></li>
+</ul>
+
+
+<p>But there are various reasons we might want to use a user-based approach <em>in addition to</em> an item-based approach (say, a user hasn&#8217;t rated many items yet, but we can find similar users based on other types of data, such as browsing history; or, we want to predict user u&#8217;s rating on item i, but user u hasn&#8217;t rated any items similar to i), so let&#8217;s see if we can get around these limitations.</p>
+
+<p>To get around the first limitation, we can project users into a lower-dimensional space (say, by using a singular value decomposition), where we can use a space-partitioning data structure (e.g., a kd-tree) or a nearest-neighbor algorithm (e.g., locality sensitive hashing) to find neighboring users.</p>
+
+<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $latex \min _ w \sum _ {j \neq i} s _ {ij} \left( r _ {uj} - \sum _ {v \in N(u, i)} w _ {uv} r _ {vj} \right) ^ 2,$ where the $latex s _ {ij}$ are item-item similarities.</p>
+
+<h2>Appendix: Shrinkage</h2>
+
+<p>Parameter shrinkage is used a couple times in the paper, so let&#8217;s explain what it means.</p>
+
+<p>Suppose that we want to estimate the probability of a coin. If we flip it once and see heads, then the maximum-likelihood estimate of heads is 1. But (as is typical for maximum-likelihood estimates), this is severe overfitting, and what we should do instead is shrink this maximum-likelihood estimate to a prior estimate of the probability of heads, say 1/2. (Note that shrinkage doesn&#8217;t necessarily mean decreasing the number, just moving it towards a prior estimate).</p>
+
+<p>How should we perform this shrinkage? If our maximum-likelihood estimate of our parameter $latex \theta$ is $latex x$ and our prior mean is $latex \mu$, a natural estimation of $latex \theta$ is to use a weighted mean $latex \alpha x + (1 - \alpha)\mu$, where $latex \alpha$ is some measure of the degree of belief in our maximum likelihood estimate.</p>
+
+<p>This weighted average approach has several interpretations:</p>
+
+<ul>
+<li><p>We can also view it as a shrinkage of our maximum likelihood estimate to our prior mean: $latex \alpha x + (1 - \alpha)\mu = x + (1 - \alpha) (\mu - x)$</p></li>
+<li><p>We can also view it as a Bayesian posterior: if we use a prior $latex \theta \sim N(\mu, \tau)$ (where $latex \tau$ is the precision of our Gaussian, not the variance) and a conditional distribution $latex x | \theta \sim N(\theta, \tau _ x)$, then the posterior mean of $latex \theta$ is $latex \theta = \frac{\tau _ x}{\tau _ x + \tau}x + \frac{\tau}{\tau _ x + \tau}\mu,$ which is equivalent to the form above.</p></li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+      <a class="prev" href="/blog/page/4/">&larr; Older</a>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/blog/page/2/">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

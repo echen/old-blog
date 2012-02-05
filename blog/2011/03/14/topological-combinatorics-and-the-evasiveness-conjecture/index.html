@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Topological Combinatorics and the Evasiveness Conjecture - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="The Kahn, Saks, and Sturtevant approach to the Evasiveness Conjecture (see the original paper here) is an epic application of pure mathematics to &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Topological Combinatorics and the Evasiveness Conjecture</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:17:41-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>The Kahn, Saks, and Sturtevant approach to the Evasiveness Conjecture (see the original paper <a href="http://www.springerlink.com/index/R521072311641L41.pdf">here</a>) is an epic application of pure mathematics to computer science. I&#8217;ll give an overview of the approach here, and probably try to add some more information on the problem in other posts.</p>
+
+<p><strong>tl;dr</strong> The KSS approach provides an <strong>algebraic-topological attack to a combinatorial hypothesis</strong>, and <strong>reduces a graph complexity problem to a problem of contractibility</strong> and (not) finding fixed points.</p>
+
+<p>First, the <strong>Evasiveness Conjecture states that any (non-trivial) monotone graph property is evasive</strong>. In other words, if you&#8217;re trying to figure out whether an undirected n-vertex graph satisfies a certain property (e.g., whether the graph contains a triangle or is connected), and this property is monotone (meaning that if you add more edges to the graph, then it still satisfies the property), then if all you&#8217;re allowed to do is ask questions of the form &#8220;Is edge (i, j) in the graph?&#8221;, then you need to query for every single edge before you can determine whether the graph satisfies the property or not. For example, if you want to figure out whether a graph G contains a clique of size 5, then you need to know whether each of the n(n-1)/2 possible edges is in the graph or not before you can answer for certain.</p>
+
+<p>Next, <strong>given any monotone graph property on n-vertex graphs, we can associate it with a simplicial complex S</strong> (basically, an n-dimensional structure formed by gluing together a bunch of hypertriangles), by taking the complex to be the set of all n-vertex graphs that don&#8217;t satisfy the property.</p>
+
+<p>Kahn, Saks, and Sturtevant then prove that <strong>if a monotone graph property is not evasive, then its associated simplicial complex is contractible</strong>, and thus (by the Lefschetz Fixed-Point theorem) any auto-simplicial map on the complex (a function from the complex to itself that preserves faces) has a fixed point.</p>
+
+<p>Thus, <strong>we can prove that a monotone graph property is evasive by finding a simplicial map that has no fixed point</strong> (which we can do by showing that no orbit of the map is a face of the complex). This approach has been used to prove things like the evasiveness of graph properties when the number of vertices is prime or a prime power, and the evasiveness of all bipartite graph properties.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:17:41-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/expository/'>expository</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture/" data-via="" data-counturl="http://echen.github.com/blog/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/02/15/an-overview-of-item-to-item-collaborative-filtering-with-amazons-recommendation-system/" title="Previous Post: Item-to-Item Collaborative Filtering with Amazon's Recommendation System">&laquo; Item-to-Item Collaborative Filtering with Amazon's Recommendation System</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/03/14/collocations-in-the-wheel-of-time/" title="next Post: Collocations in the Wheel of Time">Collocations in the Wheel of Time &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

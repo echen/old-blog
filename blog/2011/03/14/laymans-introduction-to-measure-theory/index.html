@@ -1,0 +1,240 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Layman's Introduction to Measure Theory - My Octopress Blog</title>
+  <meta name="author" content="Your Name">
+
+  
+  <meta name="description" content="Measure theory studies ways of generalizing the notions of length/area/volume. Even in 2 dimensions, it might not be clear how to measure the area of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://echen.github.com/blog/2011/03/14/laymans-introduction-to-measure-theory">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="My Octopress Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">My Octopress Blog</a></h1>
+  
+    <h2>A blogging framework for hackers.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:echen.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Layman's Introduction to Measure Theory</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:24:37-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Measure theory studies ways of generalizing the notions of length/area/volume. Even in 2 dimensions, it might not be clear how to measure the area of the following fairly tame shape:</p>
+
+<p><img src="http://d2o7bfz2il9cb7.cloudfront.net/main-qimg-809c3bdb18539dfa2917ee766a0a6159" alt="What's the area of this shape?" /></p>
+
+<p>much less the &#8220;area&#8221; of even weirder shapes in higher dimensions or different spaces entirely.</p>
+
+<p>For example, suppose you want to measure the length of a book (so that you can get a good sense of how long it takes to read). What&#8217;s a good measure? One possibility is to measure a book&#8217;s length in <em>pages</em>. Since books provide page counts, this is a fairly easy measure to get. However, different versions of the same book (e.g., hardcover and paperback versions) tend to have different page counts, so this page measure doesn&#8217;t satisfy the nice property of version invariance (which we would like to have, since hardcover and paperback versions of the same book take the same time to read). Also, not all books even have page counts (think Kindle books), so this measure doesn&#8217;t allow us to measure the length of all books we might want to read.</p>
+
+<p>Another, possibly better measure is to measure a book&#8217;s length in terms of the number of <em>words</em> it contains. Now we do have version invariance (hardcover and paperback versions contain the same number of words) and we can measure the length of Kindle books as well. We can even do things like add two books together, and the measure/number of words of the concatenated books will pleasantly equal the sum of the measures/number of words of each book alone.</p>
+
+<p>However, what happens when we try to measure a picture book&#8217;s length in words? We can&#8217;t &#8211; picture books are too pathological. Maybe we could say that a picture book has measure zero (since a picture book has no words), but then we get unhappy things like books of measure zero taking a really long time to read (imagine a really long picture book). So maybe a better option is to say that picture books are simply unmeasurable. Whenever someone asks for the length of a picture book, we ignore them, and this way our measure will continue to be a good approximation of reading time and we get to keep our other nice properties as well.</p>
+
+<p>Similarly, measure theory asks questions like:</p>
+
+<ul>
+<li><p>How do we define a measure on our space? (Jordan measure and Lebesgue measure are two different options in Euclidean space.)</p></li>
+<li><p>What properties does our measure satisfy? (For example, does it satisfy translational invariance, rotational invariance, additivity?)</p></li>
+<li><p>Which objects are measurable/which objects can we say it&#8217;s okay not to measure in order to preserve nice properties of our measure? (The Banach-Tarski ball can be rigidly reassembled into two copies of the same shape and size as the original, so we don&#8217;t want it to be measurable, since then we would lose additivity properties.)</p></li>
+</ul>
+
+
+<p>And once we&#8217;ve defined a &#8220;generalized area&#8221; (our measure), we can try to generalize other mathematical concepts as well. For example, recall that the (Riemann) integral that you learn in calculus measures the area under a curve. What happens if we replace the &#8220;area&#8221; in the Riemann integral with our new, generalized measure (e.g., to get the Lebesgue integral)? Measure theory also helps make certain probability statements mathematically precise (e.g., we can say exactly what it means that a fair coin flipped infinitely often will &#8220;almost never&#8221; land heads more than 50% of the time).</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Your Name</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:24:37-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/expository/'>expository</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://echen.github.com/blog/2011/03/14/laymans-introduction-to-measure-theory/" data-via="" data-counturl="http://echen.github.com/blog/2011/03/14/laymans-introduction-to-measure-theory/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights/" title="Previous Post: Netflix Prize Summary: Scalable Collaborative Filtering with Jointly Derived Neighborhood Interpolation Weights">&laquo; Netflix Prize Summary: Scalable Collaborative Filtering with Jointly Derived Neighborhood Interpolation Weights</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2011/03/14/a-kernel-density-approach-to-outlier-detection/" title="next Post: A Kernel Density Approach to Outlier Detection">A Kernel Density Approach to Outlier Detection &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Your Name -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
