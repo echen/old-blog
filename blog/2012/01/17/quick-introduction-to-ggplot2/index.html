@@ -94,7 +94,9 @@
 
 <h1>Introduction</h1>
 
-<p>This is a bare-bones introduction to <a href="http://had.co.nz/ggplot2/">ggplot2</a>, a visualization package in <a href="http://www.r-project.org/">R</a>. It assumes no knowledge of R and teaches the minimum you&#8217;ll need to know.</p>
+<p>This is a bare-bones introduction to <a href="http://had.co.nz/ggplot2/">ggplot2</a>, a visualization package in R. It assumes no knowledge of R.</p>
+
+<p>There is also a literate programming version of this tutorial in <a href="https://github.com/echen/ggplot2-tutorial/blob/master/ggplot2-tutorial.R"><code>ggplot2-tutorial.R</code></a>.</p>
 
 <h1>Preview</h1>
 
@@ -102,9 +104,7 @@
 
 <p>Given Fisher&#8217;s <a href="http://en.wikipedia.org/wiki/Iris_flower_data_set">iris</a> data set and one simple command&#8230;</p>
 
-<pre><code>&lt;code&gt;qplot(Sepal.Length, Petal.Length, data = iris, 
-  color = Species)
-&lt;/code&gt;
+<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species)
 </code></pre>
 
 <p>&#8230;we can produce this plot of sepal length vs. petal length, colored by species.</p>
@@ -121,45 +121,39 @@
 
 <p>Vectors are a core data structure in R, and are created with <code>c()</code>. Elements in a vector must be of the same type.</p>
 
-<pre><code>&lt;code&gt;numbers = c(23, 13, 5, 7, 31)
+<pre><code>numbers = c(23, 13, 5, 7, 31)
 names = c("edwin", "alice", "bob")
-&lt;/code&gt;
 </code></pre>
 
 <p>Elements are indexed starting at 1, and are accessed with <code>[]</code> notation.</p>
 
-<pre><code>&lt;code&gt;numbers[1] # 23
+<pre><code>numbers[1] # 23
 names[1] # edwin
-&lt;/code&gt;
 </code></pre>
 
 <h2>Data frames</h2>
 
 <p><a href="http://www.r-tutor.com/r-introduction/data-frame">Data frames</a> are like matrices, but with named columns of different types (similar to <a href="http://code.google.com/p/sqldf/">database tables</a>).</p>
 
-<pre><code>&lt;code&gt;books = data.frame(
-    title = c("harry potter", "war and peace", "lotr"),
+<pre><code>books = data.frame(
+    title = c("harry potter", "war and peace", "lord of the rings"), # column named "title"
     author = c("rowling", "tolstoy", "tolkien"),
     num_pages = c("350", "875", "500")
 )
-&lt;/code&gt;
 </code></pre>
 
 <p>You can access columns of a data frame with <code>$</code>.</p>
 
-<pre><code>&lt;code&gt;books$title # c("harry potter", "war and peace", "lotr")
+<pre><code>books$title # c("harry potter", "war and peace", "lord of the rings")
 books$author[1] # "rowling"
-&lt;/code&gt;
 </code></pre>
 
 <p>You can also create new columns with <code>$</code>.</p>
 
-<pre><code>&lt;code&gt;books$num_bought_today = c(10, 5, 8)
+<pre><code>books$num_bought_today = c(10, 5, 8)
 books$num_bought_yesterday = c(18, 13, 20)
 
-books$total_num_bought = 
-      books$num_bought_today + books$num_bought_yesterday
-&lt;/code&gt;
+books$total_num_bought = books$num_bought_today + books$num_bought_yesterday
 </code></pre>
 
 <h2>read.table</h2>
@@ -170,31 +164,20 @@ books$total_num_bought =
 
 <p>For example, consider the <a href="https://github.com/echen/r-tutorial/blob/master/data/students.tsv"><code>data/students.tsv</code></a> file (with columns describing each student&#8217;s age, test score, and name).</p>
 
-<pre><code>&lt;code&gt;13   100 alice
+<pre><code>13   100 alice
 14   95  bob
 13   82  eve
-&lt;/code&gt;
 </code></pre>
 
-<p>We can import this file into R using <a href="http://stat.ethz.ch/R-manual/R-devel/library/utils/html/read.table.html"><code>read.table()</code></a></p>
+<p>We can import this file into R using <a href="http://stat.ethz.ch/R-manual/R-devel/library/utils/html/read.table.html"><code>read.table()</code></a>.</p>
 
-<pre><code>&lt;code&gt;students = read.table(
-    "data/students.tsv", 
-    header = F, 
-    sep = "\t", 
-    col.names = c("age", "score", "name")
+<pre><code>students = read.table("data/students.tsv", 
+    header = F, # file does not contain a header (`F` is short for `FALSE`),
+                # so we must manually specify column names                    
+    sep = "\t", # file is tab-delimited        
+    col.names = c("age", "score", "name") # column names
 )
-&lt;/code&gt;
 </code></pre>
-
-<p>where</p>
-
-<ul>
-<li><p><code>header = F</code> means that the file does not contain a header (<code>F</code> is shorthand for <code>FALSE</code>)</p></li>
-<li><p><code>sep = "\t"</code> means that the file is tab-delimited</p></li>
-<li><p><code>col.names = c("age", "score", "name")</code> tells R the column names</p></li>
-</ul>
-
 
 <p>We can now access the different columns in the data frame with <code>students$age</code>, <code>students$score</code>, and <code>students$name</code>.</p>
 
@@ -202,27 +185,30 @@ books$total_num_bought =
 
 <p>For an example of a file in a different format, look at the <a href="https://github.com/echen/r-tutorial/blob/master/data/studentsWithHeader.tsv"><code>data/studentsWithHeader.tsv</code></a> file.</p>
 
-<pre><code>&lt;code&gt;age,score,name
+<pre><code>age,score,name
 13,100,alice
 14,95,bob
 13,82,eve
-&lt;/code&gt;
 </code></pre>
 
 <p>Here we have the same data, but now the file is comma-delimited and contains a header. We can import this file with</p>
 
-<pre><code>&lt;code&gt;students = read.table("data/students.tsv", 
-  header = T, sep = ",")
-&lt;/code&gt;
+<pre><code>students = read.table("data/students.tsv", 
+    sep = ",",
+    header = T  # first line contains column names, so we can
+)               # immediately call `students$age`                    
 </code></pre>
 
-<p>By setting <code>header = T</code>, we tell R that the first line of the file contains column names, so we can immediately access <code>students$age</code> and so on. (Note: there is also a <code>read.csv</code> function that uses <code>sep = ","</code> by default.)</p>
+<p>(Note: there is also a <code>read.csv</code> function that uses <code>sep = ","</code> by default.)</p>
 
 <h2>help</h2>
 
-<p>There are many more options that <code>read.table</code> can take. For a full list of these, just type <code>help(read.table)</code> (or equivalently, <code>?read.table</code>) at the prompt to access documentation.</p>
+<p>There are many more options that <code>read.table</code> can take. For a list of these, just type <code>help(read.table)</code> (or <code>?read.table</code>) at the prompt to access documentation.</p>
 
-<p>This works for other functions as well.</p>
+<pre><code># These work for other functions as well.
+help(read.table)
+?read.table
+</code></pre>
 
 <h1>ggplot2</h1>
 
@@ -232,14 +218,12 @@ books$total_num_bought =
 
 <p>One of R&#8217;s greatest strengths is its excellent set of <a href="http://cran.r-project.org/web/packages/available_packages_by_name.html">packages</a>. To install a package, you can use the <code>install.packages()</code> function.</p>
 
-<pre><code>&lt;code&gt;install.packages("ggplot2")
-&lt;/code&gt;
+<pre><code>install.packages("ggplot2")
 </code></pre>
 
 <p>To load a package into your current R session, use <code>library()</code>.</p>
 
-<pre><code>&lt;code&gt;library(ggplot2)
-&lt;/code&gt;
+<pre><code>library(ggplot2)
 </code></pre>
 
 <h2>Scatterplots with qplot()</h2>
@@ -248,8 +232,8 @@ books$total_num_bought =
 
 <p>What does the data frame contain? We can use the <code>head</code> function to look at the first few rows.</p>
 
-<pre><code>&lt;code&gt;head(iris) # by default, head displays the first 6 rows
-head(iris, n = 10) # explicitly set number of rows
+<pre><code>head(iris) # by default, head displays the first 6 rows. see `?head`
+head(iris, n = 10) # we can also explicitly set the number of rows to display
 
   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
            5.1         3.5          1.4         0.2  setosa
@@ -258,56 +242,47 @@ head(iris, n = 10) # explicitly set number of rows
            4.6         3.1          1.5         0.2  setosa
            5.0         3.6          1.4         0.2  setosa
            5.4         3.9          1.7         0.4  setosa
-&lt;/code&gt;
 </code></pre>
 
 <p>(The data frame actually contains three types of species: setosa, versicolor, and virginica.)</p>
 
 <p>Let&#8217;s plot <code>Sepal.Length</code> against <code>Petal.Length</code> using ggplot2&#8217;s <code>qplot()</code> function.</p>
 
-<pre><code>&lt;code&gt;qplot(Sepal.Length, Petal.Length, data = iris)
-# Plot Sepal.Length vs. Petal.Length, 
-# using data from the `iris` data frame.
-&lt;/code&gt;
+<pre><code>qplot(Sepal.Length, Petal.Length, data = iris)
+# Plot Sepal.Length vs. Petal.Length, using data from the `iris` data frame.
+# * First argument `Sepal.Length` goes on the x-axis.
+# * Second argument `Petal.Length` goes on the y-axis.
+# * `data = iris` means to look for this data in the `iris` data frame.    
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal.png" alt="Sepal Length vs. Petal Length" /></a></p>
 
 <p>To see where each species is located in this graph, we can color each point by adding a <code>color = Species</code> argument.</p>
 
-<pre><code>&lt;code&gt;qplot(Sepal.Length, Petal.Length, data = iris, 
-  color = Species) # dude!
-&lt;/code&gt;
+<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species) # dude!
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-specied.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-specied.png" alt="Sepal vs. Petal, Colored by Species" /></a></p>
 
 <p>Similarly, we can let the size of each point denote sepal width, by adding a <code>size = Sepal.Width</code> argument.</p>
 
-<pre><code>&lt;code&gt;qplot(Sepal.Length, Petal.Length, data = iris, 
-  color = Species, size = Petal.Width)
+<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species, size = Petal.Width)
 # We see that Iris setosa flowers have the narrowest petals.
-&lt;/code&gt;
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-sized.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-sized.png" alt="Sepal vs. Petal, Sized by Petal Width" /></a></p>
 
-<pre><code>&lt;code&gt;qplot(Sepal.Length, Petal.Length, data = iris, 
-  color = Species, size = Petal.Width, alpha = I(0.7))
-# By setting the alpha of each point to 0.7, 
-# we reduce the effects of overplotting.
-&lt;/code&gt;
+<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species, size = Petal.Width, alpha = I(0.7))
+# By setting the alpha of each point to 0.7, we reduce the effects of overplotting.
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-alpha.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-alpha.png" alt="Sepal vs. Petal, with Transparency" /></a></p>
 
 <p>Finally, let&#8217;s fix the axis labels and add a title to the plot.</p>
 
-<pre><code>&lt;code&gt;qplot(Sepal.Length, Petal.Length, data = iris, 
-    color = Species,
+<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, color = Species,
     xlab = "Sepal Length", ylab = "Petal Length", 
     main = "Sepal vs. Petal Length in Fisher's Iris data")
-&lt;/code&gt;
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-titled.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-titled.png" alt="Sepal vs. Petal, Titled" /></a></p>
@@ -316,92 +291,78 @@ head(iris, n = 10) # explicitly set number of rows
 
 <p>In the scatterplot examples above, we implicitly used a <em>point</em> <strong>geom</strong>, the default when you supply two arguments to <code>qplot()</code>.</p>
 
-<pre><code>&lt;code&gt;# These two invocations are equivalent.
-qplot(Sepal.Length, Petal.Length, data = iris, 
-  geom = "point")
+<pre><code># These two invocations are equivalent.
+qplot(Sepal.Length, Petal.Length, data = iris, geom = "point")
 qplot(Sepal.Length, Petal.Length, data = iris)
-&lt;/code&gt;
 </code></pre>
 
 <p>But we can also easily use other types of geoms to create more kinds of plots.</p>
 
 <h3>Barcharts: geom = &#8220;bar&#8221;</h3>
 
-<pre><code>&lt;code&gt;movies = data.frame(
-    director = c("spielberg", "spielberg", "spielberg", 
-        "jackson", "jackson"),
-    movie = c("jaws", "avatar", "schindler's list", "lotr", 
-        "king kong"),
+<pre><code>movies = data.frame(
+    director = c("spielberg", "spielberg", "spielberg", "jackson", "jackson"),
+    movie = c("jaws", "avatar", "schindler's list", "lotr", "king kong"),
     minutes = c(124, 163, 195, 600, 187)
 )
 
 # Plot the number of movies each director has.
-qplot(director, data = movies, geom = "bar", 
-  ylab = "# movies")
+qplot(director, data = movies, geom = "bar", ylab = "# movies")
 # By default, the height of each bar is simply a count.
-&lt;/code&gt;
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/num-movies.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/num-movies.png" alt="# Movies" /></a></p>
 
-<pre><code>&lt;code&gt;# But we can also supply a different weight.
-# Here the height of each bar is 
-# the total running time of the director's movies.
-qplot(director, weight = minutes, data = movies, 
-  geom = "bar", ylab = "total length (min.)")
-&lt;/code&gt;
+<pre><code># But we can also supply a different weight.
+# Here the height of each bar is the total running time of the director's movies.
+qplot(director, weight = minutes, data = movies, geom = "bar", ylab = "total length (min.)")
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/total-length.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/total-length.png" alt="Total Running Time" /></a></p>
 
 <h3>Line charts: geom = &#8220;line&#8221;</h3>
 
-<pre><code>&lt;code&gt;qplot(Sepal.Length, Petal.Length, data = iris, 
-  geom = "line", color = Species) 
+<pre><code>qplot(Sepal.Length, Petal.Length, data = iris, geom = "line", color = Species) 
 # Using a line geom doesn't really make sense here, but hey.
-&lt;/code&gt;
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-lined.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/sepal-vs-petal-lined.png" alt="Sepal vs. Petal, Lined" /></a></p>
 
-<pre><code>&lt;code&gt;# `Orange` is another built-in data frame 
-# that describes the growth of orange trees.
+<pre><code># `Orange` is another built-in data frame that describes the growth of orange trees.
 qplot(age, circumference, data = Orange, geom = "line",
     colour = Tree,
-    main = "How does orange tree circumference 
-      vary with age?")
-&lt;/code&gt;
+    main = "How does orange tree circumference vary with age?")
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/orange-tree-growth.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/orange-tree-growth.png" alt="Orange Tree Growth" /></a></p>
 
-<pre><code>&lt;code&gt;# We can also plot both points and lines.
-qplot(age, circumference, data = Orange, 
-  geom = c("point", "line"), colour = Tree)
-&lt;/code&gt;
+<pre><code># We can also plot both points and lines.
+qplot(age, circumference, data = Orange, geom = c("point", "line"), colour = Tree)
 </code></pre>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/r/ggplot2/orange-tree-pointed.png"><img src="http://dl.dropbox.com/u/10506/blog/r/ggplot2/orange-tree-pointed.png" alt="Orange Tree with Points" /></a></p>
 
+<p>And that&#8217;s it with what I&#8217;ll cover.</p>
+
 <h1>Next Steps</h1>
 
-<p>In this post, I skipped over a lot of aspects of R and ggplot2.</p>
+<p>I skipped over a lot of aspects of R and ggplot2 in this intro.</p>
 
 <p>For example,</p>
 
 <ul>
-<li><p>There are many geoms (and other functionalities) in ggplot2 that I didn&#8217;t cover, e.g., <a href="http://had.co.nz/ggplot2/geom_boxplot.html">boxplots</a> and <a href="http://had.co.nz/ggplot2/geom_histogram.html">histograms</a>.</p></li>
-<li><p>I didn&#8217;t talk about ggplot2&#8217;s layering system, or the <a href="http://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448">grammar of graphics</a> it&#8217;s based on.</p></li>
+<li>There are many geoms (and other functionalities) in ggplot2 that I didn&#8217;t cover, e.g., <a href="http://had.co.nz/ggplot2/geom_boxplot.html">boxplots</a> and <a href="http://had.co.nz/ggplot2/geom_histogram.html">histograms</a>.</li>
+<li>I didn&#8217;t talk about ggplot2&#8217;s layering system, or the <a href="http://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448">grammar of graphics</a> it&#8217;s based on.</li>
 </ul>
 
 
 <p>So I&#8217;ll end with some additional resources on R and ggplot2.</p>
 
 <ul>
-<li><p>I don&#8217;t use it myself, but <a href="http://rstudio.org/">RStudio</a> is a popular IDE for R.</p></li>
-<li><p>The <a href="http://had.co.nz/ggplot2/">official ggplot2 documentation</a> is great and has lots of examples. There&#8217;s also an excellent <a href="http://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/0387981403">book</a>.</p></li>
-<li><p><a href="http://plyr.had.co.nz/">plyr</a> is another fantastic R package that&#8217;s also by Hadley Wickham (the author of ggplot2).</p></li>
-<li><p>The <a href="http://cran.r-project.org/doc/manuals/R-intro.html">official R introduction</a> is okay, but definitely not great. I haven&#8217;t found any R tutorials I really like, but I&#8217;ve heard good things about <a href="http://www.amazon.com/Art-Programming-Statistical-Software-Design/dp/1593273843">The Art of R Programming</a>.</p></li>
+<li>I don&#8217;t use it myself, but <a href="http://rstudio.org/">RStudio</a> is a popular IDE for R.</li>
+<li>The <a href="http://had.co.nz/ggplot2/">official ggplot2 documentation</a> is great and has lots of examples. There&#8217;s also an excellent <a href="http://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/0387981403">book</a>.</li>
+<li><a href="http://plyr.had.co.nz/">plyr</a> is another fantastic R package that&#8217;s also by Hadley Wickham (the author of ggplot2).</li>
+<li>The <a href="http://cran.r-project.org/doc/manuals/R-intro.html">official R introduction</a> is okay, but definitely not great. I haven&#8217;t found any R tutorials I really like, but I&#8217;ve heard good things about <a href="http://www.amazon.com/Art-Programming-Statistical-Software-Design/dp/1593273843">The Art of R Programming</a>.</li>
 </ul>
 
 </div>

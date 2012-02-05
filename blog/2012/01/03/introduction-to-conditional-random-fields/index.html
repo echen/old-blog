@@ -108,17 +108,17 @@
 
 <p>For example, given the sentence &#8220;Bob drank coffee at Starbucks&#8221;, the labeling might be &#8220;Bob (NOUN) drank (VERB) coffee (NOUN) at (PREPOSITION) Starbucks (NOUN)&#8221;.</p>
 
-<p>So let&#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&#8217;ll first need to decide on a set of feature functions $latex f _ i$.</p>
+<p>So let&#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&#8217;ll first need to decide on a set of feature functions $f_i$.</p>
 
 <h2>Feature Functions in a CRF</h2>
 
 <p>In a CRF, each <strong>feature function</strong> is a function that takes in as input:</p>
 
 <ul>
-<li><p>a sentence s</p></li>
-<li><p>the position i of a word in the sentence</p></li>
-<li><p>the label $latex l _ i$ of the current word</p></li>
-<li><p>the label $latex l _ {i-1}$ of the previous word</p></li>
+<li>a sentence s</li>
+<li>the position i of a word in the sentence</li>
+<li>the label $l_i$ of the current word</li>
+<li>the label $l_{i-1}$ of the previous word</li>
 </ul>
 
 
@@ -130,43 +130,43 @@
 
 <h2>Features to Probabilities</h2>
 
-<p>Next, assign each feature function $latex f _ j$ a <strong>weight</strong> $latex \lambda _ j$ (I&#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:</p>
+<p>Next, assign each feature function $f_j$ a <strong>weight</strong> $\lambda_j$ (I&#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:</p>
 
-<p>$latex score(l | s) = \sum _ {j = 1} ^ m \sum _ {i = 1} ^ n \lambda _ j f _ j(s, i, l _ i, l _ {i-1})$</p>
+<p>$score(l | s) = \sum<em>{j = 1}<sup>m</sup> \sum</em>{i = 1}<sup>n</sup> \lambda_j f_j(s, i, l_i, l_{i-1})$</p>
 
-<p>(The first sum runs over each feature function $latex j$, and the inner sum runs over each position $latex i$ of the sentence.)</p>
+<p>(The first sum runs over each feature function $j$, and the inner sum runs over each position $i$ of the sentence.)</p>
 
-<p>Finally, we can transform these scores into probabilities $latex p(l | s)$ between 0 and 1 by exponentiating and normalizing:</p>
+<p>Finally, we can transform these scores into probabilities $p(l | s)$ between 0 and 1 by exponentiating and normalizing:</p>
 
-<p>$latex p(l | s) = \frac{exp[score(l|s)]}{\sum _ {l&#8217;} exp[score(l&#8217;|s)]} = \frac{exp[\sum _ {j = 1} ^ m \sum _ {i = 1} ^ n \lambda _ j f _ j(s, i, l _ i, l _ {i-1})]}{\sum _ {l&#8217;} exp[\sum _ {j = 1} ^ m \sum _ {i = 1} ^ n \lambda _ j f _ j(s, i, l&#8217; _ i, l&#8217; _ {i-1})]}$</p>
+<p>$p(l | s) = \frac{exp[score(l|s)]}{\sum<em>{l&#8217;} exp[score(l&#8217;|s)]} = \frac{exp[\sum</em>{j = 1}<sup>m</sup> \sum<em>{i = 1}<sup>n</sup> \lambda_j f_j(s, i, l_i, l</em>{i-1})]}{\sum<em>{l&#8217;} exp[\sum</em>{j = 1}<sup>m</sup> \sum<em>{i = 1}<sup>n</sup> \lambda_j f_j(s, i, l&#8217;</em>i, l&#8217;_{i-1})]}$</p>
 
 <h2>Example Feature Functions</h2>
 
 <p>So what do these feature functions look like? Examples of POS tagging features could include:</p>
 
 <ul>
-<li><p>$latex f _ 1(s, i, l _ i, l _ {i-1}) = 1$ if $latex l _ i =$ ADVERB and the ith word ends in &#8220;-ly&#8221;; 0 otherwise.</p>
+<li>$f_1(s, i, l_i, l_{i-1}) = 1$ if $l_i =$ ADVERB and the ith word ends in &#8220;-ly&#8221;; 0 otherwise.
 
 <ul>
-<li>If the weight $latex \lambda _ 1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.</li>
+<li>If the weight $\lambda_1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.</li>
 </ul>
 </li>
-<li><p>$latex f _ 2(s, i, l _ i, l _ {i-1}) = 1$ if $latex i = 1$, $latex l _ i =$ VERB, and the sentence ends in a question mark; 0 otherwise.</p>
+<li>$f_2(s, i, l_i, l_{i-1}) = 1$ if $i = 1$, $l_i =$ VERB, and the sentence ends in a question mark; 0 otherwise.
 
 <ul>
-<li>Again, if the weight $latex \lambda _ 2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &#8220;Is this a sentence beginning with a verb?&#8221;) are preferred.</li>
+<li>Again, if the weight $\lambda_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &#8220;Is this a sentence beginning with a verb?&#8221;) are preferred.</li>
 </ul>
 </li>
-<li><p>$latex f _ 3(s, i, l _ i, l _ {i-1}) = 1$ if $latex l _ {i-1} =$ ADJECTIVE and $latex l _ i =$ NOUN; 0 otherwise.</p>
+<li>$f_3(s, i, l_i, l<em>{i-1}) = 1$ if $l</em>{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
 
 <ul>
 <li>Again, a positive weight for this feature means that adjectives tend to be followed by nouns.</li>
 </ul>
 </li>
-<li><p>$latex f _ 4(s, i, l _ i, l _ {i-1}) = 1$ if $latex l _ {i-1} =$ PREPOSITION and $latex l _ i =$ PREPOSITION.</p>
+<li>$f_4(s, i, l_i, l<em>{i-1}) = 1$ if $l</em>{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
 
 <ul>
-<li>A <em>negative</em> weight $latex \lambda _ 4$ for this function would mean that prepositions don&#8217;t tend to follow prepositions, so we should avoid labelings where this happens.</li>
+<li>A <em>negative</em> weight $\lambda_4$ for this function would mean that prepositions don&#8217;t tend to follow prepositions, so we should avoid labelings where this happens.</li>
 </ul>
 </li>
 </ul>
@@ -179,7 +179,7 @@
 <h1>Smells like Logistic Regression&#8230;</h1>
 
 <p>The form of the CRF probabilities
-$latex p(l | s) = \frac{exp[\sum _ {j = 1} ^ m \sum _ {i = 1} ^ n f _ j(s, i, l _ i, l _ {i-1})]}{\sum _ {l&#8217;} exp[\sum _ {j = 1} ^ m \sum _ {i = 1} ^ n f _ j(s, i, l&#8217; _ i, l&#8217; _ {i-1})]}$
+$p(l | s) = \frac{exp[\sum<em>{j = 1}<sup>m</sup> \sum</em>{i = 1}<sup>n</sup> f_j(s, i, l_i, l<em>{i-1})]}{\sum</em>{l&#8217;} exp[\sum<em>{j = 1}<sup>m</sup> \sum</em>{i = 1}<sup>n</sup> f_j(s, i, l&#8217;<em>i, l&#8217;</em>{i-1})]}$
 might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</a>.</p>
 
 <p>That&#8217;s because CRFs are indeed basically the sequential version of <strong>logistic regression</strong>: whereas logistic regression is a log-linear model for <em>classification</em>, CRFs are a log-linear model for <em>sequential labels</em>.</p>
@@ -188,37 +188,37 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 
 <p>Recall that <strong><a href="http://en.wikipedia.org/wiki/Hidden_Markov_model">Hidden Markov Models</a></strong> are another model for part-of-speech tagging (and sequential labeling in general). Whereas CRFs throw any bunch of functions together to get a label score, HMMs take a <em>generative</em> approach to labeling, defining</p>
 
-<p>$latex p(l,s) = p(l _ 1) \prod _ i p(l _ i | l _ {i-1}) p(w _ i | l _ i)$</p>
+<p>$p(l,s) = p(l_1) \prod_i p(l_i | l_{i-1}) p(w_i | l_i)$</p>
 
 <p>where</p>
 
 <ul>
-<li><p>$latex p(l _ i | l _ {i-1})$ are <strong>transition</strong> probabilities (e.g., the probability that a preposition is followed by a noun);</p></li>
-<li><p>$latex p(w _ i | l _ {i-1})$ are <strong>emission</strong> probabilities (e.g., the probability that a noun emits the word &#8220;dad&#8221;).</p></li>
+<li>$p(l_i | l_{i-1})$ are <strong>transition</strong> probabilities (e.g., the probability that a preposition is followed by a noun);</li>
+<li>$p(w_i | l_{i-1})$ are <strong>emission</strong> probabilities (e.g., the probability that a noun emits the word &#8220;dad&#8221;).</li>
 </ul>
 
 
 <p>So how do HMMs compare to CRFs? CRFs are more powerful &#8211; they can model everything HMMs can and more. One way of seeing this is as follows:</p>
 
 <ul>
-<li><p>Note that the log of the HMM probability is $latex \log p(l,s) = \log p(l _ 0) + \sum _ i \log p(l _ i | l _ {i-1}) + \sum _ i \log p(w _ i | l _ i)$.</p></li>
-<li><p>This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features. That is, we can build a CRF equivalent to any HMM by&#8230;</p>
+<li>Note that the log of the HMM probability is $\log p(l,s) = \log p(l_0) + \sum_i \log p(l_i | l_{i-1}) + \sum_i \log p(w_i | l_i)$.</li>
+<li>This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features. That is, we can build a CRF equivalent to any HMM by&#8230;
 
 <ul>
-<li><p>For each HMM <em>transition</em> probability $latex p(l _ i = y | l _ {i-1} = x)$, define a set of CRF transition features of the form $latex f _ {x,y}(s, i, l _ i, l _ {i-1}) = 1$ if $latex l _ i = y$ and $latex l _ {i-1} = x$. Give each feature a weight of $latex w _ {x,y} = \log p(l _ i = y | l _ {i-1} = x)$.</p></li>
-<li><p>Similarly, for each HMM <em>emission</em> probability $latex p(w _ i = z | l _ {i} = x)$, define a set of CRF emission features of the form $latex g _ {x,y}(s, i, l _ i, l _ {i-1}) = 1$ if $latex w _ i = z$ and $latex l _ i = x$. Give each feature a weight of $latex w _ {x,z} = \log p(w _ i = z | l _ i = x)$.</p></li>
+<li>For each HMM <em>transition</em> probability $p(l_i = y | l<em>{i-1} = x)$, define a set of CRF transition features of the form $f</em>{x,y}(s, i, l_i, l<em>{i-1}) = 1$ if $l_i = y$ and $l</em>{i-1} = x$. Give each feature a weight of $w<em>{x,y} = \log p(l_i = y | l</em>{i-1} = x)$.</li>
+<li>Similarly, for each HMM <em>emission</em> probability $p(w_i = z | l<em>{i} = x)$, define a set of CRF emission features of the form $g</em>{x,y}(s, i, l_i, l<em>{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w</em>{x,z} = \log p(w_i = z | l_i = x)$.</li>
 </ul>
 </li>
 </ul>
 
 
-<p>Thus, the score $latex p(l|s)$ computed by a CRF using these feature functions is precisely proportional to the score computed by the associated HMM, and so every HMM is equivalent to some CRF.</p>
+<p>Thus, the score $p(l|s)$ computed by a CRF using these feature functions is precisely proportional to the score computed by the associated HMM, and so every HMM is equivalent to some CRF.</p>
 
 <p>However, CRFs can model a much richer set of label distributions as well, for two main reasons:</p>
 
 <ul>
-<li><p><strong>CRFs can define a much larger set of features.</strong> Whereas HMMs are necessarily <em>local</em> in nature (because they&#8217;re constrained to binary transition and emission feature functions, which force each word to depend only on the current label and each label to depend only on the previous label), CRFs can use more <em>global</em> features. For example, one of the features in our POS tagger above increased the probability of labelings that tagged the <em>first</em> word of a sentence as a VERB if the <em>end</em> of the sentence contained a question mark.</p></li>
-<li><p><strong>CRFs can have arbitrary weights.</strong> Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $latex 0 &lt;= p(w _ i | l _ i) &lt;= 1, \sum _ w p(w _ i = w | l _ 1) = 1)$, the weights of a CRF are unrestricted (e.g., $latex \log p(w _ i | l _ i)$ can be anything it wants).</p></li>
+<li><strong>CRFs can define a much larger set of features.</strong> Whereas HMMs are necessarily <em>local</em> in nature (because they&#8217;re constrained to binary transition and emission feature functions, which force each word to depend only on the current label and each label to depend only on the previous label), CRFs can use more <em>global</em> features. For example, one of the features in our POS tagger above increased the probability of labelings that tagged the <em>first</em> word of a sentence as a VERB if the <em>end</em> of the sentence contained a question mark.</li>
+<li><strong>CRFs can have arbitrary weights.</strong> Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $0 &lt;= p(w_i | l_i) &lt;= 1, \sum_w p(w_i = w | l_1) = 1)$, the weights of a CRF are unrestricted (e.g., $\log p(w_i | l_i)$ can be anything it wants).</li>
 </ul>
 
 
@@ -227,26 +227,26 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 <p>Let&#8217;s go back to the question of how to learn the feature weights in a CRF. One way is (surprise) to use <strong>gradient ascent</strong>:</p>
 
 <ul>
-<li><p>Assume we have a bunch of training examples (sentences and associated part-of-speech labels). Randomly initialize the weights of our CRF model.</p></li>
+<li>Assume we have a bunch of training examples (sentences and associated part-of-speech labels). Randomly initialize the weights of our CRF model.</li>
 <li><p>To shift these randomly initialized weights to the correct ones, for each training example&#8230;</p>
 
 <ul>
-<li><p>Go through each feature function $latex f _ i$, and calculate the gradient of the log probability of the training example with respect to $latex \lambda _ i$: $latex \frac{\partial}{\partial w _ j} \log p(l | s) = \sum _ {j = 1} ^ m f _ i(s, j, l _ j, l _ {j-1}) - \sum _ {l&#8217;} p(l&#8217; | s) \sum _ {j = 1} ^ m f _ i(s, j, l&#8217; _ j, l&#8217; _ {j-1})$</p></li>
-<li><p>Note that the first term in the gradient is the contribution of feature $latex f _ i$ under the <em>true</em> label, and the second term in the gradient is the <em>expected</em> contribution of feature $latex f _ i$ under the current model. This is exactly the form you&#8217;d expect gradient ascent to take.</p></li>
-<li><p>Move $latex \lambda _ i$ in the direction of the gradient: $latex \lambda _ i = \lambda _ i + \alpha [\sum _ {j = 1} ^ m f _ i(s, j, l _ j, l _ {j-1}) - \sum _ {l&#8217;} p(l&#8217; | s) \sum _ {j = 1} ^ m f _ i(s, j, l&#8217; _ j, l&#8217; _ {j-1})]$ where $latex \alpha$ is some learning rate.</p></li>
+<li>Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum<em>{j = 1}<sup>m</sup> f_i(s, j, l_j, l</em>{j-1}) - \sum<em>{l&#8217;} p(l&#8217; | s) \sum</em>{j = 1}<sup>m</sup> f_i(s, j, l&#8217;<em>j, l&#8217;</em>{j-1})$</li>
+<li>Note that the first term in the gradient is the contribution of feature $f_i$ under the <em>true</em> label, and the second term in the gradient is the <em>expected</em> contribution of feature $f_i$ under the current model. This is exactly the form you&#8217;d expect gradient ascent to take.</li>
+<li>Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum<em>{j = 1}<sup>m</sup> f_i(s, j, l_j, l</em>{j-1}) - \sum<em>{l&#8217;} p(l&#8217; | s) \sum</em>{j = 1}<sup>m</sup> f_i(s, j, l&#8217;<em>j, l&#8217;</em>{j-1})]$ where $\alpha$ is some learning rate.</li>
 </ul>
 </li>
-<li><p>Repeat the previous steps until some stopping condition is reached (e.g., the updates fall below some threshold).</p></li>
+<li>Repeat the previous steps until some stopping condition is reached (e.g., the updates fall below some threshold).</li>
 </ul>
 
 
-<p>In other words, every step takes the difference between what we want the model to learn and the model&#8217;s current state, and moves $latex \lambda _ i$ in the direction of this difference.</p>
+<p>In other words, every step takes the difference between what we want the model to learn and the model&#8217;s current state, and moves $\lambda_i$ in the direction of this difference.</p>
 
 <h1>Finding the Optimal Labeling</h1>
 
 <p>Suppose we&#8217;ve trained our CRF model, and now a new sentence comes in. How do we do label it?</p>
 
-<p>The naive way is to calculate $latex p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $latex k ^ m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.</p>
+<p>The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k<sup>m$</sup> possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.</p>
 
 <p>A better way is to realize that (linear-chain) CRFs satisfy an <a href="http://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a> property that allows us to use a (polynomial-time) dynamic programming algorithm to find the optimal label, similar to the <a href="http://en.wikipedia.org/wiki/Viterbi_algorithm">Viterbi algorithm</a> for HMMs.</p>
 
@@ -256,9 +256,11 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 
 <p>Suppose you want to mine Twitter for the types of presents people received for Christmas:</p>
 
-<blockquote><p>What people on Twitter wanted for Christmas, and what they got: <a href="http://t.co/EGeKTBgF">twitter.com/edchedch/statu…</a></p>
+<blockquote class="twitter-tweet"><p>What people on Twitter wanted for Christmas, and what they got: <a href="http://t.co/EGeKTBgF" title="http://twitter.com/edchedch/status/153683967315419136/photo/1">twitter.com/edchedch/statu…</a></p>— Edwin Chen (@edchedch) <a href="https://twitter.com/edchedch/status/153683967315419136" data-datetime="2012-01-02T03:48:10+00:00">January 2, 2012</a></blockquote>
 
-<p>— Edwin Chen (@edchedch) <a href="https://twitter.com/edchedch/status/153683967315419136">January 2, 2012</a></p></blockquote>
+
+<script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 
 <p>(Yes, I just embedded a tweet. BOOM.)</p>
 
@@ -271,9 +273,9 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 <p>I&#8217;ll end with some more random thoughts:</p>
 
 <ul>
-<li><p>I explicitly skipped over the graphical models framework that conditional random fields sit in, because I don&#8217;t think they add much to an initial understanding of CRFs. But if you&#8217;re interested in learning more, Daphne Koller is teaching a free, online course on <a href="http://www.pgm-class.org/">graphical models</a> starting in January.</p></li>
-<li><p>Or, if you&#8217;re more interested in the many NLP applications of CRFs (like part-of-speech tagging or <a href="http://en.wikipedia.org/wiki/Named-entity_recognition">named entity extraction</a>), Manning and Jurafsky are teaching an <a href="http://www.nlp-class.org/">NLP class</a> in the same spirit.</p></li>
-<li><p>I also glossed a bit over the analogy between CRFs:HMMs and Logistic Regression:Naive Bayes. This image (from <a href="http://arxiv.org/pdf/1011.4088v1">Sutton and McCallum&#8217;s introduction to conditional random fields</a>) sums it up, and shows the graphical model nature of CRFs as well:</p></li>
+<li>I explicitly skipped over the graphical models framework that conditional random fields sit in, because I don&#8217;t think they add much to an initial understanding of CRFs. But if you&#8217;re interested in learning more, Daphne Koller is teaching a free, online course on <a href="http://www.pgm-class.org/">graphical models</a> starting in January.</li>
+<li>Or, if you&#8217;re more interested in the many NLP applications of CRFs (like part-of-speech tagging or <a href="http://en.wikipedia.org/wiki/Named-entity_recognition">named entity extraction</a>), Manning and Jurafsky are teaching an <a href="http://www.nlp-class.org/">NLP class</a> in the same spirit.</li>
+<li>I also glossed a bit over the analogy between CRFs:HMMs and Logistic Regression:Naive Bayes. This image (from <a href="http://arxiv.org/pdf/1011.4088v1">Sutton and McCallum&#8217;s introduction to conditional random fields</a>) sums it up, and shows the graphical model nature of CRFs as well:</li>
 </ul>
 
 

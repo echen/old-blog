@@ -104,7 +104,7 @@
 
 <h1>Users, Topics</h1>
 
-<p>Before looking deeper into the voting dynamics of my post, let&#8217;s first get some background on what kinds of users the answer reached.</p>
+<p>Before looking deeper into the voting dynamics of the post, let&#8217;s first get some background on what kinds of users the answer reached.</p>
 
 <p>Here&#8217;s a graph of the topics that question upvoters follow. (Each node is a topic, and every time upvoter X follows both topics A and B, I add an edge between A and B.)</p>
 
@@ -115,9 +115,9 @@
 <p>We can see from the graph that upvoters tend to be interested in three kinds of topics:</p>
 
 <ul>
-<li><p><strong>Machine learning and other technical matters</strong> (the green cluster): Classification, Data Mining, Big Data, Information Retrieval, Analytics, Probability, Support Vector Machines, R, Data Science, &#8230;</p></li>
-<li><p><strong>Startups/Silicon Valley</strong> (the red cluster): Facebook, Lean Startups, Investing, Seed Funding, Angel Investing, Technology Trends, Product Managment, Silicon Valley Mergers and Acquisitions, Asana, Social Games, Quora, Mark Zuckerberg, User Experience, Founders and Entrepreneurs, &#8230;</p></li>
-<li><p><strong>General Intellectual Topics</strong> (the purple cluster): TED, Science, Book Recommendations, Philosophy, Politics, Self-Improvement, Travel, Life Hacks, &#8230;</p></li>
+<li><strong>Machine learning and other technical matters</strong> (the green cluster): Classification, Data Mining, Big Data, Information Retrieval, Analytics, Probability, Support Vector Machines, R, Data Science, &#8230;</li>
+<li><strong>Startups/Silicon Valley</strong> (the red cluster): Facebook, Lean Startups, Investing, Seed Funding, Angel Investing, Technology Trends, Product Managment, Silicon Valley Mergers and Acquisitions, Asana, Social Games, Quora, Mark Zuckerberg, User Experience, Founders and Entrepreneurs, &#8230;</li>
+<li><strong>General Intellectual Topics</strong> (the purple cluster): TED, Science, Book Recommendations, Philosophy, Politics, Self-Improvement, Travel, Life Hacks, &#8230;</li>
 </ul>
 
 
@@ -130,18 +130,18 @@
 <p>We can see three main clusters of users:</p>
 
 <ul>
-<li><p>A large group in <strong>green</strong> centered around a lot of power users and Quora employees.</p></li>
-<li><p>A machine learning group of folks in <strong>orange</strong> centered around people like Oliver Grisel, Christian Langreiter, and Joseph Turian.</p></li>
-<li><p>A group of people following me, in <strong>purple</strong>.</p></li>
-<li><p>Plus some smaller clusters in blue and yellow. (There were also a bunch of isolated users, connected to no one, that I filtered out of the picture.)</p></li>
+<li>A large group in <strong>green</strong> centered around a lot of power users and Quora employees.</li>
+<li>A machine learning group of folks in <strong>orange</strong> centered around people like Oliver Grisel, Christian Langreiter, and Joseph Turian.</li>
+<li>A group of people following me, in <strong>purple</strong>.</li>
+<li>Plus some smaller clusters in blue and yellow. (There were also a bunch of isolated users, connected to no one, that I filtered out of the picture.)</li>
 </ul>
 
 
 <p>Digging into how these topic and user graphs are related:</p>
 
 <ul>
-<li><p>The orange cluster of users is more heavily into machine learning: 79% of users in that cluster follow more green topics (machine learning and technical topics) than red and purple topics (startups and general intellectual matters).</p></li>
-<li><p>The green cluster of users is reversed: 77% of users follow more of the red and purple clusters of topics (on startups and general intellectual matters) than machine learning and technical topics.</p></li>
+<li>The orange cluster of users is more heavily into machine learning: 79% of users in that cluster follow more green topics (machine learning and technical topics) than red and purple topics (startups and general intellectual matters).</li>
+<li>The green cluster of users is reversed: 77% of users follow more of the red and purple clusters of topics (on startups and general intellectual matters) than machine learning and technical topics.</li>
 </ul>
 
 
@@ -149,29 +149,27 @@
 
 <h1>Social Voting Dynamics</h1>
 
-<p>So let&#8217;s take a look. Here&#8217;s a visualization I made of upvotes on my answer across time (watch it in high-quality so you can actually see what&#8217;s going on):</p>
-
-<p>[youtube=http://www.youtube.com/watch?v=cZ4Ntg4jQHw]</p>
+<p>So let&#8217;s take a look. Here&#8217;s a visualization I made of upvotes on my answer across time (click <a href="http://www.youtube.com/watch?v=cZ4Ntg4jQHw">here</a> for a larger view).</p>
 
 <p>To represent the social dynamics of these upvotes, I drew an edge from user A to user B if user A transmitted the post to user B through an upvote. (Specifically, I drew an edge from Alice to Bob if Bob follows Alice and Bob&#8217;s upvote appeared within five days of Alice&#8217;s upvote; this is meant to simulate the idea that Alice was the key intermediary between my post and Bob.)</p>
 
 <p>Also,</p>
 
 <ul>
-<li><p>Green nodes are users with at least one upvote edge.</p></li>
-<li><p>Blue nodes are users who follow at least one of the topics the post is categorized under (i.e., users who probably discovered the answer by themselves).</p></li>
-<li><p>Red nodes are users with no connections and who do not follow any of the post&#8217;s topics (i.e, users whose path to the post remain mysterious).</p></li>
-<li><p>Users increase in size when they produce more connections.</p></li>
+<li>Green nodes are users with at least one upvote edge.</li>
+<li>Blue nodes are users who follow at least one of the topics the post is categorized under (i.e., users who probably discovered the answer by themselves).</li>
+<li>Red nodes are users with no connections and who do not follow any of the post&#8217;s topics (i.e, users whose path to the post remain mysterious).</li>
+<li>Users increase in size when they produce more connections.</li>
 </ul>
 
 
 <p>Here&#8217;s a play-by-play of the video:</p>
 
 <ul>
-<li><p>On Feb 14 (the day I wrote the answer), there&#8217;s a flurry of activity.</p></li>
-<li><p>A couple of days later, Tracy Chou gives an upvote, leading to another spike in activity.</p></li>
-<li><p>Then all&#8217;s quiet until&#8230; bam! Alex Kamil leads to a surge of upvotes, and his upvote finds Ludi Rehak, who starts a small surge of her own. They&#8217;re quickly followed by Christian Langreiter, who starts a small revolution among a bunch of machine learning folks a couple days later.</p></li>
-<li><p>Then all is pretty calm again, until a couple months later when&#8230; bam! Aditya Sengupta brings in a smashing of his own followers, and his upvote makes its way to Marc Bodnick, who sets off a veritable storm of activity.</p></li>
+<li>On Feb 14 (the day I wrote the answer), there&#8217;s a flurry of activity.</li>
+<li>A couple of days later, Tracy Chou gives an upvote, leading to another spike in activity.</li>
+<li>Then all&#8217;s quiet until&#8230; bam! Alex Kamil leads to a surge of upvotes, and his upvote finds Ludi Rehak, who starts a small surge of her own. They&#8217;re quickly followed by Christian Langreiter, who starts a small revolution among a bunch of machine learning folks a couple days later.</li>
+<li>Then all is pretty calm again, until a couple months later when&#8230; bam! Aditya Sengupta brings in a smashing of his own followers, and his upvote makes its way to Marc Bodnick, who sets off a veritable storm of activity.</li>
 </ul>
 
 
@@ -186,20 +184,20 @@
 <p>There are still many questions it would be interesting to look at; for example,</p>
 
 <ul>
-<li><p>What differentiates users who sparked spikes of activity from users who didn&#8217;t? I don&#8217;t believe it&#8217;s simply number of followers, as many well-connected upvoters did <em>not</em> lead to cascades of shares. How much does authority matter?</p></li>
-<li><p>How far can a post reach? Clearly, the post reached people more than one degree of separation away from me (where one degree of separation is a follower); what does the distribution of degrees look like? Is there any relationship between degree of separation and time of upvote?</p></li>
-<li><p>What can we say about the people who started following me after reading my answer? Are they fewer degrees of separation away? Are they more interested in machine learning? Have they upvoted any of my answers before? (Perhaps there&#8217;s a certain threshold of interestingness people need to overflow before they&#8217;re considered acceptable followees.)</p></li>
+<li>What differentiates users who sparked spikes of activity from users who didn&#8217;t? I don&#8217;t believe it&#8217;s simply number of followers, as many well-connected upvoters did <em>not</em> lead to cascades of shares. Does authority matter?</li>
+<li>How far can a post reach? Clearly, the post reached people more than one degree of separation away from me (where one degree of separation is a follower); what does the distribution of degrees look like? Is there any relationship between degree of separation and time of upvote?</li>
+<li>What can we say about the people who started following me after reading my answer? Are they fewer degrees of separation away? Are they more interested in machine learning? Have they upvoted any of my answers before? (Perhaps there&#8217;s a certain &#8220;threshold&#8221; of interestingness people need to overflow before they&#8217;re considered acceptable followees.)</li>
 </ul>
 
 
 <p>But to summarize a bit what we&#8217;ve seen so far, here are some statistics on the role the social graph played in spreading the post:</p>
 
 <ul>
-<li><p>There are 5 clusters of activity after the initial post, sparked both by power users and less-connected folks. In an interesting cascade of information, some of these sparks led to further spikes in activity as well (as when Aditya Sengupta&#8217;s upvote found its way to Marc Bodnick, who set off even more activity).</p></li>
-<li><p>35% of users made their way to my answer because of someone else&#8217;s upvote.</p></li>
-<li><p>Through these connections, the post reached a fair variety of users: 32% of upvoters don&#8217;t even follow any of the post&#8217;s topics.</p></li>
-<li><p>77% of upvotes came from users over two weeks <em>after</em> my answer appeared.</p></li>
-<li><p>If we look only at the upvoters who follow at least one of the post&#8217;s topics, 33% didn&#8217;t see my answer until someone else showed it to them. In other words, a full one-third of people who presumably would have been interested in my post anyways only found it because of their social network.</p></li>
+<li>There are 5 clusters of activity after the initial post, sparked both by power users and less-connected folks. In an interesting cascade of information, some of these sparks led to further spikes in activity as well (as when Aditya Sengupta&#8217;s upvote found its way to Marc Bodnick, who set off even more activity).</li>
+<li>35% of users made their way to my answer because of someone else&#8217;s upvote.</li>
+<li>Through these connections, the post reached a fair variety of users: 32% of upvoters don&#8217;t even follow any of the post&#8217;s topics.</li>
+<li>77% of upvotes came from users over two weeks <em>after</em> my answer appeared.</li>
+<li>If we look only at the upvoters who follow at least one of the post&#8217;s topics, 33% didn&#8217;t see my answer until someone else showed it to them. In other words, a full one-third of people who presumably would have been interested in my post anyways only found it because of their social network.</li>
 </ul>
 
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: expository | My Octopress Blog]]></title>
   <link href="http://echen.github.com/blog/categories/expository/atom.xml" rel="self"/>
   <link href="http://echen.github.com/"/>
-  <updated>2012-02-04T17:23:02-08:00</updated>
+  <updated>2012-02-04T17:29:48-08:00</updated>
   <id>http://echen.github.com/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -27,9 +27,9 @@
 <p>More technically, a Restricted Boltzmann Machine is a <strong>stochastic neural network</strong> (<em>neural network</em> meaning we have neuron-like units whose binary activations depend on the neighbors they're connected to; <em>stochastic</em> meaning these activations have a probabilistic element) consisting of:</p>
 
 <ul>
-<li><p>One layer of <strong>visible units</strong> (users' movie preferences whose states we know and set);</p></li>
-<li><p>One layer of <strong>hidden units</strong> (the latent factors we try to learn); and</p></li>
-<li><p>A bias unit (whose state is always on, and is a way of adjusting for the different inherent popularities of each movie).</p></li>
+<li>One layer of <strong>visible units</strong> (users' movie preferences whose states we know and set);</li>
+<li>One layer of <strong>hidden units</strong> (the latent factors we try to learn); and</li>
+<li>A bias unit (whose state is always on, and is a way of adjusting for the different inherent popularities of each movie).</li>
 </ul>
 
 
@@ -43,21 +43,21 @@
 
 <h1>State Activation</h1>
 
-<p>Restricted Boltzmann Machines, and neural networks in general, work by updating the states of some neurons given the states of others, so let's talk about how the states of individual units change. Assuming we know the connection weights in our RBM (we'll explain how to learn these below), to update the state of unit $latex i$:</p>
+<p>Restricted Boltzmann Machines, and neural networks in general, work by updating the states of some neurons given the states of others, so let's talk about how the states of individual units change. Assuming we know the connection weights in our RBM (we'll explain how to learn these below), to update the state of unit $i$:</p>
 
 <ul>
-<li><p>Compute the <strong>activation energy</strong> $latex a _ i = \sum _ j w _ {ij} x _ j$ of unit $latex i$, where the sum runs over all units $latex j$ that unit $latex i$ is connected to, $latex w _ {ij}$ is the weight of the connection between $latex i$ and $latex j$, and $latex x _ j$ is the 0 or 1 state of unit $latex j$. In other words, all of unit $latex i$'s neighbors send it a message, and we compute the sum of all these messages.</p></li>
-<li><p>Let $latex p _ i = \sigma(a _ i)$, where $latex \sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $latex p _ i$ is close to 1 for large positive activation energies, and $latex p _ i$ is close to 0 for negative activation energies.</p></li>
-<li><p>We then turn unit $latex i$ on with probability $latex p _ i$, and turn it off with probability $latex 1 - p _ i$.</p></li>
-<li><p>(In layman's terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)</p></li>
+<li>Compute the <strong>activation energy</strong> $a_i = \sum_j w<em>{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w</em>{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$'s neighbors send it a message, and we compute the sum of all these messages.</li>
+<li>Let $p_i = \sigma(a_i)$, where $\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p_i$ is close to 1 for large positive activation energies, and $p_i$ is close to 0 for negative activation energies.</li>
+<li>We then turn unit $i$ on with probability $p_i$, and turn it off with probability $1 - p_i$.</li>
+<li>(In layman's terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)</li>
 </ul>
 
 
 <p>For example, let's suppose our two hidden units really do correspond to SF/fantasy and Oscar winners.</p>
 
 <ul>
-<li><p>If Alice has told us her six binary preferences on our set of movies, we could then ask our RBM which of the hidden units her preferences activate (i.e., ask the RBM to explain her preferences in terms of latent factors). So the six movies send messages to the hidden units, telling them to update themselves. (Note that even if Alice has declared she wants to watch Harry Potter, Avatar, and LOTR 3, this doesn't guarantee that the SF/fantasy hidden unit will turn on, but only that it will turn on with high <em>probability</em>. This makes a bit of sense: in the real world, Alice wanting to watch all three of those movies makes us highly suspect she likes SF/fantasy in general, but there's a small chance she wants to watch them for other reasons. Thus, the RBM allows us to <em>generate</em> models of people in the messy, real world.)</p></li>
-<li><p>Conversely, if we know that one person likes SF/fantasy (so that the SF/fantasy unit is on), we can then ask the RBM which of the movie units that hidden unit turns on (i.e., ask the RBM to generate a set of movie recommendations). So the hidden units send messages to the movie units, telling them to update their states. (Again, note that the SF/fantasy unit being on doesn't guarantee that we'll always recommend all three of Harry Potter, Avatar, and LOTR 3 because, hey, not everyone who likes science fiction liked Avatar.)</p></li>
+<li>If Alice has told us her six binary preferences on our set of movies, we could then ask our RBM which of the hidden units her preferences activate (i.e., ask the RBM to explain her preferences in terms of latent factors). So the six movies send messages to the hidden units, telling them to update themselves. (Note that even if Alice has declared she wants to watch Harry Potter, Avatar, and LOTR 3, this doesn't guarantee that the SF/fantasy hidden unit will turn on, but only that it will turn on with high <em>probability</em>. This makes a bit of sense: in the real world, Alice wanting to watch all three of those movies makes us highly suspect she likes SF/fantasy in general, but there's a small chance she wants to watch them for other reasons. Thus, the RBM allows us to <em>generate</em> models of people in the messy, real world.)</li>
+<li>Conversely, if we know that one person likes SF/fantasy (so that the SF/fantasy unit is on), we can then ask the RBM which of the movie units that hidden unit turns on (i.e., ask the RBM to generate a set of movie recommendations). So the hidden units send messages to the movie units, telling them to update their states. (Again, note that the SF/fantasy unit being on doesn't guarantee that we'll always recommend all three of Harry Potter, Avatar, and LOTR 3 because, hey, not everyone who likes science fiction liked Avatar.)</li>
 </ul>
 
 
@@ -66,11 +66,11 @@
 <p>So how do we learn the connection weights in our network? Suppose we have a bunch of training examples, where each training example is a binary vector with six elements corresponding to a user's movie preferences. Then for each epoch, do the following:</p>
 
 <ul>
-<li><p>Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.</p></li>
-<li><p>Next, update the states of the hidden units using the logistic activation rule described above: for the $latex j$th hidden unit, compute its activation energy $latex a _ j = \sum _ i w _ {ij} x _ i$, and set $latex x _ j$ to 1 with probability $latex \sigma(a _ j)$ and to 0 with probability $latex 1 - \sigma(a _ j)$. Then for each edge $latex e _ {ij}$, compute $latex Positive(e _ {ij}) = x _ i * x _ j$ (i.e., for each pair of units, measure whether they're both on).</p></li>
-<li><p>Now <strong>reconstruct</strong> the visible units in a similar manner: for each visible unit, compute its activation energy $latex a _ i$, and update its state. (Note that this <em>reconstruction</em> may not match the original preferences.) Then update the hidden units again, and compute $latex Negative(e _ {ij}) = x _ i * x _ j$ for each edge.</p></li>
-<li><p>Update the weight of each edge $latex e _ {ij}$ by setting $latex w _ {ij} = w _ {ij} + L * (Positive(e _ {ij}) - Negative(e _ {ij}))$, where $latex L$ is a learning rate.</p></li>
-<li><p>Repeat over all training examples.</p></li>
+<li>Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.</li>
+<li>Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w<em>{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e</em>{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they're both on).</li>
+<li>Now <strong>reconstruct</strong> the visible units in a similar manner: for each visible unit, compute its activation energy $a_i$, and update its state. (Note that this <em>reconstruction</em> may not match the original preferences.) Then update the hidden units again, and compute $Negative(e_{ij}) = x_i * x_j$ for each edge.</li>
+<li>Update the weight of each edge $e<em>{ij}$ by setting $w</em>{ij} = w<em>{ij} + L * (Positive(e</em>{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.</li>
+<li>Repeat over all training examples.</li>
 </ul>
 
 
@@ -79,12 +79,12 @@
 <p>Why does this update rule make sense? Note that</p>
 
 <ul>
-<li><p>In the first phase, $latex Positive(e _ {ij})$ measures the association between the $latex i$th and $latex j$th unit that we <em>want</em> the network to learn from our training examples;</p></li>
-<li><p>In the "reconstruction" phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $latex Negative(e _ {ij})$ measures the association that the network <em>itself</em> generates (or "daydreams" about) when no units are fixed to training data.</p></li>
+<li>In the first phase, $Positive(e_{ij})$ measures the association between the $i$th and $j$th unit that we <em>want</em> the network to learn from our training examples;</li>
+<li>In the "reconstruction" phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $Negative(e_{ij})$ measures the association that the network <em>itself</em> generates (or "daydreams" about) when no units are fixed to training data.</li>
 </ul>
 
 
-<p>So by adding $latex Positive(e _ {ij}) - Negative(e _ {ij})$ to each edge weight, we're helping the network's daydreams better match the reality of our training examples.</p>
+<p>So by adding $Positive(e<em>{ij}) - Negative(e</em>{ij})$ to each edge weight, we're helping the network's daydreams better match the reality of our training examples.</p>
 
 <p>(You may hear this update rule called <strong>contrastive divergence</strong>, which is basically a funky term for "approximate gradient descent".)</p>
 
@@ -95,18 +95,18 @@
 <p>First, I trained the RBM using some fake data.</p>
 
 <ul>
-<li><p>Alice: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.</p></li>
-<li><p>Bob: (Harry Potter = 1, Avatar = 0, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). SF/fantasy fan, but doesn't like Avatar.</p></li>
-<li><p>Carol: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.</p></li>
-<li><p>David: (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Big Oscar winners fan.</p></li>
-<li><p>Eric:  (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Oscar winners fan, except for Titanic.</p></li>
-<li><p>Fred: (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Big Oscar winners fan.</p></li>
+<li>Alice: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.</li>
+<li>Bob: (Harry Potter = 1, Avatar = 0, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). SF/fantasy fan, but doesn't like Avatar.</li>
+<li>Carol: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.</li>
+<li>David: (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Big Oscar winners fan.</li>
+<li>Eric:  (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Oscar winners fan, except for Titanic.</li>
+<li>Fred: (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Big Oscar winners fan.</li>
 </ul>
 
 
 <p>The network learned the following weights:</p>
 
-<pre><code>&lt;code&gt;                 Bias Unit       Hidden 1        Hidden 2
+<pre><code>                 Bias Unit       Hidden 1        Hidden 2
 Bias Unit       -0.08257658     -0.19041546      1.57007782 
 Harry Potter    -0.82602559     -7.08986885      4.96606654 
 Avatar          -1.84023877     -5.18354129      2.27197472 
@@ -114,7 +114,6 @@ LOTR 3           3.92321075      2.51720193      4.11061383
 Gladiator        0.10316995      6.74833901     -4.00505343 
 Titanic         -0.97646029      3.25474524     -5.59606865 
 Glitter         -4.44685751     -2.81563804     -2.91540988
-&lt;/code&gt;
 </code></pre>
 
 <p>Note that the first hidden unit seems to correspond to the Oscar winners, and the second hidden unit seems to correspond to the SF/fantasy movies, just as we were hoping.</p>
@@ -128,11 +127,11 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 <p>I tried to keep the connection-learning algorithm I described above pretty simple, so here are some modifications that often appear in practice:</p>
 
 <ul>
-<li><p>Above, $latex Negative(e _ {ij})$ was determined by taking the product of the $latex i$th and $latex j$th units after reconstructing the visible units <em>once</em> and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network's daydreams more accurately.</p></li>
-<li><p>Instead of using $latex Positive(e _ {ij})=x _ i * x _ j$, where $latex x _ i$ and $latex x _ j$ are binary 0 or 1 <em>states</em>, we could also let $latex x _ i$ and/or $latex x _ j$ be activation <em>probabilities</em>. Similarly for $latex Negative(e _ {ij})$.</p></li>
-<li><p>We could penalize larger edge weights, in order to get a sparser or more regularized model.</p></li>
-<li><p>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $latex L * (Positive(e _ {ij}) - Negative(e _ {ij})$) and the step previously taken.</p></li>
-<li><p>Instead of using only one training example in each epoch, we could use <em>batches</em> of examples in each epoch, and only update the network's weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.</p></li>
+<li>Above, $Negative(e_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units <em>once</em> and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network's daydreams more accurately.</li>
+<li>Instead of using $Positive(e<em>{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 <em>states</em>, we could also let $x_i$ and/or $x_j$ be activation <em>probabilities</em>. Similarly for $Negative(e</em>{ij})$.</li>
+<li>We could penalize larger edge weights, in order to get a sparser or more regularized model.</li>
+<li>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e<em>{ij}) - Negative(e</em>{ij})$) and the step previously taken.</li>
+<li>Instead of using only one training example in each epoch, we could use <em>batches</em> of examples in each epoch, and only update the network's weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.</li>
 </ul>
 
 
@@ -141,10 +140,10 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 <p>If you're interested in learning more about Restricted Boltzmann Machines, here are some good links.</p>
 
 <ul>
-<li><p><a href="http://www.cs.toronto.edu/~hinton/absps/guideTR.pdf">A Practical guide to training restricted Boltzmann machines</a>, by Geoffrey Hinton.</p></li>
-<li><p>A talk by Andrew Ng on <a href="http://www.youtube.com/watch?v=ZmNOAtZIgIk">Unsupervised Feature Learning and Deep Learning</a>.</p></li>
-<li><p><a href="http://www.machinelearning.org/proceedings/icml2007/papers/407.pdf">Restricted Boltzmann Machines for Collaborative Filtering</a>. I found this paper hard to read, but it's an interesting application to the Netflix Prize.</p></li>
-<li><p><a href="http://arxiv.org/abs/0908.4425">Geometry of the Restricted Boltzmann Machine</a>. A very readable introduction to RBMs, "starting with the observation that its Zariski closure is a Hadamard power of the first secant variety of the Segre variety of projective lines". (I kid, I kid.)</p></li>
+<li><a href="http://www.cs.toronto.edu/~hinton/absps/guideTR.pdf">A Practical guide to training restricted Boltzmann machines</a>, by Geoffrey Hinton.</li>
+<li>A talk by Andrew Ng on <a href="http://www.youtube.com/watch?v=ZmNOAtZIgIk">Unsupervised Feature Learning and Deep Learning</a>.</li>
+<li><a href="http://www.machinelearning.org/proceedings/icml2007/papers/407.pdf">Restricted Boltzmann Machines for Collaborative Filtering</a>. I found this paper hard to read, but it's an interesting application to the Netflix Prize.</li>
+<li><a href="http://arxiv.org/abs/0908.4425">Geometry of the Restricted Boltzmann Machine</a>. A very readable introduction to RBMs, "starting with the observation that its Zariski closure is a Hadamard power of the first secant variety of the Segre variety of projective lines". (I kid, I kid.)</li>
 </ul>
 
 ]]></content>
