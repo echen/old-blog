@@ -4,7 +4,7 @@
   <title><![CDATA[My Octopress Blog]]></title>
   <link href="http://echen.github.com/atom.xml" rel="self"/>
   <link href="http://echen.github.com/"/>
-  <updated>2012-02-04T17:29:48-08:00</updated>
+  <updated>2012-02-04T17:40:39-08:00</updated>
   <id>http://echen.github.com/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -1885,21 +1885,19 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
 <p>For example, given the sentence &#8220;I listened to Justin Bieber and Lady Gaga on the radio while driving around in my car&#8221;, an LDA model might represent this sentence as 75% about music (a topic which, say, emits the words <em>Bieber</em> with 10% probability, <em>Gaga</em> with 5% probability, <em>radio</em> with 1% probability, and so on) and 25% about cars (which might emit <em>driving</em> with 15% probability and <em>cars</em> with 10% probability).</p>
 
-<p>If you&#8217;re familiar with latent semantic analysis, you can think of LDA as a generative version.</p>
-
-<p>(For a more in-depth explanation, I wrote an introduction to LDA <a href="http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/">here</a>.)</p>
+<p>If you&#8217;re familiar with latent semantic analysis, you can think of LDA as a generative version. (For a more in-depth explanation, I wrote an introduction to LDA <a href="http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/">here</a>.)</p>
 
 <h1>Sarah Palin Email Topics</h1>
 
 <p>Here&#8217;s a sample of the topics learnt by the model, as well as the top words for each topic. (Names, of course, are based on my own interpretation.)</p>
 
 <ul>
-<li><p><a href="http://sarah-palin.heroku.com/topics/24"><strong>Wildlife/BP Corrosion</strong></a>: game, fish, moose, wildlife, hunting, bears, polar, bear, subsistence, management, area, board, hunt, wolves, control, department, year, use, wolf, habitat, hunters, caribou, program, denby, fishing, …</p></li>
-<li><p><a href="http://sarah-palin.heroku.com/topics/0"><strong>Energy/Fuel/Oil/Mining</strong></a>: energy, fuel, costs, oil, alaskans, prices, cost, nome, now, high, being, home, public, power, mine, crisis, price, resource, need, community, fairbanks, rebate, use, mining, villages, …</p></li>
-<li><p><a href="http://sarah-palin.heroku.com/topics/19"><strong>Trig/Family/Inspiration</strong></a>: family, web, mail, god, son, from, congratulations, children, life, child, down, trig, baby, birth, love, you, syndrome, very, special, bless, old, husband, years, thank, best, …</p></li>
-<li><p><a href="http://sarah-palin.heroku.com/topics/6"><strong>Gas</strong></a>: gas, oil, pipeline, agia, project, natural, north, producers, companies, tax, company, energy, development, slope, production, resources, line, gasline, transcanada, said, billion, plan, administration, million, industry, …</p></li>
-<li><p><a href="http://sarah-palin.heroku.com/topics/12"><strong>Education/Waste</strong></a>: school, waste, education, students, schools, million, read, email, market, policy, student, year, high, news, states, program, first, report, business, management, bulletin, information, reports, 2008, quarter, …</p></li>
-<li><p><a href="http://sarah-palin.heroku.com/topics/15"><strong>Presidential Campaign/Elections</strong></a>: mail, web, from, thank, you, box, mccain, sarah, very, good, great, john, hope, president, sincerely, wasilla, work, keep, make, add, family, republican, support, doing, p.o, …</p></li>
+<li><a href="http://sarah-palin.heroku.com/topics/24"><strong>Wildlife/BP Corrosion</strong></a>: game, fish, moose, wildlife, hunting, bears, polar, bear, subsistence, management, area, board, hunt, wolves, control, department, year, use, wolf, habitat, hunters, caribou, program, denby, fishing, …</li>
+<li><a href="http://sarah-palin.heroku.com/topics/0"><strong>Energy/Fuel/Oil/Mining</strong></a>: energy, fuel, costs, oil, alaskans, prices, cost, nome, now, high, being, home, public, power, mine, crisis, price, resource, need, community, fairbanks, rebate, use, mining, villages, …</li>
+<li><a href="http://sarah-palin.heroku.com/topics/19"><strong>Trig/Family/Inspiration</strong></a>: family, web, mail, god, son, from, congratulations, children, life, child, down, trig, baby, birth, love, you, syndrome, very, special, bless, old, husband, years, thank, best, …</li>
+<li><a href="http://sarah-palin.heroku.com/topics/6"><strong>Gas</strong></a>: gas, oil, pipeline, agia, project, natural, north, producers, companies, tax, company, energy, development, slope, production, resources, line, gasline, transcanada, said, billion, plan, administration, million, industry, …</li>
+<li><a href="http://sarah-palin.heroku.com/topics/12"><strong>Education/Waste</strong></a>: school, waste, education, students, schools, million, read, email, market, policy, student, year, high, news, states, program, first, report, business, management, bulletin, information, reports, 2008, quarter, …</li>
+<li><a href="http://sarah-palin.heroku.com/topics/15"><strong>Presidential Campaign/Elections</strong></a>: mail, web, from, thank, you, box, mccain, sarah, very, good, great, john, hope, president, sincerely, wasilla, work, keep, make, add, family, republican, support, doing, p.o, …</li>
 </ul>
 
 
@@ -1924,9 +1922,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
     <link href="http://echen.github.com/blog/2011/06/14/spork-spoon-or-fork/"/>
     <updated>2011-06-14T23:32:04-07:00</updated>
     <id>http://echen.github.com/blog/2011/06/14/spork-spoon-or-fork</id>
-    <content type="html"><![CDATA[<p>There&#8217;s an adorable scene in <em>WALL-E</em> where, unable to decide whether a spork belongs with his spoon collection or fork collection, WALL-E places it in the middle.</p>
+    <content type="html"><![CDATA[<p>There&#8217;s <a href="http://www.youtube.com/watch?v=ruJ76-o5lxU">an adorable scene</a> in <em>WALL-E</em> where, unable to decide whether a spork belongs with his spoon collection or fork collection, WALL-E enters an infinite loop and spontaneously combusts*.</p>
 
-<p>[youtube=http://www.youtube.com/watch?v=ruJ76-o5lxU]</p>
+<p><a href="http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif"><img src="http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif" alt="Spork" /></a></p>
 
 <p>This led me to the following timeless question: is a spork more spoon or fork?</p>
 
@@ -1939,6 +1937,8 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 <p>The results? 2 out of 20 sporks were classified as forks and the remaining 18 were classified as spoons, thereby definitively proving that <strong>a spork is 10% fork and 90% spoon</strong>.</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/spork/spork-decomposition.png"><img src="http://dl.dropbox.com/u/10506/blog/spork/spork-decomposition.png" alt="Spork Decomposition" /></a></p>
+
+<p>*Not really.</p>
 ]]></content>
   </entry>
   
@@ -1955,11 +1955,11 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
 <p>To start, I used a super simple Naive Bayes classifier, trained on unigrams (with add-one smoothing). (See the appendix at the end for details.)</p>
 
-<h3>Unigram vs. Bigram Model</h3>
+<h2>Unigram vs. Bigram Model</h2>
 
 <p>Here are the most predictive features, after training a Naive Bayes model with unigrams:</p>
 
-<pre><code>&lt;code&gt;unigram         p(twss|unigram)
+<pre><code>unigram         p(twss|unigram)
 pull            0.9724889822144924
 bigger          0.9614677503890157
 wet             0.959004244327654
@@ -1970,12 +1970,11 @@ oh              0.9432941279908561
 replied         0.943294127990856
 fast            0.943294127990856
 longer          0.9397415371025485
-&lt;/code&gt;
 </code></pre>
 
 <p>Just to compare, here are some of the most predictive features in a bigram model (I added START and END tokens to the beginning and end of each sentence, in order to have some contextual features):</p>
 
-<pre><code>&lt;code&gt;bigram          p(twss|bigram)
+<pre><code>bigram          p(twss|bigram)
 it in           0.9801434151851175
 START wow       0.9705079286853889
 START oh        0.9473580156961879
@@ -1992,7 +1991,6 @@ go in           0.8916207044791409
 START ugh       0.8916207044791409
 make it         0.8916207044791409
 its so          0.8916207044791409
-&lt;/code&gt;
 </code></pre>
 
 <p>Amusingly, sentences starting with <em>wow</em>, <em>oh</em>, and <em>ugh</em>, tend to be good candidates for TWSS sentences, as well as sentences containing <em>it&#8217;s too</em> and <em>it&#8217;s so</em>.</p>
@@ -2001,7 +1999,7 @@ its so          0.8916207044791409
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/twss/precision-recall.png"><img src="http://dl.dropbox.com/u/10506/blog/twss/precision-recall.png" alt="Precision-Recall" /></a></p>
 
-<h1>Faerie Tail</h1>
+<h1>Darling it&#8217;s better</h1>
 
 <p>Although our classifier gives excellent performance on our test set, one question is how well it generalizes to other sources of data.</p>
 
@@ -2009,33 +2007,33 @@ its so          0.8916207044791409
 
 <p>What do these misclassifications look like? Here are some of the false positives it made:</p>
 
-<h3>Aladdin</h3>
+<h2>Aladdin</h2>
 
 <ul>
-<li><p>&#8220;The African magician carries it carefully wrapt up in his bosom,&#8221; said the princess; &#8220;and this I can assure you, because he pulled it out before me, and showed it to me in triumph.&#8221;</p></li>
-<li><p>It is vanished; but I had no concern in its removal.</p></li>
-<li><p>&#8220;My son,&#8221; said he, &#8220;what a man you are to do such surprising things always in the twinkling of an eye!&#8221;</p></li>
-<li><p>&#8220;Sire,&#8221; replied Aladdin, &#8220;I have not the least reason to complain of your conduct, since you did nothing but what your duty required.&#8221;</p></li>
-<li><p>&#8220;With your leave, mother,&#8221; replied Aladdin, &#8220;I shall now take care how I sell a lamp which may be so serviceable both to you and me.&#8221;</p></li>
+<li>&#8220;The African magician carries it carefully wrapt up in his bosom,&#8221; said the princess; &#8220;and this I can assure you, because he pulled it out before me, and showed it to me in triumph.&#8221;</li>
+<li>It is vanished; but I had no concern in its removal.</li>
+<li>&#8220;My son,&#8221; said he, &#8220;what a man you are to do such surprising things always in the twinkling of an eye!&#8221;</li>
+<li>&#8220;Sire,&#8221; replied Aladdin, &#8220;I have not the least reason to complain of your conduct, since you did nothing but what your duty required.&#8221;</li>
+<li>&#8220;With your leave, mother,&#8221; replied Aladdin, &#8220;I shall now take care how I sell a lamp which may be so serviceable both to you and me.&#8221;</li>
 </ul>
 
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png"><img src="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png" alt="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png" /></a></p>
 
-<h3>Hansel and Gretel</h3>
+<h2>Hansel and Gretel</h2>
 
 <ul>
-<li><p>&#8220;Oh dear,&#8221; he said, &#8220;do let me go and see the hunt; I cannot restrain myself.&#8221;</p></li>
-<li><p>When they awoke it was dark night, and poor Grethel began to cry, and said, &#8220;Oh, how shall we get out of the wood?&#8221; But Hansel comforted her.</p></li>
-<li><p>&#8220;But remember,&#8221; she said, &#8220;I must lock the cottage door against those huntsmen, so when you come back in the evening, and knock, I shall not admit you, unless you say, &#8216;Dear little sister let me in.&#8217;</p></li>
+<li>&#8220;Oh dear,&#8221; he said, &#8220;do let me go and see the hunt; I cannot restrain myself.&#8221;</li>
+<li>When they awoke it was dark night, and poor Grethel began to cry, and said, &#8220;Oh, how shall we get out of the wood?&#8221; But Hansel comforted her.</li>
+<li>&#8220;But remember,&#8221; she said, &#8220;I must lock the cottage door against those huntsmen, so when you come back in the evening, and knock, I shall not admit you, unless you say, &#8216;Dear little sister let me in.&#8217;</li>
 </ul>
 
 
-<h3>Snow White</h3>
+<h2>Snow White</h2>
 
 <ul>
-<li><p>One was too long, another too short; so she tried them all till she came to the seventh, and that was so comfortable that she laid herself down, and was soon fast asleep.</p></li>
-<li><p>&#8220;Oh yes, I will try,&#8221; said Snow-white.</p></li>
+<li>One was too long, another too short; so she tried them all till she came to the seventh, and that was so comfortable that she laid herself down, and was soon fast asleep.</li>
+<li>&#8220;Oh yes, I will try,&#8221; said Snow-white.</li>
 </ul>
 
 
@@ -2043,46 +2041,46 @@ its so          0.8916207044791409
 
 <h1>A Demo</h1>
 
-<p>I created <a href="http://twss-classifier.heroku.com/">a small Sinatra app</a> to play around with the classifier, and deployed it <a href="http://twss-classifier.heroku.com/">here</a>.</p>
+<p>I created <a href="http://twss-classifier.heroku.com/">a small Sinatra app</a> to play around with the classifier, and deployed it <a href="http://twss-classifier.heroku.com/">here</a>. I also put the code <a href="https://github.com/echen/twss-classifier">on Github</a>.</p>
 
 <h1>Appendix: Details</h1>
 
-<h3>Datasets</h3>
+<h2>Datasets</h2>
 
 <p>To grab some TWSS examples, my first thought was to turn to <a href="http://search.twitter.com/search?q=twss">twitter</a>. However, the twitter data turned out to be incredibly noisy (lots of junk obscuring not terribly funny examples), so taking a cue from the K&amp;B paper, I pulled data from three sources:</p>
 
 <ul>
-<li><p>First, I scraped <a href="http://twssstories.com">twss stories</a> for positive training data (sentences for which a TWSS response is appropriate). Since only the last part in quotes from each submission is truly relevant to being a TWSS, I kept the quote and threw away the rest of each submission.</p></li>
-<li><p>Next, I scraped <a href="http://textsfromlastnight.com">Texts from Last Night</a> and <a href="http://www.fmylife.com">FMyLife</a> for negative training data. Since TWSS jokes are usually made in response to <em>sentences</em> (the last sentence you say), I split each submission into sentences, and each sentence formed a single negative training example.</p></li>
+<li>First, I scraped <a href="http://twssstories.com">twss stories</a> for positive training data (sentences for which a TWSS response is appropriate). Since only the last part in quotes from each submission is truly relevant to being a TWSS, I kept the quote and threw away the rest of each submission.</li>
+<li>Next, I scraped <a href="http://textsfromlastnight.com">Texts from Last Night</a> and <a href="http://www.fmylife.com">FMyLife</a> for negative training data. Since TWSS jokes are usually made in response to <em>sentences</em> (the last sentence you say), I split each submission into sentences, and each sentence formed a single negative training example.</li>
 </ul>
 
 
 <p>Finally, I normalized each sentence by converting to lowercase and removing any punctuation.</p>
 
-<h3>The Algorithm</h3>
+<h2>The Algorithm</h2>
 
 <p>To train and test the classifier, I used the examples I gathered to form training and test sets, each consisting of:</p>
 
 <ul>
-<li><p>1000 positive examples from twss stories.</p></li>
-<li><p>500 negative examples from Texts from Last Night.</p></li>
-<li><p>500 negative examples from FMyLife.</p></li>
+<li>1000 positive examples from twss stories.</li>
+<li>500 negative examples from Texts from Last Night.</li>
+<li>500 negative examples from FMyLife.</li>
 </ul>
 
 
-<h3>Performance of the Unigram Model</h3>
+<h2>Performance of the Unigram Model</h2>
 
 <p>Since we want to optimize for precision (we hope the things we classify as TWSS sentences really are TWSS sentences) over recall (it&#8217;s fine if we don&#8217;t always respond TWSS to every TWSS sentence), let&#8217;s use 0.99 probability as our threshold for classifying a sentence as TWSS. (This is equivalent to setting a low prior for the probability of being a TWSS.)</p>
 
 <p>With this threshold, a unigram Naive Bayes classifier has the following performance on a test set:</p>
 
 <ul>
-<li><p>True positives: 823</p></li>
-<li><p>False negatives: 177</p></li>
-<li><p>True negatives: 974</p></li>
-<li><p>False positives: 26</p></li>
-<li><p>Precision = 0.969</p></li>
-<li><p>Recall = 0.823</p></li>
+<li>True positives: 823</li>
+<li>False negatives: 177</li>
+<li>True negatives: 974</li>
+<li>False positives: 26</li>
+<li>Precision = 0.969</li>
+<li>Recall = 0.823</li>
 </ul>
 
 ]]></content>
@@ -2101,17 +2099,17 @@ its so          0.8916207044791409
 
 <h1>EM Algorithm</h1>
 
-<p>Let&#8217;s recall the naive Bayes algorithm: given a tweet (a set of <em>character</em> n-grams), we estimate its language to be the language $latex L$ that maximizes</p>
+<p>Let&#8217;s recall the naive Bayes algorithm: given a tweet (a set of <em>character</em> n-grams), we estimate its language to be the language $L$ that maximizes</p>
 
-<p>$latex P(language = L | ngrams) \propto P(ngrams | language = L) P(language = L)$</p>
+<p>$$P(language = L | ngrams) \propto P(ngrams | language = L) P(language = L)$$</p>
 
-<p>Thus, we need to estimate $latex P(ngram | language = L)$ and $latex P(language = L)$.</p>
+<p>Thus, we need to estimate $P(ngram | language = L)$ and $P(language = L)$.</p>
 
 <p>This would be easy <strong>if we knew the language of each tweet</strong>, since we could estimate</p>
 
 <ul>
-<li><p>$latex P(xyz| language = English)$ as #(number of times &#8220;xyz&#8221; is a trigram in the English tweets) / #(total trigrams in the English tweets)</p></li>
-<li><p>$latex P(language = English)$ as the proportion of English tweets.</p></li>
+<li>$P(xyz| language = English)$ as #(number of times &#8220;xyz&#8221; is a trigram in the English tweets) / #(total trigrams in the English tweets)</li>
+<li>$P(language = English)$ as the proportion of English tweets.</li>
 </ul>
 
 
@@ -2120,11 +2118,11 @@ its so          0.8916207044791409
 <p><strong>The problem is that we know neither of these.</strong> So what the EM algorithm says is that that we can simply <strong>guess</strong>:</p>
 
 <ul>
-<li><p>Pretend we know the language of each tweet (by randomly assigning them at the beginning).</p></li>
-<li><p>Using this guess, we can compute the n-gram probabilities for each language.</p></li>
-<li><p>Using the n-gram probabilities for each language, we can recompute the language probabilities of each tweet.</p></li>
-<li><p>Using these recomputed language probabilities, we can recompute the n-gram probabilities.</p></li>
-<li><p>And so on, recomputing the language probabilities and n-gram probabilities over and over. While our guesses will be off in the beginning, the probabilities will eventually converge to (locally) minimize the likelihood. (In my tests, my language detector would sometimes correctly converge to an English detector, and sometimes it would converge to an English-and-Dutch detector.)</p></li>
+<li>Pretend we know the language of each tweet (by randomly assigning them at the beginning).</li>
+<li>Using this guess, we can compute the n-gram probabilities for each language.</li>
+<li>Using the n-gram probabilities for each language, we can recompute the language probabilities of each tweet.</li>
+<li>Using these recomputed language probabilities, we can recompute the n-gram probabilities.</li>
+<li>And so on, recomputing the language probabilities and n-gram probabilities over and over. While our guesses will be off in the beginning, the probabilities will eventually converge to (locally) minimize the likelihood. (In my tests, my language detector would sometimes correctly converge to an English detector, and sometimes it would converge to an English-and-Dutch detector.)</li>
 </ul>
 
 
@@ -2153,10 +2151,10 @@ its so          0.8916207044791409
 <p>Trained on bigrams, the detector resulted in:</p>
 
 <ul>
-<li><p>991 true positives (English lines correctly classified as English)</p></li>
-<li><p>9 false negatives (English lines incorrectly classified as Spanish</p></li>
-<li><p>11 false positives (Spanish lines incorrectly classified as English)</p></li>
-<li><p>989 true negatives (Spanish lines correctly classified as English)</p></li>
+<li>991 true positives (English lines correctly classified as English)</li>
+<li>9 false negatives (English lines incorrectly classified as Spanish</li>
+<li>11 false positives (Spanish lines incorrectly classified as English)</li>
+<li>989 true negatives (Spanish lines correctly classified as English)</li>
 </ul>
 
 
@@ -2165,10 +2163,10 @@ its so          0.8916207044791409
 <p>Trained on trigrams, the detector resulted in:</p>
 
 <ul>
-<li><p>992 true positives</p></li>
-<li><p>8 false negatives</p></li>
-<li><p>10 false positives</p></li>
-<li><p>990 true negatives</p></li>
+<li>992 true positives</li>
+<li>8 false negatives</li>
+<li>10 false positives</li>
+<li>990 true negatives</li>
 </ul>
 
 
@@ -2187,7 +2185,7 @@ its so          0.8916207044791409
     <link href="http://echen.github.com/blog/2011/05/01/eigensheep/"/>
     <updated>2011-05-01T15:23:31-07:00</updated>
     <id>http://echen.github.com/blog/2011/05/01/eigensheep</id>
-    <content type="html"><![CDATA[<p>Aaron Koblin&#8217;s <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were <em>ordered</em>, so inspired by the use of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a> in facial recognition, I decided to try projecting the sheep onto two dimensions.</p>
+    <content type="html"><![CDATA[<p>Aaron Koblin&#8217;s <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were <em>ordered</em>, so I decided to try projecting the sheep onto two dimensions.</p>
 
 <h1>Principal Sheep Components</h1>
 
@@ -2202,6 +2200,12 @@ its so          0.8916207044791409
 <p><a href="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png"><img src="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png" alt="Projected Sheep, Black Heads/Legs Circled" /></a></p>
 
 <p>And I think the sheep on the left (next to and inside the dense cluster) seem much more poorly drawn &#8211; they look more like camels, dogs, unicorns, or bugs than actual sheep.</p>
+
+<h1>Code</h1>
+
+<p>In a bit more detail, I used the poor man&#8217;s Mechanical Turk (myself) to screenshot the first 50 sheep from the market, trying to hug the sheep as closely as possible to ensure proper alignment. Next, I used the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> to resize the images to 150x150px, convert them to grayscale, and flatten them into the rows of a matrix.</p>
+
+<p>In case anyone else wants to play with the sheep images, I put the <a href="https://github.com/echen/eigensheep">code</a> on my <a href="https://github.com/echen/eigensheep">Github</a> account.</p>
 ]]></content>
   </entry>
   
@@ -2297,9 +2301,11 @@ its so          0.8916207044791409
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png" alt="Anchoring" /></a></p>
 
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png" alt="Anchoring with Regression Lines" /></a></p>
+
 <p>So this perhaps suggests that if you&#8217;re going to price your lowest reward at 1 dollar, your next reward should cost roughly 20 dollars (or slightly more, to maximize your total revenue). Pricing above 20 dollars is a little too expensive for the folks who want to support you, but aren&#8217;t rich enough to throw gads of money; maybe rewards below 20 dollars aren&#8217;t good enough to merit the higher donation.</p>
 
-<p>Next, I&#8217;m planning on digging a little deeper into pricing effects and what makes a project successful, so I&#8217;ll hopefully have some more Kickstarter analysis in a future post.</p>
+<p>Next, I&#8217;m planning on digging a little deeper into pricing effects and what makes a project successful, so I&#8217;ll hopefully have some more Kickstarter analysis in a future post. In the meantime, in case anyone else wants to take a look, I put the data onto <a href="https://github.com/echen/kickstarter-data-analysis">my Github account</a>.</p>
 ]]></content>
   </entry>
   
@@ -2308,44 +2314,48 @@ its so          0.8916207044791409
     <link href="http://echen.github.com/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
     <updated>2011-04-21T00:16:36-07:00</updated>
     <id>http://echen.github.com/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
-    <content type="html"><![CDATA[<p>(For a layman&#8217;s introduction, see <a href="http://echen.github.com/2011/03/14/least-angle-regression-for-the-hungry-layman/">here</a>.)</p>
+    <content type="html"><![CDATA[<p>(I wrote up a more mathematical explanation of least angle regression <a href="http://echen.me/posts/a-mathematical-introduction-to-least-angle-regression">here</a>.)</p>
 
-<p>Least Angle Regression (aka LARS) is a <strong>model selection method</strong> for linear regression (when you&#8217;re worried about overfitting or want your model to be easily interpretable). To motivate it, let&#8217;s consider some other model selection methods:</p>
+<p>Suppose you&#8217;re at a buffet. You don&#8217;t want to just grab everything and overeat (overfit), so how do you decide which dishes to take? Here are some possibilities.</p>
+
+<h1>Forward Selection</h1>
+
+<p>On your first trip to the buffet, take a plateful of your favorite dish, bring it back, and eat it. On your second trip, take a plateful of the dish that <em>now</em> looks most appetizing, bring it back, and eat it. And so on.</p>
+
+<p>The problem with this method is the following: suppose your favorite food is spaghetti, followed closely by macaroni. Ideally, you&#8217;d like to take half a plate of spaghetti and slightly less than half a plate of macaroni, but under this method, you have to first take and eat a plateful of spaghetti, and now you&#8217;re sick of pasta and don&#8217;t want macaroni anymore.</p>
+
+<h1>Forward Stagewise</h1>
+
+<p>To remedy the greediness of the above method, another option is to take smaller morsels at a time. On your first trip to the buffet, you take a thimbleful of your favorite dish; on your next trip to the buffet, you take a thimbleful of the currently most appetizing dish; and so on again.</p>
+
+<p>Now, after getting your thimbleful of spaghetti, pasta still looks delicious to you, so you can get your thimbleful of macaroni as well.</p>
+
+<p>The problem with this method is that because you&#8217;re only eating a thimbleful at a time, you have to make many trips to the buffet and so dinner takes forever.</p>
+
+<h1>Least Angle Regression</h1>
+
+<p>A much more efficient method works as follows. Suppose your favorite dishes are, in order, spaghetti, macaroni, salad, and chili. On your first trip, you grab a bunch of spaghetti. You know that as you eat spaghetti, you start to get slightly sick of it, so it becomes less and less appetizing, until eventually it becomes just as appetizing as macaroni (but still more appetizing than salad and chili). So only grab an amount X of spaghetti, so that after eating X, spaghetti and macaroni are equally appetizing.</p>
+
+<p>On your second trip, spaghetti and macaroni are equally appetizing. Grab both spaghetti and macaroni, in proportions such that spaghetti and macaroni stay equally appetizing while you eat. Again, you know exactly how much spaghetti and macaroni you can eat until salad becomes just as appetizing, so only grab this amount.</p>
+
+<p>On your third trip, spaghetti, macaroni, and salad look equally delicious. Again, grab the three foods in proportions that stay equally appetizing while you eat, and only grab enough to make chili look just as tasty.</p>
+
+<p>And so on.</p>
+
+<p>Note that:</p>
 
 <ul>
-<li><p><strong>Forward selection</strong> starts with no variables in the model, and at each step it adds to the model the variable with the most explanatory power, stopping if the explanatory power falls below some threshold. This is a fast and simple method, but it can also be too greedy: we fully add variables at each step, so correlated predictors don&#8217;t get much of a chance to be included in the model. (For example, suppose we want to build a model for the deliciousness of a PB&amp;J sandwich, and two of our variables are the amount of peanut butter and the amount of jelly. We&#8217;d like both variables to appear in our model, but since amount of peanut butter is (let&#8217;s assume) strongly correlated with the amount of jelly, once we fully add peanut butter to our model, jelly doesn&#8217;t add much explanatory power anymore, and so it&#8217;s unlikely to be added.)</p></li>
-<li><p><strong>Forward stagewise regression</strong> tries to remedy the greediness of forward selection by only partially adding variables. Whereas forward selection finds the variable with the most explanatory power and goes all out in adding it to the model, forward stagewise finds the variable with the most explanatory power and updates its weight by only epsilon in the correct direction. (So we might first increase the weight of peanut butter a little bit, then increase the weight of peanut butter again, then increase the weight of jelly, then increase the weight of bread, and then increase the weight of peanut butter once more.) The problem now is that we have to make a ton of updates, so forward stagewise can be very inefficient.</p></li>
+<li>This method works better than forward selection, because we get to eat both spaghetti and macaroni.</li>
+<li>This method works much faster than forward stagewise, because we make much fewer trips. (If we want to eat $n$ dishes, we only need to make $n$ trips.)</li>
+<li>We&#8217;re always eating whatever looks most appetizing to us.</li>
 </ul>
 
 
-<p>LARS, then, is essentially forward stagewise made fast. Instead of making tiny hops in the direction of one variable at a time, LARS makes optimally-sized leaps in optimal directions. These directions are chosen to make equal angles (equal correlations) with each of the variables currently in our model. (We like peanut butter best, so we start eating it first; as we eat more, we get a little sick of it, so jelly starts looking equally appetizing, and we start eating peanut butter and jelly simultaneously; later, we add bread to the mix, etc.)</p>
+<h1>Reversing the Analogy</h1>
 
-<p>In more detail, LARS works as follows:</p>
+<p>Replace buffet with linear regression and dishes with variables, and you now have three tasty model selection methods to choose from.</p>
 
-<ul>
-<li><p>Assume for simplicity that we&#8217;ve standardized our explanatory variables to have zero mean and unit variance, and that our response variable also has zero mean.</p></li>
-<li><p>Start with no variables in your model.</p></li>
-<li><p>Find the variable $latex x _ 1 $ most correlated with the residual. (Note that the variable most correlated with the residual is equivalently the one that makes the least angle with the residual, whence the name.)</p></li>
-<li><p>Move in the direction of this variable until some other variable $latex x _ 2 $ is just as correlated.</p></li>
-<li><p>At this point, start moving in a direction such that the residual stays equally correlated with $latex x _ 1 $ and $latex x _ 2 $ (i.e., so that the residual makes equal angles with both variables), and keep moving until some variable $latex x _ 3 $ becomes equally correlated with our residual.</p></li>
-<li><p>And so on, stopping when we&#8217;ve decided our model is big enough.</p></li>
-</ul>
-
-
-<p>For example, consider the following image (slightly simplified from the <a href="http://www.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf">original LARS paper</a>; $latex x _ 1, x _ 2$ are our variables, and $latex y$ is our response):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png"><img src="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png" alt="LARS Example" /></a></p>
-
-<p>Our model starts at $latex \hat{\mu _ 0} $.</p>
-
-<ul>
-<li><p>The residual (the green line) makes a smaller angle with $latex x _ 1 $ than with $latex x _ 2 $, so we start moving in the direction of $latex x _ 1 $.
-At $latex \hat{\mu _ 1} $, the residual now makes equal angles with $latex x _ 1, x _ 2 $, and so we start moving in a new direction that preserves this equiangularity/equicorrelation.</p></li>
-<li><p>If there were more variables, we&#8217;d change directions again once a new variable made equal angles with our residual, and so on.</p></li>
-</ul>
-
-
-<p>So when should you use LARS, as opposed to some other regularization method like lasso? There&#8217;s not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don&#8217;t usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).</p>
+<p>For a more mathematical explanation of least angle regression, see <a href="http://echen.me/posts/a-mathematical-introduction-to-least-angle-regression">here</a>.</p>
 ]]></content>
   </entry>
   
@@ -2362,7 +2372,7 @@ At $latex \hat{\mu _ 1} $, the residual now makes equal angles with $latex x _ 1
 
 <h3>Silicon Valley</h3>
 
-<pre><code>&lt;code&gt;word                    Prob(Silicon Valley | word)
+<pre><code>word                    Prob(Silicon Valley | word)
 cloud                   0.9053263586466359
 stanford                0.8947378473880241
 hacker                  0.8759014372329466
@@ -2432,12 +2442,11 @@ baseball                0.6670653907496013
 iphone                  0.65665476702241  
 guy                     0.6396064208138196
 running                 0.6323876017254413
-&lt;/code&gt;
 </code></pre>
 
 <h3>New York City</h3>
 
-<pre><code>&lt;code&gt;word                    Prob(New York | word)
+<pre><code>word                    Prob(New York | word)
 bbm                     0.9235374771480804
 mets                    0.9165294616574365
 teamfollowback          0.9165294616574365
@@ -2483,19 +2492,18 @@ journalist              0.616094753936313
 website                 0.6133083363295495
 radio                   0.6133083363295495
 executive               0.6058707124010555
-&lt;/code&gt;
 </code></pre>
 
 <p>Some findings:</p>
 
 <ul>
-<li><p>Silicon Valley is much more <strong>tech</strong>- (<em>cloud, hacker, dev, engineer, software, programmer</em>) and <strong>startup</strong>-driven (<em>startup, entrepreneur, founder</em>). New York is much more into <strong>arts/entertainment</strong> (<em>actress, theatre, publishing, studio, records, magazine, journalism, filmmaker, news</em>) and <strong>finance</strong> (<em>money, financial</em>). (Another way to look at it: Silicon Valley higher-ups call themselves <em>ctos</em> and <em>founders</em> and sit on <em>boards</em>, while New York higher-ups call themselves <em>presidents</em> and <em>executives</em>.)</p></li>
-<li><p>New Yorkers care a lot about <strong>looks</strong> (<em>makeup, fashion</em>). Silicon Valley folks care a lot about <strong>sports</strong>, <strong>health</strong>, and the <strong>outdoors</strong> (<em>bike, surfer, cyclist, yoga, running, health</em>).</p></li>
-<li><p>Silicon Valley folks describe themselves through their <strong>past</strong> (<em>before, formerly, past, former</em>). New Yorkers describe themselves through their <strong>future</strong> (<em>dreams</em>).</p></li>
-<li><p>Silicon Valley is big on <strong>community</strong> (<em>support, team, help, helping, community</em>). New York is focused on the <strong>individual</strong> (<em>self, myself</em>).</p></li>
-<li><p>Silicon Valley has a larger proportion of <strong>men</strong> (<em>dad, geek, dude, guy</em>). New York has the <strong>women</strong> (<em>mother, chick</em>).</p></li>
-<li><p>New York uses BlackBerrys (<em>bbm</em> is short for BlackBerry Messenger), while Silicon Valley uses <em>iPhones</em>.</p></li>
-<li><p>Silicon Valley is more into the <strong>locavore</strong> movement (<em>green, local</em>).</p></li>
+<li>Silicon Valley is much more <strong>tech</strong>- (<em>cloud, hacker, dev, engineer, software, programmer</em>) and <strong>startup</strong>-driven (<em>startup, entrepreneur, founder</em>). New York is much more into <strong>arts/entertainment</strong> (<em>actress, theatre, publishing, studio, records, magazine, journalism, filmmaker, news</em>) and <strong>finance</strong> (<em>money, financial</em>). (Another way to look at it: Silicon Valley higher-ups call themselves <em>ctos</em> and <em>founders</em> and sit on <em>boards</em>, while New York higher-ups call themselves <em>presidents</em> and <em>executives</em>.)</li>
+<li>New Yorkers care a lot about <strong>looks</strong> (<em>makeup, fashion</em>). Silicon Valley folks care a lot about <strong>sports</strong>, <strong>health</strong>, and the <strong>outdoors</strong> (<em>bike, surfer, cyclist, yoga, running, health</em>).</li>
+<li>Silicon Valley folks describe themselves through their <strong>past</strong> (<em>before, formerly, past, former</em>). New Yorkers describe themselves through their <strong>future</strong> (<em>dreams</em>).</li>
+<li>Silicon Valley is big on <strong>community</strong> (<em>support, team, help, helping, community</em>). New York is focused on the <strong>individual</strong> (<em>self, myself</em>).</li>
+<li>Silicon Valley has a larger proportion of <strong>men</strong> (<em>dad, geek, dude, guy</em>). New York has the <strong>women</strong> (<em>mother, chick</em>).</li>
+<li>New York uses BlackBerrys (<em>bbm</em> is short for BlackBerry Messenger), while Silicon Valley uses <em>iPhones</em>.</li>
+<li>Silicon Valley is more into the <strong>locavore</strong> movement (<em>green, local</em>).</li>
 </ul>
 
 ]]></content>
@@ -2517,10 +2525,10 @@ executive               0.6058707124010555
 <p>Other examples of cointegrated pairs:</p>
 
 <ul>
-<li><p>Income and consumption: as income increases/decreases, so too does consumption.</p></li>
-<li><p>Size of police force and amount of criminal activity</p></li>
-<li><p>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</p></li>
-<li><p>Number of patients entering or leaving a hospital</p></li>
+<li>Income and consumption: as income increases/decreases, so too does consumption.</li>
+<li>Size of police force and amount of criminal activity</li>
+<li>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</li>
+<li>Number of patients entering or leaving a hospital</li>
 </ul>
 
 
@@ -2541,25 +2549,25 @@ executive               0.6058707124010555
 <p>So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:</p>
 
 <ul>
-<li><p>Check that $latex X _ t $ and $latex Y _ t $ are both I(1).</p></li>
-<li><p>Estimate the cointegrating relationship $latex Y _ t = aX _ t + e _ t $ by ordinary least squares.</p></li>
-<li><p>Check that the cointegrating residuals $latex e _ t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</p></li>
+<li>Check that $ X_t $ and $ Y_t $ are both I(1).</li>
+<li>Estimate the cointegrating relationship $ Y_t = aX_t + e_t $ by ordinary least squares.</li>
+<li>Check that the cointegrating residuals $ e_t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</li>
 </ul>
 
 
 <h1>Error-correction and Granger representation</h1>
 
-<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $latex X _ t, Y _ t $, with autoregressive representations</p>
+<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations</p>
 
-<p>$latex X _ t = a X _ {t-1} + b Y _ {t-1} + u _ t $
-$latex Y _ t = c X _ {t-1} + d Y _ {t-1} + v _ t $</p>
+<p>$ X_t = a X<em>{t-1} + b Y</em>{t-1} + u_t $
+$ Y_t = c X<em>{t-1} + d Y</em>{t-1} + v_t $</p>
 
 <p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
 
-<p>$latex \Delta X _ t = \alpha _ 1 (Y _ {t-1} - \beta X _ {t-1}) + u _ t $
-$latex \Delta Y _ t = \alpha _ 2 (Y _ {t-1} - \beta X _ {t-1}) + v _ t $</p>
+<p>$ \Delta X_t = \alpha_1 (Y<em>{t-1} - \beta X</em>{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y<em>{t-1} - \beta X</em>{t-1}) + v_t $</p>
 
-<p>where $latex Y _ {t-1} - \beta X _ {t-1} \sim I(0) $ is the cointegrating relationship. Regarding $latex Y _ {t-1} - \beta X _ {t-1} $ as the extent of disequilibrium from the long-run relationship, and the $latex \alpha _ i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+<p>where $ Y<em>{t-1} - \beta X</em>{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y<em>{t-1} - \beta X</em>{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
 
 <h1>Summary</h1>
 
@@ -2568,115 +2576,149 @@ $latex \Delta Y _ t = \alpha _ 2 (Y _ {t-1} - \beta X _ {t-1}) + v _ t $</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Introduction to Monads and Typeclasses in Haskell]]></title>
-    <link href="http://echen.github.com/blog/2011/04/16/monads-typeclasses-and-celebrities/"/>
-    <updated>2011-04-16T03:40:23-07:00</updated>
-    <id>http://echen.github.com/blog/2011/04/16/monads-typeclasses-and-celebrities</id>
-    <content type="html"><![CDATA[<p>My favorite problems are the ones that you can turn into a mini-lesson on something new. I realized the following problem could make a nice introduction to the Maybe monad and typeclasses in Haskell, so I&#8217;m going to try lessonizing it here.</p>
+    <title type="html"><![CDATA[Harry Potter and the Keyword Chaos: Unsupervised Statistically Significant Phrases]]></title>
+    <link href="http://echen.github.com/blog/2011/03/22/harry-potter-and-the-keyword-chaos-unsupervised-statistically-significant-phrases/"/>
+    <updated>2011-03-22T04:20:23-07:00</updated>
+    <id>http://echen.github.com/blog/2011/03/22/harry-potter-and-the-keyword-chaos-unsupervised-statistically-significant-phrases</id>
+    <content type="html"><![CDATA[<p>One of my all-time favorite graphs is the following visualization of the distribution of the primes (showing that the primes are more spread out than the random, clumpy points of a Poisson process):</p>
 
-<h1>Finding Celebrities</h1>
+<p><a href="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png"><img src="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png" alt="Distribution of Primes" /></a></p>
 
-<p>The problem is this: suppose you have a group of people, and you want to find a &#8220;celebrity&#8221; among them, where a celebrity is defined as a person P such that everybody else knows P, but P knows no one. (Note that, by the definition of celebrity, there can be at most one celebrity in a group.) So you&#8217;re given a group of people, a black box oracle that tells you whether person X knows person Y, and you want to efficiently find a celebrity in the group (if such a celebrity exists).</p>
+<p>So I was pretty intrigued when I ran across <a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">this paper</a> (<a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">Level statistics of words: Finding keywords in literary texts and symbolic sequences</a>) using similar quantumish, random matrixish ideas to extract the important phrases from a text.</p>
 
-<p>The solution I came up with is the following two-step algorithm:</p>
+<h1>The Paper</h1>
 
-<ul>
-<li><p>Step 1 finds a candidate celebrity. We keep a temporary candidate C and walk through the group: if C knows the current person P under our pointer, then C can&#8217;t be a celebrity, so we change the temporary candidate to be P and move on; otherwise, if C does not know the current person P, then we keep C as our candidate and move to the next person on the list.</p></li>
-<li><p>Step 2 checks that our candidate celebrity C is actually a celebrity. We walk through the list of people, and check that for every other person P, P knows C but C does not know P.</p></li>
-</ul>
+<p>Statistical phrase extraction (e.g., the &#8220;statistically improbable phrases&#8221; you see on Amazon) is usually done by comparing a target text against a baseline corpus. The authors of this paper, however, describe an <em>unsupervised</em> phrase extraction method given only the target text itself, by making use of the spatial distribution of the phrases (which gets thrown out in typical bag-of-word models).</p>
 
+<p>The idea is that uninformative words and phrases (e.g., &#8220;the&#8221; and &#8220;but&#8221;) have a more random and uniform distribution than important words and phrases (e.g., names of main characters), which will tend to form clusters. (Funnily, the quantum chaos paper containing the primes graph reverses these characterizations: there, the primes are the ones that are repellent and spread out, while the random numbers are the ones that form clusters.)</p>
 
-<p>Let&#8217;s code this up now in Haskell. Since the algorithm has two steps, let&#8217;s code up each step individually.</p>
+<p>Thus, the cluster-tendency of a phrase should be a reasonable measure of its importance.</p>
 
-<pre><code>-- Step 1
-findCandidate :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-findCandidate [] _ = Nothing
-findCandidate (x:[]) _ = Just x
-findCandidate (x:y:rest) knows =
-    if x `knows` y
-        then findCandidate (y:rest) knows
-        else findCandidate (x:rest) knows
+<h1>Implementation</h1>
 
--- Step2
-checkCandidate :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Person -&gt; Maybe Person
-checkCandidate [] _ candidate = Just candidate
-checkCandidate (x:xs) knows candidate
-    | x == candidate = checkCandidate xs knows candidate
-    | otherwise      =
-        if (x `knows` candidate) &amp;&amp; (not $ candidate `knows` x)
-            then checkCandidate xs knows candidate
-            else Nothing
+<p>I wrote a quick Ruby script to calculate the level statistics on the first Harry Potter book.</p>
+
+<p>Here are the top 25 unigrams extracted (ordered using the sigma_normalized statistic from the paper; I played around with the paper&#8217;s C number as well, but it didn&#8217;t give as good results):</p>
+
+<pre><code>phrase  count   sigma_normalized
+dudley  117     5.886458836973907
+vernon  105     5.425462371919648
+uncle   121     4.96291028279975
+yeh     100     4.483340310689477
+mirror  46      4.4123632519944564
+platform        20      3.7698278374021283
+wood    53      3.698871282864937
+aunt    65      3.682665094335877
+hagrid  336     3.532997146829891
+ter     78      3.4935220547292394
+petunia 57      3.3847272743671764
+dragon  31      3.319790040957389
+fang    16      3.1175440675916763
+unicorn 22      3.109138726006347
+bludgers        13      3.0336322222301035
+o       31      2.973718095050078
+malfoy  112     2.965094959118159
+voldemort       31      2.957883190702609
+percy   36      2.946348443571833
+path    12      2.9430416987716383
+dursley 54      2.9266934668788025
+christmas       25      2.926196222714648
+anythin 13      2.8753724174699626
+quirrell        91      2.8351538706894868
+crate   12      2.8171552951153913
 </code></pre>
 
-<p>Now how do we combine the first two steps? A first approach might be the following:</p>
+<p>It looks more impressive when you compare with the bottom 25 unigrams (filtered to counts of at least 50, to make the unigrams more comparable to those above):</p>
 
-<pre><code>badFindCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-badFindCelebrity xs knows = checkCandidate xs knows (findCandidate xs knows)
+<pre><code>phrase  count   sigma_normalized
+few     55      0.858973690529759
+seemed  72      0.8660034944771483
+might   54      0.8691077527153204
+after   68      0.8700202208036406
+way     94      0.8893865470583092
+come    95      0.8897833973429081
+before  107     0.9158168210798949
+good    82      0.9208260024379561
+suddenly        69      0.9223289856683224
+only    111     0.9262797404590966
+put     58      0.9320218173468643
+must    57      0.932224843054271
+while   60      0.9367996846919046
+asked   60      0.9386801898266576
+left    82      0.9509973378264027
+trying  65      0.9511509393516154
+saw     62      0.9524243012100968
+even    105     0.9563651096306485
+really  73      0.9569234100328665
+voice   59      0.957685122636835
+away    71      0.9611639088841413
+where   100     0.9657416499349912
+every   53      0.9659213894654203
+harrys  113     0.9746316711628271
+long    71      0.9794359046955133
 </code></pre>
 
-<p>But this doesn&#8217;t work! There&#8217;s a <em>type mismatch</em> in our definition: <code>checkCandidate</code> takes a <code>Person</code> in its last argument, but <code>findCandidate xs knows</code> returns something of type <code>Maybe Person</code>.</p>
+<p>Similarly, here are the top bigrams:</p>
 
-<p>How do we fix this? One approach would be to do some checking of our candidate celebrity: if it&#8217;s <code>Nothing</code>, then don&#8217;t even bother passing it to <code>checkCandidate</code> and just fail immediately; otherwise, extract the person from its <code>Just x</code> wrapper, and pass this extraction to <code>checkCandidate</code>. This works as follows:</p>
-
-<pre><code>messyFindCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-messyFindCelebrity xs knows =
-    case findCandidate xs knows of
-        Nothing -&gt; Nothing
-        Just x  -&gt; checkCandidate xs knows x
+<pre><code>phrase  count   sigma_normalized
+uncle vernon    97      5.2050164080560615
+the mirror      35      3.8911699122647163
+professor mcgonagall    89      3.570490871211533
+aunt petunia    52      3.3541554249859917
+the library     21      3.2822285085324374
+nine and        13      3.052813340938423
+the twins       12      3.0493973437585256
+the potters     12      2.962214857171763
+the boy 26      2.86158988074687
+said hagrid     89      2.76691520812392
+the stone       48      2.7118270594517413
+and dudley      15      2.705365860880404
+the giant       15      2.682345959043539
+the troll       18      2.6613701424473386
+mr dursley      30      2.607508647153971
+said uncle      13      2.5996349710103055
+sorcerers stone 14      2.564840300637567
+the quaffle     16      2.533417641354809
+said dumbledore 27      2.5200215250194193
+said hermione   42      2.509101121058932
+and threequarters       9       2.4248478008322967
+the crate       9       2.377194502184057
+the cloak       22      2.368960931129895
+the forest      23      2.3607725433338675
+mr potter       12      2.3429313549690285
 </code></pre>
 
-<p>This isn&#8217;t too bad, but what if we later want to add some additional checks? For example, instead of finding any old celebrity, we might want to find only celebrities that have recently starred in a movie, in which case we&#8217;d have to modify our algorithm to:</p>
+<p>And the bottom bigrams (filtered to counts of at least 25):</p>
 
-<pre><code>recentMovie :: Person -&gt; Maybe Person
-recentMovie x = ...
-
-messyFindCelebrity' :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-messyFindCelebrity' xs knows =
-    case findCandidate xs knows of
-        Nothing -&gt; Nothing
-        Just x  -&gt; case checkCandidate xs knows x of
-        Nothing -&gt; Nothing
-        Just y  -&gt; recentMovie y
+<pre><code>phrase  count   sigma_normalized
+for a   38      0.6706459452115997
+the way 34      0.7417616427971635
+to harry        31      0.7671160112200728
+a few   45      0.7699093885203201
+off the 32      0.7949383886682402
+to him  27      0.7958792937430593
+was going       36      0.811227023007951
+up to   39      0.8122786875347693
+but it  32      0.8336661901803439
+up the  40      0.8365345579027479
+if you  34      0.8422559552361845
+which was       28      0.8552087965411528
+of course       35      0.8621365585531023
+by the  43      0.8625237028663237
+the other       52      0.8876800348745395
+with a  55      0.8903321479589525
+ and    51      0.9016112133824481
+his face        31      0.9018554880700214
+and he  47      0.9038362537361607
+with the        56      0.9048625952654603
+but i   32      0.9110050643857517
+had to  43      0.9235463968235097
+at last 28      0.9255524776918606
+i know  27      0.9294114876847764
+he could        47      0.9358967550241238
 </code></pre>
 
-<h1>Maybe Monad</h1>
-
-<p>Enter the Maybe monad. Instead of forcing us to make these <code>Nothing</code> checks and <code>Just x</code> extractions ourselves, the Maybe monad has a &#8220;chaining&#8221; operator <code>&gt;&gt;=</code> that performs checks and extractions automatically. That is, <code>Nothing &gt;&gt;= f</code> is always <code>Nothing</code>, and <code>Just x &gt;&gt;= f</code> returns <code>f x</code>, so we can rewrite our <code>findCelebrity</code> method as:</p>
-
-<pre><code>findCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-findCelebrity xs knows =
-    findCandidate xs knows &gt;&gt;= checkCandidate xs knows
-</code></pre>
-
-<p>Or, in the sugared <code>do</code> syntax:</p>
-
-<pre><code>findCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-findCelebrity xs knows = do
-    candidate &lt;- findCandidate xs knows
-    celebrity &lt;- checkCandidate xs knows candidate
-    return celebrity
-</code></pre>
-
-<p>So that&#8217;s the Maybe monad.</p>
-
-<h1>Typeclasses</h1>
-
-<p>Now let&#8217;s see if we can generalize our solution a bit. In our algorithm above, we didn&#8217;t really make use of the fact that we were dealing with <code>Person</code> data types. The only assumption we made was that we could test whether two Persons were equal, in the <code>x == candidate</code> check of <code>checkCandidate</code>*. Thus, if we replace the <code>Person</code> data type in all our type signatures with a data type that supports equality testing, our function will be a bit more general and work just as well.</p>
-
-<p>To do this, we write</p>
-
-<pre><code>findCandidate :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; Maybe a
-checkCandidate :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; a -&gt; Maybe a
-findCelebrity :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; Maybe a
-</code></pre>
-
-<p><code>Eq a</code> simply means that <code>a</code> is a type that supports equality testing, i.e., given any two objects <code>x</code> and <code>y</code> of type <code>a</code>, writing <code>x == y</code> works. So now our <code>findCelebrity</code> function can not only find celebrities in a group of Persons, but also find things like the majority or minority in a group of integers (if we use <code>(&lt;)</code> or <code>(&gt;)</code> as our oracle), and sources or sinks in a graph.</p>
-
-<p>*Note that we can actually get rid of this equality testing assumption, by making <code>findCandidate</code> return a list of rejected persons (in addition to the candidate celebrity) that we check against in <code>checkCandidate</code>.</p>
-
-<h1>An evasive segue</h1>
-
-<p>So there&#8217;s an introduction to the Maybe monad and typeclasses (that maybe you could have discovered yourself!). For just one more quick intro, note that the celebrity question provides a counterexample to the <a href="http://blog.echen.me/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture">Evasiveness Conjecture</a> on <em>non-monotone</em> graphs, showing why the monotonicity assumption in the conjecture is indeed necessary.</p>
+<p>So interestingly, while the method doesn&#8217;t do a great job of capturing the most important phrases (I&#8217;m not really sure why it should, in any case, as I&#8217;d guess main characters and themes would appear pretty evenly throughout the text), it does seem to pick out minor characters and objects (like the Dudleys), which seems to make a bit more sense.</p>
 ]]></content>
   </entry>
   

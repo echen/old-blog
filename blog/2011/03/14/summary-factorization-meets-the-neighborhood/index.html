@@ -97,8 +97,8 @@
 <p>There are two approaches to collaborative filtering: neighborhood methods and latent factor models.</p>
 
 <ul>
-<li><p>Neighborhood models are most effective at detecting very localized relationships (e.g., that people who like X-Men also like Spiderman), but poor at detecting a user&#8217;s overall signals.</p></li>
-<li><p>Latent factor models are best at estimating overall structure (e.g., that a user likes horror movies), but are poor at detecting strong associations among small sets of closely related items.</p></li>
+<li>Neighborhood models are most effective at detecting very localized relationships (e.g., that people who like X-Men also like Spiderman), but poor at detecting a user&#8217;s overall signals.</li>
+<li>Latent factor models are best at estimating overall structure (e.g., that a user likes horror movies), but are poor at detecting strong associations among small sets of closely related items.</li>
 </ul>
 
 
@@ -112,17 +112,17 @@
 
 <h1>A Neighborhood Model</h1>
 
-<p>Recall the previous paper, where we modeled each rating $latex r _ {ui}$ as</p>
+<p>Recall the previous paper, where we modeled each rating $r_{ui}$ as</p>
 
-<p>$latex r _ {ui} = b _ {ui}+ \sum _ {N \in N(i; u)} (r _ {uj} - b _ {uj}) w _ {ij},$</p>
+<p>$$r<em>{ui} = b</em>{ui}+ \sum<em>{N \in N(i; u)} (r</em>{uj} - b<em>{uj}) w</em>{ij},$$</p>
 
-<p>where $latex N(i; u)$ is the k items most similar to i among the items user u rated, and the $latex w _ {ij}$ are parameters to be learned by solving a regularized least squares problem.</p>
+<p>where $N(i; u)$ is the k items most similar to i among the items user u rated, and the $w_{ij}$ are parameters to be learned by solving a regularized least squares problem.</p>
 
-<p>This paper makes several enhancements to that model. First, we replace $latex N(i; u)$ with $latex R ^ k(i; u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $latex N ^ k(i; u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
+<p>This paper makes several enhancements to that model. First, we replace $N(i; u)$ with $R<sup>k(i;</sup> u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $N<sup>k(i;</sup> u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
 
-<p>$latex r _ {ui} = b _ {ui} + \sum _ {j \in R ^ k(i; u)} (r _ {uj} - b _ {uj}) w _ {ij} + \sum _ {j \in N ^ k(i; u)} c _ {ij},$</p>
+<p>$$r<em>{ui} = b</em>{ui} + \sum<em>{j \in R<sup>k(i;</sup> u)} (r</em>{uj} - b<em>{uj}) w</em>{ij} + \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij},$$</p>
 
-<p>where the $latex c _ {ij}$ are another set of parameters to learn.</p>
+<p>where the $c_{ij}$ are another set of parameters to learn.</p>
 
 <p>Notice that by taking the intersection of the k items most similar to i with the items user u rated (giving perhaps a set of size less than k), rather than taking the k items most similar to i among the items user u rated, we let our model be influenced not only by what a user rates, but also by what a user does not rate. For example, if a user does not rate LOTR 1 or LOTR 2, his predicted rating for LOTR 3 is penalized.</p>
 
@@ -130,7 +130,7 @@
 
 <p>Nonetheless, this dichotomy between power users and newbie users is perhaps overemphasized by our current model, so we moderate the dichotomy by modifying our model to be</p>
 
-<p>$latex r _ {ui} = b _ {ui} + |R ^ k(i; u)| ^ {-0.5} \sum _ {j \in R ^ k(i; u)} (r _ {uj} - b _ {uj}) w _ {ij} + |N ^ k(i; u)| ^ {-0.5} \sum _ {j \in N ^ k(i; u)} c _ {ij}.$</p>
+<p>$$r<em>{ui} = b</em>{ui} + |R<sup>k(i;</sup> u)|<sup>{-0.5}</sup> \sum<em>{j \in R<sup>k(i;</sup> u)} (r</em>{uj} - b<em>{uj}) w</em>{ij} + |N<sup>k(i;</sup> u)|<sup>{-0.5}</sup> \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij}.$$</p>
 
 <p>Parameters are determined by solving a regularized least squares problem.</p>
 
@@ -138,21 +138,21 @@
 
 <p>Typical SVD approaches are based on the following rule:</p>
 
-<p>$latex r _ {ui} = b _ {ui} + p _ u ^ T q _ i,$</p>
+<p>$$r<em>{ui} = b</em>{ui} + p_u<sup>T</sup> q_i,$$</p>
 
-<p>where $latex p _ u$ is a user-factors vector and $latex q _ i$ is an item-factors vector. We describe two enhancements.</p>
+<p>where $p_u$ is a user-factors vector and $q_i$ is an item-factors vector. We describe two enhancements.</p>
 
 <h2>Asymmetric-SVD</h2>
 
-<p>One suggestion is to replace $latex p _ u$ with</p>
+<p>One suggestion is to replace $p_u$ with</p>
 
-<p>$latex |R(u)| ^ {-0.5} + \sum _ {j \in R(u)} (r _ {uj} - b _ {uj}) x _ j + |N(u)| ^ {-0.5} \sum _ {j \in N(u)} y _ j,$</p>
+<p>$$|R(u)|<sup>{-0.5}</sup> + \sum<em>{j \in R(u)} (r</em>{uj} - b<em>{uj}) x_j + |N(u)|<sup>{-0.5}</sup> \sum</em>{j \in N(u)} y_j,$$</p>
 
-<p>where $latex R(u)$ is the set of items user u has rated, and $latex N(u)$ is the set of items user u has provided implicit feedback for. In other words, this model represents users through the items they prefer, rather than expressing users in a latent feature space. This model has several advantages:</p>
+<p>where $R(u)$ is the set of items user u has rated, and $N(u)$ is the set of items user u has provided implicit feedback for. In other words, this model represents users through the items they prefer, rather than expressing users in a latent feature space. This model has several advantages:</p>
 
 <ul>
-<li><p>Asymmetric-SVD does not parameterize users, so we do not need to wait to retrain the model when a user comes in. Instead, we can handle new users as soon as they provide feedback.</p></li>
-<li><p>Predictions are a direct function of past feedback, so we can easily explain predictions. (When using a pure latent feature solution, however, explainability is difficult.)</p></li>
+<li>Asymmetric-SVD does not parameterize users, so we do not need to wait to retrain the model when a user comes in. Instead, we can handle new users as soon as they provide feedback.</li>
+<li>Predictions are a direct function of past feedback, so we can easily explain predictions. (When using a pure latent feature solution, however, explainability is difficult.)</li>
 </ul>
 
 
@@ -160,22 +160,22 @@
 
 <h2>SVD++</h2>
 
-<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $latex p _ u$ with $latex p _ u + |N(u)| ^ {-0.5} \sum _ {j \in N(u)} y _ j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
+<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $p_u$ with $p_u + |N(u)|<sup>{-0.5}</sup> \sum_{j \in N(u)} y_j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
 
 <h1>An Integrated Model</h1>
 
 <p>An integrated model incorporating baseline estimates, the neighborhood approach, and the latent factor approach is as follows:</p>
 
-<p>$latex r _ {ui} = \left[\mu + b _ u + b _ i\right] +\left[q _ i ^ T \big(p _ u + \sqrt{|N(u)|}\sum _ {j \in N(u)} y _ j \big)\right] + \left[\sqrt{|R ^ k(i;u)} \sum _ {j \in R ^ k(i; u)}(r _ {uj} - b _ {uj})w _ {ij}+\sqrt{|N ^ k(i;u)|} \sum _ {j \in N ^ k(i; u)} c _ {ij}\right].$</p>
+<p>$$r<em>{ui} = \left[\mu + b_u + b_i\right] +\left[q_i<sup>T</sup> \big(p_u + \sqrt{|N(u)|}\sum</em>{j \in N(u)} y_j \big)\right] + \left[\sqrt{|R<sup>k(i;u)}</sup> \sum<em>{j \in R<sup>k(i;</sup> u)}(r</em>{uj} - b<em>{uj})w</em>{ij}+\sqrt{|N<sup>k(i;u)|}</sup> \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij}\right].$$</p>
 
-<p>Note that we have used $latex (\mu + b _ u + b _ i)$ as our baseline estimate. We also used the SVD++ model, but we could use the Asymmetric-SVD model instead.</p>
+<p>Note that we have used $(\mu + b_u + b_i)$ as our baseline estimate. We also used the SVD++ model, but we could use the Asymmetric-SVD model instead.</p>
 
 <p>This rule provides a 3-tier model for recommendations:</p>
 
 <ul>
-<li><p>The first baseline group describes general properties of the item and user. For example, it may say that &#8220;The Sixth Sense&#8221; movie is known to be a good movie in general, and that Joe rates like the average user.</p></li>
-<li><p>The next latent factor group may say that since &#8220;The Sixth Sense&#8221; and Joe rate high on the Psychological Thrillers Scale, Joe may like The Sixth Sense because he likes this genre of movies in general.</p></li>
-<li><p>The final neighborhood tier makes fine-grained adjustments that are hard to file, such as the fact that Joe rated low the movie &#8220;Signs&#8221;, a similar psychological thriller by the same director.</p></li>
+<li>The first baseline group describes general properties of the item and user. For example, it may say that &#8220;The Sixth Sense&#8221; movie is known to be a good movie in general, and that Joe rates like the average user.</li>
+<li>The next latent factor group may say that since &#8220;The Sixth Sense&#8221; and Joe rate high on the Psychological Thrillers Scale, Joe may like The Sixth Sense because he likes this genre of movies in general.</li>
+<li>The final neighborhood tier makes fine-grained adjustments that are hard to file, such as the fact that Joe rated low the movie &#8220;Signs&#8221;, a similar psychological thriller by the same director.</li>
 </ul>
 
 

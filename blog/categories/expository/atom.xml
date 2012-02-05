@@ -4,7 +4,7 @@
   <title><![CDATA[Category: expository | My Octopress Blog]]></title>
   <link href="http://echen.github.com/blog/categories/expository/atom.xml" rel="self"/>
   <link href="http://echen.github.com/"/>
-  <updated>2012-02-04T17:29:48-08:00</updated>
+  <updated>2012-02-04T17:40:39-08:00</updated>
   <id>http://echen.github.com/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -185,44 +185,48 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
     <link href="http://echen.github.com/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
     <updated>2011-04-21T00:16:36-07:00</updated>
     <id>http://echen.github.com/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
-    <content type="html"><![CDATA[<p>(For a layman's introduction, see <a href="/2011/03/14/least-angle-regression-for-the-hungry-layman/">here</a>.)</p>
+    <content type="html"><![CDATA[<p>(I wrote up a more mathematical explanation of least angle regression <a href="http://echen.me/posts/a-mathematical-introduction-to-least-angle-regression">here</a>.)</p>
 
-<p>Least Angle Regression (aka LARS) is a <strong>model selection method</strong> for linear regression (when you're worried about overfitting or want your model to be easily interpretable). To motivate it, let's consider some other model selection methods:</p>
+<p>Suppose you're at a buffet. You don't want to just grab everything and overeat (overfit), so how do you decide which dishes to take? Here are some possibilities.</p>
+
+<h1>Forward Selection</h1>
+
+<p>On your first trip to the buffet, take a plateful of your favorite dish, bring it back, and eat it. On your second trip, take a plateful of the dish that <em>now</em> looks most appetizing, bring it back, and eat it. And so on.</p>
+
+<p>The problem with this method is the following: suppose your favorite food is spaghetti, followed closely by macaroni. Ideally, you'd like to take half a plate of spaghetti and slightly less than half a plate of macaroni, but under this method, you have to first take and eat a plateful of spaghetti, and now you're sick of pasta and don't want macaroni anymore.</p>
+
+<h1>Forward Stagewise</h1>
+
+<p>To remedy the greediness of the above method, another option is to take smaller morsels at a time. On your first trip to the buffet, you take a thimbleful of your favorite dish; on your next trip to the buffet, you take a thimbleful of the currently most appetizing dish; and so on again.</p>
+
+<p>Now, after getting your thimbleful of spaghetti, pasta still looks delicious to you, so you can get your thimbleful of macaroni as well.</p>
+
+<p>The problem with this method is that because you're only eating a thimbleful at a time, you have to make many trips to the buffet and so dinner takes forever.</p>
+
+<h1>Least Angle Regression</h1>
+
+<p>A much more efficient method works as follows. Suppose your favorite dishes are, in order, spaghetti, macaroni, salad, and chili. On your first trip, you grab a bunch of spaghetti. You know that as you eat spaghetti, you start to get slightly sick of it, so it becomes less and less appetizing, until eventually it becomes just as appetizing as macaroni (but still more appetizing than salad and chili). So only grab an amount X of spaghetti, so that after eating X, spaghetti and macaroni are equally appetizing.</p>
+
+<p>On your second trip, spaghetti and macaroni are equally appetizing. Grab both spaghetti and macaroni, in proportions such that spaghetti and macaroni stay equally appetizing while you eat. Again, you know exactly how much spaghetti and macaroni you can eat until salad becomes just as appetizing, so only grab this amount.</p>
+
+<p>On your third trip, spaghetti, macaroni, and salad look equally delicious. Again, grab the three foods in proportions that stay equally appetizing while you eat, and only grab enough to make chili look just as tasty.</p>
+
+<p>And so on.</p>
+
+<p>Note that:</p>
 
 <ul>
-<li><p><strong>Forward selection</strong> starts with no variables in the model, and at each step it adds to the model the variable with the most explanatory power, stopping if the explanatory power falls below some threshold. This is a fast and simple method, but it can also be too greedy: we fully add variables at each step, so correlated predictors don't get much of a chance to be included in the model. (For example, suppose we want to build a model for the deliciousness of a PB&amp;J sandwich, and two of our variables are the amount of peanut butter and the amount of jelly. We'd like both variables to appear in our model, but since amount of peanut butter is (let's assume) strongly correlated with the amount of jelly, once we fully add peanut butter to our model, jelly doesn't add much explanatory power anymore, and so it's unlikely to be added.)</p></li>
-<li><p><strong>Forward stagewise regression</strong> tries to remedy the greediness of forward selection by only partially adding variables. Whereas forward selection finds the variable with the most explanatory power and goes all out in adding it to the model, forward stagewise finds the variable with the most explanatory power and updates its weight by only epsilon in the correct direction. (So we might first increase the weight of peanut butter a little bit, then increase the weight of peanut butter again, then increase the weight of jelly, then increase the weight of bread, and then increase the weight of peanut butter once more.) The problem now is that we have to make a ton of updates, so forward stagewise can be very inefficient.</p></li>
+<li>This method works better than forward selection, because we get to eat both spaghetti and macaroni.</li>
+<li>This method works much faster than forward stagewise, because we make much fewer trips. (If we want to eat $n$ dishes, we only need to make $n$ trips.)</li>
+<li>We're always eating whatever looks most appetizing to us.</li>
 </ul>
 
 
-<p>LARS, then, is essentially forward stagewise made fast. Instead of making tiny hops in the direction of one variable at a time, LARS makes optimally-sized leaps in optimal directions. These directions are chosen to make equal angles (equal correlations) with each of the variables currently in our model. (We like peanut butter best, so we start eating it first; as we eat more, we get a little sick of it, so jelly starts looking equally appetizing, and we start eating peanut butter and jelly simultaneously; later, we add bread to the mix, etc.)</p>
+<h1>Reversing the Analogy</h1>
 
-<p>In more detail, LARS works as follows:</p>
+<p>Replace buffet with linear regression and dishes with variables, and you now have three tasty model selection methods to choose from.</p>
 
-<ul>
-<li><p>Assume for simplicity that we've standardized our explanatory variables to have zero mean and unit variance, and that our response variable also has zero mean.</p></li>
-<li><p>Start with no variables in your model.</p></li>
-<li><p>Find the variable $latex x _ 1 $ most correlated with the residual. (Note that the variable most correlated with the residual is equivalently the one that makes the least angle with the residual, whence the name.)</p></li>
-<li><p>Move in the direction of this variable until some other variable $latex x _ 2 $ is just as correlated.</p></li>
-<li><p>At this point, start moving in a direction such that the residual stays equally correlated with $latex x _ 1 $ and $latex x _ 2 $ (i.e., so that the residual makes equal angles with both variables), and keep moving until some variable $latex x _ 3 $ becomes equally correlated with our residual.</p></li>
-<li><p>And so on, stopping when we've decided our model is big enough.</p></li>
-</ul>
-
-
-<p>For example, consider the following image (slightly simplified from the <a href="http://www.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf">original LARS paper</a>; $latex x _ 1, x _ 2$ are our variables, and $latex y$ is our response):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png"><img src="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png" alt="LARS Example" /></a></p>
-
-<p>Our model starts at $latex \hat{\mu _ 0} $.</p>
-
-<ul>
-<li><p>The residual (the green line) makes a smaller angle with $latex x _ 1 $ than with $latex x _ 2 $, so we start moving in the direction of $latex x _ 1 $.
-At $latex \hat{\mu _ 1} $, the residual now makes equal angles with $latex x _ 1, x _ 2 $, and so we start moving in a new direction that preserves this equiangularity/equicorrelation.</p></li>
-<li><p>If there were more variables, we'd change directions again once a new variable made equal angles with our residual, and so on.</p></li>
-</ul>
-
-
-<p>So when should you use LARS, as opposed to some other regularization method like lasso? There's not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don't usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).</p>
+<p>For a more mathematical explanation of least angle regression, see <a href="http://echen.me/posts/a-mathematical-introduction-to-least-angle-regression">here</a>.</p>
 ]]></content>
   </entry>
   
@@ -242,10 +246,10 @@ At $latex \hat{\mu _ 1} $, the residual now makes equal angles with $latex x _ 1
 <p>Other examples of cointegrated pairs:</p>
 
 <ul>
-<li><p>Income and consumption: as income increases/decreases, so too does consumption.</p></li>
-<li><p>Size of police force and amount of criminal activity</p></li>
-<li><p>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</p></li>
-<li><p>Number of patients entering or leaving a hospital</p></li>
+<li>Income and consumption: as income increases/decreases, so too does consumption.</li>
+<li>Size of police force and amount of criminal activity</li>
+<li>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</li>
+<li>Number of patients entering or leaving a hospital</li>
 </ul>
 
 
@@ -266,25 +270,25 @@ At $latex \hat{\mu _ 1} $, the residual now makes equal angles with $latex x _ 1
 <p>So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:</p>
 
 <ul>
-<li><p>Check that $latex X _ t $ and $latex Y _ t $ are both I(1).</p></li>
-<li><p>Estimate the cointegrating relationship $latex Y _ t = aX _ t + e _ t $ by ordinary least squares.</p></li>
-<li><p>Check that the cointegrating residuals $latex e _ t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</p></li>
+<li>Check that $ X_t $ and $ Y_t $ are both I(1).</li>
+<li>Estimate the cointegrating relationship $ Y_t = aX_t + e_t $ by ordinary least squares.</li>
+<li>Check that the cointegrating residuals $ e_t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</li>
 </ul>
 
 
 <h1>Error-correction and Granger representation</h1>
 
-<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $latex X _ t, Y _ t $, with autoregressive representations</p>
+<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations</p>
 
-<p>$latex X _ t = a X _ {t-1} + b Y _ {t-1} + u _ t $
-$latex Y _ t = c X _ {t-1} + d Y _ {t-1} + v _ t $</p>
+<p>$ X_t = a X<em>{t-1} + b Y</em>{t-1} + u_t $
+$ Y_t = c X<em>{t-1} + d Y</em>{t-1} + v_t $</p>
 
 <p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
 
-<p>$latex \Delta X _ t = \alpha _ 1 (Y _ {t-1} - \beta X _ {t-1}) + u _ t $
-$latex \Delta Y _ t = \alpha _ 2 (Y _ {t-1} - \beta X _ {t-1}) + v _ t $</p>
+<p>$ \Delta X_t = \alpha_1 (Y<em>{t-1} - \beta X</em>{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y<em>{t-1} - \beta X</em>{t-1}) + v_t $</p>
 
-<p>where $latex Y _ {t-1} - \beta X _ {t-1} \sim I(0) $ is the cointegrating relationship. Regarding $latex Y _ {t-1} - \beta X _ {t-1} $ as the extent of disequilibrium from the long-run relationship, and the $latex \alpha _ i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+<p>where $ Y<em>{t-1} - \beta X</em>{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y<em>{t-1} - \beta X</em>{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
 
 <h1>Summary</h1>
 
@@ -293,115 +297,59 @@ $latex \Delta Y _ t = \alpha _ 2 (Y _ {t-1} - \beta X _ {t-1}) + v _ t $</p>
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Introduction to Monads and Typeclasses in Haskell]]></title>
-    <link href="http://echen.github.com/blog/2011/04/16/monads-typeclasses-and-celebrities/"/>
-    <updated>2011-04-16T03:40:23-07:00</updated>
-    <id>http://echen.github.com/blog/2011/04/16/monads-typeclasses-and-celebrities</id>
-    <content type="html"><![CDATA[<p>My favorite problems are the ones that you can turn into a mini-lesson on something new. I realized the following problem could make a nice introduction to the Maybe monad and typeclasses in Haskell, so I'm going to try lessonizing it here.</p>
+    <title type="html"><![CDATA[Counting Clusters]]></title>
+    <link href="http://echen.github.com/blog/2011/03/19/counting-clusters/"/>
+    <updated>2011-03-19T04:22:16-07:00</updated>
+    <id>http://echen.github.com/blog/2011/03/19/counting-clusters</id>
+    <content type="html"><![CDATA[<p>Given a set of datapoints, we often want to know how many clusters the datapoints form. Two practical algorithms for determining the number of clusters are the gap statistic and the prediction strength.</p>
 
-<h1>Finding Celebrities</h1>
+<h1>Gap Statistic</h1>
 
-<p>The problem is this: suppose you have a group of people, and you want to find a "celebrity" among them, where a celebrity is defined as a person P such that everybody else knows P, but P knows no one. (Note that, by the definition of celebrity, there can be at most one celebrity in a group.) So you're given a group of people, a black box oracle that tells you whether person X knows person Y, and you want to efficiently find a celebrity in the group (if such a celebrity exists).</p>
+<p>The gap statistic algorithm (from <a href="http://www.stanford.edu/~hastie/Papers/gap.pdf">Estimating the number of clusters in a data set via the gap statistic</a>) works as follows.</p>
 
-<p>The solution I came up with is the following two-step algorithm:</p>
+<p>For each i from 1 up to some maximum number of clusters:</p>
 
-<ul>
-<li><p>Step 1 finds a candidate celebrity. We keep a temporary candidate C and walk through the group: if C knows the current person P under our pointer, then C can't be a celebrity, so we change the temporary candidate to be P and move on; otherwise, if C does not know the current person P, then we keep C as our candidate and move to the next person on the list.</p></li>
-<li><p>Step 2 checks that our candidate celebrity C is actually a celebrity. We walk through the list of people, and check that for every other person P, P knows C but C does not know P.</p></li>
-</ul>
+<ol>
+<li><p>Run a k-means algorithm on the original dataset to find i clusters, and sum the distance of all points from their cluster mean. Call this sum the <em>dispersion</em>.</p></li>
+<li><p>Generate a set of reference datasets (of the same size as the original). One simple way of generating a reference dataset is to sample uniformly from the original dataset's bounding rectangle; a more sophisticated approach is take into account the original dataset's shape by sampling, say, from a rectangle formed from the original dataset's principal components.</p></li>
+<li><p>Calculate the dispersion of each of these reference datasets, and take their mean.</p></li>
+<li><p>Define the ith <em>gap</em> by [log(mean dispersion of reference datasets) - log(dispersion of original dataset)].</p></li>
+</ol>
 
 
-<p>Let's code this up now in Haskell. Since the algorithm has two steps, let's code up each step individually.</p>
+<p>Once we've calculated all the gaps (note that we can add confidence intervals as well; see the original paper for the formula), we can select the number of clusters to be the one that gives the maximum gap.</p>
 
-<pre><code>-- Step 1
-findCandidate :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-findCandidate [] _ = Nothing
-findCandidate (x:[]) _ = Just x
-findCandidate (x:y:rest) knows =
-    if x `knows` y
-        then findCandidate (y:rest) knows
-        else findCandidate (x:rest) knows
+<p>For example, here I've generated three Gaussian clusters:</p>
 
--- Step2
-checkCandidate :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Person -&gt; Maybe Person
-checkCandidate [] _ candidate = Just candidate
-checkCandidate (x:xs) knows candidate
-    | x == candidate = checkCandidate xs knows candidate
-    | otherwise      =
-        if (x `knows` candidate) &amp;&amp; (not $ candidate `knows` x)
-            then checkCandidate xs knows candidate
-            else Nothing
-</code></pre>
+<p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d.png" alt="Three Gaussian Clusters" /></a></p>
 
-<p>Now how do we combine the first two steps? A first approach might be the following:</p>
+<p>And running the gap statistic algorithm, we see that it correctly detects the number of clusters to be three:</p>
 
-<pre><code>badFindCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-badFindCelebrity xs knows = checkCandidate xs knows (findCandidate xs knows)
-</code></pre>
+<p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png" alt="Gap Statistic on Three Gaussian Clusters" /></a></p>
 
-<p>But this doesn't work! There's a <em>type mismatch</em> in our definition: <code>checkCandidate</code> takes a <code>Person</code> in its last argument, but <code>findCandidate xs knows</code> returns something of type <code>Maybe Person</code>.</p>
+<p>(For a sample R implementation of the gap statistic, see <a href="https://github.com/echen/gap-statistic">here</a>.)</p>
 
-<p>How do we fix this? One approach would be to do some checking of our candidate celebrity: if it's <code>Nothing</code>, then don't even bother passing it to <code>checkCandidate</code> and just fail immediately; otherwise, extract the person from its <code>Just x</code> wrapper, and pass this extraction to <code>checkCandidate</code>. This works as follows:</p>
+<h1>Prediction Strength</h1>
 
-<pre><code>messyFindCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-messyFindCelebrity xs knows =
-    case findCandidate xs knows of
-        Nothing -&gt; Nothing
-        Just x  -&gt; checkCandidate xs knows x
-</code></pre>
+<p>Another cluster-counting algorithm is the prediction strength algorithm (from <a href="http://www-stat.stanford.edu/~tibs/ftp/predstr.ps">Cluster validation by prediction strength</a>). To run it, for each i from 1 up to some maximum number of clusters:</p>
 
-<p>This isn't too bad, but what if we later want to add some additional checks? For example, instead of finding any old celebrity, we might want to find only celebrities that have recently starred in a movie, in which case we'd have to modify our algorithm to:</p>
+<ol>
+<li><p>Divide the dataset into two groups, a training set and a test set.</p></li>
+<li><p>Run a k-means algorithm on each set to find i clusters.</p></li>
+<li><p>For each <em>test</em> cluster, count the proportion of pairs of points in that cluster that would remain in the same cluster, if each were assigned to its closest <em>training</em> cluster mean.</p></li>
+<li><p>The minimum over these proportions is the prediction strength for i clusters.</p></li>
+</ol>
 
-<pre><code>recentMovie :: Person -&gt; Maybe Person
-recentMovie x = ...
 
-messyFindCelebrity' :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-messyFindCelebrity' xs knows =
-    case findCandidate xs knows of
-        Nothing -&gt; Nothing
-        Just x  -&gt; case checkCandidate xs knows x of
-        Nothing -&gt; Nothing
-        Just y  -&gt; recentMovie y
-</code></pre>
+<p>Once we've calculated the prediction strength for each number of clusters, we select the number of clusters to be the maximum i such that the prediction strength for i is greater than some threshold. (The paper suggests 0.8 - 0.9 as a good threshold, and I've seen 0.8 work well in practice.)</p>
 
-<h1>Maybe Monad</h1>
+<p>Here's the prediction strength algorithm run on the same example above:</p>
 
-<p>Enter the Maybe monad. Instead of forcing us to make these <code>Nothing</code> checks and <code>Just x</code> extractions ourselves, the Maybe monad has a "chaining" operator <code>&gt;&gt;=</code> that performs checks and extractions automatically. That is, <code>Nothing &gt;&gt;= f</code> is always <code>Nothing</code>, and <code>Just x &gt;&gt;= f</code> returns <code>f x</code>, so we can rewrite our <code>findCelebrity</code> method as:</p>
+<p><a href="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png"><img src="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png" alt="Prediction Strength on Three Gaussian Clusters" /></a></p>
 
-<pre><code>findCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-findCelebrity xs knows =
-    findCandidate xs knows &gt;&gt;= checkCandidate xs knows
-</code></pre>
+<p>(Again, for a sample R implementation of the prediction strength, see <a href="https://github.com/echen/prediction-strength">here</a>.)</p>
 
-<p>Or, in the sugared <code>do</code> syntax:</p>
-
-<pre><code>findCelebrity :: [Person] -&gt; (Person -&gt; Person -&gt; Bool) -&gt; Maybe Person
-findCelebrity xs knows = do
-    candidate &lt;- findCandidate xs knows
-    celebrity &lt;- checkCandidate xs knows candidate
-    return celebrity
-</code></pre>
-
-<p>So that's the Maybe monad.</p>
-
-<h1>Typeclasses</h1>
-
-<p>Now let's see if we can generalize our solution a bit. In our algorithm above, we didn't really make use of the fact that we were dealing with <code>Person</code> data types. The only assumption we made was that we could test whether two Persons were equal, in the <code>x == candidate</code> check of <code>checkCandidate</code>*. Thus, if we replace the <code>Person</code> data type in all our type signatures with a data type that supports equality testing, our function will be a bit more general and work just as well.</p>
-
-<p>To do this, we write</p>
-
-<pre><code>findCandidate :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; Maybe a
-checkCandidate :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; a -&gt; Maybe a
-findCelebrity :: (Eq a) =&gt; [a] -&gt; (a -&gt; a -&gt; Bool) -&gt; Maybe a
-</code></pre>
-
-<p><code>Eq a</code> simply means that <code>a</code> is a type that supports equality testing, i.e., given any two objects <code>x</code> and <code>y</code> of type <code>a</code>, writing <code>x == y</code> works. So now our <code>findCelebrity</code> function can not only find celebrities in a group of Persons, but also find things like the majority or minority in a group of integers (if we use <code>(&lt;)</code> or <code>(&gt;)</code> as our oracle), and sources or sinks in a graph.</p>
-
-<p>*Note that we can actually get rid of this equality testing assumption, by making <code>findCandidate</code> return a list of rejected persons (in addition to the candidate celebrity) that we check against in <code>checkCandidate</code>.</p>
-
-<h1>An evasive segue</h1>
-
-<p>So there's an introduction to the Maybe monad and typeclasses (that maybe you could have discovered yourself!). For just one more quick intro, note that the celebrity question provides a counterexample to the <a href="http://blog.echen.me/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture">Evasiveness Conjecture</a> on <em>non-monotone</em> graphs, showing why the monotonicity assumption in the conjecture is indeed necessary.</p>
+<p>In practice, I tend to prefer using the gap statistic algorithm, since it's a little easier to code and it doesn't require selecting an arbitrary threshold like the prediction strength does. I've also found that it gives slightly better results (though the original prediction strength paper has the opposite finding).</p>
 ]]></content>
   </entry>
   

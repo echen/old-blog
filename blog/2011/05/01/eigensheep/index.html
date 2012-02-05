@@ -90,7 +90,7 @@
   </header>
 
 
-<div class="entry-content"><p>Aaron Koblin&#8217;s <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were <em>ordered</em>, so inspired by the use of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a> in facial recognition, I decided to try projecting the sheep onto two dimensions.</p>
+<div class="entry-content"><p>Aaron Koblin&#8217;s <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were <em>ordered</em>, so I decided to try projecting the sheep onto two dimensions.</p>
 
 <h1>Principal Sheep Components</h1>
 
@@ -105,6 +105,12 @@
 <p><a href="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png"><img src="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png" alt="Projected Sheep, Black Heads/Legs Circled" /></a></p>
 
 <p>And I think the sheep on the left (next to and inside the dense cluster) seem much more poorly drawn &#8211; they look more like camels, dogs, unicorns, or bugs than actual sheep.</p>
+
+<h1>Code</h1>
+
+<p>In a bit more detail, I used the poor man&#8217;s Mechanical Turk (myself) to screenshot the first 50 sheep from the market, trying to hug the sheep as closely as possible to ensure proper alignment. Next, I used the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> to resize the images to 150x150px, convert them to grayscale, and flatten them into the rows of a matrix.</p>
+
+<p>In case anyone else wants to play with the sheep images, I put the <a href="https://github.com/echen/eigensheep">code</a> on my <a href="https://github.com/echen/eigensheep">Github</a> account.</p>
 </div>
 
 

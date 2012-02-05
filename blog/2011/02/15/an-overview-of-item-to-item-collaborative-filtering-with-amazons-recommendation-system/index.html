@@ -99,17 +99,17 @@
 <p>The item-to-item approach can be contrasted to:</p>
 
 <ul>
-<li><p><strong>A user-to-user collaborative filtering approach</strong>. This finds users similar to you (e.g., it could find users who bought a lot of items in common with you), and suggest items that they&#8217;ve bought but you haven&#8217;t.</p></li>
-<li><p><strong>A global, latent factorization approach</strong>. Rather than looking at individual items in isolation (in the item-to-item approach, if you and I both buy a book X, Amazon will make essentially the same recommendations based on X, regardless of what we&#8217;ve bought in the past), a global approach would look at all the items you&#8217;ve bought, and try to detect properties that characterize what you like. For example, if you buy a lot of science fiction books and also a lot of romance books, a global-approach algorithm might try to recommend you books with both science fiction and romance elements.</p></li>
+<li><strong>A user-to-user collaborative filtering approach</strong>. This finds users similar to you (e.g., it could find users who bought a lot of items in common with you), and suggest items that they&#8217;ve bought but you haven&#8217;t.</li>
+<li><strong>A global, latent factorization approach</strong>. Rather than looking at individual items in isolation (in the item-to-item approach, if you and I both buy a book X, Amazon will make essentially the same recommendations based on X, regardless of what we&#8217;ve bought in the past), a global approach would look at all the items you&#8217;ve bought, and try to detect properties that characterize what you like. For example, if you buy a lot of science fiction books and also a lot of romance books, a global-approach algorithm might try to recommend you books with both science fiction and romance elements.</li>
 </ul>
 
 
 <h1>Pros/cons of the item-to-item approach:</h1>
 
 <ul>
-<li><p><strong>Pros over the user-to-user approach</strong>: Amazon (and most applications) has many more users than items, so it&#8217;s computationally simpler to find similar items than it is to find similar users. Finding similar users is also a difficult algorithmic task, since individual users often have a very wide range of tastes, but individual items usually belong to relatively few genres.</p></li>
-<li><p><strong>Pros over the factorization approach</strong>: Simpler to implement. Faster to update recommendations: as soon as you buy a new book, Amazon can make a new recommendation in the item-to-item approach, whereas a factorization approach would have to wait until the factorization has been recomputed. The item-to-item approach can also be more easily leveraged in several areas, not only in the recommendations made to you, but also in the &#8220;similar items/other customers also bought&#8221; section when you look at a particular item.</p></li>
-<li><p><strong>Cons of the item-to-item approach</strong>: You don&#8217;t get very much diversity or surprise in item-to-item recommendations, so recommendations tend to be kind of &#8220;obvious&#8221; and boring.</p></li>
+<li><strong>Pros over the user-to-user approach</strong>: Amazon (and most applications) has many more users than items, so it&#8217;s computationally simpler to find similar items than it is to find similar users. Finding similar users is also a difficult algorithmic task, since individual users often have a very wide range of tastes, but individual items usually belong to relatively few genres.</li>
+<li><strong>Pros over the factorization approach</strong>: Simpler to implement. Faster to update recommendations: as soon as you buy a new book, Amazon can make a new recommendation in the item-to-item approach, whereas a factorization approach would have to wait until the factorization has been recomputed. The item-to-item approach can also be more easily leveraged in several areas, not only in the recommendations made to you, but also in the &#8220;similar items/other customers also bought&#8221; section when you look at a particular item.</li>
+<li><strong>Cons of the item-to-item approach</strong>: You don&#8217;t get very much diversity or surprise in item-to-item recommendations, so recommendations tend to be kind of &#8220;obvious&#8221; and boring.</li>
 </ul>
 
 

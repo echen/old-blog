@@ -4,7 +4,7 @@
   <title><![CDATA[Category: visualizations | My Octopress Blog]]></title>
   <link href="http://echen.github.com/blog/categories/visualizations/atom.xml" rel="self"/>
   <link href="http://echen.github.com/"/>
-  <updated>2012-02-04T17:29:48-08:00</updated>
+  <updated>2012-02-04T17:40:39-08:00</updated>
   <id>http://echen.github.com/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -59,7 +59,7 @@
     <link href="http://echen.github.com/blog/2011/05/01/eigensheep/"/>
     <updated>2011-05-01T15:23:31-07:00</updated>
     <id>http://echen.github.com/blog/2011/05/01/eigensheep</id>
-    <content type="html"><![CDATA[<p>Aaron Koblin's <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it'd be even more awesome if the grid were <em>ordered</em>, so inspired by the use of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a> in facial recognition, I decided to try projecting the sheep onto two dimensions.</p>
+    <content type="html"><![CDATA[<p>Aaron Koblin's <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it'd be even more awesome if the grid were <em>ordered</em>, so I decided to try projecting the sheep onto two dimensions.</p>
 
 <h1>Principal Sheep Components</h1>
 
@@ -74,6 +74,12 @@
 <p><a href="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png"><img src="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png" alt="Projected Sheep, Black Heads/Legs Circled" /></a></p>
 
 <p>And I think the sheep on the left (next to and inside the dense cluster) seem much more poorly drawn -- they look more like camels, dogs, unicorns, or bugs than actual sheep.</p>
+
+<h1>Code</h1>
+
+<p>In a bit more detail, I used the poor man's Mechanical Turk (myself) to screenshot the first 50 sheep from the market, trying to hug the sheep as closely as possible to ensure proper alignment. Next, I used the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> to resize the images to 150x150px, convert them to grayscale, and flatten them into the rows of a matrix.</p>
+
+<p>In case anyone else wants to play with the sheep images, I put the <a href="https://github.com/echen/eigensheep">code</a> on my <a href="https://github.com/echen/eigensheep">Github</a> account.</p>
 ]]></content>
   </entry>
   
@@ -82,9 +88,9 @@
     <link href="http://echen.github.com/blog/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan/"/>
     <updated>2011-03-14T04:26:14-07:00</updated>
     <id>http://echen.github.com/blog/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan</id>
-    <content type="html"><![CDATA[<p>This is a fun image I found on <a href="http://www.neilkodner.com/2011/01/world-cup-2010-analysis-of-95gb-of-tweets-containing-goal/">Neil Kodner's blog</a>:</p>
+    <content type="html"><![CDATA[<p>This is a fun image:</p>
 
-<p><a href="//www.flickr.com/photos/squidnews/3200285750/"><img src="http://farm4.static.flickr.com/3134/3200285750_d2bd0a62fd.jpg" alt="KH(Ax)N" /></a></p>
+<p><a href="(http://www.flickr.com/photos/squidnews/3200285750/"><img src="http://farm4.static.flickr.com/3134/3200285750_d2bd0a62fd.jpg" alt="KH(Ax)N" /></a></p>
 
 <p>But I've never actually watched any of the Star Trek movies, so I decided to recreate the graph with Pikachu instead:</p>
 

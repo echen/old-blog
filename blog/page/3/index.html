@@ -9,7 +9,7 @@
   <meta name="author" content="Your Name">
 
   
-  <meta name="description" content="One of my all-time favorite graphs is the following visualization of the distribution of the primes (showing that the primes are more spread out than &hellip;">
+  <meta name="description" content="Given a set of datapoints, we often want to know how many clusters the datapoints form. Two practical algorithms for determining the number of &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,187 +64,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/22/harry-potter-and-the-keyword-chaos-unsupervised-statistically-significant-phrases/">Harry Potter and the Keyword Chaos: Unsupervised Statistically Significant Phrases</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-22T04:20:23-07:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>One of my all-time favorite graphs is the following visualization of the distribution of the primes (showing that the primes are more spread out than the random, clumpy points of a Poisson process):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png"><img src="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png" alt="Distribution of Primes" /></a></p>
-
-<p>So I was pretty intrigued when I ran across <a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">this paper</a> (<a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">Level statistics of words: Finding keywords in literary texts and symbolic sequences</a>) using similar quantumish, random matrixish ideas to extract the important phrases from a text.</p>
-
-<h1>The Paper</h1>
-
-<p>Statistical phrase extraction (e.g., the &#8220;statistically improbable phrases&#8221; you see on Amazon) is usually done by comparing a target text against a baseline corpus. The authors of this paper, however, describe an <em>unsupervised</em> phrase extraction method given only the target text itself, by making use of the spatial distribution of the phrases (which gets thrown out in typical bag-of-word models).</p>
-
-<p>The idea is that uninformative words and phrases (e.g., &#8220;the&#8221; and &#8220;but&#8221;) have a more random and uniform distribution than important words and phrases (e.g., names of main characters), which will tend to form clusters. (Funnily, the quantum chaos paper containing the primes graph reverses these characterizations: there, the primes are the ones that are repellent and spread out, while the random numbers are the ones that form clusters.)</p>
-
-<p>Thus, the cluster-tendency of a phrase should be a reasonable measure of its importance.</p>
-
-<h1>Implementation</h1>
-
-<p>I wrote a quick Ruby script to calculate the level statistics on the first Harry Potter book.</p>
-
-<p>Here are the top 25 unigrams extracted (ordered using the sigma_normalized statistic from the paper; I played around with the paper&#8217;s C number as well, but it didn&#8217;t give as good results):</p>
-
-<pre><code>&lt;code&gt;
-phrase      count   sigma_normalized
-dudley      117     5.886458836973907
-vernon      105     5.425462371919648
-uncle       121     4.96291028279975
-yeh         100     4.483340310689477
-mirror      46      4.4123632519944564
-platform    20      3.7698278374021283
-wood        53      3.698871282864937
-aunt        65      3.682665094335877
-hagrid      336     3.532997146829891
-ter         78      3.4935220547292394
-petunia     57      3.3847272743671764
-dragon      31      3.319790040957389
-fang        16      3.1175440675916763
-unicorn     22      3.109138726006347
-bludgers    13      3.0336322222301035
-o           31      2.973718095050078
-malfoy      112     2.965094959118159
-voldemort   31      2.957883190702609
-percy       36      2.946348443571833
-path        12      2.9430416987716383
-dursley     54      2.9266934668788025
-christmas   25      2.926196222714648
-anythin     13      2.8753724174699626
-quirrell    91      2.8351538706894868
-crate       12      2.8171552951153913
-&lt;/code&gt;
-</code></pre>
-
-<p>It looks more impressive when you compare with the bottom 25 unigrams (filtered to counts of at least 50, to make the unigrams more comparable to those above):</p>
-
-<pre><code>&lt;code&gt;
-phrase      count   sigma_normalized
-few         55      0.858973690529759
-seemed      72      0.8660034944771483
-might       54      0.8691077527153204
-after       68      0.8700202208036406
-way         94      0.8893865470583092
-come        95      0.8897833973429081
-before      107     0.9158168210798949
-good        82      0.9208260024379561
-suddenly    69      0.9223289856683224
-only        111     0.9262797404590966
-put         58      0.9320218173468643
-must        57      0.932224843054271
-while       60      0.9367996846919046
-asked       60      0.9386801898266576
-left        82      0.9509973378264027
-trying      65      0.9511509393516154
-saw         62      0.9524243012100968
-even        105     0.9563651096306485
-really      73      0.9569234100328665
-voice       59      0.957685122636835
-away        71      0.9611639088841413
-where       100     0.9657416499349912
-every       53      0.9659213894654203
-harrys      113     0.9746316711628271
-long        71      0.9794359046955133
-&lt;/code&gt;
-</code></pre>
-
-<p>Similarly, here are the top bigrams:</p>
-
-<pre><code>&lt;code&gt;phrase                  count   sigma_normalized
-uncle vernon            97      5.2050164080560615
-the mirror              35      3.8911699122647163
-professor mcgonagall    89      3.570490871211533
-aunt petunia            52      3.3541554249859917
-the library             21      3.2822285085324374
-nine and                13      3.052813340938423
-the twins               12      3.0493973437585256
-the potters             12      2.962214857171763
-the boy                 26      2.86158988074687
-said hagrid             89      2.76691520812392
-the stone               48      2.7118270594517413
-and dudley              15      2.705365860880404
-the giant               15      2.682345959043539
-the troll               18      2.6613701424473386
-mr dursley              30      2.607508647153971
-said uncle              13      2.5996349710103055
-sorcerers stone         14      2.564840300637567
-the quaffle             16      2.533417641354809
-said dumbledore         27      2.5200215250194193
-said hermione           42      2.509101121058932
-and threequarters       9       2.4248478008322967
-the crate               9       2.377194502184057
-the cloak               22      2.368960931129895
-the forest              23      2.3607725433338675
-mr potter               12      2.3429313549690285
-&lt;/code&gt;
-</code></pre>
-
-<p>And the bottom bigrams (filtered to counts of at least 25):</p>
-
-<pre><code>&lt;code&gt;
-phrase      count   sigma_normalized
-for a       38      0.6706459452115997
-the way     34      0.7417616427971635
-to harry    31      0.7671160112200728
-a few       45      0.7699093885203201
-off the     32      0.7949383886682402
-to him      27      0.7958792937430593
-was going   36      0.811227023007951
-up to       39      0.8122786875347693
-but it      32      0.8336661901803439
-up the      40      0.8365345579027479
-if you      34      0.8422559552361845
-which was   28      0.8552087965411528
-of course   35      0.8621365585531023
-by the      43      0.8625237028663237
-the other   52      0.8876800348745395
-with a      55      0.8903321479589525
- and        51      0.9016112133824481
-his face    31      0.9018554880700214
-and he      47      0.9038362537361607
-with the    56      0.9048625952654603
-but i       32      0.9110050643857517
-had to      43      0.9235463968235097
-at last     28      0.9255524776918606
-i know      27      0.9294114876847764
-he could    47      0.9358967550241238
-&lt;/code&gt;
-</code></pre>
-
-<p>So interestingly, while the method doesn&#8217;t do a great job of capturing the most important phrases (I&#8217;m not really sure why it should, in any case, as I&#8217;d guess main characters and themes would appear pretty evenly throughout the text), it does seem to pick out minor characters and objects (like the Dudleys), which seems to make a bit more sense.</p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -366,14 +185,14 @@ he could    47      0.9358967550241238
 
 <h1>Mathematical Terms</h1>
 
-<p>Let $latex \pi(x) $ denote the number of primes less than or equal to x. Recall <a href="http://en.wikipedia.org/wiki/Prime_number_theorem#The_prime-counting_function_in_terms_of_the_logarithmic_integral">Gauss&#8217;s approximation</a>: $latex \pi(x) \approx \int _ 2 ^ x \frac{1}{\log t} \,dt $ (aka, the &#8220;probability that a number n is prime&#8221; is approximately $latex \frac{1}{\log n} $).</p>
+<p>Let $ \pi(x) $ denote the number of primes less than or equal to x. Recall <a href="http://en.wikipedia.org/wiki/Prime_number_theorem#The_prime-counting_function_in_terms_of_the_logarithmic_integral">Gauss&#8217;s approximation</a>: $ \pi(x) \approx \int_2<sup>x</sup> \frac{1}{\log t} \,dt $ (aka, the &#8220;probability that a number n is prime&#8221; is approximately $ \frac{1}{\log n} $).</p>
 
-<p>Riemann improved on Gauss&#8217;s approximation by discovering an <em>exact</em> formula $latex P(x) = A(x) - E(x) $ for counting the primes, where</p>
+<p>Riemann improved on Gauss&#8217;s approximation by discovering an <em>exact</em> formula $ P(x) = A(x) - E(x) $ for counting the primes, where</p>
 
 <ul>
-<li><p>$latex P(x) = \sum _ {p ^ k &lt; x} \frac{1}{k} $ performs a weighted count of the prime powers less than or equal to x. [Think of this as a generalization of the prime counting function.]</p></li>
-<li><p>$latex A(x) = \int _ 0 ^ x \frac{1}{\log t} \,dt+ \int _ x ^ {\infty} \frac{1}{t(t ^ 2  -1) \log t} \,dt $ $latex - \log 2 $ is a kind of generalization of Gauss&#8217;s approximation.</p></li>
-<li><p>$latex E(x) = \sum _ {z : \zeta(z) = 0} \int _ 0 ^ {x ^ z} \frac{1}{\log t} \,dt $ is an error-correcting factor that depends on the zeroes of the Riemann zeta function.</p></li>
+<li>$ P(x) = \sum_{p<sup>k</sup> &lt; x} \frac{1}{k} $ performs a weighted count of the prime powers less than or equal to x. [Think of this as a generalization of the prime counting function.]</li>
+<li>$ A(x) = \int_0<sup>x</sup> \frac{1}{\log t} \,dt+ \int_x<sup>{\infty}</sup> \frac{1}{t(t<sup>2</sup>  -1) \log t} \,dt $ $ - \log 2 $ is a kind of generalization of Gauss&#8217;s approximation.</li>
+<li>$ E(x) = \sum_{z : \zeta(z) = 0} \int_0<sup>{x<sup>z}</sup></sup> \frac{1}{\log t} \,dt $ is an error-correcting factor that depends on the zeroes of the Riemann zeta function.</li>
 </ul>
 
 
@@ -381,26 +200,26 @@ he could    47      0.9358967550241238
 
 <p>Let&#8217;s dig a little deeper. Instead of using Riemann&#8217;s formula, I&#8217;m going to use an equivalent version</p>
 
-<p>$latex \psi(x) = (x + \sum _ {n = 1} ^ {\infty} \frac{x ^ {-2n}}{2n} - \log 2\pi) - \sum _ {z : \zeta(z) = 0} \frac{x ^ z}{z} $</p>
+<p>$$ \psi(x) = (x + \sum<em>{n = 1}<sup>{\infty}</sup> \frac{x<sup>{-2n}}{2n}</sup> - \log 2\pi) - \sum</em>{z : \zeta(z) = 0} \frac{x<sup>z}{z}</sup> $$</p>
 
-<p>where  $latex \psi(x) = \sum _ {p ^ k \le x} \log p $. Envisioning this formula to be in the same $latex P(x) = A(x) - E(x)$ form as above, this time where</p>
+<p>where  $ \psi(x) = \sum_{p<sup>k</sup> \le x} \log p $. Envisioning this formula to be in the same $P(x) = A(x) - E(x)$ form as above, this time where</p>
 
 <ul>
-<li><p>$latex P(x) = \psi(x) = \sum _ {p ^ k \le x} \log p $ is another kind of count of the primes.</p></li>
-<li><p>$latex A(x) = x + \sum _ {n = 1} ^ {\infty} \frac{x ^ {-2n}}{2n} - \log 2\pi $ is another kind of approximation to $latex P(x)$.</p></li>
-<li><p>$latex E(x) = \sum _ {z : \zeta(z) = 0} \frac{x ^ z}{z} $ is another error-correction factor that depends on the zeroes of the Riemann zeta function.</p></li>
+<li>$ P(x) = \psi(x) = \sum_{p<sup>k</sup> \le x} \log p $ is another kind of count of the primes.</li>
+<li>$ A(x) = x + \sum_{n = 1}<sup>{\infty}</sup> \frac{x<sup>{-2n}}{2n}</sup> - \log 2\pi $ is another kind of approximation to $P(x)$.</li>
+<li>$ E(x) = \sum_{z : \zeta(z) = 0} \frac{x<sup>z}{z}</sup> $ is another error-correction factor that depends on the zeroes of the Riemann zeta function.</li>
 </ul>
 
 
 <p>we can again interpret it as an error-correcting formula for counting the primes.</p>
 
-<p>Now since $latex \psi(x) $ is a step function that jumps at the prime powers, its derivative $latex \psi&#8217;(x) $ has spikes at the prime powers and is zero everywhere else. So consider</p>
+<p>Now since $ \psi(x) $ is a step function that jumps at the prime powers, its derivative $ \psi&#8217;(x) $ has spikes at the prime powers and is zero everywhere else. So consider</p>
 
-<p>$latex \psi&#8217;(x) = 1 - \frac{1}{x(x ^ 2 - 1)} - \sum _ z x ^ {z-1} $</p>
+<p>$$ \psi&#8217;(x) = 1 - \frac{1}{x(x<sup>2</sup> - 1)} - \sum_z x<sup>{z-1}</sup> $$</p>
 
-<p>It&#8217;s well-known that the zeroes of the Riemann zeta function are symmetric about the real axis, so the (non-trivial) zeroes come in conjugate pairs $latex z, \bar{z} $. But $latex x ^ {z-1} + x ^ {\bar{z} - 1} $ is just a wave whose amplitude depends on the real part of z and whose frequency depends on the imaginary part (i.e., if $latex z = a + bi $, then $latex x ^ {z-1} + x ^ {\bar{z}-1} = 2x ^ {a-1} cos (b \log x) $), which means $latex \psi&#8217;(x) $ can be decomposed into a sum of zeta-zero waves. Note that because of the $latex 2x ^ {a-1}$ term in front, the amplitude of these waves depends only on the real part $latex a$ of the conjugate zeroes.</p>
+<p>It&#8217;s well-known that the zeroes of the Riemann zeta function are symmetric about the real axis, so the (non-trivial) zeroes come in conjugate pairs $ z, \bar{z} $. But $ x<sup>{z-1}</sup> + x<sup>{\bar{z}</sup> - 1} $ is just a wave whose amplitude depends on the real part of z and whose frequency depends on the imaginary part (i.e., if $ z = a + bi $, then $ x<sup>{z-1}</sup> + x<sup>{\bar{z}-1}</sup> = 2x<sup>{a-1}</sup> cos (b \log x) $), which means $ \psi&#8217;(x) $ can be decomposed into a sum of zeta-zero waves. Note that because of the $2x<sup>{a-1}$</sup> term in front, the amplitude of these waves depends only on the real part $a$ of the conjugate zeroes.</p>
 
-<p>For example, here are plots of $latex \psi&#8217;(x) $ using 10, 50, and 200 pairs of zeroes:</p>
+<p>For example, here are plots of $ \psi&#8217;(x) $ using 10, 50, and 200 pairs of zeroes:</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/riemann-hypothesis/10.png"><img src="http://dl.dropbox.com/u/10506/blog/riemann-hypothesis/10.png" alt="10 Pairs" /></a></p>
 
@@ -637,9 +456,9 @@ he could    47      0.9358967550241238
   </header>
 
 
-  <div class="entry-content"><p>This is a fun image I found on <a href="http://www.neilkodner.com/2011/01/world-cup-2010-analysis-of-95gb-of-tweets-containing-goal/">Neil Kodner&#8217;s blog</a>:</p>
+  <div class="entry-content"><p>This is a fun image:</p>
 
-<p><a href="//www.flickr.com/photos/squidnews/3200285750/"><img src="http://farm4.static.flickr.com/3134/3200285750_d2bd0a62fd.jpg" alt="KH(Ax)N" /></a></p>
+<p><a href="(http://www.flickr.com/photos/squidnews/3200285750/"><img src="http://farm4.static.flickr.com/3134/3200285750_d2bd0a62fd.jpg" alt="KH(Ax)N" /></a></p>
 
 <p>But I&#8217;ve never actually watched any of the Star Trek movies, so I decided to recreate the graph with Pikachu instead:</p>
 
@@ -710,139 +529,6 @@ he could    47      0.9358967550241238
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2011/03/14/a-kernel-density-approach-to-outlier-detection/">A Kernel Density Approach to Outlier Detection</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-14T04:25:09-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I describe a kernel density approach to outlier detection on small datasets. In particular, my model is the set of prices for a given item that can be found online.</p>
-
-<h1>Introduction</h1>
-
-<p>Suppose you&#8217;re searching online for the cheapest place to buy a stats book you need for class.</p>
-
-<p>You initially find the following prices:</p>
-
-<pre><code>$50 - Amazon
-$55 - Barnes &amp; Noble
-$52 - Walmart
-$50 - Borders
-</code></pre>
-
-<p>You&#8217;re about to buy it from Amazon when you whimsically decide to try searching again. This time you find an eBay listing for the book at the low price of $30.</p>
-
-<p>Should you buy it from eBay? Or is the listing just a scam? What if, instead, the price distribution of the other sellers were more widely dispersed?</p>
-
-<pre><code>$50 - Amazon
-$75 - Barnes &amp; Noble
-$60 - Walmart
-$90 - Borders
-</code></pre>
-
-<p>In other words, given the price distribution of the other sellers, you&#8217;d like to know how likely it is that a price of $30 is legitimate.</p>
-
-<p>I describe a solution to this problem based on kernel density estimation.</p>
-
-<h1>Other Approaches</h1>
-
-<p>Let&#8217;s consider some other approaches first. Suppose we have a set of prices $latex {x _ {min}} cup {x _ 1, ldots, x _ n}$, where $latex x _ {min}$ is strictly less than all the other prices in $latex X = {x _ 1, ldots, x _ n}$.</p>
-
-<h2>A Normal Approach</h2>
-
-<p>One simple approach to determining how cautious we should be of the price $latex x _ {min}$ is to calculate the mean $latex mu _ X$ and standard deviation $latex sigma _ X$ of $latex X$, and flag $latex x _ {min}$ if it falls some number of standard deviations below the mean.</p>
-
-<p>However, this approach is flawed for several reasons. First, what if the prices in $latex X$ are all equal, say $latex X = {$50, $50, $50}$, so that $latex sigma_x = 0$? Then any $latex x_{min} &lt; 50$ will be flagged, even $latex x _ {min} = $49$, which we don&#8217;t want.</p>
-
-<p>A simple heuristic (say, flag $latex x _ {min}$ only if it also falls at least $latex 10%$ below $latex mu _ X$) can fix this problem, though, so a more glaring problem is that the approach assumes prices follow a normal distribution, which they often do not. For example, bimodal distributions such as the following</p>
-
-<pre><code>$20 - Amazon
-$25 - Barnes &amp; Noble
-$22 - Walmart
-$21 - Borders
-
-$45 - eBay
-$40 - Books Inc.
-$43 - Waldenbooks
-</code></pre>
-
-<p>often arise, in which sellers seem to fall into two sets, one with higher prices and one with lower. (For example, perhaps a paperback version of a book was just released, and the megastore booksellers have slashed the price of the hardback version accordingly, while the small-scale booksellers have yet to react.)</p>
-
-<p>In general, it is unclear what distribution prices fall into (they do not have a lognormal distribution either), so it seems that we must look at non-parametric approaches instead.</p>
-
-<h2>An IQR Approach</h2>
-
-<p>One non-parametric method (which we all learn in grade school) is the interquartile method, in which we calculate the interquartile range of $latex X$ (the difference between the price falling in the $latex 75$th percentile of $latex X$ and the price falling in the $latex 25$th percentile of $latex X$) and view $latex x _ {min}$ with caution if it falls below $latex mu _ X - cIQR(X)$ for some positive constant $latex c$.</p>
-
-<p>Again, though, this method fails. For example, in the bimodal distribution above, the 75th percentile of the prices is 41.50 and the 25th percentile is 21.5, giving a rather large interquartile range of 20.00. Even with a conservative choice of $latex c = 1.5$, we flag outliers only if they fall below $latex mu _ X - 1.5($20) = $latex 30.86 - 1.5($20) = $latex 0.86$, which doesn&#8217;t seem correct.</p>
-
-<p>We need, then, a non-parametric approach which also takes into account the dispersion and clusters of prices.</p>
-
-<h1>A Kernel Density Approach</h1>
-
-<p>Recall that the kernel density estimate of a price $latex x$ given prices $latex X = {x _ 1, ldots, x _ n}$ is</p>
-
-<p>$latex KDE(x) = frac{1}{n} sum _ {i = 1} ^ n Kleft(frac{x - x _ i}{h}right),$</p>
-
-<p>where $latex K$ is some kernel function and $latex h$ is a bandwidth parameter.</p>
-
-<p>In my tests, I used a Gaussian kernel with bandwidth $latex 0.1x _ i$,</p>
-
-<p>$latex Kleft(frac{x - x _ i}{0.1x _ i}right) = frac{1}{sqrt{2pi}} e ^ {frac{-(x - x _ i) ^ 2}{2(0.1x _ i) ^ 2}}.$</p>
-
-<p>For example, given a set of original prices $latex {50, 55, 52, 50, 90, 95, 93}$</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kde-outlier-detection/original%20prices.png"><img src="http://dl.dropbox.com/u/10506/blog/kde-outlier-detection/original%20prices.png" alt="Original Prices" /></a></p>
-
-<p>here are the kernel density estimates of a new set of prices:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kde-outlier-detection/kernel%20density%20estimates.png"><img src="http://dl.dropbox.com/u/10506/blog/kde-outlier-detection/kernel%20density%20estimates.png" alt="Kernel Density Estimate of New Prices" /></a></p>
-
-<p>Notice the two humps around 50 and 90, which match the two clusters in our original set of prices.</p>
-
-<p>Finally, to take care of cases where all prices were widely dispersed, I compared the kernel density estimate of $latex x _ {min}$ to the average kernel density estimate over all prices in $latex X$:</p>
-
-<p>$latex OutlierScore(x _ {min}) = frac{KDE(x _ {min})}{frac{1}{n}sum _ {x _ i in X} KDE(x _ i) },$</p>
-
-<p>and flagged $latex x _ {min}$ if its outlier score fell below some threshold.</p>
-
-<h2>Adding Sophistication with Local Comparisons</h2>
-
-<p>While the attempt above accounts for price dispersion in our outlier score by dividing against the average kernel density estimate of all prices, a better approach (e.g., in the case of bimodal distributions) would be to take the average only over points $latex N(x _ {min})$ near $latex x _ {min}$:
-$latex OutlierScore(x _ {min}) = frac{KDE(x _ {min})}{frac{1}{|N(x _ {min})|}sum _ {x _ i in N(x _ {min})} KDE(x _ i) }.$</p>
-
-<p>For example, I experimented both with taking the $latex m$ nearest neighbors of $latex x _ {min}$, and with performing a $latex k$-means clustering on the prices and taking the points in the same cluster as $latex x _ {min}$, where I estimated $latex k$ using the gap statistic and prediction strength tests.</p>
-
-<p>Although this method didn&#8217;t produce significantly better results than the method that ignored clusters in prices, perhaps due to the relative rarity of distinct price groups in small datasets, the method should be more robust as the number of online retailers and prices per item grows.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
       <h1 class="entry-title"><a href="/blog/2011/03/14/laymans-introduction-to-measure-theory/">Layman&#8217;s Introduction to Measure Theory</a></h1>
     
     
@@ -881,9 +567,9 @@ $latex OutlierScore(x _ {min}) = frac{KDE(x _ {min})}{frac{1}{|N(x _ {min})|}sum
 <p>Similarly, measure theory asks questions like:</p>
 
 <ul>
-<li><p>How do we define a measure on our space? (Jordan measure and Lebesgue measure are two different options in Euclidean space.)</p></li>
-<li><p>What properties does our measure satisfy? (For example, does it satisfy translational invariance, rotational invariance, additivity?)</p></li>
-<li><p>Which objects are measurable/which objects can we say it&#8217;s okay not to measure in order to preserve nice properties of our measure? (The Banach-Tarski ball can be rigidly reassembled into two copies of the same shape and size as the original, so we don&#8217;t want it to be measurable, since then we would lose additivity properties.)</p></li>
+<li>How do we define a measure on our space? (Jordan measure and Lebesgue measure are two different options in Euclidean space.)</li>
+<li>What properties does our measure satisfy? (For example, does it satisfy translational invariance, rotational invariance, additivity?)</li>
+<li>Which objects are measurable/which objects can we say it&#8217;s okay not to measure in order to preserve nice properties of our measure? (The Banach-Tarski ball can be rigidly reassembled into two copies of the same shape and size as the original, so we don&#8217;t want it to be measurable, since then we would lose additivity properties.)</li>
 </ul>
 
 
@@ -936,8 +622,8 @@ $latex OutlierScore(x _ {min}) = frac{KDE(x _ {min})}{frac{1}{|N(x _ {min})|}sum
 <p>Recall that there are two types of neighborhood approaches:</p>
 
 <ul>
-<li><p>User-based approaches: to predict user i&#8217;s rating of item j, take the users most similar to user i, and perform a weighted average of their ratings of item j.</p></li>
-<li><p>Item-based approaches: to predict user i&#8217;s rating of item j, perform a weighted average of user i&#8217;s ratings of items similar to item j.</p></li>
+<li>User-based approaches: to predict user i&#8217;s rating of item j, take the users most similar to user i, and perform a weighted average of their ratings of item j.</li>
+<li>Item-based approaches: to predict user i&#8217;s rating of item j, perform a weighted average of user i&#8217;s ratings of items similar to item j.</li>
 </ul>
 
 
@@ -952,11 +638,11 @@ $latex OutlierScore(x _ {min}) = frac{KDE(x _ {min})}{frac{1}{|N(x _ {min})|}sum
 <p>The lesson is that when using existing ratings, we should normalize out these types of effects, so that ratings are as comparable as possible.</p>
 
 <p>Another way of thinking about this is that we are simply building a regression model. That is, for each user u, we have a model
-$latex r _ {ui} = (\sum \theta _ u x _ {ui}) + SpecificRating$, where the $latex x _ {ui}$ are common explanatory variables and we want to estimate $latex \theta _ u$; and similarly for each item i. Once we&#8217;ve estimated the $latex \theta _ u$, we can use the fancier neighborhood models on the specific ratings.</p>
+$r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ are common explanatory variables and we want to estimate $\theta_u$; and similarly for each item i. Once we&#8217;ve estimated the $\theta_u$, we can use the fancier neighborhood models on the specific ratings.</p>
 
 <p>For example, suppose we want to predict Bob&#8217;s rating of Titanic. We&#8217;ve built a regression model with two explanatory variables, whether the movie was Oscar-nominated (1 if so, -1 if not) and whether the movie contains Kate Winslet (1 if so, -1 if not), and we&#8217;ve determined that Bob&#8217;s weights on these two variables are -2 (Bob tends to hate Oscar movies) and +1.5 (Bob likes Kate Winslet). Similarly, his friend John has weights +1 and -0.5 for these two variables (John likes Oscars, but dislikes Kate Winslet). So if we know that John rated Titanic a 4, then we have 4 = 1(1) + -0.5(1) + (John&#8217;s specific rating), so John&#8217;s specific rating of Titanic is 3.5. If we use John&#8217;s rating alone to estimate Bob&#8217;s, we might guess that Bob would rate Titanic -2(1) + 1.5(1) + (John&#8217;s specific rating) = 3.0.</p>
 
-<p>To estimate the $latex \theta _ u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $latex \hat{\theta _ u} = \frac{\sum r _ {ui} x _ {ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $latex \theta _ u \sim N(\mu, \sigma ^ 2)$, and $latex \hat{\theta _ u} | \theta _ u \sim N(\theta _ u, \sigma _ u ^ 2)$, leading to $latex E(\theta _ u | \hat{\theta _ u}) = \frac{\sigma ^ 2 \hat{\theta _ u} + \sigma _ u ^ 2 \mu}{\sigma ^ 2 + \sigma _ u ^ 2}$.</p>
+<p>To estimate the $\theta_u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $\hat{\theta_u} = \frac{\sum r<em>{ui} x</em>{ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $\theta_u \sim N(\mu, \sigma<sup>2)$,</sup> and $\hat{\theta_u} | \theta_u \sim N(\theta_u, \sigma_u<sup>2)$,</sup> leading to $E(\theta_u | \hat{\theta_u}) = \frac{\sigma<sup>2</sup> \hat{\theta_u} + \sigma_u<sup>2</sup> \mu}{\sigma<sup>2</sup> + \sigma_u<sup>2}$.</sup></p>
 
 <p>In practice, the explanatory variables Bell and Koren found to work well included the overall mean of all ratings, each movie&#8217;s specific mean, each user&#8217;s specific mean, time since movie release, time since user join, and number of ratings for each movie.</p>
 
@@ -965,32 +651,32 @@ $latex r _ {ui} = (\sum \theta _ u x _ {ui}) + SpecificRating$, where the $latex
 <p>Let&#8217;s consider some deficiencies of the neighborhood approach:</p>
 
 <ul>
-<li><p>Suppose I want to use the first LOTR movie to predict ratings of the first Harry Potter movie. To do this, I need to say how much weight the first LOTR movie should have in this prediction. But how do I choose this weight? Standard neighborhood approaches essentially pick arbitrary similarity functions (e.g., Pearson correlation, cosine distance) as the weight, possibly testing several similarity functions to see which gives the best performance, but is there a more principled approach to choosing weights?</p></li>
-<li><p>The standard neighborhood approach ignores the fact that neighbors aren&#8217;t independent. For example, suppose all three LOTR movies are neighbors of the first HP movie. Since the three LOTR movies are so similar to each other, the standard approach is overcounting their information. Here&#8217;s an analogy: suppose I ask five of my friends where I should eat tonight. Three of them live together (boyfriend, girlfriend, and roommate), and they all recently took a trip together to Japan and are sick of Japanese food, so they vehemently recommend against sushi. Thus, my friends&#8217; recommendations have a stronger bias than would appear if I asked five friends who didn&#8217;t know each other at all.</p></li>
+<li>Suppose I want to use the first LOTR movie to predict ratings of the first Harry Potter movie. To do this, I need to say how much weight the first LOTR movie should have in this prediction. But how do I choose this weight? Standard neighborhood approaches essentially pick arbitrary similarity functions (e.g., Pearson correlation, cosine distance) as the weight, possibly testing several similarity functions to see which gives the best performance, but is there a more principled approach to choosing weights?</li>
+<li>The standard neighborhood approach ignores the fact that neighbors aren&#8217;t independent. For example, suppose all three LOTR movies are neighbors of the first HP movie. Since the three LOTR movies are so similar to each other, the standard approach is overcounting their information. Here&#8217;s an analogy: suppose I ask five of my friends where I should eat tonight. Three of them live together (boyfriend, girlfriend, and roommate), and they all recently took a trip together to Japan and are sick of Japanese food, so they vehemently recommend against sushi. Thus, my friends&#8217; recommendations have a stronger bias than would appear if I asked five friends who didn&#8217;t know each other at all.</li>
 </ul>
 
 
 <p>We&#8217;ll see how using an optimization method to derive weights (as opposed to deriving weights via a similarity function) overcomes these two limitations.</p>
 
-<p>Recall our problem: we want to predict $latex r _ {ui}$, user u&#8217;s rating of item i, and what we have is a set $latex N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $latex w _ {ij}$ such that $latex r _ {ui} = \sum _ {j \in N(i; u) w _ {ij} r _ {uj}}$. A natural approach, then, is simply to choose our weights to minimize $latex \min _ w \sum _ {v \neq u} \left( r _ {vi} - \sum _ {j \in N(i; u)} w _ {ij} r _ {vj}\right) ^ 2$.</p>
+<p>Recall our problem: we want to predict $r<em>{ui}$, user u&#8217;s rating of item i, and what we have is a set $N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $w</em>{ij}$ such that $r<em>{ui} = \sum</em>{j \in N(i; u) w<em>{ij} r</em>{uj}}$. A natural approach, then, is simply to choose our weights to minimize $\min_w \sum<em>{v \neq u} \left( r</em>{vi} - \sum<em>{j \in N(i; u)} w</em>{ij} r_{vj}\right)<sup>2$.</sup></p>
 
 <p>Notice how this optimization solves our two problems above: it&#8217;s not only a more principled approach (we choose our weights by minimizing squared error), but by deriving weights simultaneously, we overcome interaction effects.</p>
 
-<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $latex Aw = b$, where A is a $latex K \times K$ matrix defined by $latex A _ {jk} = \sum _ {v \neq u} r _ {vj} r _ {vk}$ and $latex b$ is a vector defined by $latex b _ j = \sum _ {v \neq u} r _ {vj} r _ {vi}$.</p>
+<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $Aw = b$, where A is a $K \times K$ matrix defined by $A<em>{jk} = \sum</em>{v \neq u} r<em>{vj} r</em>{vk}$ and $b$ is a vector defined by $b_j = \sum<em>{v \neq u} r</em>{vj} r_{vi}$.</p>
 
-<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $latex \bar{A} _ {jk} = \frac{\sum _ {v \in U(j,k)} r _ {vj} r _ {vk}}{|U(j, k)|}$, where $latex U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $latex \hat{A} _ {jk} = \frac{|U(J,K)|\bar{A} _ {jk} + \beta A _ {\mu}}{|U(j,k)| + \beta}$, where $latex \beta$ is a shrinkage parameter and $latex A _ {\mu}$ is the mean over all $latex \bar{A}$, and similarly for b.</p>
+<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $\bar{A}<em>{jk} = \frac{\sum</em>{v \in U(j,k)} r<em>{vj} r</em>{vk}}{|U(j, k)|}$, where $U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $\hat{A}<em>{jk} = \frac{|U(J,K)|\bar{A}</em>{jk} + \beta A<em>{\mu}}{|U(j,k)| + \beta}$, where $\beta$ is a shrinkage parameter and $A</em>{\mu}$ is the mean over all $\bar{A}$, and similarly for b.</p>
 
 <p>Note that another benefit of our optimization-derived weights is that the weights of neighbors are no longer constrained to sum to 1. Thus, if an item simply has no strong neighbors, the neighbors&#8217; prediction will have only a small effect.</p>
 
-<p>Also, when engineering these methods in practice, we should precompute all item-item similarities and all entries in the matrix $latex A$.</p>
+<p>Also, when engineering these methods in practice, we should precompute all item-item similarities and all entries in the matrix $A$.</p>
 
 <h2>Better Use of User Data</h2>
 
 <p>Neighborhood models typically follow the item-based approach for two reasons:</p>
 
 <ul>
-<li><p>There are typically many more users than items, and new users come in much more frequently than new items, so it is easier to compute all pairs of item-item similarities.</p></li>
-<li><p>Users have diverse tastes, so they aren&#8217;t as similar to each other. For example, Alice and Eve may both like horror movies, but disagree on comedies.</p></li>
+<li>There are typically many more users than items, and new users come in much more frequently than new items, so it is easier to compute all pairs of item-item similarities.</li>
+<li>Users have diverse tastes, so they aren&#8217;t as similar to each other. For example, Alice and Eve may both like horror movies, but disagree on comedies.</li>
 </ul>
 
 
@@ -998,7 +684,7 @@ $latex r _ {ui} = (\sum \theta _ u x _ {ui}) + SpecificRating$, where the $latex
 
 <p>To get around the first limitation, we can project users into a lower-dimensional space (say, by using a singular value decomposition), where we can use a space-partitioning data structure (e.g., a kd-tree) or a nearest-neighbor algorithm (e.g., locality sensitive hashing) to find neighboring users.</p>
 
-<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $latex \min _ w \sum _ {j \neq i} s _ {ij} \left( r _ {uj} - \sum _ {v \in N(u, i)} w _ {uv} r _ {vj} \right) ^ 2,$ where the $latex s _ {ij}$ are item-item similarities.</p>
+<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $\min_w \sum<em>{j \neq i} s</em>{ij} \left( r<em>{uj} - \sum</em>{v \in N(u, i)} w<em>{uv} r</em>{vj} \right)<sup>2,$</sup> where the $s_{ij}$ are item-item similarities.</p>
 
 <h2>Appendix: Shrinkage</h2>
 
@@ -1006,15 +692,209 @@ $latex r _ {ui} = (\sum \theta _ u x _ {ui}) + SpecificRating$, where the $latex
 
 <p>Suppose that we want to estimate the probability of a coin. If we flip it once and see heads, then the maximum-likelihood estimate of heads is 1. But (as is typical for maximum-likelihood estimates), this is severe overfitting, and what we should do instead is shrink this maximum-likelihood estimate to a prior estimate of the probability of heads, say 1/2. (Note that shrinkage doesn&#8217;t necessarily mean decreasing the number, just moving it towards a prior estimate).</p>
 
-<p>How should we perform this shrinkage? If our maximum-likelihood estimate of our parameter $latex \theta$ is $latex x$ and our prior mean is $latex \mu$, a natural estimation of $latex \theta$ is to use a weighted mean $latex \alpha x + (1 - \alpha)\mu$, where $latex \alpha$ is some measure of the degree of belief in our maximum likelihood estimate.</p>
+<p>How should we perform this shrinkage? If our maximum-likelihood estimate of our parameter $\theta$ is $x$ and our prior mean is $\mu$, a natural estimation of $\theta$ is to use a weighted mean $\alpha x + (1 - \alpha)\mu$, where $\alpha$ is some measure of the degree of belief in our maximum likelihood estimate.</p>
 
 <p>This weighted average approach has several interpretations:</p>
 
 <ul>
-<li><p>We can also view it as a shrinkage of our maximum likelihood estimate to our prior mean: $latex \alpha x + (1 - \alpha)\mu = x + (1 - \alpha) (\mu - x)$</p></li>
-<li><p>We can also view it as a Bayesian posterior: if we use a prior $latex \theta \sim N(\mu, \tau)$ (where $latex \tau$ is the precision of our Gaussian, not the variance) and a conditional distribution $latex x | \theta \sim N(\theta, \tau _ x)$, then the posterior mean of $latex \theta$ is $latex \theta = \frac{\tau _ x}{\tau _ x + \tau}x + \frac{\tau}{\tau _ x + \tau}\mu,$ which is equivalent to the form above.</p></li>
+<li>We can also view it as a shrinkage of our maximum likelihood estimate to our prior mean: $\alpha x + (1 - \alpha)\mu = x + (1 - \alpha) (\mu - x)$</li>
+<li>We can also view it as a Bayesian posterior: if we use a prior $\theta \sim N(\mu, \tau)$ (where $\tau$ is the precision of our Gaussian, not the variance) and a conditional distribution $x | \theta \sim N(\theta, \tau_x)$, then the posterior mean of $\theta$ is $\theta = \frac{\tau_x}{\tau_x + \tau}x + \frac{\tau}{\tau_x + \tau}\mu,$ which is equivalent to the form above.</li>
 </ul>
 
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/summary-factorization-meets-the-neighborhood/">Netflix Prize Summary: Factorization Meets the Neighborhood</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:21:52-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually, I hope to have a more integrated tutorial, but here&#8217;s a rough draft for now.)</p>
+
+<p>This is a summary of Koren&#8217;s 2008 <a href="public.research.att.com/~volinsky/netflix/kdd08koren.pdf">Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering Model</a>.</p>
+
+<p>There are two approaches to collaborative filtering: neighborhood methods and latent factor models.</p>
+
+<ul>
+<li>Neighborhood models are most effective at detecting very localized relationships (e.g., that people who like X-Men also like Spiderman), but poor at detecting a user&#8217;s overall signals.</li>
+<li>Latent factor models are best at estimating overall structure (e.g., that a user likes horror movies), but are poor at detecting strong associations among small sets of closely related items.</li>
+</ul>
+
+
+<p>Since the two approaches have complementary strengths and weaknesses, we should integrate the two; this integration is the focus of this paper.</p>
+
+<h1>Preliminaries</h1>
+
+<p>As mentioned in previous papers, we should normalize out common effects from movies. Throughout the rest of this paper, Koren uses a baseline estimate of overall rating mean + user deviation from average + movie deviation from average for the rating of user i on movie i; estimation of the latter two parameters are done by solving a regularized least squares problem.</p>
+
+<p>Koren then describes using a binary matrix (1 for rated, 0 for not rated) as a source of implicit feedback. This is useful because the mere fact that a user rated many science fiction movies (say) suggests that the user likes science fiction movies.</p>
+
+<h1>A Neighborhood Model</h1>
+
+<p>Recall the previous paper, where we modeled each rating $r_{ui}$ as</p>
+
+<p>$$r<em>{ui} = b</em>{ui}+ \sum<em>{N \in N(i; u)} (r</em>{uj} - b<em>{uj}) w</em>{ij},$$</p>
+
+<p>where $N(i; u)$ is the k items most similar to i among the items user u rated, and the $w_{ij}$ are parameters to be learned by solving a regularized least squares problem.</p>
+
+<p>This paper makes several enhancements to that model. First, we replace $N(i; u)$ with $R<sup>k(i;</sup> u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $N<sup>k(i;</sup> u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
+
+<p>$$r<em>{ui} = b</em>{ui} + \sum<em>{j \in R<sup>k(i;</sup> u)} (r</em>{uj} - b<em>{uj}) w</em>{ij} + \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij},$$</p>
+
+<p>where the $c_{ij}$ are another set of parameters to learn.</p>
+
+<p>Notice that by taking the intersection of the k items most similar to i with the items user u rated (giving perhaps a set of size less than k), rather than taking the k items most similar to i among the items user u rated, we let our model be influenced not only by what a user rates, but also by what a user does not rate. For example, if a user does not rate LOTR 1 or LOTR 2, his predicted rating for LOTR 3 is penalized.</p>
+
+<p>This implies that our current model encourages greater deviations from baseline estimates for users that provided many ratings or plenty of implicit feedback. In other words, for well-modeled users with a lot of input, we are willing to predict quirkier and less common recommendations; users we have less information about, on the other hand, receive safer, baseline estimates.</p>
+
+<p>Nonetheless, this dichotomy between power users and newbie users is perhaps overemphasized by our current model, so we moderate the dichotomy by modifying our model to be</p>
+
+<p>$$r<em>{ui} = b</em>{ui} + |R<sup>k(i;</sup> u)|<sup>{-0.5}</sup> \sum<em>{j \in R<sup>k(i;</sup> u)} (r</em>{uj} - b<em>{uj}) w</em>{ij} + |N<sup>k(i;</sup> u)|<sup>{-0.5}</sup> \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij}.$$</p>
+
+<p>Parameters are determined by solving a regularized least squares problem.</p>
+
+<h1>Latent Factor Models Revisited</h1>
+
+<p>Typical SVD approaches are based on the following rule:</p>
+
+<p>$$r<em>{ui} = b</em>{ui} + p_u<sup>T</sup> q_i,$$</p>
+
+<p>where $p_u$ is a user-factors vector and $q_i$ is an item-factors vector. We describe two enhancements.</p>
+
+<h2>Asymmetric-SVD</h2>
+
+<p>One suggestion is to replace $p_u$ with</p>
+
+<p>$$|R(u)|<sup>{-0.5}</sup> + \sum<em>{j \in R(u)} (r</em>{uj} - b<em>{uj}) x_j + |N(u)|<sup>{-0.5}</sup> \sum</em>{j \in N(u)} y_j,$$</p>
+
+<p>where $R(u)$ is the set of items user u has rated, and $N(u)$ is the set of items user u has provided implicit feedback for. In other words, this model represents users through the items they prefer, rather than expressing users in a latent feature space. This model has several advantages:</p>
+
+<ul>
+<li>Asymmetric-SVD does not parameterize users, so we do not need to wait to retrain the model when a user comes in. Instead, we can handle new users as soon as they provide feedback.</li>
+<li>Predictions are a direct function of past feedback, so we can easily explain predictions. (When using a pure latent feature solution, however, explainability is difficult.)</li>
+</ul>
+
+
+<p>As usual, parameters are learned via a regularized least-squares minimization.</p>
+
+<h2>SVD++</h2>
+
+<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $p_u$ with $p_u + |N(u)|<sup>{-0.5}</sup> \sum_{j \in N(u)} y_j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
+
+<h1>An Integrated Model</h1>
+
+<p>An integrated model incorporating baseline estimates, the neighborhood approach, and the latent factor approach is as follows:</p>
+
+<p>$$r<em>{ui} = \left[\mu + b_u + b_i\right] +\left[q_i<sup>T</sup> \big(p_u + \sqrt{|N(u)|}\sum</em>{j \in N(u)} y_j \big)\right] + \left[\sqrt{|R<sup>k(i;u)}</sup> \sum<em>{j \in R<sup>k(i;</sup> u)}(r</em>{uj} - b<em>{uj})w</em>{ij}+\sqrt{|N<sup>k(i;u)|}</sup> \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij}\right].$$</p>
+
+<p>Note that we have used $(\mu + b_u + b_i)$ as our baseline estimate. We also used the SVD++ model, but we could use the Asymmetric-SVD model instead.</p>
+
+<p>This rule provides a 3-tier model for recommendations:</p>
+
+<ul>
+<li>The first baseline group describes general properties of the item and user. For example, it may say that &#8220;The Sixth Sense&#8221; movie is known to be a good movie in general, and that Joe rates like the average user.</li>
+<li>The next latent factor group may say that since &#8220;The Sixth Sense&#8221; and Joe rate high on the Psychological Thrillers Scale, Joe may like The Sixth Sense because he likes this genre of movies in general.</li>
+<li>The final neighborhood tier makes fine-grained adjustments that are hard to file, such as the fact that Joe rated low the movie &#8220;Signs&#8221;, a similar psychological thriller by the same director.</li>
+</ul>
+
+
+<p>As usual, model parameters are determined by minimizing the regularized squared error function through gradient descent.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2011/03/14/pca-transpose-trick/">PCA Transpose Trick</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:21:12-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>A simpler eigenvector calculation</h1>
+
+<p>Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
+
+<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A<sup>T</sup> A$.</p>
+
+<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A<sup>T</sup> A$ is computationally difficult. How can we make this problem more tractable?</p>
+
+<p>It turns out that the eigenvectors of $A<sup>T</sup> A$ have a simple relationship with the eigenvectors of $A A<sup>T$,</sup> so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A<sup>T$</sup> instead. More precisely, <strong>if $v$ is an eigenvector of $A A<sup>T$,</sup> then $A<sup>Tv$</sup> is an eigenvector of $A<sup>T</sup> A$ with the same eigenvalue</strong>.</p>
+
+<h1>Proof</h1>
+
+<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A<sup>T$</sup> with eigenvalue $\lambda$. Then</p>
+
+<p>$(A A<sup>T)</sup> v = \lambda v$</p>
+
+<p>$A<sup>T(A</sup> A<sup>T</sup> v) = A<sup>T(\lambda</sup> v)$</p>
+
+<p>$(A<sup>T</sup> A)(A<sup>T</sup> v) = \lambda (A<sup>T</sup> v)$</p>
+
+<p>so $A<sup>Tv$</sup> is an eigenvector of $A<sup>T</sup> A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A<sup>T</sup> A$ directly, we can instead find the eigenvectors of $A A<sup>T$</sup> and multiply these on the left by $A<sup>T$.</sup></p>
+
+<h1>Pseudocode</h1>
+
+<p>To summarize, here&#8217;s how to perform a PCA using this trick:</p>
+
+<ul>
+<li>Let $A$ be an $m \times n$ matrix with observations in rows and dimensions in the columns.</li>
+<li>From each column of $A$, subtract the column&#8217;s mean, so that each column now has zero mean.</li>
+<li>We now need to find the eigenvectors of the covariance matrix $A<sup>T</sup> A$. If $A A<sup>T$</sup> is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A<sup>T$.</sup> Then $A<sup>T</sup> v$ are the eigenvectors of $A<sup>T</sup> A$.</li>
+</ul>
+
+
+<p>I&#8217;ve put a simple PCA implementation of this transpose trick on <a href="https://github.com/echen/pca-transpose-trick">my Github account</a>.</p>
 </div>
   
   

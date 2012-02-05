@@ -98,17 +98,17 @@
 
 <h1>EM Algorithm</h1>
 
-<p>Let&#8217;s recall the naive Bayes algorithm: given a tweet (a set of <em>character</em> n-grams), we estimate its language to be the language $latex L$ that maximizes</p>
+<p>Let&#8217;s recall the naive Bayes algorithm: given a tweet (a set of <em>character</em> n-grams), we estimate its language to be the language $L$ that maximizes</p>
 
-<p>$latex P(language = L | ngrams) \propto P(ngrams | language = L) P(language = L)$</p>
+<p>$$P(language = L | ngrams) \propto P(ngrams | language = L) P(language = L)$$</p>
 
-<p>Thus, we need to estimate $latex P(ngram | language = L)$ and $latex P(language = L)$.</p>
+<p>Thus, we need to estimate $P(ngram | language = L)$ and $P(language = L)$.</p>
 
 <p>This would be easy <strong>if we knew the language of each tweet</strong>, since we could estimate</p>
 
 <ul>
-<li><p>$latex P(xyz| language = English)$ as #(number of times &#8220;xyz&#8221; is a trigram in the English tweets) / #(total trigrams in the English tweets)</p></li>
-<li><p>$latex P(language = English)$ as the proportion of English tweets.</p></li>
+<li>$P(xyz| language = English)$ as #(number of times &#8220;xyz&#8221; is a trigram in the English tweets) / #(total trigrams in the English tweets)</li>
+<li>$P(language = English)$ as the proportion of English tweets.</li>
 </ul>
 
 
@@ -117,11 +117,11 @@
 <p><strong>The problem is that we know neither of these.</strong> So what the EM algorithm says is that that we can simply <strong>guess</strong>:</p>
 
 <ul>
-<li><p>Pretend we know the language of each tweet (by randomly assigning them at the beginning).</p></li>
-<li><p>Using this guess, we can compute the n-gram probabilities for each language.</p></li>
-<li><p>Using the n-gram probabilities for each language, we can recompute the language probabilities of each tweet.</p></li>
-<li><p>Using these recomputed language probabilities, we can recompute the n-gram probabilities.</p></li>
-<li><p>And so on, recomputing the language probabilities and n-gram probabilities over and over. While our guesses will be off in the beginning, the probabilities will eventually converge to (locally) minimize the likelihood. (In my tests, my language detector would sometimes correctly converge to an English detector, and sometimes it would converge to an English-and-Dutch detector.)</p></li>
+<li>Pretend we know the language of each tweet (by randomly assigning them at the beginning).</li>
+<li>Using this guess, we can compute the n-gram probabilities for each language.</li>
+<li>Using the n-gram probabilities for each language, we can recompute the language probabilities of each tweet.</li>
+<li>Using these recomputed language probabilities, we can recompute the n-gram probabilities.</li>
+<li>And so on, recomputing the language probabilities and n-gram probabilities over and over. While our guesses will be off in the beginning, the probabilities will eventually converge to (locally) minimize the likelihood. (In my tests, my language detector would sometimes correctly converge to an English detector, and sometimes it would converge to an English-and-Dutch detector.)</li>
 </ul>
 
 
@@ -150,10 +150,10 @@
 <p>Trained on bigrams, the detector resulted in:</p>
 
 <ul>
-<li><p>991 true positives (English lines correctly classified as English)</p></li>
-<li><p>9 false negatives (English lines incorrectly classified as Spanish</p></li>
-<li><p>11 false positives (Spanish lines incorrectly classified as English)</p></li>
-<li><p>989 true negatives (Spanish lines correctly classified as English)</p></li>
+<li>991 true positives (English lines correctly classified as English)</li>
+<li>9 false negatives (English lines incorrectly classified as Spanish</li>
+<li>11 false positives (Spanish lines incorrectly classified as English)</li>
+<li>989 true negatives (Spanish lines correctly classified as English)</li>
 </ul>
 
 
@@ -162,10 +162,10 @@
 <p>Trained on trigrams, the detector resulted in:</p>
 
 <ul>
-<li><p>992 true positives</p></li>
-<li><p>8 false negatives</p></li>
-<li><p>10 false positives</p></li>
-<li><p>990 true negatives</p></li>
+<li>992 true positives</li>
+<li>8 false negatives</li>
+<li>10 false positives</li>
+<li>990 true negatives</li>
 </ul>
 
 

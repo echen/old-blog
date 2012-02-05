@@ -101,10 +101,10 @@
 <p>Other examples of cointegrated pairs:</p>
 
 <ul>
-<li><p>Income and consumption: as income increases/decreases, so too does consumption.</p></li>
-<li><p>Size of police force and amount of criminal activity</p></li>
-<li><p>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</p></li>
-<li><p>Number of patients entering or leaving a hospital</p></li>
+<li>Income and consumption: as income increases/decreases, so too does consumption.</li>
+<li>Size of police force and amount of criminal activity</li>
+<li>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</li>
+<li>Number of patients entering or leaving a hospital</li>
 </ul>
 
 
@@ -125,25 +125,25 @@
 <p>So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:</p>
 
 <ul>
-<li><p>Check that $latex X _ t $ and $latex Y _ t $ are both I(1).</p></li>
-<li><p>Estimate the cointegrating relationship $latex Y _ t = aX _ t + e _ t $ by ordinary least squares.</p></li>
-<li><p>Check that the cointegrating residuals $latex e _ t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</p></li>
+<li>Check that $ X_t $ and $ Y_t $ are both I(1).</li>
+<li>Estimate the cointegrating relationship $ Y_t = aX_t + e_t $ by ordinary least squares.</li>
+<li>Check that the cointegrating residuals $ e_t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</li>
 </ul>
 
 
 <h1>Error-correction and Granger representation</h1>
 
-<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $latex X _ t, Y _ t $, with autoregressive representations</p>
+<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations</p>
 
-<p>$latex X _ t = a X _ {t-1} + b Y _ {t-1} + u _ t $
-$latex Y _ t = c X _ {t-1} + d Y _ {t-1} + v _ t $</p>
+<p>$ X_t = a X<em>{t-1} + b Y</em>{t-1} + u_t $
+$ Y_t = c X<em>{t-1} + d Y</em>{t-1} + v_t $</p>
 
 <p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
 
-<p>$latex \Delta X _ t = \alpha _ 1 (Y _ {t-1} - \beta X _ {t-1}) + u _ t $
-$latex \Delta Y _ t = \alpha _ 2 (Y _ {t-1} - \beta X _ {t-1}) + v _ t $</p>
+<p>$ \Delta X_t = \alpha_1 (Y<em>{t-1} - \beta X</em>{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y<em>{t-1} - \beta X</em>{t-1}) + v_t $</p>
 
-<p>where $latex Y _ {t-1} - \beta X _ {t-1} \sim I(0) $ is the cointegrating relationship. Regarding $latex Y _ {t-1} - \beta X _ {t-1} $ as the extent of disequilibrium from the long-run relationship, and the $latex \alpha _ i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+<p>where $ Y<em>{t-1} - \beta X</em>{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y<em>{t-1} - \beta X</em>{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
 
 <h1>Summary</h1>
 
@@ -193,7 +193,7 @@ $latex \Delta Y _ t = \alpha _ 2 (Y _ {t-1} - \beta X _ {t-1}) + v _ t $</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2011/04/16/monads-typeclasses-and-celebrities/" title="Previous Post: Introduction to Monads and Typeclasses in Haskell">&laquo; Introduction to Monads and Typeclasses in Haskell</a>
+        <a class="basic-alignment left" href="/blog/2011/03/22/harry-potter-and-the-keyword-chaos-unsupervised-statistically-significant-phrases/" title="Previous Post: Harry Potter and the Keyword Chaos: Unsupervised Statistically Significant Phrases">&laquo; Harry Potter and the Keyword Chaos: Unsupervised Statistically Significant Phrases</a>
       
       
         <a class="basic-alignment right" href="/blog/2011/04/18/twifferences-between-californians-and-new-yorkers/" title="next Post: Twifferences Between Californians and New Yorkers">Twifferences Between Californians and New Yorkers &raquo;</a>
