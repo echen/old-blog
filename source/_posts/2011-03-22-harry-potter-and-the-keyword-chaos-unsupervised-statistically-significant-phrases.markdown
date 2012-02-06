@@ -1,0 +1,149 @@
+---
+date: '2011-03-22 04:20:23'
+layout: post
+slug: unsupervised-statistically-significant-phrases
+status: publish
+title: 'Unsupervised Statistically Significant Phrases'
+comments: true
+wordpress_id: '31'
+categories:
+- projects
+tags:
+- amazon
+- harry potter
+- nlp
+---
+
+One of my all-time favorite graphs is the following visualization of the distribution of the primes (showing that the primes are more spread out than the random, clumpy points of a Poisson process):
+
+[![Distribution of Primes](http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png)](http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png)
+
+So I was pretty intrigued when I ran across [this paper](http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf) ([Level statistics of words: Finding keywords in literary texts and symbolic sequences](http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf)) using similar quantumish, random matrixish ideas to extract the important phrases from a text.
+
+# The Paper
+
+Statistical phrase extraction (e.g., the "statistically improbable phrases" you see on Amazon) is usually done by comparing a target text against a baseline corpus. The authors of this paper, however, describe an *unsupervised* phrase extraction method given only the target text itself, by making use of the spatial distribution of the phrases (which gets thrown out in typical bag-of-word models).
+
+The idea is that uninformative words and phrases (e.g., "the" and "but") have a more random and uniform distribution than important words and phrases (e.g., names of main characters), which will tend to form clusters. (Funnily, the quantum chaos paper containing the primes graph reverses these characterizations: there, the primes are the ones that are repellent and spread out, while the random numbers are the ones that form clusters.)
+
+Thus, the cluster-tendency of a phrase should be a reasonable measure of its importance.
+
+# Implementation
+
+I wrote a quick Ruby script to calculate the level statistics on the first Harry Potter book.
+
+Here are the top 25 unigrams extracted (ordered using the sigma_normalized statistic from the paper; I played around with the paper's C number as well, but it didn't give as good results):
+
+	phrase  count   sigma_normalized
+	dudley  117     5.886458836973907
+	vernon  105     5.425462371919648
+	uncle   121     4.96291028279975
+	yeh     100     4.483340310689477
+	mirror  46      4.4123632519944564
+	platform        20      3.7698278374021283
+	wood    53      3.698871282864937
+	aunt    65      3.682665094335877
+	hagrid  336     3.532997146829891
+	ter     78      3.4935220547292394
+	petunia 57      3.3847272743671764
+	dragon  31      3.319790040957389
+	fang    16      3.1175440675916763
+	unicorn 22      3.109138726006347
+	bludgers        13      3.0336322222301035
+	o       31      2.973718095050078
+	malfoy  112     2.965094959118159
+	voldemort       31      2.957883190702609
+	percy   36      2.946348443571833
+	path    12      2.9430416987716383
+	dursley 54      2.9266934668788025
+	christmas       25      2.926196222714648
+	anythin 13      2.8753724174699626
+	quirrell        91      2.8351538706894868
+	crate   12      2.8171552951153913
+
+It looks more impressive when you compare with the bottom 25 unigrams (filtered to counts of at least 50, to make the unigrams more comparable to those above):
+
+	phrase  count   sigma_normalized
+	few     55      0.858973690529759
+	seemed  72      0.8660034944771483
+	might   54      0.8691077527153204
+	after   68      0.8700202208036406
+	way     94      0.8893865470583092
+	come    95      0.8897833973429081
+	before  107     0.9158168210798949
+	good    82      0.9208260024379561
+	suddenly        69      0.9223289856683224
+	only    111     0.9262797404590966
+	put     58      0.9320218173468643
+	must    57      0.932224843054271
+	while   60      0.9367996846919046
+	asked   60      0.9386801898266576
+	left    82      0.9509973378264027
+	trying  65      0.9511509393516154
+	saw     62      0.9524243012100968
+	even    105     0.9563651096306485
+	really  73      0.9569234100328665
+	voice   59      0.957685122636835
+	away    71      0.9611639088841413
+	where   100     0.9657416499349912
+	every   53      0.9659213894654203
+	harrys  113     0.9746316711628271
+	long    71      0.9794359046955133
+Similarly, here are the top bigrams:
+
+	phrase  count   sigma_normalized
+	uncle vernon    97      5.2050164080560615
+	the mirror      35      3.8911699122647163
+	professor mcgonagall    89      3.570490871211533
+	aunt petunia    52      3.3541554249859917
+	the library     21      3.2822285085324374
+	nine and        13      3.052813340938423
+	the twins       12      3.0493973437585256
+	the potters     12      2.962214857171763
+	the boy 26      2.86158988074687
+	said hagrid     89      2.76691520812392
+	the stone       48      2.7118270594517413
+	and dudley      15      2.705365860880404
+	the giant       15      2.682345959043539
+	the troll       18      2.6613701424473386
+	mr dursley      30      2.607508647153971
+	said uncle      13      2.5996349710103055
+	sorcerers stone 14      2.564840300637567
+	the quaffle     16      2.533417641354809
+	said dumbledore 27      2.5200215250194193
+	said hermione   42      2.509101121058932
+	and threequarters       9       2.4248478008322967
+	the crate       9       2.377194502184057
+	the cloak       22      2.368960931129895
+	the forest      23      2.3607725433338675
+	mr potter       12      2.3429313549690285
+And the bottom bigrams (filtered to counts of at least 25):
+
+	phrase  count   sigma_normalized
+	for a   38      0.6706459452115997
+	the way 34      0.7417616427971635
+	to harry        31      0.7671160112200728
+	a few   45      0.7699093885203201
+	off the 32      0.7949383886682402
+	to him  27      0.7958792937430593
+	was going       36      0.811227023007951
+	up to   39      0.8122786875347693
+	but it  32      0.8336661901803439
+	up the  40      0.8365345579027479
+	if you  34      0.8422559552361845
+	which was       28      0.8552087965411528
+	of course       35      0.8621365585531023
+	by the  43      0.8625237028663237
+	the other       52      0.8876800348745395
+	with a  55      0.8903321479589525
+	 and    51      0.9016112133824481
+	his face        31      0.9018554880700214
+	and he  47      0.9038362537361607
+	with the        56      0.9048625952654603
+	but i   32      0.9110050643857517
+	had to  43      0.9235463968235097
+	at last 28      0.9255524776918606
+	i know  27      0.9294114876847764
+	he could        47      0.9358967550241238
+
+So interestingly, while the method doesn't do a great job of capturing the most important phrases (I'm not really sure why it should, in any case, as I'd guess main characters and themes would appear pretty evenly throughout the text), it does seem to pick out minor characters and objects (like the Dudleys), which seems to make a bit more sense.
