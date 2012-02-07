@@ -11,13 +11,9 @@ tags:
 - r
 ---
 
-For a better-looking version of this post, see my [Github repository](https://github.com/echen/ggplot2-tutorial), which also contains some of the [example datasets](https://github.com/echen/ggplot2-tutorial/tree/master/data) I use and a [literate programming version](https://github.com/echen/ggplot2-tutorial/blob/master/ggplot2-tutorial.R) of this tutorial.
-
-# Introduction
-
 This is a bare-bones introduction to [ggplot2](http://had.co.nz/ggplot2/), a visualization package in R. It assumes no knowledge of R. 
 
-There is also a literate programming version of this tutorial in [`ggplot2-tutorial.R`](https://github.com/echen/ggplot2-tutorial/blob/master/ggplot2-tutorial.R).
+For a better-looking version of this post, see [this Github repository](https://github.com/echen/ggplot2-tutorial), which also contains some of the [example datasets](https://github.com/echen/ggplot2-tutorial/tree/master/data) I use and a [literate programming version](https://github.com/echen/ggplot2-tutorial/blob/master/ggplot2-tutorial.R) of this tutorial.
 
 # Preview
 

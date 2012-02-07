@@ -16,7 +16,7 @@ description: Data scientist at Twitter. Previously math and linguistics at MIT, 
 date_format: "ordinal"
 
 # RSS / Email (optional) subscription links (change if using something like Feedburner)
-subscribe_rss: /feed
+subscribe_rss: /foobar.xml
 subscribe_email:
 # RSS feeds can list your email address if you like
 email:
