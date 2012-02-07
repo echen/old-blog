@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: visualizations | Edwin Chen's Blog]]></title>
-  <link href="http://echen.github.com/blog/categories/visualizations/atom.xml" rel="self"/>
-  <link href="http://echen.github.com/"/>
-  <updated>2012-02-07T13:58:50-08:00</updated>
-  <id>http://echen.github.com/</id>
+  <link href="http://blog.echen.me/blog/categories/visualizations/atom.xml" rel="self"/>
+  <link href="http://blog.echen.me/"/>
+  <updated>2012-02-07T14:06:02-08:00</updated>
+  <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Visualizing Miss USA 2011: Should Evolution be Taught in Schools?]]></title>
-    <link href="http://echen.github.com/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/"/>
+    <link href="http://blog.echen.me/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/"/>
     <updated>2011-07-09T13:02:05-07:00</updated>
-    <id>http://echen.github.com/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools</id>
+    <id>http://blog.echen.me/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools</id>
     <content type="html"><![CDATA[<p><strong>tl;dr</strong> Should evolution be taught in schools? Go <a href="http://miss-usa-evolution.heroku.com">here</a> to visualize what the Miss USA contestants think.</p>
 
 <h1>The Visualization</h1>
@@ -56,9 +56,9 @@
   
   <entry>
     <title type="html"><![CDATA[Eigensheep]]></title>
-    <link href="http://echen.github.com/blog/2011/05/01/eigensheep/"/>
+    <link href="http://blog.echen.me/blog/2011/05/01/eigensheep/"/>
     <updated>2011-05-01T15:23:31-07:00</updated>
-    <id>http://echen.github.com/blog/2011/05/01/eigensheep</id>
+    <id>http://blog.echen.me/blog/2011/05/01/eigensheep</id>
     <content type="html"><![CDATA[<p>Aaron Koblin's <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it'd be even more awesome if the grid were <em>ordered</em>, so I decided to try projecting the sheep onto two dimensions.</p>
 
 <h1>Principal Sheep Components</h1>
@@ -85,9 +85,9 @@
   
   <entry>
     <title type="html"><![CDATA[Piiikaaachuuuuuu vs. KHAAAAAN!]]></title>
-    <link href="http://echen.github.com/blog/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan/"/>
+    <link href="http://blog.echen.me/blog/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan/"/>
     <updated>2011-03-14T04:26:14-07:00</updated>
-    <id>http://echen.github.com/blog/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan</id>
+    <id>http://blog.echen.me/blog/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan</id>
     <content type="html"><![CDATA[<p>This is a fun image:</p>
 
 <p><a href="(http://www.flickr.com/photos/squidnews/3200285750/"><img src="http://farm4.static.flickr.com/3134/3200285750_d2bd0a62fd.jpg" alt="KH(Ax)N" /></a></p>

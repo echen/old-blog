@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: expository | Edwin Chen's Blog]]></title>
-  <link href="http://echen.github.com/blog/categories/expository/atom.xml" rel="self"/>
-  <link href="http://echen.github.com/"/>
-  <updated>2012-02-07T13:58:50-08:00</updated>
-  <id>http://echen.github.com/</id>
+  <link href="http://blog.echen.me/blog/categories/expository/atom.xml" rel="self"/>
+  <link href="http://blog.echen.me/"/>
+  <updated>2012-02-07T14:06:02-08:00</updated>
+  <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Introduction to Restricted Boltzmann Machines]]></title>
-    <link href="http://echen.github.com/blog/2011/07/18/introduction-to-restricted-boltzmann-machines/"/>
+    <link href="http://blog.echen.me/blog/2011/07/18/introduction-to-restricted-boltzmann-machines/"/>
     <updated>2011-07-18T09:32:52-07:00</updated>
-    <id>http://echen.github.com/blog/2011/07/18/introduction-to-restricted-boltzmann-machines</id>
+    <id>http://blog.echen.me/blog/2011/07/18/introduction-to-restricted-boltzmann-machines</id>
     <content type="html"><![CDATA[<h1>Introduction</h1>
 
 <p>Suppose you ask a bunch of users to rate a set of movies on a 0-100 scale. In classical <a href="http://en.wikipedia.org/wiki/Factor_analysis">factor analysis</a>, you could then try to explain each movie and user in terms of a set of latent <em>factors</em>. For example, movies like Star Wars and Lord of the Rings might have strong associations with a latent science fiction and fantasy factor, and users who like Wall-E and Toy Story might have strong associations with a latent Pixar factor.</p>
@@ -151,9 +151,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
   <entry>
     <title type="html"><![CDATA[Choosing a Machine Learning Classifier]]></title>
-    <link href="http://echen.github.com/blog/2011/04/27/choosing-a-machine-learning-classifier/"/>
+    <link href="http://blog.echen.me/blog/2011/04/27/choosing-a-machine-learning-classifier/"/>
     <updated>2011-04-27T18:43:15-07:00</updated>
-    <id>http://echen.github.com/blog/2011/04/27/choosing-a-machine-learning-classifier</id>
+    <id>http://blog.echen.me/blog/2011/04/27/choosing-a-machine-learning-classifier</id>
     <content type="html"><![CDATA[<p>How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best bet is to test out a couple different ones (making sure to try different parameters within each algorithm as well), and select the best one by cross-validation. But if you're simply looking for a "good enough" algorithm for your problem, or a place to start, here are some general guidelines I've found to work well over the years.</p>
 
 <h1>How large is your training set?</h1>
@@ -182,9 +182,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
   <entry>
     <title type="html"><![CDATA[A Mathematical Introduction to Least Angle Regression]]></title>
-    <link href="http://echen.github.com/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
+    <link href="http://blog.echen.me/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
     <updated>2011-04-21T00:16:36-07:00</updated>
-    <id>http://echen.github.com/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
+    <id>http://blog.echen.me/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
     <content type="html"><![CDATA[<p>(I wrote up a more mathematical explanation of least angle regression <a href="http://echen.me/posts/a-mathematical-introduction-to-least-angle-regression">here</a>.)</p>
 
 <p>Suppose you're at a buffet. You don't want to just grab everything and overeat (overfit), so how do you decide which dishes to take? Here are some possibilities.</p>
@@ -232,9 +232,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
   <entry>
     <title type="html"><![CDATA[Introduction to Cointegration and Pairs Trading]]></title>
-    <link href="http://echen.github.com/blog/2011/04/16/what-is-cointegration-2/"/>
+    <link href="http://blog.echen.me/blog/2011/04/16/what-is-cointegration-2/"/>
     <updated>2011-04-16T03:44:14-07:00</updated>
-    <id>http://echen.github.com/blog/2011/04/16/what-is-cointegration-2</id>
+    <id>http://blog.echen.me/blog/2011/04/16/what-is-cointegration-2</id>
     <content type="html"><![CDATA[<h1>Introduction</h1>
 
 <p>Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don't know each other (they're independent), so there's no meaningful relationship between their paths.</p>
@@ -298,9 +298,9 @@ $ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
   
   <entry>
     <title type="html"><![CDATA[Counting Clusters]]></title>
-    <link href="http://echen.github.com/blog/2011/03/19/counting-clusters/"/>
+    <link href="http://blog.echen.me/blog/2011/03/19/counting-clusters/"/>
     <updated>2011-03-19T04:22:16-07:00</updated>
-    <id>http://echen.github.com/blog/2011/03/19/counting-clusters</id>
+    <id>http://blog.echen.me/blog/2011/03/19/counting-clusters</id>
     <content type="html"><![CDATA[<p>Given a set of datapoints, we often want to know how many clusters the datapoints form. Two practical algorithms for determining the number of clusters are the gap statistic and the prediction strength.</p>
 
 <h1>Gap Statistic</h1>

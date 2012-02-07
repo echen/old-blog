@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: projects | Edwin Chen's Blog]]></title>
-  <link href="http://echen.github.com/blog/categories/projects/atom.xml" rel="self"/>
-  <link href="http://echen.github.com/"/>
-  <updated>2012-02-07T13:58:50-08:00</updated>
-  <id>http://echen.github.com/</id>
+  <link href="http://blog.echen.me/blog/categories/projects/atom.xml" rel="self"/>
+  <link href="http://blog.echen.me/"/>
+  <updated>2012-02-07T14:06:02-08:00</updated>
+  <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Visualizing Miss USA 2011: Should Evolution be Taught in Schools?]]></title>
-    <link href="http://echen.github.com/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/"/>
+    <link href="http://blog.echen.me/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/"/>
     <updated>2011-07-09T13:02:05-07:00</updated>
-    <id>http://echen.github.com/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools</id>
+    <id>http://blog.echen.me/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools</id>
     <content type="html"><![CDATA[<p><strong>tl;dr</strong> Should evolution be taught in schools? Go <a href="http://miss-usa-evolution.heroku.com">here</a> to visualize what the Miss USA contestants think.</p>
 
 <h1>The Visualization</h1>
@@ -56,9 +56,9 @@
   
   <entry>
     <title type="html"><![CDATA[Topic Modeling the Sarah Palin Emails]]></title>
-    <link href="http://echen.github.com/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/"/>
+    <link href="http://blog.echen.me/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/"/>
     <updated>2011-06-27T17:19:42-07:00</updated>
-    <id>http://echen.github.com/blog/2011/06/27/topic-modeling-the-sarah-palin-emails</id>
+    <id>http://blog.echen.me/blog/2011/06/27/topic-modeling-the-sarah-palin-emails</id>
     <content type="html"><![CDATA[<h1>LDA-based Email Browser</h1>
 
 <p>Earlier this month, several thousand emails from Sarah Palin's time as governor of Alaska were <a href="http://sunlightlabs.com/blog/2011/sarahs-inbox/">released</a>. The emails weren't organized in any fashion, though, so to make them easier to browse, I've been working on some topic modeling (in particular, using latent Dirichlet allocation) to separate the documents into different groups.</p>
@@ -105,9 +105,9 @@
   
   <entry>
     <title type="html"><![CDATA[Spork: Spoon or Fork?]]></title>
-    <link href="http://echen.github.com/blog/2011/06/14/spork-spoon-or-fork/"/>
+    <link href="http://blog.echen.me/blog/2011/06/14/spork-spoon-or-fork/"/>
     <updated>2011-06-14T23:32:04-07:00</updated>
-    <id>http://echen.github.com/blog/2011/06/14/spork-spoon-or-fork</id>
+    <id>http://blog.echen.me/blog/2011/06/14/spork-spoon-or-fork</id>
     <content type="html"><![CDATA[<p>There's <a href="http://www.youtube.com/watch?v=ruJ76-o5lxU">an adorable scene</a> in <em>WALL-E</em> where, unable to decide whether a spork belongs with his spoon collection or fork collection, WALL-E enters an infinite loop and spontaneously combusts*.</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif"><img src="http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif" alt="Spork" /></a></p>
@@ -130,9 +130,9 @@
   
   <entry>
     <title type="html"><![CDATA[TWSS: Building a That's What She Said Classifier]]></title>
-    <link href="http://echen.github.com/blog/2011/05/05/twss-building-a-thats-what-she-said-classifier/"/>
+    <link href="http://blog.echen.me/blog/2011/05/05/twss-building-a-thats-what-she-said-classifier/"/>
     <updated>2011-05-05T00:09:17-07:00</updated>
-    <id>http://echen.github.com/blog/2011/05/05/twss-building-a-thats-what-she-said-classifier</id>
+    <id>http://blog.echen.me/blog/2011/05/05/twss-building-a-thats-what-she-said-classifier</id>
     <content type="html"><![CDATA[<p>There's been a <a href="www.cs.washington.edu/homes/brun/pubs/pubs/Kiddon11.pdf">fun paper</a> on <a href="http://www.urbandictionary.com/define.php?term=that's%20what%20she%20said">That's What She Said</a> identification making the rounds recently, so I spent some time over the weekend building my own classifier.</p>
 
 <p><strong>tl;dr</strong> A simple unigram Naive Bayes model works pretty well, with performance on the lines of 0.969 precision and 0.823 recall. There's a demo <a href="http://twss-classifier.heroku.com/">here</a>. I also ran the classifier over some fairy tale text.</p>
@@ -274,9 +274,9 @@ its so          0.8916207044791409
   
   <entry>
     <title type="html"><![CDATA[Filtering for English Tweets: Unsupervised Language Detection on Twitter]]></title>
-    <link href="http://echen.github.com/blog/2011/05/01/unsupervised-language-detection-algorithms/"/>
+    <link href="http://blog.echen.me/blog/2011/05/01/unsupervised-language-detection-algorithms/"/>
     <updated>2011-05-01T16:28:07-07:00</updated>
-    <id>http://echen.github.com/blog/2011/05/01/unsupervised-language-detection-algorithms</id>
+    <id>http://blog.echen.me/blog/2011/05/01/unsupervised-language-detection-algorithms</id>
     <content type="html"><![CDATA[<p>(See a demo <a href="http://babel-fett.heroku.com/">here</a>.)</p>
 
 <p>While working on a Twitter sentiment analysis project, I ran into the problem of needing to filter out all non-English tweets. (Asking the Twitter API for English-only tweets doesn't seem to work, as it nonetheless returns tweets in Spanish, Portuguese, Dutch, Russian, and a couple other languages.)</p>
