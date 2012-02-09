@@ -368,9 +368,9 @@
 
 <h1>Book Similarities</h1>
 
-<p>Let&#8217;s run this code over some real data. Unfortunately, I didn&#8217;t have a clean source of movie ratings available, so instead I used <a href="http://www.informatik.uni-freiburg.de/~cziegler/BX/">a dataset of book ratings</a>, which contains about 1 million ratings of 250,000 books.</p>
+<p>Let&#8217;s run this code over some real data. Unfortunately, I didn&#8217;t have a clean source of movie ratings available, so instead I used <a href="http://www.informatik.uni-freiburg.de/~cziegler/BX/">this dataset of 1 million book ratings</a>.</p>
 
-<p>I ran a quick command, using the handy <a href="https://github.com/twitter/scalding/wiki/Scald.rb">scald.rb script</a> that Scalding provides:</p>
+<p>I ran a quick command, using the handy <a href="https://github.com/twitter/scalding/wiki/Scald.rb">scald.rb script</a> that Scalding provides&#8230;</p>
 
 <figure class='code'><figcaption><span>Correlation </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -379,7 +379,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And here&#8217;s a sample of the top output I got:</p>
+<p>&#8230;and here&#8217;s a sample of the top output I got:</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims-correlation.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims-correlation.png" alt="Top Book-Crossing Pairs" /></a></p>
 
@@ -389,13 +389,13 @@
 <li><em>Harry Potter</em> books are similar to other <em>Harry Potter</em> books</li>
 <li><em>Lord of the Rings</em> books are similar to other <em>Lord of the Rings</em> books</li>
 <li>A Tom Clancy book is similar to a John Grisham book</li>
-<li>Chick lit (<em>Summer Sisters</em>, by Judy Blume) is similar to chick lit (<em>Bridget Jones</em></li>
+<li>Chick lit (<em>Summer Sisters</em>, by Judy Blume) is similar to chick lit (<em>Bridget Jones</em>)</li>
 </ul>
 
 
-<p>So our Scalding job is looking pretty good.</p>
+<p>So our Scalding job is looking pretty awesome!</p>
 
-<p>Let&#8217;s also look at books similar to <em>The Great Gatsby</em>:</p>
+<p>Just for fun, let&#8217;s also look at books similar to <em>The Great Gatsby</em>:</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png" alt="Great Gatsby" /></a></p>
 
@@ -420,7 +420,7 @@
 
 <h2>Correlation, Take II</h2>
 
-<p>We can also also add a <em>regularized</em> correlation, by (say) adding N virtual movie pairs that have zero correlation. This helps avoid noise if some movie pairs have very few raters in common &#8211; for example, <em>The Great Gatsby</em> had a (unlikely) raw correlation of 1 with many other books, due simply to the fact that those book pairs had very few ratings.</p>
+<p>We can also also add a <em>regularized</em> correlation, by (say) adding N virtual movie pairs that have zero correlation. This helps avoid noise if some movie pairs have very few raters in common (for example, <em>The Great Gatsby</em> had an unlikely raw correlation of 1 with many other books, due simply to the fact that those book pairs had very few ratings).</p>
 
 <figure class='code'><figcaption><span>Regularized Correlation </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -445,7 +445,7 @@
 
 <h2>Jaccard Similarity</h2>
 
-<p>Recall that <a href="">one of the lessons of the Netflix prize</a> was that implicit data can be quite useful &#8211; the mere fact that you rate a James Bond movie, even if you rate it quite horribly, suggests that you&#8217;d probably be interested in similar films. So we can also ignore the value itself of each rating and use a <em>set</em>-based similarity measure like <a href="http://en.wikipedia.org/wiki/Jaccard_index">Jaccard similarity</a>.</p>
+<p>Recall that <a href="http://blog.echen.me/blog/2011/10/24/winning-the-netflix-prize-a-summary/">one of the lessons of the Netflix prize</a> was that implicit data can be quite useful &#8211; the mere fact that you rate a James Bond movie, even if you rate it quite horribly, suggests that you&#8217;d probably be interested in similar films. So we can also ignore the value itself of each rating and use a <em>set</em>-based similarity measure like <a href="http://en.wikipedia.org/wiki/Jaccard_index">Jaccard similarity</a>.</p>
 
 <figure class='code'><figcaption><span>Jaccard Similarity </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -458,9 +458,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<h2>Adding these in</h2>
+<h2>Incorporation</h2>
 
-<p>Finally, we add all these similarity measures to our output.</p>
+<p>Finally, let&#8217;s add all these similarity measures to our output.</p>
 
 <figure class='code'><figcaption><span>Similarity Measures </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -505,7 +505,9 @@
 
 <h1>Book Similarities Revisited</h1>
 
-<p>Let&#8217;s take another look at the book similarities above, this time with these new fields added in. Here are some of the top Book-Crossing pairs, sorted by the shrunk correlation:</p>
+<p>Let&#8217;s take another look at the book similarities above, this time with these new fields.</p>
+
+<p>Here are some of the top Book-Crossing pairs, sorted by the shrunk correlation:</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims.png" alt="Top Book-Crossing Pairs" /></a></p>
 
@@ -542,7 +544,7 @@
 
 <h2>Book-Crossings</h2>
 
-<p>For example, here&#8217;s a class I could have used to generate the music recommendations above:</p>
+<p>For example, here&#8217;s a class I could have used to generate the book recommendations above:</p>
 
 <figure class='code'><figcaption><span>BookCrossing similarities </span><a href='https://github.com/echen/scaldingale/blob/master/BookCrossing.scala'>BookCrossing.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -579,7 +581,7 @@
 <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 
-<p>(iTunes apparently lets you send a tweet whenever you rate a song.) So let&#8217;s make use of this data and generate music recommendations.</p>
+<p>iTunes apparently lets you send a tweet whenever you rate a song, so let&#8217;s make use of this data and generate music recommendations.</p>
 
 <p>Again, we create a new class that overrides the abstract <code>input</code> defined in <code>VectorSimilarities</code>:</p>
 
@@ -626,9 +628,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In this code, I used a Twitter-internal tweet source that provides data on tweets, but you could just as easily <a href="https://dev.twitter.com/docs">scrape Twitter yourself</a> and provide your own source of tweets instead.</p>
+<p>(In this code, I used a Twitter-internal tweet source that provides data on tweets, but you could just as easily <a href="https://dev.twitter.com/docs">scrape Twitter yourself</a> and provide your own source of tweets instead.)</p>
 
-<p>Here are some songs you might like if you recently listened to <strong>Beyoncé</strong>:</p>
+<p>And snap, here are some songs you might like if you recently listened to <strong>Beyoncé</strong>:</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png" alt="Jason Mraz" /></a></p>
 
@@ -654,7 +656,7 @@
 
 <p>Instead of using an explicit rating given to us, we can simply generate a dummy rating of 1 for each check-in. Correlation doesn&#8217;t make sense any more, but we can still pay attention to a measure like Jaccard simiilarity.</p>
 
-<p>So again, I create a new class that scrapes Twitter for Foursquare check-ins and parses them into a ratings format:</p>
+<p>So again, we create a new class that scrapes Twitter for Foursquare check-ins and parses them into a ratings format:</p>
 
 <figure class='code'><figcaption><span>Location similarities with Foursquare </span><a href='https://github.com/echen/scaldingale/blob/master/Foursquare.scala'>Foursquare.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -717,7 +719,7 @@
 
 <p>But why stop there? We could just as easily also abstract away our output as well, allowing us to filter and format our output however we want.</p>
 
-<p>Or, as hinted above, we could also try to generalize our similarity computations! After all, what are all of our calculations but simple vector and matrix manipulations? A dot product is just a matrix multiplication, the norms of our vectors are a diagonal, placing our matrix in a min-plus algebra would give us things like <a href="http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf">Tetris and shortest-paths</a> (and, hey, even <a href="http://mathoverflow.net/questions/406/how-is-tropicalization-like-taking-the-classical-limit">classical mechanics</a>)&#8230;</p>
+<p>Or, as hinted above, we could try to generalize our similarity computations! After all, what are all of these measures but simple vector and matrix manipulations? A dot product is just a matrix multiplication, the norms of our vectors are a diagonal, placing our matrix in a min-plus algebra would give us things like <a href="http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf">Tetris and shortest-paths</a> (and, hey, even <a href="http://mathoverflow.net/questions/406/how-is-tropicalization-like-taking-the-classical-limit">classical mechanics</a>)&#8230;</p>
 
 <p>But that&#8217;s the subject of another post.</p>
 
