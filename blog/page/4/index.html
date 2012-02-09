@@ -98,6 +98,68 @@
     
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2011/03/14/pca-transpose-trick/">PCA Transpose Trick</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+<time datetime="2011-03-14 04:21:12 -0700" pubdate  updated >Mar 14<span>th</span>, 2011</time>
+
+
+</p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>A simpler eigenvector calculation</h1>
+
+<p>Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
+
+<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A^T A$.</p>
+
+<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A^T A$ is computationally difficult. How can we make this problem more tractable?</p>
+
+<p>It turns out that the eigenvectors of $A^T A$ have a simple relationship with the eigenvectors of $A A^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A^T$, then $A^Tv$ is an eigenvector of $A^T A$ with the same eigenvalue</strong>.</p>
+
+<h1>Proof</h1>
+
+<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A^T$ with eigenvalue $\lambda$. Then</p>
+
+<p>$(A A^T) v = \lambda v$</p>
+
+<p>$A^T(A A^T v) = A^T(\lambda v)$</p>
+
+<p>$(A^T A)(A^T v) = \lambda (A^T v)$</p>
+
+<p>so $A^Tv$ is an eigenvector of $A^T A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A^T A$ directly, we can instead find the eigenvectors of $A A^T$ and multiply these on the left by $A^T$.</p>
+
+<h1>Pseudocode</h1>
+
+<p>To summarize, here&#8217;s how to perform a PCA using this trick:</p>
+
+<ul>
+<li>Let $A$ be an $m \times n$ matrix with observations in rows and dimensions in the columns.</li>
+<li>From each column of $A$, subtract the column&#8217;s mean, so that each column now has zero mean.</li>
+<li>We now need to find the eigenvectors of the covariance matrix $A^T A$. If $A A^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A^T$. Then $A^T v$ are the eigenvectors of $A^T A$.</li>
+</ul>
+
+
+<p>I&#8217;ve put a simple PCA implementation of this transpose trick on <a href="https://github.com/echen/pca-transpose-trick">my Github account</a>.</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture/">Topological Combinatorics and the Evasiveness Conjecture</a></h1>
     
     
@@ -226,6 +288,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
       </li>
     
@@ -259,10 +325,6 @@
     
       <li class="post">
         <a href="/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/">Topic Modeling the Sarah Palin Emails</a>
       </li>
     
   </ul>

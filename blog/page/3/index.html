@@ -98,6 +98,173 @@
     
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2011/03/22/harry-potter-and-the-keyword-chaos-unsupervised-statistically-significant-phrases/">Unsupervised Statistically Significant Phrases</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+<time datetime="2011-03-22 04:20:23 -0700" pubdate  updated >Mar 22<span>nd</span>, 2011</time>
+
+
+</p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>One of my all-time favorite graphs is the following visualization of the distribution of the primes (showing that the primes are more spread out than the random, clumpy points of a Poisson process):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png"><img src="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png" alt="Distribution of Primes" /></a></p>
+
+<p>So I was pretty intrigued when I ran across <a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">this paper</a> (<a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">Level statistics of words: Finding keywords in literary texts and symbolic sequences</a>) using similar quantumish, random matrixish ideas to extract the important phrases from a text.</p>
+
+<h1>The Paper</h1>
+
+<p>Statistical phrase extraction (e.g., the &#8220;statistically improbable phrases&#8221; you see on Amazon) is usually done by comparing a target text against a baseline corpus. The authors of this paper, however, describe an <em>unsupervised</em> phrase extraction method given only the target text itself, by making use of the spatial distribution of the phrases (which gets thrown out in typical bag-of-word models).</p>
+
+<p>The idea is that uninformative words and phrases (e.g., &#8220;the&#8221; and &#8220;but&#8221;) have a more random and uniform distribution than important words and phrases (e.g., names of main characters), which will tend to form clusters. (Funnily, the quantum chaos paper containing the primes graph reverses these characterizations: there, the primes are the ones that are repellent and spread out, while the random numbers are the ones that form clusters.)</p>
+
+<p>Thus, the cluster-tendency of a phrase should be a reasonable measure of its importance.</p>
+
+<h1>Implementation</h1>
+
+<p>I wrote a quick Ruby script to calculate the level statistics on the first Harry Potter book.</p>
+
+<p>Here are the top 25 unigrams extracted (ordered using the sigma_normalized statistic from the paper; I played around with the paper&#8217;s C number as well, but it didn&#8217;t give as good results):</p>
+
+<pre><code>phrase  count   sigma_normalized
+dudley  117     5.886458836973907
+vernon  105     5.425462371919648
+uncle   121     4.96291028279975
+yeh     100     4.483340310689477
+mirror  46      4.4123632519944564
+platform        20      3.7698278374021283
+wood    53      3.698871282864937
+aunt    65      3.682665094335877
+hagrid  336     3.532997146829891
+ter     78      3.4935220547292394
+petunia 57      3.3847272743671764
+dragon  31      3.319790040957389
+fang    16      3.1175440675916763
+unicorn 22      3.109138726006347
+bludgers        13      3.0336322222301035
+o       31      2.973718095050078
+malfoy  112     2.965094959118159
+voldemort       31      2.957883190702609
+percy   36      2.946348443571833
+path    12      2.9430416987716383
+dursley 54      2.9266934668788025
+christmas       25      2.926196222714648
+anythin 13      2.8753724174699626
+quirrell        91      2.8351538706894868
+crate   12      2.8171552951153913
+</code></pre>
+
+<p>It looks more impressive when you compare with the bottom 25 unigrams (filtered to counts of at least 50, to make the unigrams more comparable to those above):</p>
+
+<pre><code>phrase  count   sigma_normalized
+few     55      0.858973690529759
+seemed  72      0.8660034944771483
+might   54      0.8691077527153204
+after   68      0.8700202208036406
+way     94      0.8893865470583092
+come    95      0.8897833973429081
+before  107     0.9158168210798949
+good    82      0.9208260024379561
+suddenly        69      0.9223289856683224
+only    111     0.9262797404590966
+put     58      0.9320218173468643
+must    57      0.932224843054271
+while   60      0.9367996846919046
+asked   60      0.9386801898266576
+left    82      0.9509973378264027
+trying  65      0.9511509393516154
+saw     62      0.9524243012100968
+even    105     0.9563651096306485
+really  73      0.9569234100328665
+voice   59      0.957685122636835
+away    71      0.9611639088841413
+where   100     0.9657416499349912
+every   53      0.9659213894654203
+harrys  113     0.9746316711628271
+long    71      0.9794359046955133
+</code></pre>
+
+<p>Similarly, here are the top bigrams:</p>
+
+<pre><code>phrase  count   sigma_normalized
+uncle vernon    97      5.2050164080560615
+the mirror      35      3.8911699122647163
+professor mcgonagall    89      3.570490871211533
+aunt petunia    52      3.3541554249859917
+the library     21      3.2822285085324374
+nine and        13      3.052813340938423
+the twins       12      3.0493973437585256
+the potters     12      2.962214857171763
+the boy 26      2.86158988074687
+said hagrid     89      2.76691520812392
+the stone       48      2.7118270594517413
+and dudley      15      2.705365860880404
+the giant       15      2.682345959043539
+the troll       18      2.6613701424473386
+mr dursley      30      2.607508647153971
+said uncle      13      2.5996349710103055
+sorcerers stone 14      2.564840300637567
+the quaffle     16      2.533417641354809
+said dumbledore 27      2.5200215250194193
+said hermione   42      2.509101121058932
+and threequarters       9       2.4248478008322967
+the crate       9       2.377194502184057
+the cloak       22      2.368960931129895
+the forest      23      2.3607725433338675
+mr potter       12      2.3429313549690285
+</code></pre>
+
+<p>And the bottom bigrams (filtered to counts of at least 25):</p>
+
+<pre><code>phrase  count   sigma_normalized
+for a   38      0.6706459452115997
+the way 34      0.7417616427971635
+to harry        31      0.7671160112200728
+a few   45      0.7699093885203201
+off the 32      0.7949383886682402
+to him  27      0.7958792937430593
+was going       36      0.811227023007951
+up to   39      0.8122786875347693
+but it  32      0.8336661901803439
+up the  40      0.8365345579027479
+if you  34      0.8422559552361845
+which was       28      0.8552087965411528
+of course       35      0.8621365585531023
+by the  43      0.8625237028663237
+the other       52      0.8876800348745395
+with a  55      0.8903321479589525
+ and    51      0.9016112133824481
+his face        31      0.9018554880700214
+and he  47      0.9038362537361607
+with the        56      0.9048625952654603
+but i   32      0.9110050643857517
+had to  43      0.9235463968235097
+at last 28      0.9255524776918606
+i know  27      0.9294114876847764
+he could        47      0.9358967550241238
+</code></pre>
+
+<p>So interestingly, while the method doesn&#8217;t do a great job of capturing the most important phrases (I&#8217;m not really sure why it should, in any case, as I&#8217;d guess main characters and themes would appear pretty evenly throughout the text), it does seem to pick out minor characters and objects (like the Dudleys), which seems to make a bit more sense.</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2011/03/19/counting-clusters/">Counting Clusters</a></h1>
     
     
@@ -798,68 +965,6 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
   </article>
 
-
-  <article>
-    
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2011/03/14/pca-transpose-trick/">PCA Transpose Trick</a></h1>
-    
-    
-      <p class="meta">
-
-
-
-
-<time datetime="2011-03-14 04:21:12 -0700" pubdate  updated >Mar 14<span>th</span>, 2011</time>
-
-
-</p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>A simpler eigenvector calculation</h1>
-
-<p>Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
-
-<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A^T A$.</p>
-
-<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A^T A$ is computationally difficult. How can we make this problem more tractable?</p>
-
-<p>It turns out that the eigenvectors of $A^T A$ have a simple relationship with the eigenvectors of $A A^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A^T$, then $A^Tv$ is an eigenvector of $A^T A$ with the same eigenvalue</strong>.</p>
-
-<h1>Proof</h1>
-
-<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A^T$ with eigenvalue $\lambda$. Then</p>
-
-<p>$(A A^T) v = \lambda v$</p>
-
-<p>$A^T(A A^T v) = A^T(\lambda v)$</p>
-
-<p>$(A^T A)(A^T v) = \lambda (A^T v)$</p>
-
-<p>so $A^Tv$ is an eigenvector of $A^T A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A^T A$ directly, we can instead find the eigenvectors of $A A^T$ and multiply these on the left by $A^T$.</p>
-
-<h1>Pseudocode</h1>
-
-<p>To summarize, here&#8217;s how to perform a PCA using this trick:</p>
-
-<ul>
-<li>Let $A$ be an $m \times n$ matrix with observations in rows and dimensions in the columns.</li>
-<li>From each column of $A$, subtract the column&#8217;s mean, so that each column now has zero mean.</li>
-<li>We now need to find the eigenvectors of the covariance matrix $A^T A$. If $A A^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A^T$. Then $A^T v$ are the eigenvectors of $A^T A$.</li>
-</ul>
-
-
-<p>I&#8217;ve put a simple PCA implementation of this transpose trick on <a href="https://github.com/echen/pca-transpose-trick">my Github account</a>.</p>
-</div>
-  
-  
-
-
-  </article>
-
 <nav role="pagination">
   <div>
     
@@ -902,6 +1007,10 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
       </li>
     
@@ -935,10 +1044,6 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
     
       <li class="post">
         <a href="/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/">Topic Modeling the Sarah Palin Emails</a>
       </li>
     
   </ul>

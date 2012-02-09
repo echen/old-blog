@@ -18,6 +18,7 @@ function addSidebarToggler() {
       $('body').addClass('collapse-sidebar');
     }
   });
+  $('aside[role=sidebar]').addClass('sidebar')
   sections = $('aside[role=sidebar] > section')
   if(sections.length > 1){
     sections.each(function(section, index){
