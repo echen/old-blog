@@ -1,0 +1,451 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Edwin Chen's Blog: Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</title>
+  <meta name="author" content="Edwin Chen">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+  <link rel="canonical" href="http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/"/>
+  <link href="/favicon.png" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/feed/index.xml" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29005692-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Edwin Chen's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul role=subscription data-subscription="rss">
+  <li><a href="/feed/index.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:blog.echen.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+<time datetime="2011-09-07 11:15:11 -0700" pubdate  updated >Sep 7<span>th</span>, 2011</time>
+
+
+</p>
+    
+  </header>
+
+
+<div class="entry-content"><p><strong>tl;dr</strong> See <a href="http://www.youtube.com/watch?v=cZ4Ntg4jQHw">this movie visualization</a> for a case study on how a post propagates through Quora.</p>
+
+<p>How does information spread through a network? Much of Quora&#8217;s appeal, after all, lies in its social graph &#8211; and when you&#8217;ve got a network of users, all broadcasting their activities to their neighbors, information can cascade in multiple ways. How do these social designs affect which users see what?</p>
+
+<p>Think, for example, of what happens when your kid learns a new slang word at school. He doesn&#8217;t confine his use of the word to McKinley Elementary&#8217;s particular boundaries, between the times of 9-3pm &#8211; he introduces it to his friends from other schools at soccer practice as well. A couple months later, he even says it at home for the first time; you like the word so much, you then start using it at work. Eventually, Justin Bieber uses the word in a song, at which point the word&#8217;s popularity really starts to explode.</p>
+
+<p>So how does information propagate through a social network? What types of people does an answer on Quora reach, and how does it reach them? (Do users discover new answers individually, or are hubs of connectors more key?) How does the activity of a post on Quora rise and fall? (Submissions on other sites have limited lifetimes, fading into obscurity soon after an initial spike; how does that change when users are connected and every upvote can revive a post for someone else&#8217;s eyes?)</p>
+
+<p>(I looked at Quora since I had some data from there already available, but I hope the lessons should be fairly applicable in general, to other social networks like Facebook, Twitter, and LinkedIn as well.)</p>
+
+<p>To give an initial answer to some of these questions, I dug into one of my more popular posts, on <a href="http://www.quora.com/Random-Forests/How-do-random-forests-work-in-laymans-terms">a layman&#8217;s introduction to random forests</a>.</p>
+
+<h1>Users, Topics</h1>
+
+<p>Before looking deeper into the voting dynamics of the post, let&#8217;s first get some background on what kinds of users the answer reached.</p>
+
+<p>Here&#8217;s a graph of the topics that question upvoters follow. (Each node is a topic, and every time upvoter X follows both topics A and B, I add an edge between A and B.)</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/social-network-transmission/rf-upvoter-topics-unlabeled.png"><img src="http://dl.dropbox.com/u/10506/blog/social-network-transmission/rf-upvoter-topics-unlabeled.png" alt="Upvoters' Topics - Unlabeled" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/social-network-transmission/rf-upvoter-topics-labeled.png"><img src="http://dl.dropbox.com/u/10506/blog/social-network-transmission/rf-upvoter-topics-labeled.png" alt="Upvoters' Topics - Labeled" /></a></p>
+
+<p>We can see from the graph that upvoters tend to be interested in three kinds of topics:</p>
+
+<ul>
+<li><strong>Machine learning and other technical matters</strong> (the green cluster): Classification, Data Mining, Big Data, Information Retrieval, Analytics, Probability, Support Vector Machines, R, Data Science, &#8230;</li>
+<li><strong>Startups/Silicon Valley</strong> (the red cluster): Facebook, Lean Startups, Investing, Seed Funding, Angel Investing, Technology Trends, Product Managment, Silicon Valley Mergers and Acquisitions, Asana, Social Games, Quora, Mark Zuckerberg, User Experience, Founders and Entrepreneurs, &#8230;</li>
+<li><strong>General Intellectual Topics</strong> (the purple cluster): TED, Science, Book Recommendations, Philosophy, Politics, Self-Improvement, Travel, Life Hacks, &#8230;</li>
+</ul>
+
+
+<p>Also, here&#8217;s the network of the upvoters themselves (there&#8217;s an edge between users A and B if A follows B):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/social-network-transmission/rf-upvoters-unlabeled.png"><img src="http://dl.dropbox.com/u/10506/blog/social-network-transmission/rf-upvoters-unlabeled.png" alt="Upvote Network - Unlabeled" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/social-network-transmission/rf-upvoters-labeled.png"><img src="http://dl.dropbox.com/u/10506/blog/social-network-transmission/rf-upvoters-labeled.png" alt="Upvote Network - Labeled" /></a></p>
+
+<p>We can see three main clusters of users:</p>
+
+<ul>
+<li>A large group in <strong>green</strong> centered around a lot of power users and Quora employees.</li>
+<li>A machine learning group of folks in <strong>orange</strong> centered around people like Oliver Grisel, Christian Langreiter, and Joseph Turian.</li>
+<li>A group of people following me, in <strong>purple</strong>.</li>
+<li>Plus some smaller clusters in blue and yellow. (There were also a bunch of isolated users, connected to no one, that I filtered out of the picture.)</li>
+</ul>
+
+
+<p>Digging into how these topic and user graphs are related:</p>
+
+<ul>
+<li>The orange cluster of users is more heavily into machine learning: 79% of users in that cluster follow more green topics (machine learning and technical topics) than red and purple topics (startups and general intellectual matters).</li>
+<li>The green cluster of users is reversed: 77% of users follow more of the red and purple clusters of topics (on startups and general intellectual matters) than machine learning and technical topics.</li>
+</ul>
+
+
+<p>More interestingly, though, we can ask: how do the connections between upvoters relate to the way the post spread?</p>
+
+<h1>Social Voting Dynamics</h1>
+
+<p>So let&#8217;s take a look. Here&#8217;s a visualization I made of upvotes on my answer across time (click <a href="http://www.youtube.com/watch?v=cZ4Ntg4jQHw">here</a> for a larger view).</p>
+
+<iframe width="640" height="510" src="http://www.youtube.com/embed/cZ4Ntg4jQHw " frameborder="0" allowfullscreen></iframe>
+
+
+<p></p>
+
+<p>To represent the social dynamics of these upvotes, I drew an edge from user A to user B if user A transmitted the post to user B through an upvote. (Specifically, I drew an edge from Alice to Bob if Bob follows Alice and Bob&#8217;s upvote appeared within five days of Alice&#8217;s upvote; this is meant to simulate the idea that Alice was the key intermediary between my post and Bob.)</p>
+
+<p>Also,</p>
+
+<ul>
+<li>Green nodes are users with at least one upvote edge.</li>
+<li>Blue nodes are users who follow at least one of the topics the post is categorized under (i.e., users who probably discovered the answer by themselves).</li>
+<li>Red nodes are users with no connections and who do not follow any of the post&#8217;s topics (i.e, users whose path to the post remain mysterious).</li>
+<li>Users increase in size when they produce more connections.</li>
+</ul>
+
+
+<p>Here&#8217;s a play-by-play of the video:</p>
+
+<ul>
+<li>On Feb 14 (the day I wrote the answer), there&#8217;s a flurry of activity.</li>
+<li>A couple of days later, Tracy Chou gives an upvote, leading to another spike in activity.</li>
+<li>Then all&#8217;s quiet until&#8230; bam! Alex Kamil leads to a surge of upvotes, and his upvote finds Ludi Rehak, who starts a small surge of her own. They&#8217;re quickly followed by Christian Langreiter, who starts a small revolution among a bunch of machine learning folks a couple days later.</li>
+<li>Then all is pretty calm again, until a couple months later when&#8230; bam! Aditya Sengupta brings in a smashing of his own followers, and his upvote makes its way to Marc Bodnick, who sets off a veritable storm of activity.</li>
+</ul>
+
+
+<p>(Already we can see some relationships between the graph of user connections and the way the post propagated. Many of the users from the orange cluster, for example, come from Alex Kamil and Christian Langreiter&#8217;s upvotes, and many of the users from the green cluster come from Aditya Sengupta and Marc Bodnick&#8217;s upvotes. What&#8217;s interesting, though, is, why didn&#8217;t the cluster of green users appear all at once, like the orange cluster did? People like Kah Seng Tay, Tracy Chou, Venkatesh Rao, and Chad Little upvoted the answer pretty early on, but it wasn&#8217;t until Aditya Sengupta&#8217;s upvote a couple months later that people like Marc Bodnick, Edmond Lau, and many of the other green users (who do indeed follow that first set of folks) discovered the answer. Did the post simply get lost in users&#8217; feeds the first time around? Was the post perhaps ignored until it received enough upvotes to be considered worth reading? Are some users&#8217; upvotes just trusted more than others&#8217;?)</p>
+
+<p>For another view of the upvote dynamics, here&#8217;s a static visualization, where we can again easily see the clusters of activity:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/social-network-transmission/upvote-clusters-labeled-v2.png"><img src="http://dl.dropbox.com/u/10506/blog/social-network-transmission/upvote-clusters-labeled-v2.png" alt="Upvote Temporal Clusters" /></a></p>
+
+<h1>Fin</h1>
+
+<p>There are still many questions it would be interesting to look at; for example,</p>
+
+<ul>
+<li>What differentiates users who sparked spikes of activity from users who didn&#8217;t? I don&#8217;t believe it&#8217;s simply number of followers, as many well-connected upvoters did <em>not</em> lead to cascades of shares. Does authority matter?</li>
+<li>How far can a post reach? Clearly, the post reached people more than one degree of separation away from me (where one degree of separation is a follower); what does the distribution of degrees look like? Is there any relationship between degree of separation and time of upvote?</li>
+<li>What can we say about the people who started following me after reading my answer? Are they fewer degrees of separation away? Are they more interested in machine learning? Have they upvoted any of my answers before? (Perhaps there&#8217;s a certain &#8220;threshold&#8221; of interestingness people need to overflow before they&#8217;re considered acceptable followees.)</li>
+</ul>
+
+
+<p>But to summarize a bit what we&#8217;ve seen so far, here are some statistics on the role the social graph played in spreading the post:</p>
+
+<ul>
+<li>There are 5 clusters of activity after the initial post, sparked both by power users and less-connected folks. In an interesting cascade of information, some of these sparks led to further spikes in activity as well (as when Aditya Sengupta&#8217;s upvote found its way to Marc Bodnick, who set off even more activity).</li>
+<li>35% of users made their way to my answer because of someone else&#8217;s upvote.</li>
+<li>Through these connections, the post reached a fair variety of users: 32% of upvoters don&#8217;t even follow any of the post&#8217;s topics.</li>
+<li>77% of upvotes came from users over two weeks <em>after</em> my answer appeared.</li>
+<li>If we look only at the upvoters who follow at least one of the post&#8217;s topics, 33% didn&#8217;t see my answer until someone else showed it to them. In other words, a full one-third of people who presumably would have been interested in my post anyways only found it because of their social network.</li>
+</ul>
+
+
+<p>So it looks like the social graph played quite a large part in the post&#8217;s propagation, and I&#8217;ll end with a big shoutout to Stormy Shippy, who provided an awesome set of scripts I used to collect a lot of this data.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Edwin Chen</span></span>
+
+      
+
+
+
+
+<time datetime="2011-09-07 11:15:11 -0700" pubdate  updated >Sep 7<span>th</span>, 2011</time>
+
+
+
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/" data-via="edchedch" data-counturl="http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/" >Tweet</a>
+  
+  
+  <g:plusone size="medium"></g:plusone>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread"><div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'edwinchen';
+  var disqus_identifier = 'http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/';
+  var disqus_url = 'http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/';
+  //var disqus_developer = 1;
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Edwin Chen</h1>
+  
+  <p>Data scientist at <a href="https://twitter.com/#!/edchedch">Twitter</a>. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
+  
+  <p>I like math, statistics, machine learning, and linguistics.</p>
+
+  <p>Email: hello[at]echen.me<br/>
+  Twitter: <a href="https://twitter.com/#!/edchedch">@edchedch</a><br/>
+  Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
+
+  <p>Available for consulting work, so feel free to contact me about projects.</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("edchedch", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/edchedch" class="twitter-follow-button" data-width="208px" data-show-count="true">Follow @edchedch</a>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Edwin Chen -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'edwinchen';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/';
+        var disqus_url = 'http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>

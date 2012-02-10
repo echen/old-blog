@@ -1,0 +1,431 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Edwin Chen's Blog</title>
+  <meta name="author" content="Edwin Chen">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+  <link rel="canonical" href="http://blog.echen.me/page/4/index.html"/>
+  <link href="/favicon.png" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/feed/index.xml" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29005692-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Edwin Chen's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul role=subscription data-subscription="rss">
+  <li><a href="/feed/index.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:blog.echen.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/03/14/pca-transpose-trick/">PCA Transpose Trick</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+<time datetime="2011-03-14 04:21:12 -0700" pubdate  updated >Mar 14<span>th</span>, 2011</time>
+
+
+</p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>A simpler eigenvector calculation</h1>
+
+<p>Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
+
+<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A^T A$.</p>
+
+<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A^T A$ is computationally difficult. How can we make this problem more tractable?</p>
+
+<p>It turns out that the eigenvectors of $A^T A$ have a simple relationship with the eigenvectors of $A A^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A^T$, then $A^Tv$ is an eigenvector of $A^T A$ with the same eigenvalue</strong>.</p>
+
+<h1>Proof</h1>
+
+<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A^T$ with eigenvalue $\lambda$. Then</p>
+
+<p>$(A A^T) v = \lambda v$</p>
+
+<p>$A^T(A A^T v) = A^T(\lambda v)$</p>
+
+<p>$(A^T A)(A^T v) = \lambda (A^T v)$</p>
+
+<p>so $A^Tv$ is an eigenvector of $A^T A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A^T A$ directly, we can instead find the eigenvectors of $A A^T$ and multiply these on the left by $A^T$.</p>
+
+<h1>Pseudocode</h1>
+
+<p>To summarize, here&#8217;s how to perform a PCA using this trick:</p>
+
+<ul>
+<li>Let $A$ be an $m \times n$ matrix with observations in rows and dimensions in the columns.</li>
+<li>From each column of $A$, subtract the column&#8217;s mean, so that each column now has zero mean.</li>
+<li>We now need to find the eigenvectors of the covariance matrix $A^T A$. If $A A^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A^T$. Then $A^T v$ are the eigenvectors of $A^T A$.</li>
+</ul>
+
+
+<p>I&#8217;ve put a simple PCA implementation of this transpose trick on <a href="https://github.com/echen/pca-transpose-trick">my Github account</a>.</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture/">Topological Combinatorics and the Evasiveness Conjecture</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+<time datetime="2011-03-14 04:17:41 -0700" pubdate  updated >Mar 14<span>th</span>, 2011</time>
+
+
+</p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The Kahn, Saks, and Sturtevant approach to the Evasiveness Conjecture (see the original paper <a href="http://www.springerlink.com/index/R521072311641L41.pdf">here</a>) is an epic application of pure mathematics to computer science. I&#8217;ll give an overview of the approach here, and probably try to add some more information on the problem in other posts.</p>
+
+<p><strong>tl;dr</strong> The KSS approach provides an algebraic-topological attack to a combinatorial hypothesis, and reduces a graph complexity problem to a problem of contractibility and (not) finding fixed points.</p>
+
+<p>First, the Evasiveness Conjecture states that any (non-trivial) monotone graph property is evasive. In other words, if you&#8217;re trying to figure out whether an undirected n-vertex graph satisfies a certain property (e.g., whether the graph contains a triangle or is connected), and this property is monotone (meaning that if you add more edges to the graph, then it still satisfies the property), then if all you&#8217;re allowed to do is ask questions of the form &#8220;Is edge (i, j) in the graph?&#8221;, then you need to query for every single edge before you can determine whether the graph satisfies the property or not. For example, if you want to figure out whether a graph G contains a clique of size 5, then you need to know whether each of the n(n-1)/2 possible edges is in the graph or not before you can answer for certain.</p>
+
+<p>Next, given any monotone graph property on n-vertex graphs, we can associate it with a simplicial complex S (basically, an n-dimensional structure formed by gluing together a bunch of hypertriangles), by taking the complex to be the set of all n-vertex graphs that don&#8217;t satisfy the property.</p>
+
+<p>Kahn, Saks, and Sturtevant then prove that if a monotone graph property is not evasive, then its associated simplicial complex is contractible, and thus (by the Lefschetz Fixed-Point theorem) any auto-simplicial map on the complex (a function from the complex to itself that preserves faces) has a fixed point.</p>
+
+<p>Thus, we can prove that a monotone graph property is evasive by finding a simplicial map that has no fixed point (which we can do by showing that no orbit of the map is a face of the complex). This approach has been used to prove things like the evasiveness of graph properties when the number of vertices is prime or a prime power, and the evasiveness of all bipartite graph properties.</p>
+</div>
+  
+  
+
+
+  </article>
+
+
+  <article>
+    
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/02/15/an-overview-of-item-to-item-collaborative-filtering-with-amazons-recommendation-system/">Item-to-Item Collaborative Filtering With Amazon&#8217;s Recommendation System</a></h1>
+    
+    
+      <p class="meta">
+
+
+
+
+<time datetime="2011-02-15 04:15:11 -0800" pubdate  updated >Feb 15<span>th</span>, 2011</time>
+
+
+</p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Introduction</h1>
+
+<p>In making its product recommendations, Amazon makes heavy use of an item-to-item collaborative filtering approach. This essentially means that for each item X, Amazon builds a neighborhood of related items S(X); whenever you buy/look at an item, Amazon then recommends you items from that item&#8217;s neighborhood. That&#8217;s why when you sign in to Amazon and look at the front page, your recommendations are mostly of the form &#8220;You viewed&#8230; Customers who viewed this also viewed&#8230;&#8221;.</p>
+
+<h1>Other approaches.</h1>
+
+<p>The item-to-item approach can be contrasted to:</p>
+
+<ul>
+<li><strong>A user-to-user collaborative filtering approach</strong>. This finds users similar to you (e.g., it could find users who bought a lot of items in common with you), and suggest items that they&#8217;ve bought but you haven&#8217;t.</li>
+<li><strong>A global, latent factorization approach</strong>. Rather than looking at individual items in isolation (in the item-to-item approach, if you and I both buy a book X, Amazon will make essentially the same recommendations based on X, regardless of what we&#8217;ve bought in the past), a global approach would look at all the items you&#8217;ve bought, and try to detect properties that characterize what you like. For example, if you buy a lot of science fiction books and also a lot of romance books, a global-approach algorithm might try to recommend you books with both science fiction and romance elements.</li>
+</ul>
+
+
+<h1>Pros/cons of the item-to-item approach:</h1>
+
+<ul>
+<li><strong>Pros over the user-to-user approach</strong>: Amazon (and most applications) has many more users than items, so it&#8217;s computationally simpler to find similar items than it is to find similar users. Finding similar users is also a difficult algorithmic task, since individual users often have a very wide range of tastes, but individual items usually belong to relatively few genres.</li>
+<li><strong>Pros over the factorization approach</strong>: Simpler to implement. Faster to update recommendations: as soon as you buy a new book, Amazon can make a new recommendation in the item-to-item approach, whereas a factorization approach would have to wait until the factorization has been recomputed. The item-to-item approach can also be more easily leveraged in several areas, not only in the recommendations made to you, but also in the &#8220;similar items/other customers also bought&#8221; section when you look at a particular item.</li>
+<li><strong>Cons of the item-to-item approach</strong>: You don&#8217;t get very much diversity or surprise in item-to-item recommendations, so recommendations tend to be kind of &#8220;obvious&#8221; and boring.</li>
+</ul>
+
+
+<h1>How to find similar items</h1>
+
+<p>Since the item-to-item approach makes crucial use of similar items, here&#8217;s a high-level view of how to do it. First, associate each item with the set of users who have bought/looked at it. The similarity between any two items could then be a normalized measure of the number of users they have in common (i.e., the Jaccard index) or the cosine distance between the two items (imagine each item as a vector, with a 1 in the ith element if user i has bought it, and 0 otherwise).</p>
+</div>
+  
+  
+
+
+  </article>
+
+<nav role="pagination">
+  <div>
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/page/3/">Newer &rarr;</a>
+    
+  </div>
+</nav>
+
+<script type="text/javascript">
+    var disqus_shortname = 'edwinchen';
+    (function () {
+      var s = document.createElement('script'); s.async = true;
+      s.type = 'text/javascript';
+      s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+      (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+
+</div>
+<aside role=sidebar>
+  
+    <section>
+  <h1>Edwin Chen</h1>
+  
+  <p>Data scientist at <a href="https://twitter.com/#!/edchedch">Twitter</a>. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
+  
+  <p>I like math, statistics, machine learning, and linguistics.</p>
+
+  <p>Email: hello[at]echen.me<br/>
+  Twitter: <a href="https://twitter.com/#!/edchedch">@edchedch</a><br/>
+  Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
+
+  <p>Available for consulting work, so feel free to contact me about projects.</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("edchedch", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/edchedch" class="twitter-follow-button" data-width="208px" data-show-count="true">Follow @edchedch</a>
+  
+</section>
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Edwin Chen -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'edwinchen';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>

@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Edwin Chen's Blog: Introduction to Conditional Random Fields</title>
+  <meta name="author" content="Edwin Chen">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+
+  <link rel="canonical" href="http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/"/>
+  <link href="/favicon.png" rel="shortcut icon" />
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/feed/index.xml" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml"/>
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29005692-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+  
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Edwin Chen's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul role=subscription data-subscription="rss">
+  <li><a href="/feed/index.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="site-search">
+    <input type="hidden" name="q" value="site:blog.echen.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul role=main-navigation>
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry">
+  
+  <header>
+    
+      <h1 class="entry-title">Introduction to Conditional Random Fields</h1>
+    
+    
+      <p class="meta">
+
+
+
+
+<time datetime="2012-01-03 16:02:25 -0800" pubdate  updated >Jan 3<span>rd</span>, 2012</time>
+
+
+</p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>Introduction</h1>
+
+<p>Imagine you have a sequence of snapshots from a day in Justin Bieber&#8217;s life, and you want to label each image with the activity it represents (eating, sleeping, driving, etc.). How can you do this?</p>
+
+<p>One way is to ignore the sequential nature of the snapshots, and build a <em>per-image</em> classifier. For example, given a month&#8217;s worth of labeled snapshots, you might learn that dark images taken at 6am tend to be about sleeping, images with lots of bright colors tend to be about dancing, images of cars are about driving, and so on.</p>
+
+<p>By ignoring this sequential aspect, however, you lose a lot of information. For example, what happens if you see a close-up picture of a mouth &#8211; is it about singing or eating? If you know that the <em>previous</em> image is a picture of Justin Bieber eating or cooking, then it&#8217;s more likely this picture is about eating; if, however, the previous image contains Justin Bieber singing or dancing, then this one probably shows him singing as well.</p>
+
+<p>Thus, to increase the accuracy of our labeler, we should incorporate the labels of nearby photos, and this is precisely what a <strong>conditional random field</strong> does.</p>
+
+<h1>Part-of-Speech Tagging</h1>
+
+<p>Let&#8217;s go into some more detail, using the more common example of <strong>part-of-speech tagging</strong>.</p>
+
+<p>In POS tagging, the goal is to label a sentence (a sequence of words or tokens) with tags like ADJECTIVE, NOUN, PREPOSITION, VERB, ADVERB, ARTICLE.</p>
+
+<p>For example, given the sentence &#8220;Bob drank coffee at Starbucks&#8221;, the labeling might be &#8220;Bob (NOUN) drank (VERB) coffee (NOUN) at (PREPOSITION) Starbucks (NOUN)&#8221;.</p>
+
+<p>So let&#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&#8217;ll first need to decide on a set of feature functions $f_i$.</p>
+
+<h2>Feature Functions in a CRF</h2>
+
+<p>In a CRF, each <strong>feature function</strong> is a function that takes in as input:</p>
+
+<ul>
+<li>a sentence s</li>
+<li>the position i of a word in the sentence</li>
+<li>the label $l_i$ of the current word</li>
+<li>the label $l_{i-1}$ of the previous word</li>
+</ul>
+
+
+<p>and outputs a real-valued number (though the numbers are often just either 0 or 1).</p>
+
+<p>(Note: by restricting our features to depend on only the <em>current</em> and <em>previous</em> labels, rather than arbitrary labels throughout the sentence, I&#8217;m actually building the special case of a <strong>linear-chain CRF</strong>. For simplicity, I&#8217;m going to ignore general CRFs in this post.)</p>
+
+<p>For example, one possible feature function could measure how much we suspect that the current word should be labeled as an adjective given that the previous word is &#8220;very&#8221;.</p>
+
+<h2>Features to Probabilities</h2>
+
+<p>Next, assign each feature function $f_j$ a <strong>weight</strong> $\lambda_j$ (I&#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:</p>
+
+<p>$score(l | s) = \sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})$</p>
+
+<p>(The first sum runs over each feature function $j$, and the inner sum runs over each position $i$ of the sentence.)</p>
+
+<p>Finally, we can transform these scores into probabilities $p(l | s)$ between 0 and 1 by exponentiating and normalizing:</p>
+
+<p>$p(l | s) = \frac{exp[score(l|s)]}{\sum_{l&#8217;} exp[score(l&#8217;|s)]} = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})]}{\sum_{l&#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l&#8217;_i, l&#8217;_{i-1})]}$</p>
+
+<h2>Example Feature Functions</h2>
+
+<p>So what do these feature functions look like? Examples of POS tagging features could include:</p>
+
+<ul>
+<li>$f_1(s, i, l_i, l_{i-1}) = 1$ if $l_i =$ ADVERB and the ith word ends in &#8220;-ly&#8221;; 0 otherwise.
+
+<ul>
+<li>If the weight $\lambda_1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.</li>
+</ul>
+</li>
+<li>$f_2(s, i, l_i, l_{i-1}) = 1$ if $i = 1$, $l_i =$ VERB, and the sentence ends in a question mark; 0 otherwise.
+
+<ul>
+<li>Again, if the weight $\lambda_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &#8220;Is this a sentence beginning with a verb?&#8221;) are preferred.</li>
+</ul>
+</li>
+<li>$f_3(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
+
+<ul>
+<li>Again, a positive weight for this feature means that adjectives tend to be followed by nouns.</li>
+</ul>
+</li>
+<li>$f_4(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
+
+<ul>
+<li>A <em>negative</em> weight $\lambda_4$ for this function would mean that prepositions don&#8217;t tend to follow prepositions, so we should avoid labelings where this happens.</li>
+</ul>
+</li>
+</ul>
+
+
+<p>And that&#8217;s it! To sum up: to build a conditional random field, you just define a bunch of feature functions (which can depend on the entire sentence, a current position, and nearby labels), assign them weights, and add them all together, transforming at the end to a probability if necessary.</p>
+
+<p>Now let&#8217;s step back and compare CRFs to some other common machine learning techniques.</p>
+
+<h1>Smells like Logistic Regression&#8230;</h1>
+
+<p>The form of the CRF probabilities
+$p(l | s) = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l_i, l_{i-1})]}{\sum_{l&#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l&#8217;_i, l&#8217;_{i-1})]}$
+might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</a>.</p>
+
+<p>That&#8217;s because CRFs are indeed basically the sequential version of <strong>logistic regression</strong>: whereas logistic regression is a log-linear model for <em>classification</em>, CRFs are a log-linear model for <em>sequential labels</em>.</p>
+
+<h1>Looks like HMMs&#8230;</h1>
+
+<p>Recall that <strong><a href="http://en.wikipedia.org/wiki/Hidden_Markov_model">Hidden Markov Models</a></strong> are another model for part-of-speech tagging (and sequential labeling in general). Whereas CRFs throw any bunch of functions together to get a label score, HMMs take a <em>generative</em> approach to labeling, defining</p>
+
+<p>$p(l,s) = p(l_1) \prod_i p(l_i | l_{i-1}) p(w_i | l_i)$</p>
+
+<p>where</p>
+
+<ul>
+<li>$p(l_i | l_{i-1})$ are <strong>transition</strong> probabilities (e.g., the probability that a preposition is followed by a noun);</li>
+<li>$p(w_i | l_{i-1})$ are <strong>emission</strong> probabilities (e.g., the probability that a noun emits the word &#8220;dad&#8221;).</li>
+</ul>
+
+
+<p>So how do HMMs compare to CRFs? CRFs are more powerful &#8211; they can model everything HMMs can and more. One way of seeing this is as follows.</p>
+
+<p>Note that the log of the HMM probability is $\log p(l,s) = \log p(l_0) + \sum_i \log p(l_i | l_{i-1}) + \sum_i \log p(w_i | l_i)$. This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features.</p>
+
+<p>That is, we can build a CRF equivalent to any HMM by&#8230;</p>
+
+<ul>
+<li>For each HMM <em>transition</em> probability $ p(l_i = y | l_{i-1} = x) $, define a set of CRF transition features of the form $f_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $l_i = y$ and $l_{i-1} = x$. Give each feature a weight of $w_{x,y} = \log p(l_i = y | l_{i-1} = x)$.</li>
+<li>Similarly, for each HMM <em>emission</em> probability $p(w_i = z | l_{i} = x)$, define a set of CRF emission features of the form $g_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w_{x,z} = \log p(w_i = z | l_i = x)$.</li>
+</ul>
+
+
+<p>Thus, the score $p(l|s)$ computed by a CRF using these feature functions is precisely proportional to the score computed by the associated HMM, and so every HMM is equivalent to some CRF.</p>
+
+<p>However, CRFs can model a much richer set of label distributions as well, for two main reasons:</p>
+
+<ul>
+<li><strong>CRFs can define a much larger set of features.</strong> Whereas HMMs are necessarily <em>local</em> in nature (because they&#8217;re constrained to binary transition and emission feature functions, which force each word to depend only on the current label and each label to depend only on the previous label), CRFs can use more <em>global</em> features. For example, one of the features in our POS tagger above increased the probability of labelings that tagged the <em>first</em> word of a sentence as a VERB if the <em>end</em> of the sentence contained a question mark.</li>
+<li><strong>CRFs can have arbitrary weights.</strong> Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $0 &lt;= p(w_i | l_i) &lt;= 1, \sum_w p(w_i = w | l_1) = 1)$, the weights of a CRF are unrestricted (e.g., $\log p(w_i | l_i)$ can be anything it wants).</li>
+</ul>
+
+
+<h1>Learning Weights</h1>
+
+<p>Let&#8217;s go back to the question of how to learn the feature weights in a CRF. One way is (surprise) to use <strong>gradient ascent</strong>.</p>
+
+<p>Assume we have a bunch of training examples (sentences and associated part-of-speech labels). Randomly initialize the weights of our CRF model.
+To shift these randomly initialized weights to the correct ones, for each training example&#8230;</p>
+
+<ul>
+<li>Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&#8217;} p(l&#8217; | s) \sum_{j = 1}^m f_i(s, j, l&#8217;_j, l&#8217;_{j-1})$</li>
+<li>Note that the first term in the gradient is the contribution of feature $f_i$ under the <em>true</em> label, and the second term in the gradient is the <em>expected</em> contribution of feature $f_i$ under the current model. This is exactly the form you&#8217;d expect gradient ascent to take.</li>
+<li>Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&#8217;} p(l&#8217; | s) \sum_{j = 1}^m f_i(s, j, l&#8217;_j, l&#8217;_{j-1})]$ where $\alpha$ is some learning rate.</li>
+<li>Repeat the previous steps until some stopping condition is reached (e.g., the updates fall below some threshold).</li>
+</ul>
+
+
+<p>In other words, every step takes the difference between what we want the model to learn and the model&#8217;s current state, and moves $\lambda_i$ in the direction of this difference.</p>
+
+<h1>Finding the Optimal Labeling</h1>
+
+<p>Suppose we&#8217;ve trained our CRF model, and now a new sentence comes in. How do we do label it?</p>
+
+<p>The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.</p>
+
+<p>A better way is to realize that (linear-chain) CRFs satisfy an <a href="http://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a> property that allows us to use a (polynomial-time) dynamic programming algorithm to find the optimal label, similar to the <a href="http://en.wikipedia.org/wiki/Viterbi_algorithm">Viterbi algorithm</a> for HMMs.</p>
+
+<h1>A More Interesting Application</h1>
+
+<p>Okay, so part-of-speech tagging is kind of boring, and there are plenty of existing POS taggers out there. When might you use a CRF in real life?</p>
+
+<p>Suppose you want to mine Twitter for the types of presents people received for Christmas:</p>
+
+<blockquote class="twitter-tweet"><p>What people on Twitter wanted for Christmas, and what they got: <a href="http://t.co/EGeKTBgF" title="http://twitter.com/edchedch/status/153683967315419136/photo/1">twitter.com/edchedch/statu…</a></p>— Edwin Chen (@edchedch) <a href="https://twitter.com/edchedch/status/153683967315419136" data-datetime="2012-01-02T03:48:10+00:00">January 2, 2012</a></blockquote>
+
+
+<script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+<p>(Yes, I just embedded a tweet. BOOM.)</p>
+
+<p>How can you figure out which words refer to gifts?</p>
+
+<p>To gather data for the graphs above, I simply looked for phrases of the form &#8220;I want XXX for Christmas&#8221; and &#8220;I got XXX for Christmas&#8221;. However, a more sophisticated CRF variant could use a GIFT part-of-speech-like tag (even adding other tags like GIFT-GIVER and GIFT-RECEIVER, to get even more information on who got what from whom) and treat this like a POS tagging problem. Features could be based around things like &#8220;this word is a GIFT if the previous word was a GIFT-RECEIVER and the word before that was &#8216;gave&#8217;&#8221; or &#8220;this word is a GIFT if the next two words are &#8216;for Christmas&#8217;&#8221;.</p>
+
+<h1>Fin</h1>
+
+<p>I&#8217;ll end with some more random thoughts:</p>
+
+<ul>
+<li>I explicitly skipped over the graphical models framework that conditional random fields sit in, because I don&#8217;t think they add much to an initial understanding of CRFs. But if you&#8217;re interested in learning more, Daphne Koller is teaching a free, online course on <a href="http://www.pgm-class.org/">graphical models</a> starting in January.</li>
+<li>Or, if you&#8217;re more interested in the many NLP applications of CRFs (like part-of-speech tagging or <a href="http://en.wikipedia.org/wiki/Named-entity_recognition">named entity extraction</a>), Manning and Jurafsky are teaching an <a href="http://www.nlp-class.org/">NLP class</a> in the same spirit.</li>
+<li>I also glossed a bit over the analogy between CRFs:HMMs and Logistic Regression:Naive Bayes. This image (from <a href="http://arxiv.org/pdf/1011.4088v1">Sutton and McCallum&#8217;s introduction to conditional random fields</a>) sums it up, and shows the graphical model nature of CRFs as well:</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/crfs/crf-diagram.png"><img src="http://dl.dropbox.com/u/10506/blog/crfs/crf-diagram.png" alt="CRF Diagram" /></a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Edwin Chen</span></span>
+
+      
+
+
+
+
+<time datetime="2012-01-03 16:02:25 -0800" pubdate  updated >Jan 3<span>rd</span>, 2012</time>
+
+
+
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/" data-via="edchedch" data-counturl="http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/" >Tweet</a>
+  
+  
+  <g:plusone size="medium"></g:plusone>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread"><div id="disqus_thread"></div>
+<script type="text/javascript">
+  var disqus_shortname = 'edwinchen';
+  var disqus_identifier = 'http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/';
+  var disqus_url = 'http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/';
+  //var disqus_developer = 1;
+  (function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Edwin Chen</h1>
+  
+  <p>Data scientist at <a href="https://twitter.com/#!/edchedch">Twitter</a>. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
+  
+  <p>I like math, statistics, machine learning, and linguistics.</p>
+
+  <p>Email: hello[at]echen.me<br/>
+  Twitter: <a href="https://twitter.com/#!/edchedch">@edchedch</a><br/>
+  Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
+
+  <p>Available for consulting work, so feel free to contact me about projects.</p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("edchedch", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/edchedch" class="twitter-follow-button" data-width="208px" data-show-count="true">Follow @edchedch</a>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Edwin Chen -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'edwinchen';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/';
+        var disqus_url = 'http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>

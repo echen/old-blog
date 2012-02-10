@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-02-09T13:23:56-08:00</updated>
+  <updated>2012-02-09T21:29:18-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -14,9 +14,9 @@
   
   <entry>
     <title>Movie recommendations and more via MapReduce and Scalding</title>
-    <link href="http://blog.echen.me/blog/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/"/>
+    <link href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/"/>
     <updated>2012-02-09T03:20:00-08:00</updated>
-    <id>http://blog.echen.me/blog/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding</id>
+    <id>http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding</id>
     <content type="html">&lt;p&gt;This is going to be an in-your-face introduction to &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding&lt;/a&gt;, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced.&lt;/p&gt;
 
 &lt;p&gt;In 140 characters: instead of forcing you to write raw &lt;em&gt;map&lt;/em&gt; and &lt;em&gt;reduce&lt;/em&gt; functions, Scalding allows you to write natural code like&lt;/p&gt;
@@ -150,7 +150,7 @@
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * Now  find all pairs of co-rated movies (pairs of movies that a user has rated) by&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * Now find all pairs of co-rated movies (pairs of movies that a user has rated) by&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * joining the duplicate rating streams on their user fields, &lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingPairs&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
@@ -654,9 +654,9 @@
   
   <entry>
     <title>Quick Introduction to ggplot2</title>
-    <link href="http://blog.echen.me/blog/2012/01/17/quick-introduction-to-ggplot2/"/>
+    <link href="http://blog.echen.me/2012/01/17/quick-introduction-to-ggplot2/"/>
     <updated>2012-01-17T10:28:55-08:00</updated>
-    <id>http://blog.echen.me/blog/2012/01/17/quick-introduction-to-ggplot2</id>
+    <id>http://blog.echen.me/2012/01/17/quick-introduction-to-ggplot2</id>
     <content type="html">&lt;p&gt;This is a bare-bones introduction to &lt;a href=&quot;http://had.co.nz/ggplot2/&quot;&gt;ggplot2&lt;/a&gt;, a visualization package in R. It assumes no knowledge of R.&lt;/p&gt;
 
 &lt;p&gt;For a better-looking version of this post, see &lt;a href=&quot;https://github.com/echen/ggplot2-tutorial&quot;&gt;this Github repository&lt;/a&gt;, which also contains some of the &lt;a href=&quot;https://github.com/echen/ggplot2-tutorial/tree/master/data&quot;&gt;example datasets&lt;/a&gt; I use and a &lt;a href=&quot;https://github.com/echen/ggplot2-tutorial/blob/master/ggplot2-tutorial.R&quot;&gt;literate programming version&lt;/a&gt; of this tutorial.&lt;/p&gt;
@@ -1042,9 +1042,9 @@
   
   <entry>
     <title>Introduction to Conditional Random Fields</title>
-    <link href="http://blog.echen.me/blog/2012/01/03/introduction-to-conditional-random-fields/"/>
+    <link href="http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/"/>
     <updated>2012-01-03T16:02:25-08:00</updated>
-    <id>http://blog.echen.me/blog/2012/01/03/introduction-to-conditional-random-fields</id>
+    <id>http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields</id>
     <content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;Imagine you have a sequence of snapshots from a day in Justin Bieber&amp;#8217;s life, and you want to label each image with the activity it represents (eating, sleeping, driving, etc.). How can you do this?&lt;/p&gt;
@@ -1235,9 +1235,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
   <entry>
     <title>Winning the Netflix Prize: A Summary</title>
-    <link href="http://blog.echen.me/blog/2011/10/24/winning-the-netflix-prize-a-summary/"/>
+    <link href="http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/"/>
     <updated>2011-10-24T16:27:01-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/10/24/winning-the-netflix-prize-a-summary</id>
+    <id>http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary</id>
     <content type="html">&lt;p&gt;How was the &lt;a href=&quot;http://en.wikipedia.org/wiki/Netflix_Prize&quot;&gt;Netflix Prize&lt;/a&gt; won? I went through a lot of the Netflix Prize papers a couple years ago, so I&amp;#8217;ll try to give an overview of the techniques that went into the winning solution here.&lt;/p&gt;
 
 &lt;h1&gt;Normalization of Global Effects&lt;/h1&gt;
@@ -1398,9 +1398,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
   <entry>
     <title>Stuff Harvard People Like</title>
-    <link href="http://blog.echen.me/blog/2011/09/29/stuff-harvard-people-like/"/>
+    <link href="http://blog.echen.me/2011/09/29/stuff-harvard-people-like/"/>
     <updated>2011-09-29T10:48:09-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/09/29/stuff-harvard-people-like</id>
+    <id>http://blog.echen.me/2011/09/29/stuff-harvard-people-like</id>
     <content type="html">&lt;p&gt;What types of students go to which schools? There are, of course, the classic stereotypes:&lt;/p&gt;
 
 &lt;ul&gt;
@@ -1881,9 +1881,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
   <entry>
     <title>Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</title>
-    <link href="http://blog.echen.me/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/"/>
+    <link href="http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/"/>
     <updated>2011-09-07T11:15:11-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post</id>
+    <id>http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post</id>
     <content type="html">&lt;p&gt;&lt;strong&gt;tl;dr&lt;/strong&gt; See &lt;a href=&quot;http://www.youtube.com/watch?v=cZ4Ntg4jQHw&quot;&gt;this movie visualization&lt;/a&gt; for a case study on how a post propagates through Quora.&lt;/p&gt;
 
 &lt;p&gt;How does information spread through a network? Much of Quora&amp;#8217;s appeal, after all, lies in its social graph &amp;#8211; and when you&amp;#8217;ve got a network of users, all broadcasting their activities to their neighbors, information can cascade in multiple ways. How do these social designs affect which users see what?&lt;/p&gt;
@@ -2006,9 +2006,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
   <entry>
     <title>Introduction to Latent Dirichlet Allocation</title>
-    <link href="http://blog.echen.me/blog/2011/08/22/introduction-to-latent-dirichlet-allocation/"/>
+    <link href="http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation/"/>
     <updated>2011-08-22T10:50:49-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/08/22/introduction-to-latent-dirichlet-allocation</id>
+    <id>http://blog.echen.me/2011/08/22/introduction-to-latent-dirichlet-allocation</id>
     <content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;Suppose you have the following set of sentences:&lt;/p&gt;
@@ -2148,9 +2148,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
   <entry>
     <title>Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</title>
-    <link href="http://blog.echen.me/blog/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/"/>
+    <link href="http://blog.echen.me/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/"/>
     <updated>2011-07-28T07:55:29-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook</id>
+    <id>http://blog.echen.me/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook</id>
     <content type="html">&lt;p&gt;It always strikes me as curious that some posts get a lot of love on Twitter, while others get many more shares on Facebook:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/twitter-beats-fb.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/twitter-beats-fb.png&quot; alt=&quot;Twitter Beats FB&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
@@ -2440,9 +2440,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
   <entry>
     <title>Introduction to Restricted Boltzmann Machines</title>
-    <link href="http://blog.echen.me/blog/2011/07/18/introduction-to-restricted-boltzmann-machines/"/>
+    <link href="http://blog.echen.me/2011/07/18/introduction-to-restricted-boltzmann-machines/"/>
     <updated>2011-07-18T09:32:52-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/07/18/introduction-to-restricted-boltzmann-machines</id>
+    <id>http://blog.echen.me/2011/07/18/introduction-to-restricted-boltzmann-machines</id>
     <content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;Suppose you ask a bunch of users to rate a set of movies on a 0-100 scale. In classical &lt;a href=&quot;http://en.wikipedia.org/wiki/Factor_analysis&quot;&gt;factor analysis&lt;/a&gt;, you could then try to explain each movie and user in terms of a set of latent &lt;em&gt;factors&lt;/em&gt;. For example, movies like Star Wars and Lord of the Rings might have strong associations with a latent science fiction and fantasy factor, and users who like Wall-E and Toy Story might have strong associations with a latent Pixar factor.&lt;/p&gt;
@@ -2576,9 +2576,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
   <entry>
     <title>Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</title>
-    <link href="http://blog.echen.me/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/"/>
+    <link href="http://blog.echen.me/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/"/>
     <updated>2011-07-09T13:02:05-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools</id>
+    <id>http://blog.echen.me/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools</id>
     <content type="html">&lt;p&gt;&lt;strong&gt;tl;dr&lt;/strong&gt; Should evolution be taught in schools? Go &lt;a href=&quot;http://miss-usa-evolution.heroku.com&quot;&gt;here&lt;/a&gt; to visualize what the Miss USA contestants think.&lt;/p&gt;
 
 &lt;h1&gt;The Visualization&lt;/h1&gt;
@@ -2617,9 +2617,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
   <entry>
     <title>Topic Modeling the Sarah Palin Emails</title>
-    <link href="http://blog.echen.me/blog/2011/06/27/topic-modeling-the-sarah-palin-emails/"/>
+    <link href="http://blog.echen.me/2011/06/27/topic-modeling-the-sarah-palin-emails/"/>
     <updated>2011-06-27T17:19:42-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/06/27/topic-modeling-the-sarah-palin-emails</id>
+    <id>http://blog.echen.me/2011/06/27/topic-modeling-the-sarah-palin-emails</id>
     <content type="html">&lt;h1&gt;LDA-based Email Browser&lt;/h1&gt;
 
 &lt;p&gt;Earlier this month, several thousand emails from Sarah Palin&amp;#8217;s time as governor of Alaska were &lt;a href=&quot;http://sunlightlabs.com/blog/2011/sarahs-inbox/&quot;&gt;released&lt;/a&gt;. The emails weren&amp;#8217;t organized in any fashion, though, so to make them easier to browse, I&amp;#8217;ve been working on some topic modeling (in particular, using latent Dirichlet allocation) to separate the documents into different groups.&lt;/p&gt;
@@ -2666,9 +2666,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
   <entry>
     <title>Spork: Spoon or Fork?</title>
-    <link href="http://blog.echen.me/blog/2011/06/14/spork-spoon-or-fork/"/>
+    <link href="http://blog.echen.me/2011/06/14/spork-spoon-or-fork/"/>
     <updated>2011-06-14T23:32:04-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/06/14/spork-spoon-or-fork</id>
+    <id>http://blog.echen.me/2011/06/14/spork-spoon-or-fork</id>
     <content type="html">&lt;p&gt;There&amp;#8217;s &lt;a href=&quot;http://www.youtube.com/watch?v=ruJ76-o5lxU&quot;&gt;an adorable scene&lt;/a&gt; in &lt;em&gt;WALL-E&lt;/em&gt; where, unable to decide whether a spork belongs with his spoon collection or fork collection, WALL-E enters an infinite loop and spontaneously combusts*.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif&quot; alt=&quot;Spork&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
@@ -2691,9 +2691,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
   <entry>
     <title>TWSS: Building a That&#8217;s What She Said Classifier</title>
-    <link href="http://blog.echen.me/blog/2011/05/05/twss-building-a-thats-what-she-said-classifier/"/>
+    <link href="http://blog.echen.me/2011/05/05/twss-building-a-thats-what-she-said-classifier/"/>
     <updated>2011-05-05T00:09:17-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/05/05/twss-building-a-thats-what-she-said-classifier</id>
+    <id>http://blog.echen.me/2011/05/05/twss-building-a-thats-what-she-said-classifier</id>
     <content type="html">&lt;p&gt;There&amp;#8217;s been a &lt;a href=&quot;www.cs.washington.edu/homes/brun/pubs/pubs/Kiddon11.pdf&quot;&gt;fun paper&lt;/a&gt; on &lt;a href=&quot;http://www.urbandictionary.com/define.php?term=that&#8217;s%20what%20she%20said&quot;&gt;That&amp;#8217;s What She Said&lt;/a&gt; identification making the rounds recently, so I spent some time over the weekend building my own classifier.&lt;/p&gt;
 
 &lt;p&gt;&lt;strong&gt;tl;dr&lt;/strong&gt; A simple unigram Naive Bayes model works pretty well, with performance on the lines of 0.969 precision and 0.823 recall. There&amp;#8217;s a demo &lt;a href=&quot;http://twss-classifier.heroku.com/&quot;&gt;here&lt;/a&gt;. I also ran the classifier over some fairy tale text.&lt;/p&gt;
@@ -2835,9 +2835,9 @@ its so          0.8916207044791409
   
   <entry>
     <title>Filtering for English Tweets: Unsupervised Language Detection on Twitter</title>
-    <link href="http://blog.echen.me/blog/2011/05/01/unsupervised-language-detection-algorithms/"/>
+    <link href="http://blog.echen.me/2011/05/01/unsupervised-language-detection-algorithms/"/>
     <updated>2011-05-01T16:28:07-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/05/01/unsupervised-language-detection-algorithms</id>
+    <id>http://blog.echen.me/2011/05/01/unsupervised-language-detection-algorithms</id>
     <content type="html">&lt;p&gt;(See a demo &lt;a href=&quot;http://babel-fett.heroku.com/&quot;&gt;here&lt;/a&gt;.)&lt;/p&gt;
 
 &lt;p&gt;While working on a Twitter sentiment analysis project, I ran into the problem of needing to filter out all non-English tweets. (Asking the Twitter API for English-only tweets doesn&amp;#8217;t seem to work, as it nonetheless returns tweets in Spanish, Portuguese, Dutch, Russian, and a couple other languages.)&lt;/p&gt;
@@ -2929,9 +2929,9 @@ its so          0.8916207044791409
   
   <entry>
     <title>Eigensheep</title>
-    <link href="http://blog.echen.me/blog/2011/05/01/eigensheep/"/>
+    <link href="http://blog.echen.me/2011/05/01/eigensheep/"/>
     <updated>2011-05-01T15:23:31-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/05/01/eigensheep</id>
+    <id>http://blog.echen.me/2011/05/01/eigensheep</id>
     <content type="html">&lt;p&gt;Aaron Koblin&amp;#8217;s &lt;a href=&quot;http://www.thesheepmarket.com/&quot;&gt;Sheep Market&lt;/a&gt; visualization is an awesome use of Mechanical Turk. But it&amp;#8217;d be even more awesome if the grid were &lt;em&gt;ordered&lt;/em&gt;, so I decided to try projecting the sheep onto two dimensions.&lt;/p&gt;
 
 &lt;h1&gt;Principal Sheep Components&lt;/h1&gt;
@@ -2958,9 +2958,9 @@ its so          0.8916207044791409
   
   <entry>
     <title>Choosing a Machine Learning Classifier</title>
-    <link href="http://blog.echen.me/blog/2011/04/27/choosing-a-machine-learning-classifier/"/>
+    <link href="http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier/"/>
     <updated>2011-04-27T18:43:15-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/04/27/choosing-a-machine-learning-classifier</id>
+    <id>http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier</id>
     <content type="html">&lt;p&gt;How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best bet is to test out a couple different ones (making sure to try different parameters within each algorithm as well), and select the best one by cross-validation. But if you&amp;#8217;re simply looking for a &amp;#8220;good enough&amp;#8221; algorithm for your problem, or a place to start, here are some general guidelines I&amp;#8217;ve found to work well over the years.&lt;/p&gt;
 
 &lt;h1&gt;How large is your training set?&lt;/h1&gt;
@@ -2989,9 +2989,9 @@ its so          0.8916207044791409
   
   <entry>
     <title>Kickstarter Data Analysis: Success and Pricing</title>
-    <link href="http://blog.echen.me/blog/2011/04/25/kickstarter-data-analysis-success-and-pricing/"/>
+    <link href="http://blog.echen.me/2011/04/25/kickstarter-data-analysis-success-and-pricing/"/>
     <updated>2011-04-25T21:19:40-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/04/25/kickstarter-data-analysis-success-and-pricing</id>
+    <id>http://blog.echen.me/2011/04/25/kickstarter-data-analysis-success-and-pricing</id>
     <content type="html">&lt;p&gt;&lt;a href=&quot;http://www.kickstarter.com/&quot;&gt;Kickstarter&lt;/a&gt; is an online crowdfunding platform for launching creative projects. When starting a new project, project owners specify a deadline and the minimum amount of money they need to raise. They receive the money (less a transaction fee) only if they reach or exceed that minimum; otherwise, no money changes hands.&lt;/p&gt;
 
 &lt;p&gt;What&amp;#8217;s particularly fun about Kickstarter is that in contrast to &lt;a href=&quot;http://www.kiva.org/&quot;&gt;that other microfinance site&lt;/a&gt;, Kickstarter projects don&amp;#8217;t ask for loans; instead, patrons receive pre-specified rewards unique to each project. For example, someone donating money to help an artist record an album might receive a digital copy of the album if they donate 20 dollars, or a digital copy plus a signed physical cd if they donate 50 dollars.&lt;/p&gt;
@@ -3058,9 +3058,9 @@ its so          0.8916207044791409
   
   <entry>
     <title>A Mathematical Introduction to Least Angle Regression</title>
-    <link href="http://blog.echen.me/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
+    <link href="http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
     <updated>2011-04-21T00:16:36-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
+    <id>http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
     <content type="html">&lt;p&gt;(I wrote up a more mathematical explanation of least angle regression &lt;a href=&quot;http://echen.me/posts/a-mathematical-introduction-to-least-angle-regression&quot;&gt;here&lt;/a&gt;.)&lt;/p&gt;
 
 &lt;p&gt;Suppose you&amp;#8217;re at a buffet. You don&amp;#8217;t want to just grab everything and overeat (overfit), so how do you decide which dishes to take? Here are some possibilities.&lt;/p&gt;
@@ -3108,9 +3108,9 @@ its so          0.8916207044791409
   
   <entry>
     <title>Twifferences Between Californians and New Yorkers</title>
-    <link href="http://blog.echen.me/blog/2011/04/18/twifferences-between-californians-and-new-yorkers/"/>
+    <link href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/"/>
     <updated>2011-04-18T03:41:39-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/04/18/twifferences-between-californians-and-new-yorkers</id>
+    <id>http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers</id>
     <content type="html">&lt;p&gt;How do people in Silicon Valley compare to those in New York City? For a data-driven answer, I pulled a couple days&amp;#8217; worth of Twitter data around the two areas.&lt;/p&gt;
 
 &lt;h2&gt;Silicon Valley vs. NYC&lt;/h2&gt;
@@ -3258,9 +3258,9 @@ executive               0.6058707124010555
   
   <entry>
     <title>Introduction to Cointegration and Pairs Trading</title>
-    <link href="http://blog.echen.me/blog/2011/04/16/what-is-cointegration-2/"/>
+    <link href="http://blog.echen.me/2011/04/16/what-is-cointegration-2/"/>
     <updated>2011-04-16T03:44:14-07:00</updated>
-    <id>http://blog.echen.me/blog/2011/04/16/what-is-cointegration-2</id>
+    <id>http://blog.echen.me/2011/04/16/what-is-cointegration-2</id>
     <content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
 
 &lt;p&gt;Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&amp;#8217;t know each other (they&amp;#8217;re independent), so there&amp;#8217;s no meaningful relationship between their paths.&lt;/p&gt;
