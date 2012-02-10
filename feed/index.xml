@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-02-09T21:29:18-08:00</updated>
+  <updated>2012-02-10T01:20:46-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -19,7 +19,7 @@
     <id>http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding</id>
     <content type="html">&lt;p&gt;This is going to be an in-your-face introduction to &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding&lt;/a&gt;, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced.&lt;/p&gt;
 
-&lt;p&gt;In 140 characters: instead of forcing you to write raw &lt;em&gt;map&lt;/em&gt; and &lt;em&gt;reduce&lt;/em&gt; functions, Scalding allows you to write natural code like&lt;/p&gt;
+&lt;p&gt;In 140: instead of forcing you to write raw &lt;em&gt;map&lt;/em&gt; and &lt;em&gt;reduce&lt;/em&gt; functions, Scalding allows you to write natural code like&lt;/p&gt;
 
 &lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
@@ -91,8 +91,8 @@
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// Put the number of people who rated each movie into a field called &amp;quot;numRaters&amp;quot;.    &lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Shortcut: .groupBy(&amp;#39;movie) { _.size(&amp;#39;numRaters) }&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// Rename, since when we join, Scalding currently requires both sides to have distinctly named fields.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// Rename, since Scalding requires both sides to have distinct fields when we join.&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movieX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// Merge `ratings` with `numRaters`, by joining on their movie fields.&lt;/span&gt;
@@ -105,9 +105,7 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
-&lt;p&gt;You want to calculate how similar every two movies are, so that if someone watches &lt;em&gt;The Lion King&lt;/em&gt;, you can recommend movies like &lt;em&gt;Toy Story&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;So how should you define the similarity between two movies?&lt;/p&gt;
+&lt;p&gt;You want to calculate how similar pairs of movies are, so that if someone watches &lt;em&gt;The Lion King&lt;/em&gt;, you can recommend films like &lt;em&gt;Toy Story&lt;/em&gt;. So how should you define the similarity between two movies?&lt;/p&gt;
 
 &lt;p&gt;One way is to use their &lt;strong&gt;correlation&lt;/strong&gt;:&lt;/p&gt;
 
@@ -115,7 +113,7 @@
 &lt;li&gt;For every pair of movies A and B, find all the people who rated both A and B.&lt;/li&gt;
 &lt;li&gt;Use these ratings to form a Movie A vector and a Movie B vector.&lt;/li&gt;
 &lt;li&gt;Calculate the correlation between these two vectors.&lt;/li&gt;
-&lt;li&gt;Whenever someone watches a movie, you could then recommend the movies most correlated with it.&lt;/li&gt;
+&lt;li&gt;Whenever someone watches a movie, you can then recommend the movies most correlated with it.&lt;/li&gt;
 &lt;/ul&gt;
 
 
@@ -235,7 +233,7 @@
 
 &lt;p&gt;(See the &lt;a href=&quot;http://en.wikipedia.org/wiki/Correlation_and_dependence&quot;&gt;Wikipedia page&lt;/a&gt; on correlation.)&lt;/p&gt;
 
-&lt;p&gt;Notice that every one of the elements in this formula is a field in &lt;code&gt;vectorCalcs&lt;/code&gt;! So instead of using the standard calculation, let&amp;#8217;s use this form instead:&lt;/p&gt;
+&lt;p&gt;Notice that every one of the elements in this formula is a field in &lt;code&gt;vectorCalcs&lt;/code&gt;! So instead of using the standard calculation, we can use this form instead:&lt;/p&gt;
 
 &lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Correlation &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
@@ -281,7 +279,7 @@
 &lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Correlation &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;#&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Send&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;the&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;job&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;off&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Hadoop&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cluster&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;n&quot;&gt;scald&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rb&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MovieSimilarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scala&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&#8211;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;book&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;crossing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&#8211;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;output&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;book&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;crossing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;similarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsv&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;n&quot;&gt;scald&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rb&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MovieSimilarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scala&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&#8211;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&#8211;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;output&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;similarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsv&lt;/span&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
@@ -294,14 +292,12 @@
 &lt;ul&gt;
 &lt;li&gt;&lt;em&gt;Harry Potter&lt;/em&gt; books are similar to other &lt;em&gt;Harry Potter&lt;/em&gt; books&lt;/li&gt;
 &lt;li&gt;&lt;em&gt;Lord of the Rings&lt;/em&gt; books are similar to other &lt;em&gt;Lord of the Rings&lt;/em&gt; books&lt;/li&gt;
-&lt;li&gt;A Tom Clancy book is similar to a John Grisham book&lt;/li&gt;
+&lt;li&gt;Tom Clancy book is similar to John Grisham&lt;/li&gt;
 &lt;li&gt;Chick lit (&lt;em&gt;Summer Sisters&lt;/em&gt;, by Judy Blume) is similar to chick lit (&lt;em&gt;Bridget Jones&lt;/em&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 
 
-&lt;p&gt;So our Scalding job is looking pretty awesome!&lt;/p&gt;
-
-&lt;p&gt;Just for fun, let&amp;#8217;s also look at books similar to &lt;em&gt;The Great Gatsby&lt;/em&gt;:&lt;/p&gt;
+&lt;p&gt;Awesome! Just for fun, let&amp;#8217;s also look at books similar to &lt;em&gt;The Great Gatsby&lt;/em&gt;:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png&quot; alt=&quot;Great Gatsby&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
@@ -313,7 +309,7 @@
 
 &lt;h2&gt;Cosine Similarity&lt;/h2&gt;
 
-&lt;p&gt;For example, &lt;a href=&quot;http://en.wikipedia.org/wiki/Cosine_similarity&quot;&gt;cosine similarity&lt;/a&gt; is a another common vector-based similarity measure.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;http://en.wikipedia.org/wiki/Cosine_similarity&quot;&gt;Cosine similarity&lt;/a&gt; is a another common vector-based similarity measure.&lt;/p&gt;
 
 &lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Cosine Similarity &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
@@ -351,7 +347,7 @@
 
 &lt;h2&gt;Jaccard Similarity&lt;/h2&gt;
 
-&lt;p&gt;Recall that &lt;a href=&quot;http://blog.echen.me/blog/2011/10/24/winning-the-netflix-prize-a-summary/&quot;&gt;one of the lessons of the Netflix prize&lt;/a&gt; was that implicit data can be quite useful &amp;#8211; the mere fact that you rate a James Bond movie, even if you rate it quite horribly, suggests that you&amp;#8217;d probably be interested in similar films. So we can also ignore the value itself of each rating and use a &lt;em&gt;set&lt;/em&gt;-based similarity measure like &lt;a href=&quot;http://en.wikipedia.org/wiki/Jaccard_index&quot;&gt;Jaccard similarity&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Recall that &lt;a href=&quot;http://blog.echen.me/blog/2011/10/24/winning-the-netflix-prize-a-summary/&quot;&gt;one of the lessons of the Netflix prize&lt;/a&gt; was that implicit data can be quite useful &amp;#8211; the mere fact that you rate a James Bond movie, even if you rate it quite horribly, suggests that you&amp;#8217;d probably be interested in similar action films. So we can also ignore the value itself of each rating and use a &lt;em&gt;set&lt;/em&gt;-based similarity measure like &lt;a href=&quot;http://en.wikipedia.org/wiki/Jaccard_index&quot;&gt;Jaccard similarity&lt;/a&gt;.&lt;/p&gt;
 
 &lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Jaccard Similarity &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
@@ -387,7 +383,7 @@
 &lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PRIOR_COUNT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PRIOR_COUNT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PRIOR_CORRELATION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;similarities&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
@@ -411,13 +407,13 @@
 
 &lt;h1&gt;Book Similarities Revisited&lt;/h1&gt;
 
-&lt;p&gt;Let&amp;#8217;s take another look at the book similarities above, this time with these new fields.&lt;/p&gt;
+&lt;p&gt;Let&amp;#8217;s take another look at the book similarities above, now that we have these new fields.&lt;/p&gt;
 
-&lt;p&gt;Here are some of the top Book-Crossing pairs, sorted by the shrunk correlation:&lt;/p&gt;
+&lt;p&gt;Here are some of the top Book-Crossing pairs, sorted by their shrunk correlation:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims.png&quot; alt=&quot;Top Book-Crossing Pairs&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Notice how regularization affects things: the &lt;em&gt;Dark Tower&lt;/em&gt; pair has a pretty high raw correlation, but relatively few ratings (which makes us less confident in the raw correlation), so it ends up below the others.&lt;/p&gt;
+&lt;p&gt;Notice how regularization affects things: the &lt;em&gt;Dark Tower&lt;/em&gt; pair has a pretty high raw correlation, but relatively few ratings (reducing our confidence in the raw correlation), so it ends up below the others.&lt;/p&gt;
 
 &lt;p&gt;And here are books similar to &lt;em&gt;The Great Gatsby&lt;/em&gt;, this time ordered by cosine similarity:&lt;/p&gt;
 
@@ -487,9 +483,9 @@
 &lt;script src=&quot;http://blog.echen.me//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
 
 
-&lt;p&gt;iTunes apparently lets you send a tweet whenever you rate a song, so let&amp;#8217;s make use of this data and generate music recommendations.&lt;/p&gt;
+&lt;p&gt;iTunes lets you send a tweet whenever you rate a song, so let&amp;#8217;s use Twitter to generate music recommendations!&lt;/p&gt;
 
-&lt;p&gt;Again, we create a new class that overrides the abstract &lt;code&gt;input&lt;/code&gt; defined in &lt;code&gt;VectorSimilarities&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;Again, we create a new class that overrides the abstract &lt;code&gt;input&lt;/code&gt; defined in &lt;code&gt;VectorSimilarities&lt;/code&gt;&amp;#8230;&lt;/p&gt;
 
 &lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Song similarities with Twitter + iTunes &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/ITunes.scala&#8217;&gt;ITunes.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
@@ -536,11 +532,9 @@
 
 &lt;p&gt;(In this code, I used a Twitter-internal tweet source that provides data on tweets, but you could just as easily &lt;a href=&quot;https://dev.twitter.com/docs&quot;&gt;scrape Twitter yourself&lt;/a&gt; and provide your own source of tweets instead.)&lt;/p&gt;
 
-&lt;p&gt;And snap, here are some songs you might like if you recently listened to &lt;strong&gt;Beyoncé&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;&amp;#8230;and SNAP! Here are some songs you might like if you recently listened to &lt;strong&gt;Beyoncé&lt;/strong&gt;:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png&quot; alt=&quot;Jason Mraz&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;(Unfortunately, the data was quite sparse, so the similarities might not be too great.)&lt;/p&gt;
 
 &lt;p&gt;And some recommended songs if you like &lt;strong&gt;Lady Gaga&lt;/strong&gt;:&lt;/p&gt;
 
@@ -562,7 +556,7 @@
 
 &lt;p&gt;Instead of using an explicit rating given to us, we can simply generate a dummy rating of 1 for each check-in. Correlation doesn&amp;#8217;t make sense any more, but we can still pay attention to a measure like Jaccard simiilarity.&lt;/p&gt;
 
-&lt;p&gt;So again, we create a new class that scrapes Twitter for Foursquare check-ins and parses them into a ratings format:&lt;/p&gt;
+&lt;p&gt;So we simply create a new class that scrapes tweets for Foursquare check-in information&amp;#8230;&lt;/p&gt;
 
 &lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Location similarities with Foursquare &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/Foursquare.scala&#8217;&gt;Foursquare.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
@@ -605,7 +599,7 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
-&lt;p&gt;And bam! Here are locations similar to the &lt;strong&gt;Empire State Building&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;&amp;#8230;and bam! Here are locations similar to the &lt;strong&gt;Empire State Building&lt;/strong&gt;:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/empire-state-building.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/empire-state-building.png&quot; alt=&quot;Empire State Building&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
@@ -613,36 +607,38 @@
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/bergdorf-goodman.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/bergdorf-goodman.png&quot; alt=&quot;Bergdorf Goodman&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
+&lt;p&gt;(Hoity-toity French names indeed.)&lt;/p&gt;
+
 &lt;p&gt;And here&amp;#8217;s where to go after the &lt;strong&gt;Statue of Liberty&lt;/strong&gt;:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/statue-of-liberty.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/statue-of-liberty.png&quot; alt=&quot;Statue of Liberty&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Power of Twitter, yo.&lt;/p&gt;
+&lt;p&gt;Power of Twitter, yo!&lt;/p&gt;
 
 &lt;h1&gt;Another Abstraction&lt;/h1&gt;
 
-&lt;p&gt;So we abstracted away our input, allowing us to easily plug in new data sources (tweets, TSVs, music ratings, check-ins, Yelp, Netflix, Amazon&amp;#8230;).&lt;/p&gt;
+&lt;p&gt;So we abstracted away our input, allowing us to easily plug in new data sources (tweets, TSVs, iTunes, Foursquare, whatever!).&lt;/p&gt;
 
-&lt;p&gt;But why stop there? We could just as easily also abstract away our output as well, allowing us to filter and format our output however we want.&lt;/p&gt;
+&lt;p&gt;But why stop there? We could just as easily abstract away our output as well, allowing us to filter and format our output however we want.&lt;/p&gt;
 
-&lt;p&gt;Or, as hinted above, we could try to generalize our similarity computations! After all, what are all of these measures but simple vector and matrix manipulations? A dot product is just a matrix multiplication, the norms of our vectors are a diagonal, placing our matrix in a min-plus algebra would give us things like &lt;a href=&quot;http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf&quot;&gt;Tetris and shortest-paths&lt;/a&gt; (and, hey, even &lt;a href=&quot;http://mathoverflow.net/questions/406/how-is-tropicalization-like-taking-the-classical-limit&quot;&gt;classical mechanics&lt;/a&gt;)&amp;#8230;&lt;/p&gt;
+&lt;p&gt;Or, as hinted at above, we could try to generalize our similarity computations! After all, what are all of our measures but simple vector and matrix manipulations? A dot product is just a matrix multiplication, vector norms are a diagonal, placing the matrix in a min-plus algebra could give us things like &lt;a href=&quot;http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf&quot;&gt;Tetris&lt;/a&gt; and &lt;a href=&quot;http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf&quot;&gt;shortest-paths&lt;/a&gt; (and hey, even &lt;a href=&quot;http://mathoverflow.net/questions/406/how-is-tropicalization-like-taking-the-classical-limit&quot;&gt;classical mechanics&lt;/a&gt;)&amp;#8230;&lt;/p&gt;
 
-&lt;p&gt;But that&amp;#8217;s the subject of another post.&lt;/p&gt;
+&lt;p&gt;But I&amp;#8217;ll leave that for another post.&lt;/p&gt;
 
 &lt;h1&gt;Next Steps&lt;/h1&gt;
 
-&lt;p&gt;Hopefully I gave you a taste of the awesomeness of Scalding. If you want to learn even more, check out these links:&lt;/p&gt;
+&lt;p&gt;Hopefully I gave you a taste of the awesomeness of Scalding. To learn even more:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;The &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;official Scalding repository&lt;/a&gt; on Github.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/twitter/scalding/wiki/Getting-Started&quot;&gt;A Getting Started Guide&lt;/a&gt; on the Scalding wiki.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/twitter/scalding/tree/master/tutorial&quot;&gt;A code-based introduction&lt;/a&gt;, complete with Scalding jobs that you can run in local mode.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/twitter/scalding/blob/master/tutorial/CodeSnippets.md&quot;&gt;A bunch of code snippets&lt;/a&gt; that show you examples of different Scalding functions (e.g., &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt;, &lt;code&gt;flatMap&lt;/code&gt;, &lt;code&gt;groupBy&lt;/code&gt;, &lt;code&gt;count&lt;/code&gt;, &lt;code&gt;join&lt;/code&gt;).&lt;/li&gt;
-&lt;li&gt;All the code for this post is &lt;a href=&quot;https://github.com/echen/scaldingale&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Check out the &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding on Github&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Read &lt;a href=&quot;https://github.com/twitter/scalding/wiki/Getting-Started&quot;&gt;this Getting Started Guide&lt;/a&gt; on the Scalding wiki.&lt;/li&gt;
+&lt;li&gt;Run through &lt;a href=&quot;https://github.com/twitter/scalding/tree/master/tutorial&quot;&gt;this code-based introduction&lt;/a&gt;, complete with Scalding jobs that you can run in local mode.&lt;/li&gt;
+&lt;li&gt;Browse &lt;a href=&quot;https://github.com/twitter/scalding/blob/master/tutorial/CodeSnippets.md&quot;&gt;this set of code snippets&lt;/a&gt;, which shows examples of different Scalding functions (e.g., &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt;, &lt;code&gt;flatMap&lt;/code&gt;, &lt;code&gt;groupBy&lt;/code&gt;, &lt;code&gt;count&lt;/code&gt;, &lt;code&gt;join&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;And all the code for this post is &lt;a href=&quot;https://github.com/echen/scaldingale&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
 &lt;/ul&gt;
 
 
-&lt;p&gt;Watch out for more documentation soon, and definitely &lt;a href=&quot;https://twitter.com/#!/scalding&quot;&gt;follow @Scalding on Twitter&lt;/a&gt; for updates or to ask any questions.&lt;/p&gt;
+&lt;p&gt;Watch out for more documentation soon, and you should most definitely &lt;a href=&quot;https://twitter.com/#!/scalding&quot;&gt;follow @Scalding&lt;/a&gt; on Twitter for updates or to ask any questions.&lt;/p&gt;
 
 &lt;h1&gt;Mad Props&lt;/h1&gt;
 
