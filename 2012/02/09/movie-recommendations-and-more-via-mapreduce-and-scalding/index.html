@@ -192,7 +192,7 @@
 </span><span class='line'><span class="c1">// Merge `ratings` with `numRaters`, by joining on their movie fields.</span>
 </span><span class='line'><span class="k">val</span> <span class="n">ratingsWithSize</span> <span class="k">=</span>
 </span><span class='line'>  <span class="n">ratings</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">joinWithSmaller</span><span class="o">(</span><span class="-Symbol">&#39;movie</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;movieX</span><span class="o">,</span> <span class="n">ratings</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">.</span><span class="n">joinWithSmaller</span><span class="o">(</span><span class="-Symbol">&#39;movie</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;movieX</span><span class="o">,</span> <span class="n">numRaters</span><span class="o">)</span>
 </span><span class='line'>    <span class="o">.</span><span class="n">discard</span><span class="o">(</span><span class="-Symbol">&#39;movieX</span><span class="o">)</span> <span class="c1">// Remove the extra field.</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1">// ratingsWithSize now contains the following fields: (user, movie, rating, numRaters).</span>
