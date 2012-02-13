@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-02-11T04:18:39-08:00</updated>
+  <updated>2012-02-12T16:37:04-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -19,7 +19,7 @@
     <id>http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding</id>
     <content type="html">&lt;p&gt;This is going to be an in-your-face introduction to &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding&lt;/a&gt;, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced.&lt;/p&gt;
 
-&lt;p&gt;In 140: instead of forcing you to write raw &lt;em&gt;map&lt;/em&gt; and &lt;em&gt;reduce&lt;/em&gt; functions, Scalding allows you to write natural code like&lt;/p&gt;
+&lt;p&gt;In 140: instead of forcing you to write raw &lt;em&gt;map&lt;/em&gt; and &lt;em&gt;reduce&lt;/em&gt; functions, Scalding allows you to write &lt;em&gt;natural&lt;/em&gt; code like&lt;/p&gt;
 
 &lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
@@ -28,7 +28,7 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
-&lt;p&gt;(Not much different from the Ruby code you&amp;#8217;d write to compute tweet distributions over &lt;em&gt;small&lt;/em&gt; data!)&lt;/p&gt;
+&lt;p&gt;Not much different from the Ruby you&amp;#8217;d write to compute tweet distributions over &lt;em&gt;small&lt;/em&gt; data? &lt;strong&gt;Exactly.&lt;/strong&gt;&lt;/p&gt;
 
 &lt;p&gt;Two notes before we begin:&lt;/p&gt;
 
@@ -270,14 +270,14 @@
 
 &lt;h1&gt;Book Similarities&lt;/h1&gt;
 
-&lt;p&gt;Let&amp;#8217;s run this code over some real data. Unfortunately, I didn&amp;#8217;t have a clean source of movie ratings available, so instead I used &lt;a href=&quot;http://www.informatik.uni-freiburg.de/~cziegler/BX/&quot;&gt;this dataset of 1 million book ratings&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Let&amp;#8217;s run this code over some real data. Unfortunately, I didn&amp;#8217;t have a clean source of movie ratings available, so instead I used &lt;a href=&quot;http://www.informatik.uni-freiburg.de/~cziegler/BX/&quot;&gt;this dataset&lt;/a&gt; of 1 million book ratings.&lt;/p&gt;
 
 &lt;p&gt;I ran a quick command, using the handy &lt;a href=&quot;https://github.com/twitter/scalding/wiki/Scald.rb&quot;&gt;scald.rb script&lt;/a&gt; that Scalding provides&amp;#8230;&lt;/p&gt;
 
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Correlation &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
+&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;#&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Send&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;the&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;job&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;off&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;to&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Hadoop&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cluster&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;n&quot;&gt;scald&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rb&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;MovieSimilarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;scala&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&#8211;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsv&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&#8211;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;output&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;similarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tsv&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;bash&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c&quot;&gt;# Send the job off to a Hadoop cluster&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;scald.rb MovieSimilarities.scala &#8211;input ratings.tsv &#8211;output similarities.tsv
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
@@ -285,17 +285,17 @@
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims-correlation.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims-correlation.png&quot; alt=&quot;Top Book-Crossing Pairs&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;We see that&lt;/p&gt;
+&lt;p&gt;As we&amp;#8217;d expect, we see that&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;&lt;em&gt;Harry Potter&lt;/em&gt; books are similar to other &lt;em&gt;Harry Potter&lt;/em&gt; books&lt;/li&gt;
 &lt;li&gt;&lt;em&gt;Lord of the Rings&lt;/em&gt; books are similar to other &lt;em&gt;Lord of the Rings&lt;/em&gt; books&lt;/li&gt;
-&lt;li&gt;Tom Clancy book is similar to John Grisham&lt;/li&gt;
+&lt;li&gt;Tom Clancy is similar to John Grisham&lt;/li&gt;
 &lt;li&gt;Chick lit (&lt;em&gt;Summer Sisters&lt;/em&gt;, by Judy Blume) is similar to chick lit (&lt;em&gt;Bridget Jones&lt;/em&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 
 
-&lt;p&gt;Awesome! Just for fun, let&amp;#8217;s also look at books similar to &lt;em&gt;The Great Gatsby&lt;/em&gt;:&lt;/p&gt;
+&lt;p&gt;Just for fun, let&amp;#8217;s also look at books similar to &lt;em&gt;The Great Gatsby&lt;/em&gt;:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png&quot; alt=&quot;Great Gatsby&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
@@ -419,7 +419,7 @@
 
 &lt;h1&gt;Input Abstraction&lt;/h1&gt;
 
-&lt;p&gt;Okay, so right now, our code is tied to our specific &lt;code&gt;ratings.tsv&lt;/code&gt; input. But what if we change the way we store our ratings, or what if we want to generate similarities for something entirely different?&lt;/p&gt;
+&lt;p&gt;So our code right now is tied to our specific &lt;code&gt;ratings.tsv&lt;/code&gt; input. But what if we change the way we store our ratings, or what if we want to generate similarities for something entirely different?&lt;/p&gt;
 
 &lt;p&gt;Let&amp;#8217;s abstract away our input. We&amp;#8217;ll create a &lt;a href=&quot;https://github.com/echen/scaldingale/blob/master/VectorSimilarities.scala&quot;&gt;VectorSimilarities class&lt;/a&gt; that represents input data in the following format:&lt;/p&gt;
 
@@ -440,7 +440,7 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
-&lt;p&gt;Whenever we want to define a new input format, we simply subclass the abstract &lt;code&gt;VectorSimilarities&lt;/code&gt; class and provide a concrete implementation of the &lt;code&gt;input&lt;/code&gt; method.&lt;/p&gt;
+&lt;p&gt;Whenever we want to define a new input format, we simply subclass &lt;code&gt;VectorSimilarities&lt;/code&gt; and provide a concrete implementation of the &lt;code&gt;input&lt;/code&gt; method.&lt;/p&gt;
 
 &lt;h2&gt;Book-Crossings&lt;/h2&gt;
 
@@ -469,7 +469,7 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
-&lt;p&gt;The input method simply reads from a TSV file and lets the &lt;code&gt;VectorSimilarities&lt;/code&gt; class do all the work.&lt;/p&gt;
+&lt;p&gt;The input method simply reads from a TSV file and lets the &lt;code&gt;VectorSimilarities&lt;/code&gt; superclass do all the work. Instant recommendations, BOOM.&lt;/p&gt;
 
 &lt;h2&gt;Song Similarities with Twitter + iTunes&lt;/h2&gt;
 
@@ -481,7 +481,7 @@
 &lt;script src=&quot;http://blog.echen.me//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
 
 
-&lt;p&gt;iTunes lets you send a tweet whenever you rate a song, so let&amp;#8217;s use Twitter to generate music recommendations!&lt;/p&gt;
+&lt;p&gt;Since iTunes lets you send a tweet whenever you rate a song, we can use these to generate music recommendations!&lt;/p&gt;
 
 &lt;p&gt;Again, we create a new class that overrides the abstract &lt;code&gt;input&lt;/code&gt; defined in &lt;code&gt;VectorSimilarities&lt;/code&gt;&amp;#8230;&lt;/p&gt;
 
@@ -505,6 +505,8 @@
 &lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;20&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;21&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;22&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ITunes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;VectorSimilarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;c1&quot;&gt;// Example tweet:&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;c1&quot;&gt;// rated New Kids On the Block: Super Hits by New Kids On the Block 5 stars http://itun.es/iSg3Fc #iTunes&lt;/span&gt;
@@ -512,6 +514,8 @@
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Pipe&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itunesRatings&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;// This is a Twitter-internal tweet source, but you could just as easily scrape &lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;// Twitter yourself and provide your own source of tweets: https://dev.twitter.com/docs&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;nc&quot;&gt;TweetSource&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapTo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;userId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getUserId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;#iTunes&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
@@ -528,15 +532,15 @@
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
-&lt;p&gt;(In this code, I used a Twitter-internal tweet source that provides data on tweets, but you could just as easily &lt;a href=&quot;https://dev.twitter.com/docs&quot;&gt;scrape Twitter yourself&lt;/a&gt; and provide your own source of tweets instead.)&lt;/p&gt;
-
-&lt;p&gt;&amp;#8230;and SNAP! Here are some songs you might like if you recently listened to &lt;strong&gt;Beyoncé&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;&amp;#8230;and snap! Here are some songs you might like if you recently listened to &lt;strong&gt;Beyoncé&lt;/strong&gt;:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png&quot; alt=&quot;Jason Mraz&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;p&gt;And some recommended songs if you like &lt;strong&gt;Lady Gaga&lt;/strong&gt;:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/lady-gaga.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/lady-gaga.png&quot; alt=&quot;Lady Gaga&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;GG Pandora.&lt;/p&gt;
 
 &lt;h2&gt;Location Similarities with Foursquare Check-ins&lt;/h2&gt;
 
@@ -605,21 +609,21 @@
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/bergdorf-goodman.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/bergdorf-goodman.png&quot; alt=&quot;Bergdorf Goodman&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;(Hoity-toity French names indeed.)&lt;/p&gt;
+&lt;p&gt;(Hoity-toity French names? Yes indeed.)&lt;/p&gt;
 
 &lt;p&gt;And here&amp;#8217;s where to go after the &lt;strong&gt;Statue of Liberty&lt;/strong&gt;:&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/statue-of-liberty.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/statue-of-liberty.png&quot; alt=&quot;Statue of Liberty&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;Power of Twitter, yo!&lt;/p&gt;
+&lt;p&gt;Power of Twitter, yo.&lt;/p&gt;
 
-&lt;h1&gt;Another Abstraction&lt;/h1&gt;
+&lt;h1&gt;Layers of Abstraction&lt;/h1&gt;
 
-&lt;p&gt;So we abstracted away our input, allowing us to easily plug in new data sources (tweets, TSVs, iTunes, Foursquare, whatever!).&lt;/p&gt;
+&lt;p&gt;So we abstracted away our input, allowing us to easily plug in new data sources (tweets, TSVs, iTunes, Foursquare, whatever).&lt;/p&gt;
 
 &lt;p&gt;But why stop there? We could just as easily abstract away our output as well, allowing us to filter and format our output however we want.&lt;/p&gt;
 
-&lt;p&gt;Or, as hinted at above, we could try to generalize our similarity computations! After all, what are all of our measures but simple vector and matrix manipulations? A dot product is just a matrix multiplication, vector norms are a diagonal, placing the matrix in a min-plus algebra could give us things like &lt;a href=&quot;http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf&quot;&gt;Tetris&lt;/a&gt; and &lt;a href=&quot;http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf&quot;&gt;shortest-paths&lt;/a&gt; (and hey, even &lt;a href=&quot;http://mathoverflow.net/questions/406/how-is-tropicalization-like-taking-the-classical-limit&quot;&gt;classical mechanics&lt;/a&gt;)&amp;#8230;&lt;/p&gt;
+&lt;p&gt;Or, as hinted at above, we could try to generalize our similarity computations! After all, what are all our measures but simple vector and matrix manipulations? A dot product is just a matrix multiplication, vector norms are a diagonal, placing the matrix in a min-plus algebra could give us things like &lt;a href=&quot;http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf&quot;&gt;Tetris&lt;/a&gt; and &lt;a href=&quot;http://www-rocq.inria.fr/metalau/quadrat/STACS-Gaubert.pdf&quot;&gt;shortest-paths&lt;/a&gt; (and hey, even &lt;a href=&quot;http://mathoverflow.net/questions/406/how-is-tropicalization-like-taking-the-classical-limit&quot;&gt;classical mechanics&lt;/a&gt;)&amp;#8230;&lt;/p&gt;
 
 &lt;p&gt;But I&amp;#8217;ll leave that for another post.&lt;/p&gt;
 
@@ -628,7 +632,7 @@
 &lt;p&gt;Hopefully I gave you a taste of the awesomeness of Scalding. To learn even more:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Check out the &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding on Github&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Check out &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding on Github&lt;/a&gt;.&lt;/li&gt;
 &lt;li&gt;Read &lt;a href=&quot;https://github.com/twitter/scalding/wiki/Getting-Started&quot;&gt;this Getting Started Guide&lt;/a&gt; on the Scalding wiki.&lt;/li&gt;
 &lt;li&gt;Run through &lt;a href=&quot;https://github.com/twitter/scalding/tree/master/tutorial&quot;&gt;this code-based introduction&lt;/a&gt;, complete with Scalding jobs that you can run in local mode.&lt;/li&gt;
 &lt;li&gt;Browse &lt;a href=&quot;https://github.com/twitter/scalding/blob/master/tutorial/CodeSnippets.md&quot;&gt;this set of code snippets&lt;/a&gt;, which shows examples of different Scalding functions (e.g., &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt;, &lt;code&gt;flatMap&lt;/code&gt;, &lt;code&gt;groupBy&lt;/code&gt;, &lt;code&gt;count&lt;/code&gt;, &lt;code&gt;join&lt;/code&gt;).&lt;/li&gt;
