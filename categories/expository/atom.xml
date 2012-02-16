@@ -4,7 +4,7 @@
   <title><![CDATA[Category: expository | Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/categories/expository/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-02-13T02:39:14-08:00</updated>
+  <updated>2012-02-15T22:56:49-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -185,48 +185,44 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
     <link href="http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
     <updated>2011-04-21T00:16:36-07:00</updated>
     <id>http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
-    <content type="html"><![CDATA[<p>(I wrote up a more mathematical explanation of least angle regression <a href="http://echen.me/posts/a-mathematical-introduction-to-least-angle-regression">here</a>.)</p>
+    <content type="html"><![CDATA[<p>(For a layman's introduction, see <a href="http://blog.echen.me/2011/03/14/least-angle-regression-for-the-hungry-layman/">here</a>.)</p>
 
-<p>Suppose you're at a buffet. You don't want to just grab everything and overeat (overfit), so how do you decide which dishes to take? Here are some possibilities.</p>
-
-<h1>Forward Selection</h1>
-
-<p>On your first trip to the buffet, take a plateful of your favorite dish, bring it back, and eat it. On your second trip, take a plateful of the dish that <em>now</em> looks most appetizing, bring it back, and eat it. And so on.</p>
-
-<p>The problem with this method is the following: suppose your favorite food is spaghetti, followed closely by macaroni. Ideally, you'd like to take half a plate of spaghetti and slightly less than half a plate of macaroni, but under this method, you have to first take and eat a plateful of spaghetti, and now you're sick of pasta and don't want macaroni anymore.</p>
-
-<h1>Forward Stagewise</h1>
-
-<p>To remedy the greediness of the above method, another option is to take smaller morsels at a time. On your first trip to the buffet, you take a thimbleful of your favorite dish; on your next trip to the buffet, you take a thimbleful of the currently most appetizing dish; and so on again.</p>
-
-<p>Now, after getting your thimbleful of spaghetti, pasta still looks delicious to you, so you can get your thimbleful of macaroni as well.</p>
-
-<p>The problem with this method is that because you're only eating a thimbleful at a time, you have to make many trips to the buffet and so dinner takes forever.</p>
-
-<h1>Least Angle Regression</h1>
-
-<p>A much more efficient method works as follows. Suppose your favorite dishes are, in order, spaghetti, macaroni, salad, and chili. On your first trip, you grab a bunch of spaghetti. You know that as you eat spaghetti, you start to get slightly sick of it, so it becomes less and less appetizing, until eventually it becomes just as appetizing as macaroni (but still more appetizing than salad and chili). So only grab an amount X of spaghetti, so that after eating X, spaghetti and macaroni are equally appetizing.</p>
-
-<p>On your second trip, spaghetti and macaroni are equally appetizing. Grab both spaghetti and macaroni, in proportions such that spaghetti and macaroni stay equally appetizing while you eat. Again, you know exactly how much spaghetti and macaroni you can eat until salad becomes just as appetizing, so only grab this amount.</p>
-
-<p>On your third trip, spaghetti, macaroni, and salad look equally delicious. Again, grab the three foods in proportions that stay equally appetizing while you eat, and only grab enough to make chili look just as tasty.</p>
-
-<p>And so on.</p>
-
-<p>Note that:</p>
+<p>Least Angle Regression (aka LARS) is a <strong>model selection method</strong> for linear regression (when you're worried about overfitting or want your model to be easily interpretable). To motivate it, let's consider some other model selection methods:</p>
 
 <ul>
-<li>This method works better than forward selection, because we get to eat both spaghetti and macaroni.</li>
-<li>This method works much faster than forward stagewise, because we make much fewer trips. (If we want to eat $n$ dishes, we only need to make $n$ trips.)</li>
-<li>We're always eating whatever looks most appetizing to us.</li>
+<li><strong>Forward selection</strong> starts with no variables in the model, and at each step it adds to the model the variable with the most explanatory power, stopping if the explanatory power falls below some threshold. This is a fast and simple method, but it can also be too greedy: we fully add variables at each step, so correlated predictors don't get much of a chance to be included in the model. (For example, suppose we want to build a model for the deliciousness of a PB&amp;J sandwich, and two of our variables are the amount of peanut butter and the amount of jelly. We'd like both variables to appear in our model, but since amount of peanut butter is (let's assume) strongly correlated with the amount of jelly, once we fully add peanut butter to our model, jelly doesn't add much explanatory power anymore, and so it's unlikely to be added.)</li>
+<li><strong>Forward stagewise regression</strong> tries to remedy the greediness of forward selection by only partially adding variables. Whereas forward selection finds the variable with the most explanatory power and goes all out in adding it to the model, forward stagewise finds the variable with the most explanatory power and updates its weight by only epsilon in the correct direction. (So we might first increase the weight of peanut butter a little bit, then increase the weight of peanut butter again, then increase the weight of jelly, then increase the weight of bread, and then increase the weight of peanut butter once more.) The problem now is that we have to make a ton of updates, so forward stagewise can be very inefficient.</li>
 </ul>
 
 
-<h1>Reversing the Analogy</h1>
+<p>LARS, then, is essentially forward stagewise made fast. Instead of making tiny hops in the direction of one variable at a time, LARS makes optimally-sized leaps in optimal directions. These directions are chosen to make equal angles (equal correlations) with each of the variables currently in our model. (We like peanut butter best, so we start eating it first; as we eat more, we get a little sick of it, so jelly starts looking equally appetizing, and we start eating peanut butter and jelly simultaneously; later, we add bread to the mix, etc.)</p>
 
-<p>Replace buffet with linear regression and dishes with variables, and you now have three tasty model selection methods to choose from.</p>
+<p>In more detail, LARS works as follows:</p>
 
-<p>For a more mathematical explanation of least angle regression, see <a href="http://echen.me/posts/a-mathematical-introduction-to-least-angle-regression">here</a>.</p>
+<ul>
+<li>Assume for simplicity that we've standardized our explanatory variables to have zero mean and unit variance, and that our response variable also has zero mean.</li>
+<li>Start with no variables in your model.</li>
+<li>Find the variable $ x_1 $ most correlated with the residual. (Note that the variable most correlated with the residual is equivalently the one that makes the least angle with the residual, whence the name.)</li>
+<li>Move in the direction of this variable until some other variable $ x_2 $ is just as correlated.</li>
+<li>At this point, start moving in a direction such that the residual stays equally correlated with $ x_1 $ and $ x_2 $ (i.e., so that the residual makes equal angles with both variables), and keep moving until some variable $ x_3 $ becomes equally correlated with our residual.</li>
+<li>And so on, stopping when we've decided our model is big enough.</li>
+</ul>
+
+
+<p>For example, consider the following image (slightly simplified from the <a href="http://www.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf">original LARS paper</a>; $x_1, x_2$ are our variables, and $y$ is our response):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png"><img src="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png" alt="LARS Example" /></a></p>
+
+<p>Our model starts at $ \hat{\mu_0} $.</p>
+
+<ul>
+<li>The residual (the green line) makes a smaller angle with $ x_1 $ than with $ x_2 $, so we start moving in the direction of $ x_1 $.
+At $ \hat{\mu_1} $, the residual now makes equal angles with $ x_1, x_2 $, and so we start moving in a new direction that preserves this equiangularity/equicorrelation.</li>
+<li>If there were more variables, we'd change directions again once a new variable made equal angles with our residual, and so on.</li>
+</ul>
+
+
+<p>So when should you use LARS, as opposed to some other regularization method like lasso? There's not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don't usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).</p>
 ]]></content>
   </entry>
   
