@@ -7,6 +7,9 @@
   <meta charset="utf-8">
   <title>Edwin Chen's Blog</title>
   <meta name="author" content="Edwin Chen">
+
+  
+  <meta name="description" content="This is going to be an in-your-face introduction to Scalding, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced. In 140 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -15,14 +18,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-
-  <link rel="canonical" href="http://blog.echen.me/index.html"/>
-  <link href="/favicon.png" rel="shortcut icon" />
+  <link rel="canonical" href="http://blog.echen.me">
+  <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="http://s3.amazonaws.com/ender-js/jeesh.min.js"></script>
+  <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/feed/index.xml" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml"/>
+  <link href="/feed/index.xml" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
   
   <script type="text/javascript">
     var _gaq = _gaq || [];
@@ -37,32 +43,6 @@
   </script>
 
 
-  
-  <script type="text/javascript">
-    (function() {
-      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
-      script.src = 'https://apis.google.com/js/plusone.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
-    })();
-  </script>
-
-
-  
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-  <!--Fonts from Google's Web font directory at http://google.com/webfonts -->
-<link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
-<link href='http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css'>
-
 </head>
 
 <body   >
@@ -72,17 +52,19 @@
 </hgroup>
 
 </header>
-  <nav role="navigation"><ul role=subscription data-subscription="rss">
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
   <li><a href="/feed/index.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
+  
 <form action="http://google.com/search" method="get">
-  <fieldset role="site-search">
+  <fieldset role="search">
     <input type="hidden" name="q" value="site:blog.echen.me" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
-<ul role=main-navigation>
+  
+<ul class="main-navigation">
   <li><a href="/">Blog</a></li>
   <li><a href="/blog/archives">Archives</a></li>
 </ul>
@@ -91,25 +73,32 @@
   <div id="main">
     <div id="content">
       <div class="blog-index">
-
-
-
-  <article>
-    
+  
+  
+  
+    <article>
+      
   <header>
     
-      <h1 class="entry-title"><a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie Recommendations and More via MapReduce and Scalding</a></h1>
+      <h1 class="entry-title"><a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2012-02-09 03:20:00 -0800" pubdate  updated >Feb 9<span>th</span>, 2012</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2012-02-09T03:20:00-08:00" pubdate data-updated="true">Feb 9<span>th</span>, 2012</time>
+        
+      </p>
     
   </header>
 
@@ -749,25 +738,32 @@
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
-      <h1 class="entry-title"><a href="/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to Ggplot2</a></h1>
+      <h1 class="entry-title"><a href="/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2012-01-17 10:28:55 -0800" pubdate  updated >Jan 17<span>th</span>, 2012</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2012-01-17T10:28:55-08:00" pubdate data-updated="true">Jan 17<span>th</span>, 2012</time>
+        
+      </p>
     
   </header>
 
@@ -1157,25 +1153,32 @@
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
       <h1 class="entry-title"><a href="/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2012-01-03 16:02:25 -0800" pubdate  updated >Jan 3<span>rd</span>, 2012</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2012-01-03T16:02:25-08:00" pubdate data-updated="true">Jan 3<span>rd</span>, 2012</time>
+        
+      </p>
     
   </header>
 
@@ -1370,25 +1373,32 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
       <h1 class="entry-title"><a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2011-10-24 16:27:01 -0700" pubdate  updated >Oct 24<span>th</span>, 2011</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2011-10-24T16:27:01-07:00" pubdate data-updated="true">Oct 24<span>th</span>, 2011</time>
+        
+      </p>
     
   </header>
 
@@ -1553,25 +1563,32 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
       <h1 class="entry-title"><a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2011-09-29 10:48:09 -0700" pubdate  updated >Sep 29<span>th</span>, 2011</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2011-09-29T10:48:09-07:00" pubdate data-updated="true">Sep 29<span>th</span>, 2011</time>
+        
+      </p>
     
   </header>
 
@@ -2056,25 +2073,32 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
       <h1 class="entry-title"><a href="/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2011-09-07 11:15:11 -0700" pubdate  updated >Sep 7<span>th</span>, 2011</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2011-09-07T11:15:11-07:00" pubdate data-updated="true">Sep 7<span>th</span>, 2011</time>
+        
+      </p>
     
   </header>
 
@@ -2201,25 +2225,32 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
       <h1 class="entry-title"><a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2011-08-22 10:50:49 -0700" pubdate  updated >Aug 22<span>nd</span>, 2011</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2011-08-22T10:50:49-07:00" pubdate data-updated="true">Aug 22<span>nd</span>, 2011</time>
+        
+      </p>
     
   </header>
 
@@ -2363,25 +2394,32 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
-      <h1 class="entry-title"><a href="/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What Gets Shared on Twitter vs. Facebook?</a></h1>
+      <h1 class="entry-title"><a href="/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2011-07-28 07:55:29 -0700" pubdate  updated >Jul 28<span>th</span>, 2011</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2011-07-28T07:55:29-07:00" pubdate data-updated="true">Jul 28<span>th</span>, 2011</time>
+        
+      </p>
     
   </header>
 
@@ -2675,25 +2713,32 @@ To shift these randomly initialized weights to the correct ones, for each traini
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
       <h1 class="entry-title"><a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2011-07-18 09:32:52 -0700" pubdate  updated >Jul 18<span>th</span>, 2011</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2011-07-18T09:32:52-07:00" pubdate data-updated="true">Jul 18<span>th</span>, 2011</time>
+        
+      </p>
     
   </header>
 
@@ -2831,25 +2876,32 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
 
 
-  </article>
-
-
-  <article>
-    
+    </article>
+  
+  
+    <article>
+      
   <header>
     
-      <h1 class="entry-title"><a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution Be Taught in Schools?</a></h1>
+      <h1 class="entry-title"><a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a></h1>
     
     
       <p class="meta">
+        
 
 
 
 
-<time datetime="2011-07-09 13:02:05 -0700" pubdate  updated >Jul 9<span>th</span>, 2011</time>
 
 
-</p>
+
+
+  
+
+
+<time datetime="2011-07-09T13:02:05-07:00" pubdate data-updated="true">Jul 9<span>th</span>, 2011</time>
+        
+      </p>
     
   </header>
 
@@ -2892,43 +2944,29 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   
 
 
-  </article>
-
-<nav role="pagination">
-  <div>
+    </article>
+  
+  <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
   </div>
-</nav>
-
-<script type="text/javascript">
-    var disqus_shortname = 'edwinchen';
-    (function () {
-      var s = document.createElement('script'); s.async = true;
-      s.type = 'text/javascript';
-      s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
-      (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
-    }());
-</script>
-
 </div>
-<aside role=sidebar>
+<aside class="sidebar">
   
     <section>
   <h1>Edwin Chen</h1>
   
-  <p>Data scientist at <a href="https://twitter.com/#!/edchedch">Twitter</a>. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
+  <p>Data scientist at Twitter. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
   
   <p>I like math, statistics, machine learning, and linguistics.</p>
 
   <p>Email: hello[at]echen.me<br/>
   Twitter: <a href="https://twitter.com/#!/edchedch">@edchedch</a><br/>
   Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
-</section>
-<section>
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
@@ -2987,7 +3025,7 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   </script>
   <script src="/javascripts/twitter.js" type="text/javascript"> </script>
   
-    <a href="http://twitter.com/edchedch" class="twitter-follow-button" data-width="208px" data-show-count="true">Follow @edchedch</a>
+    <a href="http://twitter.com/edchedch" class="twitter-follow-button" data-show-count="true">Follow @edchedch</a>
   
 </section>
 
