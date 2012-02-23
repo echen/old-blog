@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-02-23T11:44:48-08:00</updated>
+  <updated>2012-02-23T11:55:11-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -12,632 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Movie recommendations and more via MapReduce and Scalding]]></title>
-    <link href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding+%28Twitter+MacBook+Pro%27s+conflicted+copy+2012-02-20%29/"/>
-    <updated>2012-02-09T03:20:00-08:00</updated>
-    <id>http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding (Twitter MacBook Pro&#8217;s conflicted copy 2012-02-20)</id>
-    <content type="html"><![CDATA[<p>This is going to be an in-your-face introduction to <a href="https://github.com/twitter/scalding">Scalding</a>, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced.</p>
-
-<p>In 140: instead of forcing you to write raw <code>map</code> and <code>reduce</code> functions, Scalding allows you to write <em>natural</em> code like</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">// Create a histogram of tweet lengths.</span>
-</span><span class='line'><span class="n">tweets</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="-Symbol">&#39;tweet</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;length</span><span class="o">)</span> <span class="o">{</span> <span class="n">tweet</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span> <span class="n">tweet</span><span class="o">.</span><span class="n">size</span> <span class="o">}.</span><span class="n">groupBy</span><span class="o">(</span><span class="-Symbol">&#39;length</span><span class="o">)</span> <span class="o">{</span> <span class="n">_</span><span class="o">.</span><span class="n">size</span> <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Not much different from the Ruby you&#8217;d write to compute tweet distributions over <em>small</em> data? <strong>Exactly.</strong></p>
-
-<p>Two notes before we begin:</p>
-
-<ul>
-<li><a href="https://github.com/echen/scaldingale">This Github repository</a> contains all the code used.</li>
-<li>For a gentler introduction to Scalding, see <a href="https://github.com/twitter/scalding/wiki/Getting-Started">this Getting Started guide</a> on the Scalding wiki.</li>
-</ul>
-
-
-<h1>Movie Similarities</h1>
-
-<p>Imagine you run an online movie business, and you want to generate movie recommendations. You have a rating system (people can rate movies with 1 to 5 stars), and we&#8217;ll assume for simplicity that all of the ratings are stored in a TSV file somewhere.</p>
-
-<p>Let&#8217;s start by reading the ratings into a Scalding job.</p>
-
-<figure class='code'><figcaption><span>Input </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * The input is a TSV file with three columns: (user, movie, rating).</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="k">val</span> <span class="nc">INPUT_FILENAME</span> <span class="k">=</span> <span class="s">&quot;data/ratings.tsv&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * Read in the input and give each field a type and name.</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="k">val</span> <span class="n">ratings</span> <span class="k">=</span>
-</span><span class='line'>  <span class="nc">Tsv</span><span class="o">(</span><span class="nc">INPUT_FILENAME</span><span class="o">).</span><span class="n">read</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">mapTo</span><span class="o">((</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="-Symbol">&#39;user</span><span class="o">,</span> <span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">))</span> <span class="o">{</span> <span class="n">fields</span> <span class="k">:</span> <span class="o">(</span><span class="kt">String</span><span class="o">,</span> <span class="kt">String</span><span class="o">,</span> <span class="nc">Double</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">fields</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * Let&#39;s also keep track of the total number of people who rated each movie.</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="k">val</span> <span class="n">numRaters</span> <span class="k">=</span>
-</span><span class='line'>  <span class="n">ratings</span>
-</span><span class='line'>    <span class="c1">// Put the number of people who rated each movie into a field called &quot;numRaters&quot;.    </span>
-</span><span class='line'>    <span class="o">.</span><span class="n">groupBy</span><span class="o">(</span><span class="-Symbol">&#39;movie</span><span class="o">)</span> <span class="o">{</span> <span class="n">_</span><span class="o">.</span><span class="n">size</span> <span class="o">}.</span><span class="n">rename</span><span class="o">(</span><span class="-Symbol">&#39;size</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;numRaters</span><span class="o">)</span>
-</span><span class='line'>    <span class="c1">// Rename, since Scalding requires both sides to have distinct fields when we join.</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">rename</span><span class="o">(</span><span class="-Symbol">&#39;movie</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;movieX</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// Merge `ratings` with `numRaters`, by joining on their movie fields.</span>
-</span><span class='line'><span class="k">val</span> <span class="n">ratingsWithSize</span> <span class="k">=</span>
-</span><span class='line'>  <span class="n">ratings</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">joinWithSmaller</span><span class="o">(</span><span class="-Symbol">&#39;movie</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;movieX</span><span class="o">,</span> <span class="n">numRaters</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">discard</span><span class="o">(</span><span class="-Symbol">&#39;movieX</span><span class="o">)</span> <span class="c1">// Remove the extra field.</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// ratingsWithSize now contains the following fields: (user, movie, rating, numRaters).</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>You want to calculate how similar pairs of movies are, so that if someone watches <em>The Lion King</em>, you can recommend films like <em>Toy Story</em>. So how should you define the similarity between two movies?</p>
-
-<p>One way is to use their <strong>correlation</strong>:</p>
-
-<ul>
-<li>For every pair of movies A and B, find all the people who rated both A and B.</li>
-<li>Use these ratings to form a Movie A vector and a Movie B vector.</li>
-<li>Calculate the correlation between these two vectors.</li>
-<li>Whenever someone watches a movie, you can then recommend the movies most correlated with it.</li>
-</ul>
-
-
-<p>Let&#8217;s start with the first two steps.</p>
-
-<figure class='code'><figcaption><span>Find rating pairs </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * To get all pairs of co-rated movies, we&#39;ll join `ratings` against itself.</span>
-</span><span class='line'><span class="cm"> * So first make a dummy copy of the ratings that we can join against.</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="k">val</span> <span class="n">ratings2</span> <span class="k">=</span>
-</span><span class='line'>  <span class="n">ratingsWithSize</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">rename</span><span class="o">((</span><span class="-Symbol">&#39;user</span><span class="o">,</span> <span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">,</span> <span class="-Symbol">&#39;numRaters</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="-Symbol">&#39;user2</span><span class="o">,</span> <span class="-Symbol">&#39;movie2</span><span class="o">,</span> <span class="-Symbol">&#39;rating2</span><span class="o">,</span> <span class="-Symbol">&#39;numRaters2</span><span class="o">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * Now find all pairs of co-rated movies (pairs of movies that a user has rated) by</span>
-</span><span class='line'><span class="cm"> * joining the duplicate rating streams on their user fields, </span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="k">val</span> <span class="n">ratingPairs</span> <span class="k">=</span>
-</span><span class='line'>  <span class="n">ratingsWithSize</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">joinWithSmaller</span><span class="o">(</span><span class="-Symbol">&#39;user</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;user2</span><span class="o">,</span> <span class="n">ratings2</span><span class="o">)</span>
-</span><span class='line'>    <span class="c1">// De-dupe so that we don&#39;t calculate similarity of both (A, B) and (B, A).</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;movie2</span><span class="o">)</span> <span class="o">{</span> <span class="n">movies</span> <span class="k">:</span> <span class="o">(</span><span class="kt">String</span><span class="o">,</span> <span class="kt">String</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">movies</span><span class="o">.</span><span class="n">_1</span> <span class="o">&lt;</span> <span class="n">movies</span><span class="o">.</span><span class="n">_2</span> <span class="o">}</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">project</span><span class="o">(</span><span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">,</span> <span class="-Symbol">&#39;numRaters</span><span class="o">,</span> <span class="-Symbol">&#39;movie2</span><span class="o">,</span> <span class="-Symbol">&#39;rating2</span><span class="o">,</span> <span class="-Symbol">&#39;numRaters2</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// By grouping on (&#39;movie, &#39;movie2), we can now get all the people who rated any pair of movies.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Before using these rating pairs to calculate correlation, let&#8217;s stop for a bit.</p>
-
-<p>Since we&#8217;re explicitly thinking of movies as <strong>vectors</strong> of ratings, it&#8217;s natural to compute some very vector-y things like norms and dot products, as well as the length of each vector and the sum over all elements in each vector. So let&#8217;s compute these:</p>
-
-<figure class='code'><figcaption><span>Vector calculations </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="cm">/**</span>
-</span><span class='line'><span class="cm"> * Compute dot products, norms, sums, and sizes of the rating vectors.</span>
-</span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="k">val</span> <span class="n">vectorCalcs</span> <span class="k">=</span>
-</span><span class='line'>  <span class="n">ratingPairs</span>
-</span><span class='line'>    <span class="c1">// Compute (x*y, x^2, y^2), which we need for dot products and norms.</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">map</span><span class="o">((</span><span class="-Symbol">&#39;rating</span><span class="o">,</span> <span class="-Symbol">&#39;rating2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="-Symbol">&#39;ratingProd</span><span class="o">,</span> <span class="-Symbol">&#39;ratingSq</span><span class="o">,</span> <span class="-Symbol">&#39;rating2Sq</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>      <span class="n">ratings</span> <span class="k">:</span> <span class="o">(</span><span class="kt">Double</span><span class="o">,</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=&gt;</span>
-</span><span class='line'>      <span class="o">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">_1</span> <span class="o">*</span> <span class="n">ratings</span><span class="o">.</span><span class="n">_2</span><span class="o">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">_1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span> <span class="n">math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">ratings</span><span class="o">.</span><span class="n">_2</span><span class="o">,</span> <span class="mi">2</span><span class="o">))</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">groupBy</span><span class="o">(</span><span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;movie2</span><span class="o">)</span> <span class="o">{</span> <span class="n">group</span> <span class="k">=&gt;</span>
-</span><span class='line'>        <span class="n">group</span><span class="o">.</span><span class="n">size</span> <span class="c1">// length of each vector</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">sum</span><span class="o">(</span><span class="-Symbol">&#39;ratingProd</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;dotProduct</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">sum</span><span class="o">(</span><span class="-Symbol">&#39;rating</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;ratingSum</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">sum</span><span class="o">(</span><span class="-Symbol">&#39;rating2</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;rating2Sum</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">sum</span><span class="o">(</span><span class="-Symbol">&#39;ratingSq</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;ratingNormSq</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">sum</span><span class="o">(</span><span class="-Symbol">&#39;rating2Sq</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;rating2NormSq</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">max</span><span class="o">(</span><span class="-Symbol">&#39;numRaters</span><span class="o">)</span> <span class="c1">// Just an easy way to make sure the numRaters field stays.</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">max</span><span class="o">(</span><span class="-Symbol">&#39;numRaters2</span><span class="o">)</span>                
-</span><span class='line'>        <span class="c1">// All of these operations chain together like in a builder object.</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To summarize, each row in <code>vectorCalcs</code> now contains the following fields:</p>
-
-<ul>
-<li><strong>movie, movie2</strong></li>
-<li><strong>numRaters, numRaters2</strong>: the total number of people who rated each movie</li>
-<li><strong>size</strong>: the number of people who rated both movie and movie2</li>
-<li><strong>dotProduct</strong>: dot product between the movie vector (a vector of ratings) and the movie2 vector (also a vector of ratings)</li>
-<li><strong>ratingSum, rating2sum</strong>: sum over all elements in each ratings vector</li>
-<li><strong>ratingNormSq, rating2Normsq</strong>: squared norm of each vector</li>
-</ul>
-
-
-<p>So let&#8217;s go back to calculating the correlation between movie and movie2. We could, of course, calculate correlation in the standard way: find the covariance between the movie and movie2 ratings, and divide by their standard deviations.</p>
-
-<p>But recall that we can also write correlation in the following form:</p>
-
-<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x<sup>2</sup> - (\sum x)<sup>2}</sup> \sqrt{n \sum y<sup>2</sup> - (\sum y)<sup>2}}$</sup></p>
-
-<p>(See the <a href="http://en.wikipedia.org/wiki/Correlation_and_dependence">Wikipedia page</a> on correlation.)</p>
-
-<p>Notice that every one of the elements in this formula is a field in <code>vectorCalcs</code>! So instead of using the standard calculation, we can use this form instead:</p>
-
-<figure class='code'><figcaption><span>Correlation </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">correlations</span> <span class="k">=</span>
-</span><span class='line'>  <span class="n">vectorCalcs</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">map</span><span class="o">((</span><span class="-Symbol">&#39;size</span><span class="o">,</span> <span class="-Symbol">&#39;dotProduct</span><span class="o">,</span> <span class="-Symbol">&#39;ratingSum</span><span class="o">,</span> <span class="-Symbol">&#39;rating2Sum</span><span class="o">,</span> <span class="-Symbol">&#39;ratingNormSq</span><span class="o">,</span> <span class="-Symbol">&#39;rating2NormSq</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;correlation</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>      <span class="k">val</span> <span class="n">fields</span> <span class="k">:</span> <span class="o">(</span><span class="kt">Double</span><span class="o">,</span> <span class="kt">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">)</span> <span class="k">=&gt;</span>
-</span><span class='line'>      <span class="n">correlation</span><span class="o">(</span><span class="n">fields</span><span class="o">.</span><span class="n">_1</span><span class="o">,</span> <span class="n">fields</span><span class="o">.</span><span class="n">_2</span><span class="o">,</span> <span class="n">fields</span><span class="o">.</span><span class="n">_3</span><span class="o">,</span> <span class="n">fields</span><span class="o">.</span><span class="n">_4</span><span class="o">,</span> <span class="n">fields</span><span class="o">.</span><span class="n">_5</span><span class="o">,</span> <span class="n">fields</span><span class="o">.</span><span class="n">_6</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="n">correlation</span><span class="o">(</span><span class="n">size</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">dotProduct</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">ratingSum</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
-</span><span class='line'>  <span class="n">rating2Sum</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">ratingNormSq</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">rating2NormSq</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">val</span> <span class="n">numerator</span> <span class="k">=</span> <span class="n">size</span> <span class="o">*</span> <span class="n">dotProduct</span> <span class="o">-</span> <span class="n">ratingSum</span> <span class="o">*</span> <span class="n">rating2Sum</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">denominator</span> <span class="k">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="o">(</span><span class="n">size</span> <span class="o">*</span> <span class="n">ratingNormSq</span> <span class="o">-</span> <span class="n">ratingSum</span> <span class="o">*</span> <span class="n">ratingSum</span><span class="o">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="o">(</span><span class="n">size</span> <span class="o">*</span> <span class="n">rating2NormSq</span> <span class="o">-</span> <span class="n">rating2Sum</span> <span class="o">*</span> <span class="n">rating2Sum</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And that&#8217;s it! To see the full code, check out the Github repository <a href="https://github.com/echen/scaldingale">here</a>.</p>
-
-<h1>Book Similarities</h1>
-
-<p>Let&#8217;s run this code over some real data. Unfortunately, I didn&#8217;t have a clean source of movie ratings available, so instead I used <a href="http://www.informatik.uni-freiburg.de/~cziegler/BX/">this dataset</a> of 1 million book ratings.</p>
-
-<p>I ran a quick command, using the handy <a href="https://github.com/twitter/scalding/wiki/Scald.rb">scald.rb script</a> that Scalding provides&#8230;</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># Send the job off to a Hadoop cluster</span>
-</span><span class='line'>scald.rb MovieSimilarities.scala --input ratings.tsv --output similarities.tsv
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8230;and here&#8217;s a sample of the top output I got:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims-correlation.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims-correlation.png" alt="Top Book-Crossing Pairs" /></a></p>
-
-<p>As we&#8217;d expect, we see that</p>
-
-<ul>
-<li><em>Harry Potter</em> books are similar to other <em>Harry Potter</em> books</li>
-<li><em>Lord of the Rings</em> books are similar to other <em>Lord of the Rings</em> books</li>
-<li>Tom Clancy is similar to John Grisham</li>
-<li>Chick lit (<em>Summer Sisters</em>, by Judy Blume) is similar to chick lit (<em>Bridget Jones</em>)</li>
-</ul>
-
-
-<p>Just for fun, let&#8217;s also look at books similar to <em>The Great Gatsby</em>:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png" alt="Great Gatsby" /></a></p>
-
-<p>(Schoolboy memories, exactly.)</p>
-
-<h1>More Similarity Measures</h1>
-
-<p>Of course, there are lots of other similarity measures we could use besides correlation.</p>
-
-<h2>Cosine Similarity</h2>
-
-<p><a href="http://en.wikipedia.org/wiki/Cosine_similarity">Cosine similarity</a> is a another common vector-based similarity measure.</p>
-
-<figure class='code'><figcaption><span>Cosine Similarity </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">cosineSimilarity</span><span class="o">(</span><span class="n">dotProduct</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">ratingNorm</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">rating2Norm</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>  <span class="n">dotProduct</span> <span class="o">/</span> <span class="o">(</span><span class="n">ratingNorm</span> <span class="o">*</span> <span class="n">rating2Norm</span><span class="o">)</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Correlation, Take II</h2>
-
-<p>We can also also add a <em>regularized</em> correlation, by (say) adding N virtual movie pairs that have zero correlation. This helps avoid noise if some movie pairs have very few raters in common (for example, <em>The Great Gatsby</em> had an unlikely raw correlation of 1 with many other books, due simply to the fact that those book pairs had very few ratings).</p>
-
-<figure class='code'><figcaption><span>Regularized Correlation </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">regularizedCorrelation</span><span class="o">(</span><span class="n">size</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">dotProduct</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">ratingSum</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
-</span><span class='line'>  <span class="n">rating2Sum</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">ratingNormSq</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">rating2NormSq</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
-</span><span class='line'>  <span class="n">virtualCount</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">priorCorrelation</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">val</span> <span class="n">unregularizedCorrelation</span> <span class="k">=</span> <span class="n">correlation</span><span class="o">(</span><span class="n">size</span><span class="o">,</span> <span class="n">dotProduct</span><span class="o">,</span> <span class="n">ratingSum</span><span class="o">,</span> <span class="n">rating2Sum</span><span class="o">,</span> <span class="n">ratingNormSq</span><span class="o">,</span> <span class="n">rating2NormSq</span><span class="o">)</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">w</span> <span class="k">=</span> <span class="n">size</span> <span class="o">/</span> <span class="o">(</span><span class="n">size</span> <span class="o">+</span> <span class="n">virtualCount</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">w</span> <span class="o">*</span> <span class="n">unregularizedCorrelation</span> <span class="o">+</span> <span class="o">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">w</span><span class="o">)</span> <span class="o">*</span> <span class="n">priorCorrelation</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Jaccard Similarity</h2>
-
-<p>Recall that <a href="http://blog.echen.me/blog/2011/10/24/winning-the-netflix-prize-a-summary/">one of the lessons of the Netflix prize</a> was that implicit data can be quite useful &#8211; the mere fact that you rate a James Bond movie, even if you rate it quite horribly, suggests that you&#8217;d probably be interested in similar action films. So we can also ignore the value itself of each rating and use a <em>set</em>-based similarity measure like <a href="http://en.wikipedia.org/wiki/Jaccard_index">Jaccard similarity</a>.</p>
-
-<figure class='code'><figcaption><span>Jaccard Similarity </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">def</span> <span class="n">jaccardSimilarity</span><span class="o">(</span><span class="n">usersInCommon</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">totalUsers1</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">,</span> <span class="n">totalUsers2</span> <span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">val</span> <span class="n">union</span> <span class="k">=</span> <span class="n">totalUsers1</span> <span class="o">+</span> <span class="n">totalUsers2</span> <span class="o">-</span> <span class="n">usersInCommon</span>
-</span><span class='line'>  <span class="n">usersInCommon</span> <span class="o">/</span> <span class="n">union</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Incorporation</h2>
-
-<p>Finally, let&#8217;s add all these similarity measures to our output.</p>
-
-<figure class='code'><figcaption><span>Similarity Measures </span><a href='https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala'>MovieSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="nc">PRIOR_COUNT</span> <span class="k">=</span> <span class="mi">10</span>
-</span><span class='line'><span class="k">val</span> <span class="nc">PRIOR_CORRELATION</span> <span class="k">=</span> <span class="mi">0</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">val</span> <span class="n">similarities</span> <span class="k">=</span>
-</span><span class='line'>  <span class="n">vectorCalcs</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">map</span><span class="o">((</span><span class="-Symbol">&#39;size</span><span class="o">,</span> <span class="-Symbol">&#39;dotProduct</span><span class="o">,</span> <span class="-Symbol">&#39;ratingSum</span><span class="o">,</span> <span class="-Symbol">&#39;rating2Sum</span><span class="o">,</span> <span class="-Symbol">&#39;ratingNormSq</span><span class="o">,</span> <span class="-Symbol">&#39;rating2NormSq</span><span class="o">,</span> <span class="-Symbol">&#39;numRaters</span><span class="o">,</span> <span class="-Symbol">&#39;numRaters2</span><span class="o">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>      <span class="o">(</span><span class="-Symbol">&#39;correlation</span><span class="o">,</span> <span class="-Symbol">&#39;regularizedCorrelation</span><span class="o">,</span> <span class="-Symbol">&#39;cosineSimilarity</span><span class="o">,</span> <span class="-Symbol">&#39;jaccardSimilarity</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="n">fields</span> <span class="k">:</span> <span class="o">(</span><span class="kt">Double</span><span class="o">,</span> <span class="kt">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">,</span> <span class="nc">Double</span><span class="o">)</span> <span class="k">=&gt;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">val</span> <span class="o">(</span><span class="n">size</span><span class="o">,</span> <span class="n">dotProduct</span><span class="o">,</span> <span class="n">ratingSum</span><span class="o">,</span> <span class="n">rating2Sum</span><span class="o">,</span> <span class="n">ratingNormSq</span><span class="o">,</span> <span class="n">rating2NormSq</span><span class="o">,</span> <span class="n">numRaters</span><span class="o">,</span> <span class="n">numRaters2</span><span class="o">)</span> <span class="k">=</span> <span class="n">fields</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">val</span> <span class="n">corr</span> <span class="k">=</span> <span class="n">correlation</span><span class="o">(</span><span class="n">size</span><span class="o">,</span> <span class="n">dotProduct</span><span class="o">,</span> <span class="n">ratingSum</span><span class="o">,</span> <span class="n">rating2Sum</span><span class="o">,</span> <span class="n">ratingNormSq</span><span class="o">,</span> <span class="n">rating2NormSq</span><span class="o">)</span>
-</span><span class='line'>      <span class="k">val</span> <span class="n">regCorr</span> <span class="k">=</span> <span class="n">regularizedCorrelation</span><span class="o">(</span><span class="n">size</span><span class="o">,</span> <span class="n">dotProduct</span><span class="o">,</span> <span class="n">ratingSum</span><span class="o">,</span> <span class="n">rating2Sum</span><span class="o">,</span> <span class="n">ratingNormSq</span><span class="o">,</span> <span class="n">rating2NormSq</span><span class="o">,</span> <span class="nc">PRIOR_COUNT</span><span class="o">,</span> <span class="nc">PRIOR_CORRELATION</span><span class="o">)</span>
-</span><span class='line'>      <span class="k">val</span> <span class="n">cosSim</span> <span class="k">=</span> <span class="n">cosineSimilarity</span><span class="o">(</span><span class="n">dotProduct</span><span class="o">,</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="o">(</span><span class="n">ratingNormSq</span><span class="o">),</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="o">(</span><span class="n">rating2NormSq</span><span class="o">))</span>
-</span><span class='line'>      <span class="k">val</span> <span class="n">jaccard</span> <span class="k">=</span> <span class="n">jaccardSimilarity</span><span class="o">(</span><span class="n">size</span><span class="o">,</span> <span class="n">numRaters</span><span class="o">,</span> <span class="n">numRaters2</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="o">(</span><span class="n">corr</span><span class="o">,</span> <span class="n">regCorr</span><span class="o">,</span> <span class="n">cosSim</span><span class="o">,</span> <span class="n">jaccard</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Book Similarities Revisited</h1>
-
-<p>Let&#8217;s take another look at the book similarities above, now that we have these new fields.</p>
-
-<p>Here are some of the top Book-Crossing pairs, sorted by their shrunk correlation:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims.png" alt="Top Book-Crossing Pairs" /></a></p>
-
-<p>Notice how regularization affects things: the <em>Dark Tower</em> pair has a pretty high raw correlation, but relatively few ratings (reducing our confidence in the raw correlation), so it ends up below the others.</p>
-
-<p>And here are books similar to <em>The Great Gatsby</em>, this time ordered by cosine similarity:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby.png" alt="Great Gatsby" /></a></p>
-
-<h1>Input Abstraction</h1>
-
-<p>So our code right now is tied to our specific <code>ratings.tsv</code> input. But what if we change the way we store our ratings, or what if we want to generate similarities for something entirely different?</p>
-
-<p>Let&#8217;s abstract away our input. We&#8217;ll create a <a href="https://github.com/echen/scaldingale/blob/master/VectorSimilarities.scala">VectorSimilarities class</a> that represents input data in the following format:</p>
-
-<figure class='code'><figcaption><span>Input abstraction </span><a href='https://github.com/echen/scaldingale/blob/master/VectorSimilarities.scala'>VectorSimilarities.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">// This is an abstract method that returns a Pipe (aka, a stream of rating tuples).</span>
-</span><span class='line'><span class="c1">// It takes in three symbols that name the user, item, and rating fields.</span>
-</span><span class='line'><span class="k">def</span> <span class="n">input</span><span class="o">(</span><span class="n">userField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">itemField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">ratingField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Pipe</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">val</span> <span class="n">ratings</span> <span class="k">=</span> <span class="n">input</span><span class="o">(</span><span class="-Symbol">&#39;user</span><span class="o">,</span> <span class="-Symbol">&#39;item</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">)</span>
-</span><span class='line'><span class="c1">// ...</span>
-</span><span class='line'><span class="c1">// The rest of the code remains essentially the same.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Whenever we want to define a new input format, we simply subclass <code>VectorSimilarities</code> and provide a concrete implementation of the <code>input</code> method.</p>
-
-<h2>Book-Crossings</h2>
-
-<p>For example, here&#8217;s a class I could have used to generate the book recommendations above:</p>
-
-<figure class='code'><figcaption><span>BookCrossing similarities </span><a href='https://github.com/echen/scaldingale/blob/master/BookCrossing.scala'>BookCrossing.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">BookCrossing</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Args</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">VectorSimilarities</span><span class="o">(</span><span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">input</span><span class="o">(</span><span class="n">userField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">itemField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">ratingField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Pipe</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">bookCrossingRatings</span> <span class="k">=</span>
-</span><span class='line'>      <span class="nc">Tsv</span><span class="o">(</span><span class="s">&quot;book-crossing-ratings.tsv&quot;</span><span class="o">)</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">read</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">mapTo</span><span class="o">((</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">userField</span><span class="o">,</span> <span class="n">itemField</span><span class="o">,</span> <span class="n">ratingField</span><span class="o">))</span> <span class="o">{</span> <span class="n">fields</span> <span class="k">:</span> <span class="o">(</span><span class="kt">String</span><span class="o">,</span> <span class="kt">String</span><span class="o">,</span> <span class="nc">Double</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">fields</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">bookCrossingRatings</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>The input method simply reads from a TSV file and lets the <code>VectorSimilarities</code> superclass do all the work. Instant recommendations, BOOM.</p>
-
-<h2>Song Similarities with Twitter + iTunes</h2>
-
-<p>But why limit ourselves to books? We do, after all, have Twitter at our fingertips&#8230;</p>
-
-<blockquote class="twitter-tweet"><p>rated Born This Way by Lady GaGa 5 stars <a href="http://t.co/wTYAwWqm" title="http://itun.es/iSg92N">itun.es/iSg92N</a> <a href="https://twitter.com/search/%2523iTunes">#iTunes</a></p>&mdash; gggf (@GalMusic92) <a href="https://twitter.com/GalMusic92/status/167267017865428996" data-datetime="2012-02-08T15:22:19+00:00">February 8, 2012</a></blockquote>
-
-
-<script src="http://blog.echen.me//platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-
-<p>Since iTunes lets you send a tweet whenever you rate a song, we can use these to generate music recommendations!</p>
-
-<p>Again, we create a new class that overrides the abstract <code>input</code> defined in <code>VectorSimilarities</code>&#8230;</p>
-
-<figure class='code'><figcaption><span>Song similarities with Twitter + iTunes </span><a href='https://github.com/echen/scaldingale/blob/master/ITunes.scala'>ITunes.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">ITunes</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Args</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">VectorSimilarities</span><span class="o">(</span><span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">// Example tweet:</span>
-</span><span class='line'>  <span class="c1">// rated New Kids On the Block: Super Hits by New Kids On the Block 5 stars http://itun.es/iSg3Fc #iTunes</span>
-</span><span class='line'>  <span class="k">val</span> <span class="nc">ITUNES_REGEX</span> <span class="k">=</span> <span class="s">&quot;&quot;&quot;rated (.+?) by (.+?) (\d) stars .*? #iTunes&quot;&quot;&quot;</span><span class="o">.</span><span class="n">r</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">input</span><span class="o">(</span><span class="n">userField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">itemField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">ratingField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Pipe</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">itunesRatings</span> <span class="k">=</span>
-</span><span class='line'>      <span class="c1">// This is a Twitter-internal tweet source, but you could just as easily scrape </span>
-</span><span class='line'>      <span class="c1">// Twitter yourself and provide your own source of tweets: https://dev.twitter.com/docs</span>
-</span><span class='line'>      <span class="nc">TweetSource</span><span class="o">()</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">mapTo</span><span class="o">(</span><span class="-Symbol">&#39;userId</span><span class="o">,</span> <span class="-Symbol">&#39;text</span><span class="o">)</span> <span class="o">{</span> <span class="n">s</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="n">getUserId</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="n">getText</span><span class="o">)</span> <span class="o">}</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">filter</span><span class="o">(</span><span class="-Symbol">&#39;text</span><span class="o">)</span> <span class="o">{</span> <span class="n">text</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span> <span class="n">text</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="s">&quot;#iTunes&quot;</span><span class="o">)</span> <span class="o">}</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="-Symbol">&#39;text</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="-Symbol">&#39;song</span><span class="o">,</span> <span class="-Symbol">&#39;artist</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">text</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
-</span><span class='line'>          <span class="nc">ITUNES_REGEX</span><span class="o">.</span><span class="n">findFirstMatchIn</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span> <span class="n">_</span><span class="o">.</span><span class="n">subgroups</span> <span class="o">}.</span><span class="n">map</span> <span class="o">{</span> <span class="n">l</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">l</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">l</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span> <span class="n">l</span><span class="o">(</span><span class="mi">2</span><span class="o">))</span> <span class="o">}</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">rename</span><span class="o">((</span><span class="-Symbol">&#39;userId</span><span class="o">,</span> <span class="-Symbol">&#39;song</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">userField</span><span class="o">,</span> <span class="n">itemField</span><span class="o">,</span> <span class="n">ratingField</span><span class="o">))</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">project</span><span class="o">(</span><span class="n">userField</span><span class="o">,</span> <span class="n">itemField</span><span class="o">,</span> <span class="n">ratingField</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">itunesRatings</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8230;and snap! Here are some songs you might like if you recently listened to <strong>Beyoncé</strong>:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png" alt="Jason Mraz" /></a></p>
-
-<p>And some recommended songs if you like <strong>Lady Gaga</strong>:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/lady-gaga.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/lady-gaga.png" alt="Lady Gaga" /></a></p>
-
-<p>GG Pandora.</p>
-
-<h2>Location Similarities with Foursquare Check-ins</h2>
-
-<p>But what if we don&#8217;t have explicit ratings? For example, we could be a news site that wants to generate article recommendations, and maybe we only have user <em>visits</em> on each story.</p>
-
-<p>Or what if we want to generate restaurant or tourist recommendations, when all we know is who visits each location?</p>
-
-<blockquote class="twitter-tweet"><p>I&#8217;m at Empire State Building (350 5th Ave., btwn 33rd & 34th St., New York) <a href="http://t.co/q6tXzf3n" title="http://4sq.com/zZ5xGd">4sq.com/zZ5xGd</a></p>&mdash; Simon Ackerman (@SimonAckerman) <a href="https://twitter.com/SimonAckerman/status/167232054247956481" data-datetime="2012-02-08T13:03:23+00:00">February 8, 2012</a></blockquote>
-
-
-<script src="http://blog.echen.me//platform.twitter.com/widgets.js" charset="utf-8"></script>
-
-
-<p>Let&#8217;s finally make Foursquare check-ins useful. (I kid, I kid.)</p>
-
-<p>Instead of using an explicit rating given to us, we can simply generate a dummy rating of 1 for each check-in. Correlation doesn&#8217;t make sense any more, but we can still pay attention to a measure like Jaccard simiilarity.</p>
-
-<p>So we simply create a new class that scrapes tweets for Foursquare check-in information&#8230;</p>
-
-<figure class='code'><figcaption><span>Location similarities with Foursquare </span><a href='https://github.com/echen/scaldingale/blob/master/Foursquare.scala'>Foursquare.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">Foursquare</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Args</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">VectorSimilarities</span><span class="o">(</span><span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-</span><span class='line'>  <span class="c1">// Example tweet: I&#39;m at The Ambassador (673 Geary St, btw Leavenworth &amp; Jones, San Francisco) w/ 2 others http://4sq.com/xok3rI</span>
-</span><span class='line'>  <span class="c1">// Let&#39;s limit to New York for simplicity.</span>
-</span><span class='line'>  <span class="k">val</span> <span class="nc">FOURSQUARE_REGEX</span> <span class="k">=</span> <span class="s">&quot;&quot;&quot;I&#39;m at (.+?) \(.*? New York&quot;&quot;&quot;</span><span class="o">.</span><span class="n">r</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">input</span><span class="o">(</span><span class="n">userField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">itemField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">ratingField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Pipe</span> <span class="o">=</span> <span class="o">{</span>
-</span><span class='line'>    <span class="k">val</span> <span class="n">foursquareCheckins</span> <span class="k">=</span>
-</span><span class='line'>      <span class="nc">TweetSource</span><span class="o">()</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">mapTo</span><span class="o">(</span><span class="-Symbol">&#39;userId</span><span class="o">,</span> <span class="-Symbol">&#39;text</span><span class="o">)</span> <span class="o">{</span> <span class="n">s</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="n">getUserId</span><span class="o">.</span><span class="n">toLong</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="n">getText</span><span class="o">)</span> <span class="o">}</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="-Symbol">&#39;text</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="-Symbol">&#39;location</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">))</span> <span class="o">{</span>
-</span><span class='line'>          <span class="n">text</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
-</span><span class='line'>          <span class="nc">FOURSQUARE_REGEX</span><span class="o">.</span><span class="n">findFirstMatchIn</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span> <span class="n">_</span><span class="o">.</span><span class="n">subgroups</span> <span class="o">}.</span><span class="n">map</span> <span class="o">{</span> <span class="n">l</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">l</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="mi">1</span><span class="o">)</span> <span class="o">}</span>
-</span><span class='line'>        <span class="o">}</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">rename</span><span class="o">((</span><span class="-Symbol">&#39;userId</span><span class="o">,</span> <span class="-Symbol">&#39;location</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">userField</span><span class="o">,</span> <span class="n">itemField</span><span class="o">,</span> <span class="n">ratingField</span><span class="o">))</span>
-</span><span class='line'>        <span class="o">.</span><span class="n">unique</span><span class="o">(</span><span class="n">userField</span><span class="o">,</span> <span class="n">itemField</span><span class="o">,</span> <span class="n">ratingField</span><span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">foursquareCheckins</span>
-</span><span class='line'>  <span class="o">}</span>
-</span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>&#8230;and bam! Here are locations similar to the <strong>Empire State Building</strong>:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/empire-state-building.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/empire-state-building.png" alt="Empire State Building" /></a></p>
-
-<p>Here are places you might want to check out, if you check-in at <strong>Bergdorf Goodman</strong>:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/bergdorf-goodman.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/bergdorf-goodman.png" alt="Bergdorf Goodman" /></a></p>
-
-<p>And here&#8217;s where to go after the <strong>Statue of Liberty</strong>:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/statue-of-liberty.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/statue-of-liberty.png" alt="Statue of Liberty" /></a></p>
-
-<p>Power of Twitter, yo.</p>
-
-<h1>Next Steps</h1>
-
-<p>Hopefully I gave you a taste of the awesomeness of Scalding. To learn even more:</p>
-
-<ul>
-<li>Check out <a href="https://github.com/twitter/scalding">Scalding on Github</a>.</li>
-<li>Read <a href="https://github.com/twitter/scalding/wiki/Getting-Started">this Getting Started Guide</a> on the Scalding wiki.</li>
-<li>Run through <a href="https://github.com/twitter/scalding/tree/master/tutorial">this code-based introduction</a>, complete with Scalding jobs that you can run in local mode.</li>
-<li>Browse <a href="https://github.com/twitter/scalding/blob/master/tutorial/CodeSnippets.md">this set of code snippets</a>, which shows examples of different Scalding functions (e.g., <code>map</code>, <code>filter</code>, <code>flatMap</code>, <code>groupBy</code>, <code>count</code>, <code>join</code>).</li>
-<li>And all the code for this post is <a href="https://github.com/echen/scaldingale">here</a>.</li>
-</ul>
-
-
-<p>Watch out for more documentation soon, and you should most definitely <a href="https://twitter.com/#!/scalding">follow @Scalding</a> on Twitter for updates or to ask any questions.</p>
-
-<h1>Mad Props</h1>
-
-<p>And finally, a huge shoutout to <a href="https://twitter.com/argyris">Argyris Zymnis</a>, <a href="https://twitter.com/avibryant">Avi Bryant</a>, and <a href="https://twitter.com/posco">Oscar Boykin</a>, the mastermind hackers who have spent (and continue spending!) unimaginable hours making Scalding a joy to use.</p>
-
-<p>@argyris, @avibryant, @posco: Thanks for it all. #awesomejobguys</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Movie recommendations and more via MapReduce and Scalding]]></title>
@@ -854,7 +228,7 @@
 
 <p>But recall that we can also write correlation in the following form:</p>
 
-<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x<sup>2</sup> - (\sum x)<sup>2}</sup> \sqrt{n \sum y<sup>2</sup> - (\sum y)<sup>2}}$</sup></p>
+<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x^2 - (\sum x)^2} \sqrt{n \sum y^2 - (\sum y)^2}}$</p>
 
 <p>(See the <a href="http://en.wikipedia.org/wiki/Correlation_and_dependence">Wikipedia page</a> on correlation.)</p>
 
@@ -1242,6 +616,33 @@
 
 <p>Power of Twitter, yo.</p>
 
+<h1>RottenTomatoes Similarities</h1>
+
+<p>UPDATE: I grabbed RottenTomatoes data from tweets&#8230;</p>
+
+<blockquote class="twitter-tweet"><p>My review for &#8216;How to Train Your Dragon&#8217; on Rotten Tomatoes: 4 1/2 stars &gt;<a href="http://t.co/YTOKWLEt" title="http://bit.ly/xtw3d3">bit.ly/xtw3d3</a></p>&mdash; Benjamin West (@BenTheWest) <a href="https://twitter.com/BenTheWest/status/171772890121895936" data-datetime="2012-02-21T01:47:03+00:00">February 21, 2012</a></blockquote>
+
+
+<p>So here&#8217;s a sample of the most similar movies:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/top-rottentomatoes-sims.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/top-rottentomatoes-sims.png" alt="Top RottenTomatoes Movies" /></a></p>
+
+<p>We see that</p>
+
+<ul>
+<li><em>Lord of the Rings</em>, <em>Harry Potter</em>, and <em>Star Wars</em> movies are similar to other <em>Lord of the Rings</em>, <em>Harry Potter</em>, and <em>Star Wars</em> movies</li>
+<li>Big science fiction blockbusters (<em>Avatar</em>) are similar to big science fiction blockbusters (<em>Inception</em>)</li>
+<li>People who like one Justin Timberlake movie (<em>Bad Teacher</em>) also like other Justin Timberlake Movies (<em>In Time</em>). Similarly with Michael Fassbender (<em>A Dangerous Method</em>, <em>Shame</em>)</li>
+<li>Art house movies (<em>The Tree of Life</em>) stick together (<em>Tinker Tailor Soldier Spy</em>)</li>
+</ul>
+
+
+<p>Let&#8217;s also look at the movies with the most <em>negative</em> correlation:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/bottom-rottentomatoes-sims.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/bottom-rottentomatoes-sims.png" alt="Negative RottenTomatoes Movies" /></a></p>
+
+<p>(The more you like loud and dirty popcorn movies (<em>Thor</em>) and vamp romance (<em>Twilight</em>), the less you like impressionistic trees of life? Well I never.)</p>
+
 <h1>Next Steps</h1>
 
 <p>Hopefully I gave you a taste of the awesomeness of Scalding. To learn even more:</p>
@@ -1350,7 +751,7 @@
 </pre></td><td class='code'><pre><code class='r'><span class='line'>books<span class="p">$</span>num_bought_today <span class="o">=</span> c<span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">8</span><span class="p">)</span>
 </span><span class='line'>books<span class="p">$</span>num_bought_yesterday <span class="o">=</span> c<span class="p">(</span><span class="m">18</span><span class="p">,</span> <span class="m">13</span><span class="p">,</span> <span class="m">20</span><span class="p">)</span>
 </span><span class='line'>  
-</span><span class='line'>books<span class="p">$</span>total_num_bought <span class="o">=</span> books<span class="p">$</span>num_bought_today <span class="o">+</span> books<span class="p">$</span>num_bought_yesterday
+</span><span class='line'>books<span class="p">$</span>total\_num\_bought <span class="o">=</span> books<span class="p">$</span>num_bought_today <span class="o">+</span> books<span class="p">$</span>num_bought_yesterday
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -1700,13 +1101,13 @@
 
 <p>Next, assign each feature function $f_j$ a <strong>weight</strong> $\lambda_j$ (I&#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:</p>
 
-<p>$score(l | s) = \sum<em>{j = 1}<sup>m</sup> \sum</em>{i = 1}<sup>n</sup> \lambda_j f_j(s, i, l_i, l_{i-1})$</p>
+<p>$score(l | s) = \sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})$</p>
 
 <p>(The first sum runs over each feature function $j$, and the inner sum runs over each position $i$ of the sentence.)</p>
 
 <p>Finally, we can transform these scores into probabilities $p(l | s)$ between 0 and 1 by exponentiating and normalizing:</p>
 
-<p>$p(l | s) = \frac{exp[score(l|s)]}{\sum<em>{l&#8217;} exp[score(l&#8217;|s)]} = \frac{exp[\sum</em>{j = 1}<sup>m</sup> \sum<em>{i = 1}<sup>n</sup> \lambda_j f_j(s, i, l_i, l</em>{i-1})]}{\sum<em>{l&#8217;} exp[\sum</em>{j = 1}<sup>m</sup> \sum<em>{i = 1}<sup>n</sup> \lambda_j f_j(s, i, l&#8217;</em>i, l&#8217;_{i-1})]}$</p>
+<p>$p(l | s) = \frac{exp[score(l|s)]}{\sum_{l&#8217;} exp[score(l&#8217;|s)]} = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})]}{\sum_{l&#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l&#8217;_i, l&#8217;_{i-1})]}$</p>
 
 <h2>Example Feature Functions</h2>
 
@@ -1725,13 +1126,13 @@
 <li>Again, if the weight $\lambda_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &#8220;Is this a sentence beginning with a verb?&#8221;) are preferred.</li>
 </ul>
 </li>
-<li>$f_3(s, i, l_i, l<em>{i-1}) = 1$ if $l</em>{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
+<li>$f_3(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
 
 <ul>
 <li>Again, a positive weight for this feature means that adjectives tend to be followed by nouns.</li>
 </ul>
 </li>
-<li>$f_4(s, i, l_i, l<em>{i-1}) = 1$ if $l</em>{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
+<li>$f_4(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
 
 <ul>
 <li>A <em>negative</em> weight $\lambda_4$ for this function would mean that prepositions don&#8217;t tend to follow prepositions, so we should avoid labelings where this happens.</li>
@@ -1747,7 +1148,7 @@
 <h1>Smells like Logistic Regression&#8230;</h1>
 
 <p>The form of the CRF probabilities
-$p(l | s) = \frac{exp[\sum<em>{j = 1}<sup>m</sup> \sum</em>{i = 1}<sup>n</sup> f_j(s, i, l_i, l<em>{i-1})]}{\sum</em>{l&#8217;} exp[\sum<em>{j = 1}<sup>m</sup> \sum</em>{i = 1}<sup>n</sup> f_j(s, i, l&#8217;<em>i, l&#8217;</em>{i-1})]}$
+$p(l | s) = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l_i, l_{i-1})]}{\sum_{l&#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l&#8217;_i, l&#8217;_{i-1})]}$
 might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</a>.</p>
 
 <p>That&#8217;s because CRFs are indeed basically the sequential version of <strong>logistic regression</strong>: whereas logistic regression is a log-linear model for <em>classification</em>, CRFs are a log-linear model for <em>sequential labels</em>.</p>
@@ -1773,8 +1174,8 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 <p>That is, we can build a CRF equivalent to any HMM by&#8230;</p>
 
 <ul>
-<li>For each HMM <em>transition</em> probability $ p(l_i = y | l<em>{i-1} = x) $, define a set of CRF transition features of the form $f</em>{x,y}(s, i, l_i, l<em>{i-1}) = 1$ if $l_i = y$ and $l</em>{i-1} = x$. Give each feature a weight of $w<em>{x,y} = \log p(l_i = y | l</em>{i-1} = x)$.</li>
-<li>Similarly, for each HMM <em>emission</em> probability $p(w_i = z | l<em>{i} = x)$, define a set of CRF emission features of the form $g</em>{x,y}(s, i, l_i, l<em>{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w</em>{x,z} = \log p(w_i = z | l_i = x)$.</li>
+<li>For each HMM <em>transition</em> probability $ p(l_i = y | l_{i-1} = x) $, define a set of CRF transition features of the form $f_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $l_i = y$ and $l_{i-1} = x$. Give each feature a weight of $w_{x,y} = \log p(l_i = y | l_{i-1} = x)$.</li>
+<li>Similarly, for each HMM <em>emission</em> probability $p(w_i = z | l_{i} = x)$, define a set of CRF emission features of the form $g_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w_{x,z} = \log p(w_i = z | l_i = x)$.</li>
 </ul>
 
 
@@ -1796,9 +1197,9 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 To shift these randomly initialized weights to the correct ones, for each training example&#8230;</p>
 
 <ul>
-<li>Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum<em>{j = 1}<sup>m</sup> f_i(s, j, l_j, l</em>{j-1}) - \sum<em>{l&#8217;} p(l&#8217; | s) \sum</em>{j = 1}<sup>m</sup> f_i(s, j, l&#8217;<em>j, l&#8217;</em>{j-1})$</li>
+<li>Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&#8217;} p(l&#8217; | s) \sum_{j = 1}^m f_i(s, j, l&#8217;_j, l&#8217;_{j-1})$</li>
 <li>Note that the first term in the gradient is the contribution of feature $f_i$ under the <em>true</em> label, and the second term in the gradient is the <em>expected</em> contribution of feature $f_i$ under the current model. This is exactly the form you&#8217;d expect gradient ascent to take.</li>
-<li>Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum<em>{j = 1}<sup>m</sup> f_i(s, j, l_j, l</em>{j-1}) - \sum<em>{l&#8217;} p(l&#8217; | s) \sum</em>{j = 1}<sup>m</sup> f_i(s, j, l&#8217;<em>j, l&#8217;</em>{j-1})]$ where $\alpha$ is some learning rate.</li>
+<li>Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&#8217;} p(l&#8217; | s) \sum_{j = 1}^m f_i(s, j, l&#8217;_j, l&#8217;_{j-1})]$ where $\alpha$ is some learning rate.</li>
 <li>Repeat the previous steps until some stopping condition is reached (e.g., the updates fall below some threshold).</li>
 </ul>
 
@@ -1809,7 +1210,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 <p>Suppose we&#8217;ve trained our CRF model, and now a new sentence comes in. How do we do label it?</p>
 
-<p>The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k<sup>m$</sup> possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.</p>
+<p>The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.</p>
 
 <p>A better way is to realize that (linear-chain) CRFs satisfy an <a href="http://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a> property that allows us to use a (polynomial-time) dynamic programming algorithm to find the optimal label, similar to the <a href="http://en.wikipedia.org/wiki/Viterbi_algorithm">Viterbi algorithm</a> for HMMs.</p>
 
@@ -3084,7 +2485,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 <p>Restricted Boltzmann Machines, and neural networks in general, work by updating the states of some neurons given the states of others, so let&#8217;s talk about how the states of individual units change. Assuming we know the connection weights in our RBM (we&#8217;ll explain how to learn these below), to update the state of unit $i$:</p>
 
 <ul>
-<li>Compute the <strong>activation energy</strong> $a_i = \sum_j w<em>{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w</em>{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&#8217;s neighbors send it a message, and we compute the sum of all these messages.</li>
+<li>Compute the <strong>activation energy</strong> $a_i = \sum_j w_{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w_{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&#8217;s neighbors send it a message, and we compute the sum of all these messages.</li>
 <li>Let $p_i = \sigma(a_i)$, where $\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p_i$ is close to 1 for large positive activation energies, and $p_i$ is close to 0 for negative activation energies.</li>
 <li>We then turn unit $i$ on with probability $p_i$, and turn it off with probability $1 - p_i$.</li>
 <li>(In layman&#8217;s terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)</li>
@@ -3105,9 +2506,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 <ul>
 <li>Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.</li>
-<li>Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w<em>{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e</em>{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they&#8217;re both on).</li>
+<li>Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w_{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e_{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they&#8217;re both on).</li>
 <li>Now <strong>reconstruct</strong> the visible units in a similar manner: for each visible unit, compute its activation energy $a_i$, and update its state. (Note that this <em>reconstruction</em> may not match the original preferences.) Then update the hidden units again, and compute $Negative(e_{ij}) = x_i * x_j$ for each edge.</li>
-<li>Update the weight of each edge $e<em>{ij}$ by setting $w</em>{ij} = w<em>{ij} + L * (Positive(e</em>{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.</li>
+<li>Update the weight of each edge $e_{ij}$ by setting $w_{ij} = w_{ij} + L * (Positive(e_{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.</li>
 <li>Repeat over all training examples.</li>
 </ul>
 
@@ -3122,7 +2523,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 </ul>
 
 
-<p>So by adding $Positive(e<em>{ij}) - Negative(e</em>{ij})$ to each edge weight, we&#8217;re helping the network&#8217;s daydreams better match the reality of our training examples.</p>
+<p>So by adding $Positive(e_{ij}) - Negative(e_{ij})$ to each edge weight, we&#8217;re helping the network&#8217;s daydreams better match the reality of our training examples.</p>
 
 <p>(You may hear this update rule called <strong>contrastive divergence</strong>, which is basically a funky term for &#8220;approximate gradient descent&#8221;.)</p>
 
@@ -3166,9 +2567,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
 <ul>
 <li>Above, $Negative(e_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units <em>once</em> and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&#8217;s daydreams more accurately.</li>
-<li>Instead of using $Positive(e<em>{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 <em>states</em>, we could also let $x_i$ and/or $x_j$ be activation <em>probabilities</em>. Similarly for $Negative(e</em>{ij})$.</li>
+<li>Instead of using $Positive(e_{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 <em>states</em>, we could also let $x_i$ and/or $x_j$ be activation <em>probabilities</em>. Similarly for $Negative(e_{ij})$.</li>
 <li>We could penalize larger edge weights, in order to get a sparser or more regularized model.</li>
-<li>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e<em>{ij}) - Negative(e</em>{ij})$) and the step previously taken.</li>
+<li>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e_{ij}) - Negative(e_{ij})$) and the step previously taken.</li>
 <li>Instead of using only one training example in each epoch, we could use <em>batches</em> of examples in each epoch, and only update the network&#8217;s weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.</li>
 </ul>
 
@@ -3862,6 +3263,72 @@ executive               0.6058707124010555
 <li>Silicon Valley is more into the <strong>locavore</strong> movement (<em>green, local</em>).</li>
 </ul>
 
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Cointegration and Pairs Trading]]></title>
+    <link href="http://blog.echen.me/2011/04/16/what-is-cointegration-2/"/>
+    <updated>2011-04-16T03:44:14-07:00</updated>
+    <id>http://blog.echen.me/2011/04/16/what-is-cointegration-2</id>
+    <content type="html"><![CDATA[<h1>Introduction</h1>
+
+<p>Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&#8217;t know each other (they&#8217;re independent), so there&#8217;s no meaningful relationship between their paths.</p>
+
+<p>But suppose instead you have a drunk walking with her dog. This time there <em>is</em> a connection. What&#8217;s the nature of this connection? Notice that although each path individually is still an unpredictable random walk, given the location of one of the drunk or dog, we have a pretty good idea of where the other is; that is, the distance between the two is fairly predictable. (For example, if the dog wanders too far away from his owner, she&#8217;ll tend to move in his direction to avoid losing him, so the two stay close together despite a tendency to wander around on their own.) We describe this relationship by saying that the drunk and her dog form a cointegrating pair.</p>
+
+<p>In more technical terms, if we have two non-stationary time series X and Y that become stationary when differenced (these are called integrated of order one series, or I(1) series; random walks are one example) such that some linear combination of X and Y is stationary (aka, I(0)), then we say that X and Y are cointegrated. In other words, while neither X nor Y alone hovers around a constant value, some combination of them does, so we can think of cointegration as describing a particular kind of long-run equilibrium relationship. (The definition of cointegration can be extended to multiple time series, with higher orders of integration.)</p>
+
+<p>Other examples of cointegrated pairs:</p>
+
+<ul>
+<li>Income and consumption: as income increases/decreases, so too does consumption.</li>
+<li>Size of police force and amount of criminal activity</li>
+<li>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</li>
+<li>Number of patients entering or leaving a hospital</li>
+</ul>
+
+
+<h1>An application</h1>
+
+<p>So why do we care about cointegration? In quantitative finance, cointegration forms the basis of the pairs trading strategy: suppose we have two cointegrated stocks X and Y, with the particular (for concreteness) cointegrating relationship X - 2Y = Z, where Z is a stationary series of zero mean. For example, X could be McDonald&#8217;s, Y could be Burger King, and the cointegration relationship would mean that X tends to be priced twice as high as Y, so that when X is more than twice the price of Y, we expect X to move down or Y to move up in the near future (and analogously, if X is less than twice the price of Y, we expect X to move up or Y to move down). This suggests the following trading strategy: if X - 2Y > d, for some positive threshold d, then we should sell X and buy Y (since we expect X to decrease in price and Y to increase), and similarly, if X - 2Y &lt; -d, then we should buy X and sell Y.</p>
+
+<h1>Spurious regression</h1>
+
+<p>But why do we need the notion of cointegration at all? Why can&#8217;t we simply use, say, the R-squared between X or Y to see if X and Y have some kind of relationship? The reason is that standard regression analysis fails when dealing with non-stationary variables, leading to spurious regressions that suggest relationships even when there are none.</p>
+
+<p>For example, suppose we regress two independent random walks against each other, and test for a linear relationship. A large percentage of the time, we&#8217;ll find high R-squared values and low p-values when using standard OLS statistics, even though there&#8217;s absolutely no relationship between the two random walks. As an illustration, here I simulated 1000 pairs of random walks of length 100, and found p-values less than 0.05 in 77% of the cases:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png"><img src="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png" alt="Spurious Regression" /></a></p>
+
+<h1>A Cointegration Test</h1>
+
+<p>So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:</p>
+
+<ul>
+<li>Check that $ X_t $ and $ Y_t $ are both I(1).</li>
+<li>Estimate the cointegrating relationship $ Y_t = aX_t + e_t $ by ordinary least squares.</li>
+<li>Check that the cointegrating residuals $ e_t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</li>
+</ul>
+
+
+<h1>Error-correction and Granger representation</h1>
+
+<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations</p>
+
+<p>$ X_t = a X_{t-1} + b Y_{t-1} + u_t $
+$ Y_t = c X_{t-1} + d Y_{t-1} + v_t $</p>
+
+<p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
+
+<p>$ \Delta X_t = \alpha_1 (Y_{t-1} - \beta X_{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
+
+<p>where $ Y_{t-1} - \beta X_{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y_{t-1} - \beta X_{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+
+<h1>Summary</h1>
+
+<p>So, just to summarize a bit, cointegration is an equilibrium relationship between time series that individually aren&#8217;t in equilbrium (you can kind of contrast this with (Pearson) correlation, which describes a linear relationship), and it&#8217;s useful because it allows us to incorporate both short-term dynamics (deviations from equilibrium) and long-run expectations (corrections to equilibrium).</p>
 ]]></content>
   </entry>
   

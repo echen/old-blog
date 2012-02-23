@@ -4,639 +4,13 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-02-23T11:44:48-08:00</updated>
+  <updated>2012-02-23T11:55:11-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
     
   </author>
 
-  
-  <entry>
-    <title>Movie recommendations and more via MapReduce and Scalding</title>
-    <link href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding+%28Twitter+MacBook+Pro%27s+conflicted+copy+2012-02-20%29/"/>
-    <updated>2012-02-09T03:20:00-08:00</updated>
-    <id>http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding (Twitter MacBook Pro&#8217;s conflicted copy 2012-02-20)</id>
-    <content type="html">&lt;p&gt;This is going to be an in-your-face introduction to &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding&lt;/a&gt;, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced.&lt;/p&gt;
-
-&lt;p&gt;In 140: instead of forcing you to write raw &lt;code&gt;map&lt;/code&gt; and &lt;code&gt;reduce&lt;/code&gt; functions, Scalding allows you to write &lt;em&gt;natural&lt;/em&gt; code like&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// Create a histogram of tweet lengths.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;n&quot;&gt;tweets&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;tweet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tweet&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tweet&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;length&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;Not much different from the Ruby you&amp;#8217;d write to compute tweet distributions over &lt;em&gt;small&lt;/em&gt; data? &lt;strong&gt;Exactly.&lt;/strong&gt;&lt;/p&gt;
-
-&lt;p&gt;Two notes before we begin:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/echen/scaldingale&quot;&gt;This Github repository&lt;/a&gt; contains all the code used.&lt;/li&gt;
-&lt;li&gt;For a gentler introduction to Scalding, see &lt;a href=&quot;https://github.com/twitter/scalding/wiki/Getting-Started&quot;&gt;this Getting Started guide&lt;/a&gt; on the Scalding wiki.&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h1&gt;Movie Similarities&lt;/h1&gt;
-
-&lt;p&gt;Imagine you run an online movie business, and you want to generate movie recommendations. You have a rating system (people can rate movies with 1 to 5 stars), and we&amp;#8217;ll assume for simplicity that all of the ratings are stored in a TSV file somewhere.&lt;/p&gt;
-
-&lt;p&gt;Let&amp;#8217;s start by reading the ratings into a Scalding job.&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Input &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;20&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;21&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;22&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;23&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;24&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;25&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;26&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;27&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;28&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;29&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * The input is a TSV file with three columns: (user, movie, rating).&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;INPUT_FILENAME&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;data/ratings.tsv&amp;quot;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * Read in the input and give each field a type and name.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;nc&quot;&gt;Tsv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;INPUT_FILENAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapTo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * Let&amp;#39;s also keep track of the total number of people who rated each movie.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// Put the number of people who rated each movie into a field called &amp;quot;numRaters&amp;quot;.    &lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// Rename, since Scalding requires both sides to have distinct fields when we join.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movieX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// Merge `ratings` with `numRaters`, by joining on their movie fields.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingsWithSize&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;joinWithSmaller&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movieX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;discard&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movieX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Remove the extra field.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// ratingsWithSize now contains the following fields: (user, movie, rating, numRaters).&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;You want to calculate how similar pairs of movies are, so that if someone watches &lt;em&gt;The Lion King&lt;/em&gt;, you can recommend films like &lt;em&gt;Toy Story&lt;/em&gt;. So how should you define the similarity between two movies?&lt;/p&gt;
-
-&lt;p&gt;One way is to use their &lt;strong&gt;correlation&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;For every pair of movies A and B, find all the people who rated both A and B.&lt;/li&gt;
-&lt;li&gt;Use these ratings to form a Movie A vector and a Movie B vector.&lt;/li&gt;
-&lt;li&gt;Calculate the correlation between these two vectors.&lt;/li&gt;
-&lt;li&gt;Whenever someone watches a movie, you can then recommend the movies most correlated with it.&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;p&gt;Let&amp;#8217;s start with the first two steps.&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Find rating pairs &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;20&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * To get all pairs of co-rated movies, we&amp;#39;ll join `ratings` against itself.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * So first make a dummy copy of the ratings that we can join against.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratingsWithSize&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * Now find all pairs of co-rated movies (pairs of movies that a user has rated) by&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * joining the duplicate rating streams on their user fields, &lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingPairs&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratingsWithSize&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;joinWithSmaller&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// De-dupe so that we don&amp;#39;t calculate similarity of both (A, B) and (B, A).&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;movies&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;movies&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;movies&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// By grouping on (&amp;#39;movie, &amp;#39;movie2), we can now get all the people who rated any pair of movies.&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;Before using these rating pairs to calculate correlation, let&amp;#8217;s stop for a bit.&lt;/p&gt;
-
-&lt;p&gt;Since we&amp;#8217;re explicitly thinking of movies as &lt;strong&gt;vectors&lt;/strong&gt; of ratings, it&amp;#8217;s natural to compute some very vector-y things like norms and dot products, as well as the length of each vector and the sum over all elements in each vector. So let&amp;#8217;s compute these:&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Vector calculations &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;20&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;21&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * Compute dot products, norms, sums, and sizes of the rating vectors.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vectorCalcs&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratingPairs&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// Compute (x*y, x^2, y^2), which we need for dot products and norms.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingProd&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2Sq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pow&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;n&quot;&gt;group&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// length of each vector&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingProd&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;dotProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingSum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2Sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingSq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingNormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2Sq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2NormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Just an easy way to make sure the numRaters field stays.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;                
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;c1&quot;&gt;// All of these operations chain together like in a builder object.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;To summarize, each row in &lt;code&gt;vectorCalcs&lt;/code&gt; now contains the following fields:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;movie, movie2&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;numRaters, numRaters2&lt;/strong&gt;: the total number of people who rated each movie&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;size&lt;/strong&gt;: the number of people who rated both movie and movie2&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;dotProduct&lt;/strong&gt;: dot product between the movie vector (a vector of ratings) and the movie2 vector (also a vector of ratings)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;ratingSum, rating2sum&lt;/strong&gt;: sum over all elements in each ratings vector&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;ratingNormSq, rating2Normsq&lt;/strong&gt;: squared norm of each vector&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;p&gt;So let&amp;#8217;s go back to calculating the correlation between movie and movie2. We could, of course, calculate correlation in the standard way: find the covariance between the movie and movie2 ratings, and divide by their standard deviations.&lt;/p&gt;
-
-&lt;p&gt;But recall that we can also write correlation in the following form:&lt;/p&gt;
-
-&lt;p&gt;$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x&lt;sup&gt;2&lt;/sup&gt; - (\sum x)&lt;sup&gt;2}&lt;/sup&gt; \sqrt{n \sum y&lt;sup&gt;2&lt;/sup&gt; - (\sum y)&lt;sup&gt;2}}$&lt;/sup&gt;&lt;/p&gt;
-
-&lt;p&gt;(See the &lt;a href=&quot;http://en.wikipedia.org/wiki/Correlation_and_dependence&quot;&gt;Wikipedia page&lt;/a&gt; on correlation.)&lt;/p&gt;
-
-&lt;p&gt;Notice that every one of the elements in this formula is a field in &lt;code&gt;vectorCalcs&lt;/code&gt;! So instead of using the standard calculation, we can use this form instead:&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Correlation &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;correlations&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;vectorCalcs&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;dotProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingSum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2Sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingNormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2NormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;correlation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;n&quot;&gt;correlation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_4&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_5&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_6&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;correlation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingNormSq&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2NormSq&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numerator&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;denominator&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingNormSq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2NormSq&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;numerator&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;denominator&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;And that&amp;#8217;s it! To see the full code, check out the Github repository &lt;a href=&quot;https://github.com/echen/scaldingale&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h1&gt;Book Similarities&lt;/h1&gt;
-
-&lt;p&gt;Let&amp;#8217;s run this code over some real data. Unfortunately, I didn&amp;#8217;t have a clean source of movie ratings available, so instead I used &lt;a href=&quot;http://www.informatik.uni-freiburg.de/~cziegler/BX/&quot;&gt;this dataset&lt;/a&gt; of 1 million book ratings.&lt;/p&gt;
-
-&lt;p&gt;I ran a quick command, using the handy &lt;a href=&quot;https://github.com/twitter/scalding/wiki/Scald.rb&quot;&gt;scald.rb script&lt;/a&gt; that Scalding provides&amp;#8230;&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;bash&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c&quot;&gt;# Send the job off to a Hadoop cluster&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;scald.rb MovieSimilarities.scala &#8211;input ratings.tsv &#8211;output similarities.tsv
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;&amp;#8230;and here&amp;#8217;s a sample of the top output I got:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims-correlation.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims-correlation.png&quot; alt=&quot;Top Book-Crossing Pairs&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;As we&amp;#8217;d expect, we see that&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&lt;em&gt;Harry Potter&lt;/em&gt; books are similar to other &lt;em&gt;Harry Potter&lt;/em&gt; books&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Lord of the Rings&lt;/em&gt; books are similar to other &lt;em&gt;Lord of the Rings&lt;/em&gt; books&lt;/li&gt;
-&lt;li&gt;Tom Clancy is similar to John Grisham&lt;/li&gt;
-&lt;li&gt;Chick lit (&lt;em&gt;Summer Sisters&lt;/em&gt;, by Judy Blume) is similar to chick lit (&lt;em&gt;Bridget Jones&lt;/em&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;p&gt;Just for fun, let&amp;#8217;s also look at books similar to &lt;em&gt;The Great Gatsby&lt;/em&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby-correlation.png&quot; alt=&quot;Great Gatsby&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;(Schoolboy memories, exactly.)&lt;/p&gt;
-
-&lt;h1&gt;More Similarity Measures&lt;/h1&gt;
-
-&lt;p&gt;Of course, there are lots of other similarity measures we could use besides correlation.&lt;/p&gt;
-
-&lt;h2&gt;Cosine Similarity&lt;/h2&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://en.wikipedia.org/wiki/Cosine_similarity&quot;&gt;Cosine similarity&lt;/a&gt; is a another common vector-based similarity measure.&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Cosine Similarity &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cosineSimilarity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingNorm&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Norm&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratingNorm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Norm&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;h2&gt;Correlation, Take II&lt;/h2&gt;
-
-&lt;p&gt;We can also also add a &lt;em&gt;regularized&lt;/em&gt; correlation, by (say) adding N virtual movie pairs that have zero correlation. This helps avoid noise if some movie pairs have very few raters in common (for example, &lt;em&gt;The Great Gatsby&lt;/em&gt; had an unlikely raw correlation of 1 with many other books, due simply to the fact that those book pairs had very few ratings).&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Regularized Correlation &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;regularizedCorrelation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingNormSq&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2NormSq&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;virtualCount&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;priorCorrelation&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;unregularizedCorrelation&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;correlation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingNormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2NormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;virtualCount&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;unregularizedCorrelation&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;w&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;priorCorrelation&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;h2&gt;Jaccard Similarity&lt;/h2&gt;
-
-&lt;p&gt;Recall that &lt;a href=&quot;http://blog.echen.me/blog/2011/10/24/winning-the-netflix-prize-a-summary/&quot;&gt;one of the lessons of the Netflix prize&lt;/a&gt; was that implicit data can be quite useful &amp;#8211; the mere fact that you rate a James Bond movie, even if you rate it quite horribly, suggests that you&amp;#8217;d probably be interested in similar action films. So we can also ignore the value itself of each rating and use a &lt;em&gt;set&lt;/em&gt;-based similarity measure like &lt;a href=&quot;http://en.wikipedia.org/wiki/Jaccard_index&quot;&gt;Jaccard similarity&lt;/a&gt;.&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Jaccard Similarity &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jaccardSimilarity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;usersInCommon&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;totalUsers1&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;totalUsers2&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;union&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;totalUsers1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;totalUsers2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;usersInCommon&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;usersInCommon&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;union&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;h2&gt;Incorporation&lt;/h2&gt;
-
-&lt;p&gt;Finally, let&amp;#8217;s add all these similarity measures to our output.&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Similarity Measures &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/MovieSimilarities.scala&#8217;&gt;MovieSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PRIOR_COUNT&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PRIOR_CORRELATION&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;similarities&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;vectorCalcs&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;dotProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingSum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2Sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;ratingNormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating2NormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;correlation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;regularizedCorrelation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;cosineSimilarity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;jaccardSimilarity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingNormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2NormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;corr&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;correlation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingNormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2NormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;regCorr&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;regularizedCorrelation&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingSum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2Sum&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingNormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;rating2NormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PRIOR_COUNT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;PRIOR_CORRELATION&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cosSim&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cosineSimilarity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dotProduct&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ratingNormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;math&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;sqrt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rating2NormSq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jaccard&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jaccardSimilarity&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;corr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;regCorr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cosSim&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;jaccard&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;h1&gt;Book Similarities Revisited&lt;/h1&gt;
-
-&lt;p&gt;Let&amp;#8217;s take another look at the book similarities above, now that we have these new fields.&lt;/p&gt;
-
-&lt;p&gt;Here are some of the top Book-Crossing pairs, sorted by their shrunk correlation:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-book-crossing-sims.png&quot; alt=&quot;Top Book-Crossing Pairs&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Notice how regularization affects things: the &lt;em&gt;Dark Tower&lt;/em&gt; pair has a pretty high raw correlation, but relatively few ratings (reducing our confidence in the raw correlation), so it ends up below the others.&lt;/p&gt;
-
-&lt;p&gt;And here are books similar to &lt;em&gt;The Great Gatsby&lt;/em&gt;, this time ordered by cosine similarity:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/great-gatsby.png&quot; alt=&quot;Great Gatsby&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;h1&gt;Input Abstraction&lt;/h1&gt;
-
-&lt;p&gt;So our code right now is tied to our specific &lt;code&gt;ratings.tsv&lt;/code&gt; input. But what if we change the way we store our ratings, or what if we want to generate similarities for something entirely different?&lt;/p&gt;
-
-&lt;p&gt;Let&amp;#8217;s abstract away our input. We&amp;#8217;ll create a &lt;a href=&quot;https://github.com/echen/scaldingale/blob/master/VectorSimilarities.scala&quot;&gt;VectorSimilarities class&lt;/a&gt; that represents input data in the following format:&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Input abstraction &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/VectorSimilarities.scala&#8217;&gt;VectorSimilarities.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// This is an abstract method that returns a Pipe (aka, a stream of rating tuples).&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// It takes in three symbols that name the user, item, and rating fields.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Pipe&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;item&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// &#8230;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// The rest of the code remains essentially the same.&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;Whenever we want to define a new input format, we simply subclass &lt;code&gt;VectorSimilarities&lt;/code&gt; and provide a concrete implementation of the &lt;code&gt;input&lt;/code&gt; method.&lt;/p&gt;
-
-&lt;h2&gt;Book-Crossings&lt;/h2&gt;
-
-&lt;p&gt;For example, here&amp;#8217;s a class I could have used to generate the book recommendations above:&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;BookCrossing similarities &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/BookCrossing.scala&#8217;&gt;BookCrossing.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;BookCrossing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;VectorSimilarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Pipe&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bookCrossingRatings&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;nc&quot;&gt;Tsv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;book-crossing-ratings.tsv&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapTo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;n&quot;&gt;bookCrossingRatings&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;The input method simply reads from a TSV file and lets the &lt;code&gt;VectorSimilarities&lt;/code&gt; superclass do all the work. Instant recommendations, BOOM.&lt;/p&gt;
-
-&lt;h2&gt;Song Similarities with Twitter + iTunes&lt;/h2&gt;
-
-&lt;p&gt;But why limit ourselves to books? We do, after all, have Twitter at our fingertips&amp;#8230;&lt;/p&gt;
-
-&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p&gt;rated Born This Way by Lady GaGa 5 stars &lt;a href=&quot;http://t.co/wTYAwWqm&quot; title=&quot;http://itun.es/iSg92N&quot;&gt;itun.es/iSg92N&lt;/a&gt; &lt;a href=&quot;https://twitter.com/search/%2523iTunes&quot;&gt;#iTunes&lt;/a&gt;&lt;/p&gt;&amp;mdash; gggf (@GalMusic92) &lt;a href=&quot;https://twitter.com/GalMusic92/status/167267017865428996&quot; data-datetime=&quot;2012-02-08T15:22:19+00:00&quot;&gt;February 8, 2012&lt;/a&gt;&lt;/blockquote&gt;
-
-
-&lt;script src=&quot;http://blog.echen.me//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
-
-
-&lt;p&gt;Since iTunes lets you send a tweet whenever you rate a song, we can use these to generate music recommendations!&lt;/p&gt;
-
-&lt;p&gt;Again, we create a new class that overrides the abstract &lt;code&gt;input&lt;/code&gt; defined in &lt;code&gt;VectorSimilarities&lt;/code&gt;&amp;#8230;&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Song similarities with Twitter + iTunes &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/ITunes.scala&#8217;&gt;ITunes.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;20&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;21&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;22&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ITunes&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;VectorSimilarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;c1&quot;&gt;// Example tweet:&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;c1&quot;&gt;// rated New Kids On the Block: Super Hits by New Kids On the Block 5 stars http://itun.es/iSg3Fc #iTunes&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ITUNES_REGEX&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&amp;quot;rated (.+?) by (.+?) (\d) stars .*? #iTunes&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Pipe&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itunesRatings&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;// This is a Twitter-internal tweet source, but you could just as easily scrape &lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;// Twitter yourself and provide your own source of tweets: https://dev.twitter.com/docs&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;nc&quot;&gt;TweetSource&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapTo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;userId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getUserId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;contains&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;#iTunes&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flatMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;song&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;artist&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;          &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;          &lt;span class=&quot;nc&quot;&gt;ITUNES_REGEX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;findFirstMatchIn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subgroups&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;userId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;song&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;project&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;n&quot;&gt;itunesRatings&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;&amp;#8230;and snap! Here are some songs you might like if you recently listened to &lt;strong&gt;Beyoncé&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/beyonce.png&quot; alt=&quot;Jason Mraz&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;And some recommended songs if you like &lt;strong&gt;Lady Gaga&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/lady-gaga.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/lady-gaga.png&quot; alt=&quot;Lady Gaga&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;GG Pandora.&lt;/p&gt;
-
-&lt;h2&gt;Location Similarities with Foursquare Check-ins&lt;/h2&gt;
-
-&lt;p&gt;But what if we don&amp;#8217;t have explicit ratings? For example, we could be a news site that wants to generate article recommendations, and maybe we only have user &lt;em&gt;visits&lt;/em&gt; on each story.&lt;/p&gt;
-
-&lt;p&gt;Or what if we want to generate restaurant or tourist recommendations, when all we know is who visits each location?&lt;/p&gt;
-
-&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p&gt;I&amp;#8217;m at Empire State Building (350 5th Ave., btwn 33rd &amp; 34th St., New York) &lt;a href=&quot;http://t.co/q6tXzf3n&quot; title=&quot;http://4sq.com/zZ5xGd&quot;&gt;4sq.com/zZ5xGd&lt;/a&gt;&lt;/p&gt;&amp;mdash; Simon Ackerman (@SimonAckerman) &lt;a href=&quot;https://twitter.com/SimonAckerman/status/167232054247956481&quot; data-datetime=&quot;2012-02-08T13:03:23+00:00&quot;&gt;February 8, 2012&lt;/a&gt;&lt;/blockquote&gt;
-
-
-&lt;script src=&quot;http://blog.echen.me//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
-
-
-&lt;p&gt;Let&amp;#8217;s finally make Foursquare check-ins useful. (I kid, I kid.)&lt;/p&gt;
-
-&lt;p&gt;Instead of using an explicit rating given to us, we can simply generate a dummy rating of 1 for each check-in. Correlation doesn&amp;#8217;t make sense any more, but we can still pay attention to a measure like Jaccard simiilarity.&lt;/p&gt;
-
-&lt;p&gt;So we simply create a new class that scrapes tweets for Foursquare check-in information&amp;#8230;&lt;/p&gt;
-
-&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Location similarities with Foursquare &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/scaldingale/blob/master/Foursquare.scala&#8217;&gt;Foursquare.scala&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Foursquare&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;extends&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;VectorSimilarities&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;c1&quot;&gt;// Example tweet: I&amp;#39;m at The Ambassador (673 Geary St, btw Leavenworth &amp;amp; Jones, San Francisco) w/ 2 others http://4sq.com/xok3rI&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;c1&quot;&gt;// Let&amp;#39;s limit to New York for simplicity.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FOURSQUARE_REGEX&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&amp;quot;&amp;quot;I&amp;#39;m at (.+?) \(.*? New York&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Symbol&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;Pipe&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;foursquareCheckins&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;nc&quot;&gt;TweetSource&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapTo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;userId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getUserId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;toLong&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getText&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;flatMap&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;location&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;          &lt;span class=&quot;n&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;          &lt;span class=&quot;nc&quot;&gt;FOURSQUARE_REGEX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;findFirstMatchIn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;text&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subgroups&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;map&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;l&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;userId&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;location&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;        &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unique&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;userField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;itemField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingField&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;n&quot;&gt;foursquareCheckins&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
-
-
-&lt;p&gt;&amp;#8230;and bam! Here are locations similar to the &lt;strong&gt;Empire State Building&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/empire-state-building.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/empire-state-building.png&quot; alt=&quot;Empire State Building&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Here are places you might want to check out, if you check-in at &lt;strong&gt;Bergdorf Goodman&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/bergdorf-goodman.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/bergdorf-goodman.png&quot; alt=&quot;Bergdorf Goodman&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;And here&amp;#8217;s where to go after the &lt;strong&gt;Statue of Liberty&lt;/strong&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/statue-of-liberty.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/statue-of-liberty.png&quot; alt=&quot;Statue of Liberty&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Power of Twitter, yo.&lt;/p&gt;
-
-&lt;h1&gt;Next Steps&lt;/h1&gt;
-
-&lt;p&gt;Hopefully I gave you a taste of the awesomeness of Scalding. To learn even more:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Check out &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding on Github&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;Read &lt;a href=&quot;https://github.com/twitter/scalding/wiki/Getting-Started&quot;&gt;this Getting Started Guide&lt;/a&gt; on the Scalding wiki.&lt;/li&gt;
-&lt;li&gt;Run through &lt;a href=&quot;https://github.com/twitter/scalding/tree/master/tutorial&quot;&gt;this code-based introduction&lt;/a&gt;, complete with Scalding jobs that you can run in local mode.&lt;/li&gt;
-&lt;li&gt;Browse &lt;a href=&quot;https://github.com/twitter/scalding/blob/master/tutorial/CodeSnippets.md&quot;&gt;this set of code snippets&lt;/a&gt;, which shows examples of different Scalding functions (e.g., &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt;, &lt;code&gt;flatMap&lt;/code&gt;, &lt;code&gt;groupBy&lt;/code&gt;, &lt;code&gt;count&lt;/code&gt;, &lt;code&gt;join&lt;/code&gt;).&lt;/li&gt;
-&lt;li&gt;And all the code for this post is &lt;a href=&quot;https://github.com/echen/scaldingale&quot;&gt;here&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;p&gt;Watch out for more documentation soon, and you should most definitely &lt;a href=&quot;https://twitter.com/#!/scalding&quot;&gt;follow @Scalding&lt;/a&gt; on Twitter for updates or to ask any questions.&lt;/p&gt;
-
-&lt;h1&gt;Mad Props&lt;/h1&gt;
-
-&lt;p&gt;And finally, a huge shoutout to &lt;a href=&quot;https://twitter.com/argyris&quot;&gt;Argyris Zymnis&lt;/a&gt;, &lt;a href=&quot;https://twitter.com/avibryant&quot;&gt;Avi Bryant&lt;/a&gt;, and &lt;a href=&quot;https://twitter.com/posco&quot;&gt;Oscar Boykin&lt;/a&gt;, the mastermind hackers who have spent (and continue spending!) unimaginable hours making Scalding a joy to use.&lt;/p&gt;
-
-&lt;p&gt;@argyris, @avibryant, @posco: Thanks for it all. #awesomejobguys&lt;/p&gt;
-</content>
-  </entry>
   
   <entry>
     <title>Movie recommendations and more via MapReduce and Scalding</title>
@@ -853,7 +227,7 @@
 
 &lt;p&gt;But recall that we can also write correlation in the following form:&lt;/p&gt;
 
-&lt;p&gt;$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x&lt;sup&gt;2&lt;/sup&gt; - (\sum x)&lt;sup&gt;2}&lt;/sup&gt; \sqrt{n \sum y&lt;sup&gt;2&lt;/sup&gt; - (\sum y)&lt;sup&gt;2}}$&lt;/sup&gt;&lt;/p&gt;
+&lt;p&gt;$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x^2 - (\sum x)^2} \sqrt{n \sum y^2 - (\sum y)^2}}$&lt;/p&gt;
 
 &lt;p&gt;(See the &lt;a href=&quot;http://en.wikipedia.org/wiki/Correlation_and_dependence&quot;&gt;Wikipedia page&lt;/a&gt; on correlation.)&lt;/p&gt;
 
@@ -1241,6 +615,33 @@
 
 &lt;p&gt;Power of Twitter, yo.&lt;/p&gt;
 
+&lt;h1&gt;RottenTomatoes Similarities&lt;/h1&gt;
+
+&lt;p&gt;UPDATE: I grabbed RottenTomatoes data from tweets&amp;#8230;&lt;/p&gt;
+
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p&gt;My review for &amp;#8216;How to Train Your Dragon&amp;#8217; on Rotten Tomatoes: 4 1/2 stars &amp;gt;&lt;a href=&quot;http://t.co/YTOKWLEt&quot; title=&quot;http://bit.ly/xtw3d3&quot;&gt;bit.ly/xtw3d3&lt;/a&gt;&lt;/p&gt;&amp;mdash; Benjamin West (@BenTheWest) &lt;a href=&quot;https://twitter.com/BenTheWest/status/171772890121895936&quot; data-datetime=&quot;2012-02-21T01:47:03+00:00&quot;&gt;February 21, 2012&lt;/a&gt;&lt;/blockquote&gt;
+
+
+&lt;p&gt;So here&amp;#8217;s a sample of the most similar movies:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-rottentomatoes-sims.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/top-rottentomatoes-sims.png&quot; alt=&quot;Top RottenTomatoes Movies&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We see that&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Lord of the Rings&lt;/em&gt;, &lt;em&gt;Harry Potter&lt;/em&gt;, and &lt;em&gt;Star Wars&lt;/em&gt; movies are similar to other &lt;em&gt;Lord of the Rings&lt;/em&gt;, &lt;em&gt;Harry Potter&lt;/em&gt;, and &lt;em&gt;Star Wars&lt;/em&gt; movies&lt;/li&gt;
+&lt;li&gt;Big science fiction blockbusters (&lt;em&gt;Avatar&lt;/em&gt;) are similar to big science fiction blockbusters (&lt;em&gt;Inception&lt;/em&gt;)&lt;/li&gt;
+&lt;li&gt;People who like one Justin Timberlake movie (&lt;em&gt;Bad Teacher&lt;/em&gt;) also like other Justin Timberlake Movies (&lt;em&gt;In Time&lt;/em&gt;). Similarly with Michael Fassbender (&lt;em&gt;A Dangerous Method&lt;/em&gt;, &lt;em&gt;Shame&lt;/em&gt;)&lt;/li&gt;
+&lt;li&gt;Art house movies (&lt;em&gt;The Tree of Life&lt;/em&gt;) stick together (&lt;em&gt;Tinker Tailor Soldier Spy&lt;/em&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Let&amp;#8217;s also look at the movies with the most &lt;em&gt;negative&lt;/em&gt; correlation:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/bottom-rottentomatoes-sims.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/scaldingale/bottom-rottentomatoes-sims.png&quot; alt=&quot;Negative RottenTomatoes Movies&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;(The more you like loud and dirty popcorn movies (&lt;em&gt;Thor&lt;/em&gt;) and vamp romance (&lt;em&gt;Twilight&lt;/em&gt;), the less you like impressionistic trees of life? Well I never.)&lt;/p&gt;
+
 &lt;h1&gt;Next Steps&lt;/h1&gt;
 
 &lt;p&gt;Hopefully I gave you a taste of the awesomeness of Scalding. To learn even more:&lt;/p&gt;
@@ -1349,7 +750,7 @@
 &lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;r&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_today &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; c&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_yesterday &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; c&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;total_num_bought &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_today &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_yesterday
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;total\_num\_bought &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_today &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_yesterday
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
@@ -1699,13 +1100,13 @@
 
 &lt;p&gt;Next, assign each feature function $f_j$ a &lt;strong&gt;weight&lt;/strong&gt; $\lambda_j$ (I&amp;#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:&lt;/p&gt;
 
-&lt;p&gt;$score(l | s) = \sum&lt;em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; \sum&lt;/em&gt;{i = 1}&lt;sup&gt;n&lt;/sup&gt; \lambda_j f_j(s, i, l_i, l_{i-1})$&lt;/p&gt;
+&lt;p&gt;$score(l | s) = \sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})$&lt;/p&gt;
 
 &lt;p&gt;(The first sum runs over each feature function $j$, and the inner sum runs over each position $i$ of the sentence.)&lt;/p&gt;
 
 &lt;p&gt;Finally, we can transform these scores into probabilities $p(l | s)$ between 0 and 1 by exponentiating and normalizing:&lt;/p&gt;
 
-&lt;p&gt;$p(l | s) = \frac{exp[score(l|s)]}{\sum&lt;em&gt;{l&amp;#8217;} exp[score(l&amp;#8217;|s)]} = \frac{exp[\sum&lt;/em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; \sum&lt;em&gt;{i = 1}&lt;sup&gt;n&lt;/sup&gt; \lambda_j f_j(s, i, l_i, l&lt;/em&gt;{i-1})]}{\sum&lt;em&gt;{l&amp;#8217;} exp[\sum&lt;/em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; \sum&lt;em&gt;{i = 1}&lt;sup&gt;n&lt;/sup&gt; \lambda_j f_j(s, i, l&amp;#8217;&lt;/em&gt;i, l&amp;#8217;_{i-1})]}$&lt;/p&gt;
+&lt;p&gt;$p(l | s) = \frac{exp[score(l|s)]}{\sum_{l&amp;#8217;} exp[score(l&amp;#8217;|s)]} = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})]}{\sum_{l&amp;#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l&amp;#8217;_i, l&amp;#8217;_{i-1})]}$&lt;/p&gt;
 
 &lt;h2&gt;Example Feature Functions&lt;/h2&gt;
 
@@ -1724,13 +1125,13 @@
 &lt;li&gt;Again, if the weight $\lambda_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &amp;#8220;Is this a sentence beginning with a verb?&amp;#8221;) are preferred.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;$f_3(s, i, l_i, l&lt;em&gt;{i-1}) = 1$ if $l&lt;/em&gt;{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
+&lt;li&gt;$f_3(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
 
 &lt;ul&gt;
 &lt;li&gt;Again, a positive weight for this feature means that adjectives tend to be followed by nouns.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;$f_4(s, i, l_i, l&lt;em&gt;{i-1}) = 1$ if $l&lt;/em&gt;{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
+&lt;li&gt;$f_4(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
 
 &lt;ul&gt;
 &lt;li&gt;A &lt;em&gt;negative&lt;/em&gt; weight $\lambda_4$ for this function would mean that prepositions don&amp;#8217;t tend to follow prepositions, so we should avoid labelings where this happens.&lt;/li&gt;
@@ -1746,7 +1147,7 @@
 &lt;h1&gt;Smells like Logistic Regression&amp;#8230;&lt;/h1&gt;
 
 &lt;p&gt;The form of the CRF probabilities
-$p(l | s) = \frac{exp[\sum&lt;em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; \sum&lt;/em&gt;{i = 1}&lt;sup&gt;n&lt;/sup&gt; f_j(s, i, l_i, l&lt;em&gt;{i-1})]}{\sum&lt;/em&gt;{l&amp;#8217;} exp[\sum&lt;em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; \sum&lt;/em&gt;{i = 1}&lt;sup&gt;n&lt;/sup&gt; f_j(s, i, l&amp;#8217;&lt;em&gt;i, l&amp;#8217;&lt;/em&gt;{i-1})]}$
+$p(l | s) = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l_i, l_{i-1})]}{\sum_{l&amp;#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l&amp;#8217;_i, l&amp;#8217;_{i-1})]}$
 might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quot;&gt;familiar&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;That&amp;#8217;s because CRFs are indeed basically the sequential version of &lt;strong&gt;logistic regression&lt;/strong&gt;: whereas logistic regression is a log-linear model for &lt;em&gt;classification&lt;/em&gt;, CRFs are a log-linear model for &lt;em&gt;sequential labels&lt;/em&gt;.&lt;/p&gt;
@@ -1772,8 +1173,8 @@ might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quo
 &lt;p&gt;That is, we can build a CRF equivalent to any HMM by&amp;#8230;&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;For each HMM &lt;em&gt;transition&lt;/em&gt; probability $ p(l_i = y | l&lt;em&gt;{i-1} = x) $, define a set of CRF transition features of the form $f&lt;/em&gt;{x,y}(s, i, l_i, l&lt;em&gt;{i-1}) = 1$ if $l_i = y$ and $l&lt;/em&gt;{i-1} = x$. Give each feature a weight of $w&lt;em&gt;{x,y} = \log p(l_i = y | l&lt;/em&gt;{i-1} = x)$.&lt;/li&gt;
-&lt;li&gt;Similarly, for each HMM &lt;em&gt;emission&lt;/em&gt; probability $p(w_i = z | l&lt;em&gt;{i} = x)$, define a set of CRF emission features of the form $g&lt;/em&gt;{x,y}(s, i, l_i, l&lt;em&gt;{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w&lt;/em&gt;{x,z} = \log p(w_i = z | l_i = x)$.&lt;/li&gt;
+&lt;li&gt;For each HMM &lt;em&gt;transition&lt;/em&gt; probability $ p(l_i = y | l_{i-1} = x) $, define a set of CRF transition features of the form $f_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $l_i = y$ and $l_{i-1} = x$. Give each feature a weight of $w_{x,y} = \log p(l_i = y | l_{i-1} = x)$.&lt;/li&gt;
+&lt;li&gt;Similarly, for each HMM &lt;em&gt;emission&lt;/em&gt; probability $p(w_i = z | l_{i} = x)$, define a set of CRF emission features of the form $g_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w_{x,z} = \log p(w_i = z | l_i = x)$.&lt;/li&gt;
 &lt;/ul&gt;
 
 
@@ -1795,9 +1196,9 @@ might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quo
 To shift these randomly initialized weights to the correct ones, for each training example&amp;#8230;&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum&lt;em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; f_i(s, j, l_j, l&lt;/em&gt;{j-1}) - \sum&lt;em&gt;{l&amp;#8217;} p(l&amp;#8217; | s) \sum&lt;/em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; f_i(s, j, l&amp;#8217;&lt;em&gt;j, l&amp;#8217;&lt;/em&gt;{j-1})$&lt;/li&gt;
+&lt;li&gt;Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&amp;#8217;} p(l&amp;#8217; | s) \sum_{j = 1}^m f_i(s, j, l&amp;#8217;_j, l&amp;#8217;_{j-1})$&lt;/li&gt;
 &lt;li&gt;Note that the first term in the gradient is the contribution of feature $f_i$ under the &lt;em&gt;true&lt;/em&gt; label, and the second term in the gradient is the &lt;em&gt;expected&lt;/em&gt; contribution of feature $f_i$ under the current model. This is exactly the form you&amp;#8217;d expect gradient ascent to take.&lt;/li&gt;
-&lt;li&gt;Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum&lt;em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; f_i(s, j, l_j, l&lt;/em&gt;{j-1}) - \sum&lt;em&gt;{l&amp;#8217;} p(l&amp;#8217; | s) \sum&lt;/em&gt;{j = 1}&lt;sup&gt;m&lt;/sup&gt; f_i(s, j, l&amp;#8217;&lt;em&gt;j, l&amp;#8217;&lt;/em&gt;{j-1})]$ where $\alpha$ is some learning rate.&lt;/li&gt;
+&lt;li&gt;Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&amp;#8217;} p(l&amp;#8217; | s) \sum_{j = 1}^m f_i(s, j, l&amp;#8217;_j, l&amp;#8217;_{j-1})]$ where $\alpha$ is some learning rate.&lt;/li&gt;
 &lt;li&gt;Repeat the previous steps until some stopping condition is reached (e.g., the updates fall below some threshold).&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -1808,7 +1209,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 &lt;p&gt;Suppose we&amp;#8217;ve trained our CRF model, and now a new sentence comes in. How do we do label it?&lt;/p&gt;
 
-&lt;p&gt;The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k&lt;sup&gt;m$&lt;/sup&gt; possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.&lt;/p&gt;
+&lt;p&gt;The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.&lt;/p&gt;
 
 &lt;p&gt;A better way is to realize that (linear-chain) CRFs satisfy an &lt;a href=&quot;http://en.wikipedia.org/wiki/Optimal_substructure&quot;&gt;optimal substructure&lt;/a&gt; property that allows us to use a (polynomial-time) dynamic programming algorithm to find the optimal label, similar to the &lt;a href=&quot;http://en.wikipedia.org/wiki/Viterbi_algorithm&quot;&gt;Viterbi algorithm&lt;/a&gt; for HMMs.&lt;/p&gt;
 
@@ -3083,7 +2484,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 &lt;p&gt;Restricted Boltzmann Machines, and neural networks in general, work by updating the states of some neurons given the states of others, so let&amp;#8217;s talk about how the states of individual units change. Assuming we know the connection weights in our RBM (we&amp;#8217;ll explain how to learn these below), to update the state of unit $i$:&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;Compute the &lt;strong&gt;activation energy&lt;/strong&gt; $a_i = \sum_j w&lt;em&gt;{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w&lt;/em&gt;{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&amp;#8217;s neighbors send it a message, and we compute the sum of all these messages.&lt;/li&gt;
+&lt;li&gt;Compute the &lt;strong&gt;activation energy&lt;/strong&gt; $a_i = \sum_j w_{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w_{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&amp;#8217;s neighbors send it a message, and we compute the sum of all these messages.&lt;/li&gt;
 &lt;li&gt;Let $p_i = \sigma(a_i)$, where $\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p_i$ is close to 1 for large positive activation energies, and $p_i$ is close to 0 for negative activation energies.&lt;/li&gt;
 &lt;li&gt;We then turn unit $i$ on with probability $p_i$, and turn it off with probability $1 - p_i$.&lt;/li&gt;
 &lt;li&gt;(In layman&amp;#8217;s terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)&lt;/li&gt;
@@ -3104,9 +2505,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 &lt;ul&gt;
 &lt;li&gt;Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.&lt;/li&gt;
-&lt;li&gt;Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w&lt;em&gt;{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e&lt;/em&gt;{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they&amp;#8217;re both on).&lt;/li&gt;
+&lt;li&gt;Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w_{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e_{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they&amp;#8217;re both on).&lt;/li&gt;
 &lt;li&gt;Now &lt;strong&gt;reconstruct&lt;/strong&gt; the visible units in a similar manner: for each visible unit, compute its activation energy $a_i$, and update its state. (Note that this &lt;em&gt;reconstruction&lt;/em&gt; may not match the original preferences.) Then update the hidden units again, and compute $Negative(e_{ij}) = x_i * x_j$ for each edge.&lt;/li&gt;
-&lt;li&gt;Update the weight of each edge $e&lt;em&gt;{ij}$ by setting $w&lt;/em&gt;{ij} = w&lt;em&gt;{ij} + L * (Positive(e&lt;/em&gt;{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.&lt;/li&gt;
+&lt;li&gt;Update the weight of each edge $e_{ij}$ by setting $w_{ij} = w_{ij} + L * (Positive(e_{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.&lt;/li&gt;
 &lt;li&gt;Repeat over all training examples.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -3121,7 +2522,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 &lt;/ul&gt;
 
 
-&lt;p&gt;So by adding $Positive(e&lt;em&gt;{ij}) - Negative(e&lt;/em&gt;{ij})$ to each edge weight, we&amp;#8217;re helping the network&amp;#8217;s daydreams better match the reality of our training examples.&lt;/p&gt;
+&lt;p&gt;So by adding $Positive(e_{ij}) - Negative(e_{ij})$ to each edge weight, we&amp;#8217;re helping the network&amp;#8217;s daydreams better match the reality of our training examples.&lt;/p&gt;
 
 &lt;p&gt;(You may hear this update rule called &lt;strong&gt;contrastive divergence&lt;/strong&gt;, which is basically a funky term for &amp;#8220;approximate gradient descent&amp;#8221;.)&lt;/p&gt;
 
@@ -3165,9 +2566,9 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
 &lt;ul&gt;
 &lt;li&gt;Above, $Negative(e_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units &lt;em&gt;once&lt;/em&gt; and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&amp;#8217;s daydreams more accurately.&lt;/li&gt;
-&lt;li&gt;Instead of using $Positive(e&lt;em&gt;{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 &lt;em&gt;states&lt;/em&gt;, we could also let $x_i$ and/or $x_j$ be activation &lt;em&gt;probabilities&lt;/em&gt;. Similarly for $Negative(e&lt;/em&gt;{ij})$.&lt;/li&gt;
+&lt;li&gt;Instead of using $Positive(e_{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 &lt;em&gt;states&lt;/em&gt;, we could also let $x_i$ and/or $x_j$ be activation &lt;em&gt;probabilities&lt;/em&gt;. Similarly for $Negative(e_{ij})$.&lt;/li&gt;
 &lt;li&gt;We could penalize larger edge weights, in order to get a sparser or more regularized model.&lt;/li&gt;
-&lt;li&gt;When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e&lt;em&gt;{ij}) - Negative(e&lt;/em&gt;{ij})$) and the step previously taken.&lt;/li&gt;
+&lt;li&gt;When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e_{ij}) - Negative(e_{ij})$) and the step previously taken.&lt;/li&gt;
 &lt;li&gt;Instead of using only one training example in each epoch, we could use &lt;em&gt;batches&lt;/em&gt; of examples in each epoch, and only update the network&amp;#8217;s weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -3861,6 +3262,72 @@ executive               0.6058707124010555
 &lt;li&gt;Silicon Valley is more into the &lt;strong&gt;locavore&lt;/strong&gt; movement (&lt;em&gt;green, local&lt;/em&gt;).&lt;/li&gt;
 &lt;/ul&gt;
 
+</content>
+  </entry>
+  
+  <entry>
+    <title>Introduction to Cointegration and Pairs Trading</title>
+    <link href="http://blog.echen.me/2011/04/16/what-is-cointegration-2/"/>
+    <updated>2011-04-16T03:44:14-07:00</updated>
+    <id>http://blog.echen.me/2011/04/16/what-is-cointegration-2</id>
+    <content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&amp;#8217;t know each other (they&amp;#8217;re independent), so there&amp;#8217;s no meaningful relationship between their paths.&lt;/p&gt;
+
+&lt;p&gt;But suppose instead you have a drunk walking with her dog. This time there &lt;em&gt;is&lt;/em&gt; a connection. What&amp;#8217;s the nature of this connection? Notice that although each path individually is still an unpredictable random walk, given the location of one of the drunk or dog, we have a pretty good idea of where the other is; that is, the distance between the two is fairly predictable. (For example, if the dog wanders too far away from his owner, she&amp;#8217;ll tend to move in his direction to avoid losing him, so the two stay close together despite a tendency to wander around on their own.) We describe this relationship by saying that the drunk and her dog form a cointegrating pair.&lt;/p&gt;
+
+&lt;p&gt;In more technical terms, if we have two non-stationary time series X and Y that become stationary when differenced (these are called integrated of order one series, or I(1) series; random walks are one example) such that some linear combination of X and Y is stationary (aka, I(0)), then we say that X and Y are cointegrated. In other words, while neither X nor Y alone hovers around a constant value, some combination of them does, so we can think of cointegration as describing a particular kind of long-run equilibrium relationship. (The definition of cointegration can be extended to multiple time series, with higher orders of integration.)&lt;/p&gt;
+
+&lt;p&gt;Other examples of cointegrated pairs:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Income and consumption: as income increases/decreases, so too does consumption.&lt;/li&gt;
+&lt;li&gt;Size of police force and amount of criminal activity&lt;/li&gt;
+&lt;li&gt;A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.&lt;/li&gt;
+&lt;li&gt;Number of patients entering or leaving a hospital&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;An application&lt;/h1&gt;
+
+&lt;p&gt;So why do we care about cointegration? In quantitative finance, cointegration forms the basis of the pairs trading strategy: suppose we have two cointegrated stocks X and Y, with the particular (for concreteness) cointegrating relationship X - 2Y = Z, where Z is a stationary series of zero mean. For example, X could be McDonald&amp;#8217;s, Y could be Burger King, and the cointegration relationship would mean that X tends to be priced twice as high as Y, so that when X is more than twice the price of Y, we expect X to move down or Y to move up in the near future (and analogously, if X is less than twice the price of Y, we expect X to move up or Y to move down). This suggests the following trading strategy: if X - 2Y &gt; d, for some positive threshold d, then we should sell X and buy Y (since we expect X to decrease in price and Y to increase), and similarly, if X - 2Y &amp;lt; -d, then we should buy X and sell Y.&lt;/p&gt;
+
+&lt;h1&gt;Spurious regression&lt;/h1&gt;
+
+&lt;p&gt;But why do we need the notion of cointegration at all? Why can&amp;#8217;t we simply use, say, the R-squared between X or Y to see if X and Y have some kind of relationship? The reason is that standard regression analysis fails when dealing with non-stationary variables, leading to spurious regressions that suggest relationships even when there are none.&lt;/p&gt;
+
+&lt;p&gt;For example, suppose we regress two independent random walks against each other, and test for a linear relationship. A large percentage of the time, we&amp;#8217;ll find high R-squared values and low p-values when using standard OLS statistics, even though there&amp;#8217;s absolutely no relationship between the two random walks. As an illustration, here I simulated 1000 pairs of random walks of length 100, and found p-values less than 0.05 in 77% of the cases:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png&quot; alt=&quot;Spurious Regression&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1&gt;A Cointegration Test&lt;/h1&gt;
+
+&lt;p&gt;So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Check that $ X_t $ and $ Y_t $ are both I(1).&lt;/li&gt;
+&lt;li&gt;Estimate the cointegrating relationship $ Y_t = aX_t + e_t $ by ordinary least squares.&lt;/li&gt;
+&lt;li&gt;Check that the cointegrating residuals $ e_t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;Error-correction and Granger representation&lt;/h1&gt;
+
+&lt;p&gt;Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations&lt;/p&gt;
+
+&lt;p&gt;$ X_t = a X_{t-1} + b Y_{t-1} + u_t $
+$ Y_t = c X_{t-1} + d Y_{t-1} + v_t $&lt;/p&gt;
+
+&lt;p&gt;By the Granger representation theorem (which is actually a bit more general than this), we then have&lt;/p&gt;
+
+&lt;p&gt;$ \Delta X_t = \alpha_1 (Y_{t-1} - \beta X_{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $&lt;/p&gt;
+
+&lt;p&gt;where $ Y_{t-1} - \beta X_{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y_{t-1} - \beta X_{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.&lt;/p&gt;
+
+&lt;h1&gt;Summary&lt;/h1&gt;
+
+&lt;p&gt;So, just to summarize a bit, cointegration is an equilibrium relationship between time series that individually aren&amp;#8217;t in equilbrium (you can kind of contrast this with (Pearson) correlation, which describes a linear relationship), and it&amp;#8217;s useful because it allows us to incorporate both short-term dynamics (deviations from equilibrium) and long-run expectations (corrections to equilibrium).&lt;/p&gt;
 </content>
   </entry>
   

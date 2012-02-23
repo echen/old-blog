@@ -104,23 +104,23 @@
 
 <p>Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
 
-<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A<sup>T</sup> A$.</p>
+<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A^T A$.</p>
 
-<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A<sup>T</sup> A$ is computationally difficult. How can we make this problem more tractable?</p>
+<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A^T A$ is computationally difficult. How can we make this problem more tractable?</p>
 
-<p>It turns out that the eigenvectors of $A<sup>T</sup> A$ have a simple relationship with the eigenvectors of $A A<sup>T$,</sup> so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A<sup>T$</sup> instead. More precisely, <strong>if $v$ is an eigenvector of $A A<sup>T$,</sup> then $A<sup>Tv$</sup> is an eigenvector of $A<sup>T</sup> A$ with the same eigenvalue</strong>.</p>
+<p>It turns out that the eigenvectors of $A^T A$ have a simple relationship with the eigenvectors of $A A^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A^T$, then $A^Tv$ is an eigenvector of $A^T A$ with the same eigenvalue</strong>.</p>
 
 <h1>Proof</h1>
 
-<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A<sup>T$</sup> with eigenvalue $\lambda$. Then</p>
+<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A^T$ with eigenvalue $\lambda$. Then</p>
 
-<p>$(A A<sup>T)</sup> v = \lambda v$</p>
+<p>$(A A^T) v = \lambda v$</p>
 
-<p>$A<sup>T(A</sup> A<sup>T</sup> v) = A<sup>T(\lambda</sup> v)$</p>
+<p>$A^T(A A^T v) = A^T(\lambda v)$</p>
 
-<p>$(A<sup>T</sup> A)(A<sup>T</sup> v) = \lambda (A<sup>T</sup> v)$</p>
+<p>$(A^T A)(A^T v) = \lambda (A^T v)$</p>
 
-<p>so $A<sup>Tv$</sup> is an eigenvector of $A<sup>T</sup> A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A<sup>T</sup> A$ directly, we can instead find the eigenvectors of $A A<sup>T$</sup> and multiply these on the left by $A<sup>T$.</sup></p>
+<p>so $A^Tv$ is an eigenvector of $A^T A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A^T A$ directly, we can instead find the eigenvectors of $A A^T$ and multiply these on the left by $A^T$.</p>
 
 <h1>Pseudocode</h1>
 
@@ -129,7 +129,7 @@
 <ul>
 <li>Let $A$ be an $m \times n$ matrix with observations in rows and dimensions in the columns.</li>
 <li>From each column of $A$, subtract the column&#8217;s mean, so that each column now has zero mean.</li>
-<li>We now need to find the eigenvectors of the covariance matrix $A<sup>T</sup> A$. If $A A<sup>T$</sup> is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A<sup>T$.</sup> Then $A<sup>T</sup> v$ are the eigenvectors of $A<sup>T</sup> A$.</li>
+<li>We now need to find the eigenvectors of the covariance matrix $A^T A$. If $A A^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A^T$. Then $A^T v$ are the eigenvectors of $A^T A$.</li>
 </ul>
 
 
@@ -217,10 +217,6 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding+%28Twitter+MacBook+Pro%27s+conflicted+copy+2012-02-20%29/">Movie recommendations and more via MapReduce and Scalding</a>
-      </li>
-    
-      <li class="post">
         <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
       </li>
     
@@ -254,6 +250,10 @@
     
       <li class="post">
         <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
       </li>
     
   </ul>

@@ -310,7 +310,7 @@
 
 <p>But recall that we can also write correlation in the following form:</p>
 
-<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x<sup>2</sup> - (\sum x)<sup>2}</sup> \sqrt{n \sum y<sup>2</sup> - (\sum y)<sup>2}}$</sup></p>
+<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x^2 - (\sum x)^2} \sqrt{n \sum y^2 - (\sum y)^2}}$</p>
 
 <p>(See the <a href="http://en.wikipedia.org/wiki/Correlation_and_dependence">Wikipedia page</a> on correlation.)</p>
 
@@ -698,6 +698,33 @@
 
 <p>Power of Twitter, yo.</p>
 
+<h1>RottenTomatoes Similarities</h1>
+
+<p>UPDATE: I grabbed RottenTomatoes data from tweets&#8230;</p>
+
+<blockquote class="twitter-tweet"><p>My review for &#8216;How to Train Your Dragon&#8217; on Rotten Tomatoes: 4 1/2 stars &gt;<a href="http://t.co/YTOKWLEt" title="http://bit.ly/xtw3d3">bit.ly/xtw3d3</a></p>&mdash; Benjamin West (@BenTheWest) <a href="https://twitter.com/BenTheWest/status/171772890121895936" data-datetime="2012-02-21T01:47:03+00:00">February 21, 2012</a></blockquote>
+
+
+<p>So here&#8217;s a sample of the most similar movies:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/top-rottentomatoes-sims.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/top-rottentomatoes-sims.png" alt="Top RottenTomatoes Movies" /></a></p>
+
+<p>We see that</p>
+
+<ul>
+<li><em>Lord of the Rings</em>, <em>Harry Potter</em>, and <em>Star Wars</em> movies are similar to other <em>Lord of the Rings</em>, <em>Harry Potter</em>, and <em>Star Wars</em> movies</li>
+<li>Big science fiction blockbusters (<em>Avatar</em>) are similar to big science fiction blockbusters (<em>Inception</em>)</li>
+<li>People who like one Justin Timberlake movie (<em>Bad Teacher</em>) also like other Justin Timberlake Movies (<em>In Time</em>). Similarly with Michael Fassbender (<em>A Dangerous Method</em>, <em>Shame</em>)</li>
+<li>Art house movies (<em>The Tree of Life</em>) stick together (<em>Tinker Tailor Soldier Spy</em>)</li>
+</ul>
+
+
+<p>Let&#8217;s also look at the movies with the most <em>negative</em> correlation:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/bottom-rottentomatoes-sims.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/bottom-rottentomatoes-sims.png" alt="Negative RottenTomatoes Movies" /></a></p>
+
+<p>(The more you like loud and dirty popcorn movies (<em>Thor</em>) and vamp romance (<em>Twilight</em>), the less you like impressionistic trees of life? Well I never.)</p>
+
 <h1>Next Steps</h1>
 
 <p>Hopefully I gave you a taste of the awesomeness of Scalding. To learn even more:</p>
@@ -764,8 +791,6 @@
         <a class="basic-alignment left" href="/2012/01/17/quick-introduction-to-ggplot2/" title="Previous Post: Quick Introduction to ggplot2">&laquo; Quick Introduction to ggplot2</a>
       
       
-        <a class="basic-alignment right" href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding+%28Twitter+MacBook+Pro%27s+conflicted+copy+2012-02-20%29/" title="next Post: Movie recommendations and more via MapReduce and Scalding">Movie recommendations and more via MapReduce and Scalding &raquo;</a>
-      
     </p>
   </footer>
 </article>
@@ -793,10 +818,6 @@
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding+%28Twitter+MacBook+Pro%27s+conflicted+copy+2012-02-20%29/">Movie recommendations and more via MapReduce and Scalding</a>
-      </li>
     
       <li class="post">
         <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
@@ -832,6 +853,10 @@
     
       <li class="post">
         <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
       </li>
     
   </ul>
