@@ -24,7 +24,7 @@
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="/javascripts/ender.js"></script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/feed/index.xml" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml">
+  <link href="/feed/" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -53,7 +53,7 @@
 
 </header>
   <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/feed/index.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  <li><a href="/feed/" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
   
@@ -129,11 +129,11 @@
 <p>The lesson is that when using existing ratings, we should normalize out these types of effects, so that ratings are as comparable as possible.</p>
 
 <p>Another way of thinking about this is that we are simply building a regression model. That is, for each user u, we have a model
-$r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are common explanatory variables and we want to estimate $\theta_u$; and similarly for each item i. Once we&#8217;ve estimated the $\theta_u$, we can use the fancier neighborhood models on the specific ratings.</p>
+$r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ are common explanatory variables and we want to estimate $\theta_u$; and similarly for each item i. Once we&#8217;ve estimated the $\theta_u$, we can use the fancier neighborhood models on the specific ratings.</p>
 
 <p>For example, suppose we want to predict Bob&#8217;s rating of Titanic. We&#8217;ve built a regression model with two explanatory variables, whether the movie was Oscar-nominated (1 if so, -1 if not) and whether the movie contains Kate Winslet (1 if so, -1 if not), and we&#8217;ve determined that Bob&#8217;s weights on these two variables are -2 (Bob tends to hate Oscar movies) and +1.5 (Bob likes Kate Winslet). Similarly, his friend John has weights +1 and -0.5 for these two variables (John likes Oscars, but dislikes Kate Winslet). So if we know that John rated Titanic a 4, then we have 4 = 1(1) + -0.5(1) + (John&#8217;s specific rating), so John&#8217;s specific rating of Titanic is 3.5. If we use John&#8217;s rating alone to estimate Bob&#8217;s, we might guess that Bob would rate Titanic -2(1) + 1.5(1) + (John&#8217;s specific rating) = 3.0.</p>
 
-<p>To estimate the $\theta_u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $\hat{\theta_u} = \frac{\sum r_{ui} x_{ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $\theta_u \sim N(\mu, \sigma^2)$, and $\hat{\theta_u} | \theta_u \sim N(\theta_u, \sigma_u^2)$, leading to $E(\theta_u | \hat{\theta_u}) = \frac{\sigma^2 \hat{\theta_u} + \sigma_u^2 \mu}{\sigma^2 + \sigma_u^2}$.</p>
+<p>To estimate the $\theta_u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $\hat{\theta_u} = \frac{\sum r<em>{ui} x</em>{ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $\theta_u \sim N(\mu, \sigma<sup>2)$,</sup> and $\hat{\theta_u} | \theta_u \sim N(\theta_u, \sigma_u<sup>2)$,</sup> leading to $E(\theta_u | \hat{\theta_u}) = \frac{\sigma<sup>2</sup> \hat{\theta_u} + \sigma_u<sup>2</sup> \mu}{\sigma<sup>2</sup> + \sigma_u<sup>2}$.</sup></p>
 
 <p>In practice, the explanatory variables Bell and Koren found to work well included the overall mean of all ratings, each movie&#8217;s specific mean, each user&#8217;s specific mean, time since movie release, time since user join, and number of ratings for each movie.</p>
 
@@ -149,13 +149,13 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <p>We&#8217;ll see how using an optimization method to derive weights (as opposed to deriving weights via a similarity function) overcomes these two limitations.</p>
 
-<p>Recall our problem: we want to predict $r_{ui}$, user u&#8217;s rating of item i, and what we have is a set $N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $w_{ij}$ such that $r_{ui} = \sum_{j \in N(i; u) w_{ij} r_{uj}}$. A natural approach, then, is simply to choose our weights to minimize $\min_w \sum_{v \neq u} \left( r_{vi} - \sum_{j \in N(i; u)} w_{ij} r_{vj}\right)^2$.</p>
+<p>Recall our problem: we want to predict $r<em>{ui}$, user u&#8217;s rating of item i, and what we have is a set $N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $w</em>{ij}$ such that $r<em>{ui} = \sum</em>{j \in N(i; u) w<em>{ij} r</em>{uj}}$. A natural approach, then, is simply to choose our weights to minimize $\min_w \sum<em>{v \neq u} \left( r</em>{vi} - \sum<em>{j \in N(i; u)} w</em>{ij} r_{vj}\right)<sup>2$.</sup></p>
 
 <p>Notice how this optimization solves our two problems above: it&#8217;s not only a more principled approach (we choose our weights by minimizing squared error), but by deriving weights simultaneously, we overcome interaction effects.</p>
 
-<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $Aw = b$, where A is a $K \times K$ matrix defined by $A_{jk} = \sum_{v \neq u} r_{vj} r_{vk}$ and $b$ is a vector defined by $b_j = \sum_{v \neq u} r_{vj} r_{vi}$.</p>
+<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $Aw = b$, where A is a $K \times K$ matrix defined by $A<em>{jk} = \sum</em>{v \neq u} r<em>{vj} r</em>{vk}$ and $b$ is a vector defined by $b_j = \sum<em>{v \neq u} r</em>{vj} r_{vi}$.</p>
 
-<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $\bar{A}_{jk} = \frac{\sum_{v \in U(j,k)} r_{vj} r_{vk}}{|U(j, k)|}$, where $U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $\hat{A}_{jk} = \frac{|U(J,K)|\bar{A}_{jk} + \beta A_{\mu}}{|U(j,k)| + \beta}$, where $\beta$ is a shrinkage parameter and $A_{\mu}$ is the mean over all $\bar{A}$, and similarly for b.</p>
+<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $\bar{A}<em>{jk} = \frac{\sum</em>{v \in U(j,k)} r<em>{vj} r</em>{vk}}{|U(j, k)|}$, where $U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $\hat{A}<em>{jk} = \frac{|U(J,K)|\bar{A}</em>{jk} + \beta A<em>{\mu}}{|U(j,k)| + \beta}$, where $\beta$ is a shrinkage parameter and $A</em>{\mu}$ is the mean over all $\bar{A}$, and similarly for b.</p>
 
 <p>Note that another benefit of our optimization-derived weights is that the weights of neighbors are no longer constrained to sum to 1. Thus, if an item simply has no strong neighbors, the neighbors&#8217; prediction will have only a small effect.</p>
 
@@ -175,7 +175,7 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <p>To get around the first limitation, we can project users into a lower-dimensional space (say, by using a singular value decomposition), where we can use a space-partitioning data structure (e.g., a kd-tree) or a nearest-neighbor algorithm (e.g., locality sensitive hashing) to find neighboring users.</p>
 
-<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $\min_w \sum_{j \neq i} s_{ij} \left( r_{uj} - \sum_{v \in N(u, i)} w_{uv} r_{vj} \right)^2,$ where the $s_{ij}$ are item-item similarities.</p>
+<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $\min_w \sum<em>{j \neq i} s</em>{ij} \left( r<em>{uj} - \sum</em>{v \in N(u, i)} w<em>{uv} r</em>{vj} \right)<sup>2,$</sup> where the $s_{ij}$ are item-item similarities.</p>
 
 <h2>Appendix: Shrinkage</h2>
 
@@ -275,6 +275,10 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding+%28Twitter+MacBook+Pro%27s+conflicted+copy+2012-02-20%29/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
         <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
       </li>
     
@@ -308,10 +312,6 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
     
       <li class="post">
         <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
       </li>
     
   </ul>

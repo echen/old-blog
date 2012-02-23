@@ -150,11 +150,17 @@
         <loc>
             http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/
         </loc>
-        <lastmod>2012-02-19T13:54:45-08:00</lastmod>
+        <lastmod>2012-02-20T16:28:58-08:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding+%28Twitter+MacBook+Pro%27s+conflicted+copy+2012-02-20%29/
+        </loc>
+        <lastmod>2012-02-20T21:20:11-08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.echen.me/blog/archives/</loc>
-        <lastmod>2012-02-19T13:54:45-08:00</lastmod>
+        <lastmod>2012-02-20T21:20:11-08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.echen.me/feed/index.xml</loc>
@@ -166,6 +172,6 @@
     </url>
     <url>
         <loc>http://blog.echen.me/</loc>
-        <lastmod>2012-02-19T13:54:45-08:00</lastmod>
+        <lastmod>2012-02-20T21:20:11-08:00</lastmod>
     </url>
 </urlset>
