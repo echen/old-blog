@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="LDA-based Email Browser Earlier this month, several thousand emails from Sarah Palin&#8217;s time as governor of Alaska were released. The emails &hellip;">
+  <meta name="description" content="tl;dr Should evolution be taught in schools? Go here to visualize what the Miss USA contestants think. The Visualization Education is an area sorely &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,74 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-09T13:02:05-07:00" pubdate data-updated="true">Jul 9<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>tl;dr</strong> Should evolution be taught in schools? Go <a href="http://miss-usa-evolution.heroku.com">here</a> to visualize what the Miss USA contestants think.</p>
+
+<h1>The Visualization</h1>
+
+<p>Education is an area sorely in need of data crunching, so when I ran across <a href="http://www.youtube.com/watch?v=9QBv2CFTSWU&amp;feature=player_embedded#at=56">an amusing video</a> satirizing the Miss USA contestants&#8217; thoughts on teaching evolution, I thought it would be fun to transcribe <a href="youtube=http://www.youtube.com/watch?v=UkBmhM0R2A0&amp;feature=youtu.be#at=41">the original video</a> and visualize the data.</p>
+
+<p>So after some tedious transcription, I built <a href="http://miss-usa-evolution.heroku.com">this app</a> to categorize and visualize the responses in various ways. (Mouseover states to see transcriptions, and click to jump to each contestant&#8217;s response in the video.)</p>
+
+<h1>Example Maps</h1>
+
+<p>Here are some examples of the generated maps.</p>
+
+<p>First, we can look at which contestants believe in evolution (Miss California &#8211; the winner! &#8211; is the only contestant who explicitly states she believes in evolution; the red states explicitly state they do not believe in evolution; the grey states don&#8217;t make clear what they believe):</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=believes"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/believe-evolution.png" alt="Believe Evolution" /></a></p>
+
+<p>We can also see which contestants believe evolution should be taught in schools (green states say yes, red states say no, grey states say maybe or that it should be a choice):</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=should_teach"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/teach-evolution.png" alt="Teach Evolution" /></a></p>
+
+<p>Here is a rough Darwin-friendliness score I assigned to each response (worst in dark red to best in dark green):</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=score"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/score.png" alt="Score" /></a></p>
+
+<p>This map shows which contestants believe schools should teach creationism:</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=teach_creationism"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/teach-creationism.png" alt="Teach Creationism" /></a></p>
+
+<p>And this map shows which contestants mention science in their response:</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=mentions_science"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/mention-science.png" alt="Mention Science" /></a></p>
+
+<p>So while there aren&#8217;t any striking patterns (I was hoping for a bright swath of red across the most religious states), the data&#8217;s still fun to look at, and it&#8217;s helpful to see that Alabama, whose <a href="http://www.youtube.com/watch?v=UkBmhM0R2A0&amp;feature=youtu.be#at=42">strongly anti-evolution</a> candidate is the only one colored red in both of the first two maps, does seem to be a bit of an outlier with respect to the rest of the nation.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -955,99 +1023,6 @@ executive               0.6058707124010555
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/04/16/what-is-cointegration-2/">Introduction to Cointegration and Pairs Trading</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-16T03:44:14-07:00" pubdate data-updated="true">Apr 16<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>Introduction</h1>
-
-<p>Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&#8217;t know each other (they&#8217;re independent), so there&#8217;s no meaningful relationship between their paths.</p>
-
-<p>But suppose instead you have a drunk walking with her dog. This time there <em>is</em> a connection. What&#8217;s the nature of this connection? Notice that although each path individually is still an unpredictable random walk, given the location of one of the drunk or dog, we have a pretty good idea of where the other is; that is, the distance between the two is fairly predictable. (For example, if the dog wanders too far away from his owner, she&#8217;ll tend to move in his direction to avoid losing him, so the two stay close together despite a tendency to wander around on their own.) We describe this relationship by saying that the drunk and her dog form a cointegrating pair.</p>
-
-<p>In more technical terms, if we have two non-stationary time series X and Y that become stationary when differenced (these are called integrated of order one series, or I(1) series; random walks are one example) such that some linear combination of X and Y is stationary (aka, I(0)), then we say that X and Y are cointegrated. In other words, while neither X nor Y alone hovers around a constant value, some combination of them does, so we can think of cointegration as describing a particular kind of long-run equilibrium relationship. (The definition of cointegration can be extended to multiple time series, with higher orders of integration.)</p>
-
-<p>Other examples of cointegrated pairs:</p>
-
-<ul>
-<li>Income and consumption: as income increases/decreases, so too does consumption.</li>
-<li>Size of police force and amount of criminal activity</li>
-<li>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</li>
-<li>Number of patients entering or leaving a hospital</li>
-</ul>
-
-
-<h1>An application</h1>
-
-<p>So why do we care about cointegration? In quantitative finance, cointegration forms the basis of the pairs trading strategy: suppose we have two cointegrated stocks X and Y, with the particular (for concreteness) cointegrating relationship X - 2Y = Z, where Z is a stationary series of zero mean. For example, X could be McDonald&#8217;s, Y could be Burger King, and the cointegration relationship would mean that X tends to be priced twice as high as Y, so that when X is more than twice the price of Y, we expect X to move down or Y to move up in the near future (and analogously, if X is less than twice the price of Y, we expect X to move up or Y to move down). This suggests the following trading strategy: if X - 2Y > d, for some positive threshold d, then we should sell X and buy Y (since we expect X to decrease in price and Y to increase), and similarly, if X - 2Y &lt; -d, then we should buy X and sell Y.</p>
-
-<h1>Spurious regression</h1>
-
-<p>But why do we need the notion of cointegration at all? Why can&#8217;t we simply use, say, the R-squared between X or Y to see if X and Y have some kind of relationship? The reason is that standard regression analysis fails when dealing with non-stationary variables, leading to spurious regressions that suggest relationships even when there are none.</p>
-
-<p>For example, suppose we regress two independent random walks against each other, and test for a linear relationship. A large percentage of the time, we&#8217;ll find high R-squared values and low p-values when using standard OLS statistics, even though there&#8217;s absolutely no relationship between the two random walks. As an illustration, here I simulated 1000 pairs of random walks of length 100, and found p-values less than 0.05 in 77% of the cases:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png"><img src="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png" alt="Spurious Regression" /></a></p>
-
-<h1>A Cointegration Test</h1>
-
-<p>So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:</p>
-
-<ul>
-<li>Check that $ X_t $ and $ Y_t $ are both I(1).</li>
-<li>Estimate the cointegrating relationship $ Y_t = aX_t + e_t $ by ordinary least squares.</li>
-<li>Check that the cointegrating residuals $ e_t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</li>
-</ul>
-
-
-<h1>Error-correction and Granger representation</h1>
-
-<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations</p>
-
-<p>$ X_t = a X_{t-1} + b Y_{t-1} + u_t $
-$ Y_t = c X_{t-1} + d Y_{t-1} + v_t $</p>
-
-<p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
-
-<p>$ \Delta X_t = \alpha_1 (Y_{t-1} - \beta X_{t-1}) + u_t $
-$ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
-
-<p>where $ Y_{t-1} - \beta X_{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y_{t-1} - \beta X_{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
-
-<h1>Summary</h1>
-
-<p>So, just to summarize a bit, cointegration is an equilibrium relationship between time series that individually aren&#8217;t in equilbrium (you can kind of contrast this with (Pearson) correlation, which describes a linear relationship), and it&#8217;s useful because it allows us to incorporate both short-term dynamics (deviations from equilibrium) and long-run expectations (corrections to equilibrium).</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/3/">&larr; Older</a>
@@ -1073,6 +1048,10 @@ $ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/02/26/pointwise-mutual-number-linformation/">Pointwise Mutual #Linformation</a>
+      </li>
     
       <li class="post">
         <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
@@ -1108,10 +1087,6 @@ $ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
     
       <li class="post">
         <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
       </li>
     
   </ul>

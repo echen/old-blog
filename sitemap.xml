@@ -153,8 +153,12 @@
         <lastmod>2012-02-23T11:54:42-08:00</lastmod>
     </url>
     <url>
+        <loc>http://blog.echen.me/2012/02/26/pointwise-mutual-number-linformation/</loc>
+        <lastmod>2012-02-26T15:47:00-08:00</lastmod>
+    </url>
+    <url>
         <loc>http://blog.echen.me/blog/archives/</loc>
-        <lastmod>2012-02-23T11:54:42-08:00</lastmod>
+        <lastmod>2012-02-26T15:47:00-08:00</lastmod>
     </url>
     <url>
         <loc>http://blog.echen.me/feed/index.xml</loc>
@@ -166,6 +170,6 @@
     </url>
     <url>
         <loc>http://blog.echen.me/</loc>
-        <lastmod>2012-02-23T11:54:42-08:00</lastmod>
+        <lastmod>2012-02-26T15:47:00-08:00</lastmod>
     </url>
 </urlset>
