@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually &hellip;">
+  <meta name="description" content="A simpler eigenvector calculation Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,131 +74,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/03/14/summary-factorization-meets-the-neighborhood/">Netflix Prize Summary: Factorization Meets the Neighborhood</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-14T04:21:52-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually, I hope to have a more integrated tutorial, but here&#8217;s a rough draft for now.)</p>
-
-<p>This is a summary of Koren&#8217;s 2008 <a href="public.research.att.com/~volinsky/netflix/kdd08koren.pdf">Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering Model</a>.</p>
-
-<p>There are two approaches to collaborative filtering: neighborhood methods and latent factor models.</p>
-
-<ul>
-<li>Neighborhood models are most effective at detecting very localized relationships (e.g., that people who like X-Men also like Spiderman), but poor at detecting a user&#8217;s overall signals.</li>
-<li>Latent factor models are best at estimating overall structure (e.g., that a user likes horror movies), but are poor at detecting strong associations among small sets of closely related items.</li>
-</ul>
-
-
-<p>Since the two approaches have complementary strengths and weaknesses, we should integrate the two; this integration is the focus of this paper.</p>
-
-<h1>Preliminaries</h1>
-
-<p>As mentioned in previous papers, we should normalize out common effects from movies. Throughout the rest of this paper, Koren uses a baseline estimate of overall rating mean + user deviation from average + movie deviation from average for the rating of user i on movie i; estimation of the latter two parameters are done by solving a regularized least squares problem.</p>
-
-<p>Koren then describes using a binary matrix (1 for rated, 0 for not rated) as a source of implicit feedback. This is useful because the mere fact that a user rated many science fiction movies (say) suggests that the user likes science fiction movies.</p>
-
-<h1>A Neighborhood Model</h1>
-
-<p>Recall the previous paper, where we modeled each rating $r_{ui}$ as</p>
-
-<p>$$r_{ui} = b_{ui}+ \sum_{N \in N(i; u)} (r_{uj} - b_{uj}) w_{ij},$$</p>
-
-<p>where $N(i; u)$ is the k items most similar to i among the items user u rated, and the $w_{ij}$ are parameters to be learned by solving a regularized least squares problem.</p>
-
-<p>This paper makes several enhancements to that model. First, we replace $N(i; u)$ with $R^k(i; u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $N^k(i; u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
-
-<p>$$r_{ui} = b_{ui} + \sum_{j \in R^k(i; u)} (r_{uj} - b_{uj}) w_{ij} + \sum_{j \in N^k(i; u)} c_{ij},$$</p>
-
-<p>where the $c_{ij}$ are another set of parameters to learn.</p>
-
-<p>Notice that by taking the intersection of the k items most similar to i with the items user u rated (giving perhaps a set of size less than k), rather than taking the k items most similar to i among the items user u rated, we let our model be influenced not only by what a user rates, but also by what a user does not rate. For example, if a user does not rate LOTR 1 or LOTR 2, his predicted rating for LOTR 3 is penalized.</p>
-
-<p>This implies that our current model encourages greater deviations from baseline estimates for users that provided many ratings or plenty of implicit feedback. In other words, for well-modeled users with a lot of input, we are willing to predict quirkier and less common recommendations; users we have less information about, on the other hand, receive safer, baseline estimates.</p>
-
-<p>Nonetheless, this dichotomy between power users and newbie users is perhaps overemphasized by our current model, so we moderate the dichotomy by modifying our model to be</p>
-
-<p>$$r_{ui} = b_{ui} + |R^k(i; u)|^{-0.5} \sum_{j \in R^k(i; u)} (r_{uj} - b_{uj}) w_{ij} + |N^k(i; u)|^{-0.5} \sum_{j \in N^k(i; u)} c_{ij}.$$</p>
-
-<p>Parameters are determined by solving a regularized least squares problem.</p>
-
-<h1>Latent Factor Models Revisited</h1>
-
-<p>Typical SVD approaches are based on the following rule:</p>
-
-<p>$$r_{ui} = b_{ui} + p_u^T q_i,$$</p>
-
-<p>where $p_u$ is a user-factors vector and $q_i$ is an item-factors vector. We describe two enhancements.</p>
-
-<h2>Asymmetric-SVD</h2>
-
-<p>One suggestion is to replace $p_u$ with</p>
-
-<p>$$|R(u)|^{-0.5} + \sum_{j \in R(u)} (r_{uj} - b_{uj}) x_j + |N(u)|^{-0.5} \sum_{j \in N(u)} y_j,$$</p>
-
-<p>where $R(u)$ is the set of items user u has rated, and $N(u)$ is the set of items user u has provided implicit feedback for. In other words, this model represents users through the items they prefer, rather than expressing users in a latent feature space. This model has several advantages:</p>
-
-<ul>
-<li>Asymmetric-SVD does not parameterize users, so we do not need to wait to retrain the model when a user comes in. Instead, we can handle new users as soon as they provide feedback.</li>
-<li>Predictions are a direct function of past feedback, so we can easily explain predictions. (When using a pure latent feature solution, however, explainability is difficult.)</li>
-</ul>
-
-
-<p>As usual, parameters are learned via a regularized least-squares minimization.</p>
-
-<h2>SVD++</h2>
-
-<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $p_u$ with $p_u + |N(u)|^{-0.5} \sum_{j \in N(u)} y_j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
-
-<h1>An Integrated Model</h1>
-
-<p>An integrated model incorporating baseline estimates, the neighborhood approach, and the latent factor approach is as follows:</p>
-
-<p>$$r_{ui} = \left[\mu + b_u + b_i\right] +\left[q_i^T \big(p_u + \sqrt{|N(u)|}\sum_{j \in N(u)} y_j \big)\right] + \left[\sqrt{|R^k(i;u)} \sum_{j \in R^k(i; u)}(r_{uj} - b_{uj})w_{ij}+\sqrt{|N^k(i;u)|} \sum_{j \in N^k(i; u)} c_{ij}\right].$$</p>
-
-<p>Note that we have used $(\mu + b_u + b_i)$ as our baseline estimate. We also used the SVD++ model, but we could use the Asymmetric-SVD model instead.</p>
-
-<p>This rule provides a 3-tier model for recommendations:</p>
-
-<ul>
-<li>The first baseline group describes general properties of the item and user. For example, it may say that &#8220;The Sixth Sense&#8221; movie is known to be a good movie in general, and that Joe rates like the average user.</li>
-<li>The next latent factor group may say that since &#8220;The Sixth Sense&#8221; and Joe rate high on the Psychological Thrillers Scale, Joe may like The Sixth Sense because he likes this genre of movies in general.</li>
-<li>The final neighborhood tier makes fine-grained adjustments that are hard to file, such as the fact that Joe rated low the movie &#8220;Signs&#8221;, a similar psychological thriller by the same director.</li>
-</ul>
-
-
-<p>As usual, model parameters are determined by minimizing the regularized squared error function through gradient descent.</p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -401,10 +276,6 @@
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/2012/02/26/pointwise-mutual-number-linformation/">Pointwise Mutual #Linformation</a>
-      </li>
-    
-      <li class="post">
         <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
       </li>
     
@@ -438,6 +309,10 @@
     
       <li class="post">
         <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
       </li>
     
   </ul>

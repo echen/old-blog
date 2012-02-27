@@ -4,36 +4,13 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-02-26T15:51:24-08:00</updated>
+  <updated>2012-02-26T17:38:39-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
     
   </author>
 
-  
-  <entry>
-    <title>Pointwise Mutual #Linformation</title>
-    <link href="http://blog.echen.me/2012/02/26/pointwise-mutual-number-linformation/"/>
-    <updated>2012-02-26T15:09:00-08:00</updated>
-    <id>http://blog.echen.me/2012/02/26/pointwise-mutual-number-linformation</id>
-    <content type="html">&lt;p&gt;&lt;a href=&quot;http://en.wikipedia.org/wiki/Pointwise_mutual_information&quot;&gt;Pointwise mutual information&lt;/a&gt; is a common way of measuring &lt;em&gt;associations&lt;/em&gt; that I&amp;#8217;ve made &lt;a href=&quot;http://blog.echen.me/2011/09/29/stuff-harvard-people-like/&quot;&gt;great use of&lt;/a&gt; before. Can we use it to better understand hashtags?&lt;/p&gt;
-
-&lt;p&gt;Here I calculated PMI-associations for &lt;a href=&quot;https://twitter.com/#!/search/%23linsanity&quot;&gt;#linsanity&lt;/a&gt;:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/linformation/%23linsanity.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/linformation/%23linsanity.png&quot; alt=&quot;#linsanity&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;(Roughly, the pointwise mutual information measures how much more likely each word is to appear in a tweet, given that the tweet is tagged with #linsanity.)&lt;/p&gt;
-
-&lt;p&gt;So even if we have no idea what #linsanity means, we can guess it has something to do with an Asian dude who plays basketball for the NY Knicks.&lt;/p&gt;
-
-&lt;p&gt;And here are the #linningest words:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/linformation/%23linning.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/linformation/%23linning.png&quot; alt=&quot;#linning&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Turns out homeboy shot down a date with Kim Kardashian.&lt;/p&gt;
-</content>
-  </entry>
   
   <entry>
     <title>Movie recommendations and more via MapReduce and Scalding</title>
@@ -3285,6 +3262,72 @@ executive               0.6058707124010555
 &lt;li&gt;Silicon Valley is more into the &lt;strong&gt;locavore&lt;/strong&gt; movement (&lt;em&gt;green, local&lt;/em&gt;).&lt;/li&gt;
 &lt;/ul&gt;
 
+</content>
+  </entry>
+  
+  <entry>
+    <title>Introduction to Cointegration and Pairs Trading</title>
+    <link href="http://blog.echen.me/2011/04/16/what-is-cointegration-2/"/>
+    <updated>2011-04-16T03:44:14-07:00</updated>
+    <id>http://blog.echen.me/2011/04/16/what-is-cointegration-2</id>
+    <content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&amp;#8217;t know each other (they&amp;#8217;re independent), so there&amp;#8217;s no meaningful relationship between their paths.&lt;/p&gt;
+
+&lt;p&gt;But suppose instead you have a drunk walking with her dog. This time there &lt;em&gt;is&lt;/em&gt; a connection. What&amp;#8217;s the nature of this connection? Notice that although each path individually is still an unpredictable random walk, given the location of one of the drunk or dog, we have a pretty good idea of where the other is; that is, the distance between the two is fairly predictable. (For example, if the dog wanders too far away from his owner, she&amp;#8217;ll tend to move in his direction to avoid losing him, so the two stay close together despite a tendency to wander around on their own.) We describe this relationship by saying that the drunk and her dog form a cointegrating pair.&lt;/p&gt;
+
+&lt;p&gt;In more technical terms, if we have two non-stationary time series X and Y that become stationary when differenced (these are called integrated of order one series, or I(1) series; random walks are one example) such that some linear combination of X and Y is stationary (aka, I(0)), then we say that X and Y are cointegrated. In other words, while neither X nor Y alone hovers around a constant value, some combination of them does, so we can think of cointegration as describing a particular kind of long-run equilibrium relationship. (The definition of cointegration can be extended to multiple time series, with higher orders of integration.)&lt;/p&gt;
+
+&lt;p&gt;Other examples of cointegrated pairs:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Income and consumption: as income increases/decreases, so too does consumption.&lt;/li&gt;
+&lt;li&gt;Size of police force and amount of criminal activity&lt;/li&gt;
+&lt;li&gt;A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.&lt;/li&gt;
+&lt;li&gt;Number of patients entering or leaving a hospital&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;An application&lt;/h1&gt;
+
+&lt;p&gt;So why do we care about cointegration? In quantitative finance, cointegration forms the basis of the pairs trading strategy: suppose we have two cointegrated stocks X and Y, with the particular (for concreteness) cointegrating relationship X - 2Y = Z, where Z is a stationary series of zero mean. For example, X could be McDonald&amp;#8217;s, Y could be Burger King, and the cointegration relationship would mean that X tends to be priced twice as high as Y, so that when X is more than twice the price of Y, we expect X to move down or Y to move up in the near future (and analogously, if X is less than twice the price of Y, we expect X to move up or Y to move down). This suggests the following trading strategy: if X - 2Y &gt; d, for some positive threshold d, then we should sell X and buy Y (since we expect X to decrease in price and Y to increase), and similarly, if X - 2Y &amp;lt; -d, then we should buy X and sell Y.&lt;/p&gt;
+
+&lt;h1&gt;Spurious regression&lt;/h1&gt;
+
+&lt;p&gt;But why do we need the notion of cointegration at all? Why can&amp;#8217;t we simply use, say, the R-squared between X or Y to see if X and Y have some kind of relationship? The reason is that standard regression analysis fails when dealing with non-stationary variables, leading to spurious regressions that suggest relationships even when there are none.&lt;/p&gt;
+
+&lt;p&gt;For example, suppose we regress two independent random walks against each other, and test for a linear relationship. A large percentage of the time, we&amp;#8217;ll find high R-squared values and low p-values when using standard OLS statistics, even though there&amp;#8217;s absolutely no relationship between the two random walks. As an illustration, here I simulated 1000 pairs of random walks of length 100, and found p-values less than 0.05 in 77% of the cases:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png&quot; alt=&quot;Spurious Regression&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1&gt;A Cointegration Test&lt;/h1&gt;
+
+&lt;p&gt;So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Check that $ X_t $ and $ Y_t $ are both I(1).&lt;/li&gt;
+&lt;li&gt;Estimate the cointegrating relationship $ Y_t = aX_t + e_t $ by ordinary least squares.&lt;/li&gt;
+&lt;li&gt;Check that the cointegrating residuals $ e_t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;Error-correction and Granger representation&lt;/h1&gt;
+
+&lt;p&gt;Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations&lt;/p&gt;
+
+&lt;p&gt;$ X_t = a X_{t-1} + b Y_{t-1} + u_t $
+$ Y_t = c X_{t-1} + d Y_{t-1} + v_t $&lt;/p&gt;
+
+&lt;p&gt;By the Granger representation theorem (which is actually a bit more general than this), we then have&lt;/p&gt;
+
+&lt;p&gt;$ \Delta X_t = \alpha_1 (Y_{t-1} - \beta X_{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $&lt;/p&gt;
+
+&lt;p&gt;where $ Y_{t-1} - \beta X_{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y_{t-1} - \beta X_{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.&lt;/p&gt;
+
+&lt;h1&gt;Summary&lt;/h1&gt;
+
+&lt;p&gt;So, just to summarize a bit, cointegration is an equilibrium relationship between time series that individually aren&amp;#8217;t in equilbrium (you can kind of contrast this with (Pearson) correlation, which describes a linear relationship), and it&amp;#8217;s useful because it allows us to incorporate both short-term dynamics (deviations from equilibrium) and long-run expectations (corrections to equilibrium).&lt;/p&gt;
 </content>
   </entry>
   

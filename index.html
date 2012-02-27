@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="Pointwise mutual information is a common way of measuring associations that I&#8217;ve made great use of before. Can we use it to better understand &hellip;">
+  <meta name="description" content="This is going to be an in-your-face introduction to Scalding, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced. In 140 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,56 +74,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2012/02/26/pointwise-mutual-number-linformation/">Pointwise Mutual #Linformation</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-02-26T15:09:00-08:00" pubdate data-updated="true">Feb 26<span>th</span>, 2012</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://en.wikipedia.org/wiki/Pointwise_mutual_information">Pointwise mutual information</a> is a common way of measuring <em>associations</em> that I&#8217;ve made <a href="http://blog.echen.me/2011/09/29/stuff-harvard-people-like/">great use of</a> before. Can we use it to better understand hashtags?</p>
-
-<p>Here I calculated PMI-associations for <a href="https://twitter.com/#!/search/%23linsanity">#linsanity</a>:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/linformation/%23linsanity.png"><img src="http://dl.dropbox.com/u/10506/blog/linformation/%23linsanity.png" alt="#linsanity" /></a></p>
-
-<p>(Roughly, the pointwise mutual information measures how much more likely each word is to appear in a tweet, given that the tweet is tagged with #linsanity.)</p>
-
-<p>So even if we have no idea what #linsanity means, we can guess it has something to do with an Asian dude who plays basketball for the NY Knicks.</p>
-
-<p>And here are the #linningest words:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/linformation/%23linning.png"><img src="http://dl.dropbox.com/u/10506/blog/linformation/%23linning.png" alt="#linning" /></a></p>
-
-<p>Turns out homeboy shot down a date with Kim Kardashian.</p>
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -2943,6 +2893,74 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
     </article>
   
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-07-09T13:02:05-07:00" pubdate data-updated="true">Jul 9<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>tl;dr</strong> Should evolution be taught in schools? Go <a href="http://miss-usa-evolution.heroku.com">here</a> to visualize what the Miss USA contestants think.</p>
+
+<h1>The Visualization</h1>
+
+<p>Education is an area sorely in need of data crunching, so when I ran across <a href="http://www.youtube.com/watch?v=9QBv2CFTSWU&amp;feature=player_embedded#at=56">an amusing video</a> satirizing the Miss USA contestants&#8217; thoughts on teaching evolution, I thought it would be fun to transcribe <a href="youtube=http://www.youtube.com/watch?v=UkBmhM0R2A0&amp;feature=youtu.be#at=41">the original video</a> and visualize the data.</p>
+
+<p>So after some tedious transcription, I built <a href="http://miss-usa-evolution.heroku.com">this app</a> to categorize and visualize the responses in various ways. (Mouseover states to see transcriptions, and click to jump to each contestant&#8217;s response in the video.)</p>
+
+<h1>Example Maps</h1>
+
+<p>Here are some examples of the generated maps.</p>
+
+<p>First, we can look at which contestants believe in evolution (Miss California &#8211; the winner! &#8211; is the only contestant who explicitly states she believes in evolution; the red states explicitly state they do not believe in evolution; the grey states don&#8217;t make clear what they believe):</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=believes"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/believe-evolution.png" alt="Believe Evolution" /></a></p>
+
+<p>We can also see which contestants believe evolution should be taught in schools (green states say yes, red states say no, grey states say maybe or that it should be a choice):</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=should_teach"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/teach-evolution.png" alt="Teach Evolution" /></a></p>
+
+<p>Here is a rough Darwin-friendliness score I assigned to each response (worst in dark red to best in dark green):</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=score"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/score.png" alt="Score" /></a></p>
+
+<p>This map shows which contestants believe schools should teach creationism:</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=teach_creationism"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/teach-creationism.png" alt="Teach Creationism" /></a></p>
+
+<p>And this map shows which contestants mention science in their response:</p>
+
+<p><a href="http://miss-usa-evolution.heroku.com/?column=mentions_science"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/mention-science.png" alt="Mention Science" /></a></p>
+
+<p>So while there aren&#8217;t any striking patterns (I was hoping for a bright swath of red across the most religious states), the data&#8217;s still fun to look at, and it&#8217;s helpful to see that Alabama, whose <a href="http://www.youtube.com/watch?v=UkBmhM0R2A0&amp;feature=youtu.be#at=42">strongly anti-evolution</a> candidate is the only one colored red in both of the first two maps, does seem to be a bit of an outlier with respect to the rest of the nation.</p>
+</div>
+  
+  
+
+
+    </article>
+  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -2966,10 +2984,6 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/2012/02/26/pointwise-mutual-number-linformation/">Pointwise Mutual #Linformation</a>
-      </li>
     
       <li class="post">
         <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
@@ -3005,6 +3019,10 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
     
       <li class="post">
         <a href="/2011/07/18/introduction-to-restricted-boltzmann-machines/">Introduction to Restricted Boltzmann Machines</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/">Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</a>
       </li>
     
   </ul>
