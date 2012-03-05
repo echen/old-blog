@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Choosing a Machine Learning Classifier - Edwin Chen's Blog</title>
+  <title>Instant interactive visualization with d3 + ggplot2 - Edwin Chen's Blog</title>
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best &hellip;">
+  <meta name="description" content="It&#8217;s often easier to understand a chart than a table. So why is it still so hard to make a simple data graphic, and why am I still bombarded by &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier">
+  <link rel="canonical" href="http://blog.echen.me/2012/03/05/instant-interactive-visualization-with-d3-and-ggplot2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,7 +77,7 @@
   
   <header>
     
-      <h1 class="entry-title">Choosing a Machine Learning Classifier</h1>
+      <h1 class="entry-title">Instant interactive visualization with d3 + ggplot2</h1>
     
     
       <p class="meta">
@@ -93,36 +93,36 @@
   
 
 
-<time datetime="2011-04-27T18:43:15-07:00" pubdate data-updated="true">Apr 27<span>th</span>, 2011</time>
+<time datetime="2012-03-05T09:37:00-08:00" pubdate data-updated="true">Mar 5<span>th</span>, 2012</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best bet is to test out a couple different ones (making sure to try different parameters within each algorithm as well), and select the best one by cross-validation. But if you&#8217;re simply looking for a &#8220;good enough&#8221; algorithm for your problem, or a place to start, here are some general guidelines I&#8217;ve found to work well over the years.</p>
+<div class="entry-content"><p>It&#8217;s often easier to understand a chart than a table. So why is it still so hard to make a simple data graphic, and why am I still bombarded by mind-numbing reams of raw <em>numbers</em>?</p>
 
-<h1>How large is your training set?</h1>
+<p>(Yeah, I love <a href="http://blog.echen.me/2012/01/17/quick-introduction-to-ggplot2/">ggplot2</a> to death. But sometimes I want a little more interaction, and sometimes all I want is to drag-and-drop and be done.)</p>
 
-<p>If your training set is small, high bias/low variance classifiers (e.g., Naive Bayes) have an advantage over low bias/high variance classifiers (e.g., kNN), since the latter will overfit. But low bias/high variance classifiers start to win out as your training set grows (they have lower asymptotic error), since high bias classifiers aren&#8217;t powerful enough to provide accurate models.</p>
+<p>So I&#8217;ve been experimenting with <a href="http://minifolds.herokuapp.com/graphs/1?x=health&amp;y=speed&amp;size=intelligence&amp;color=age&amp;group=height">a small, ggplot2-inspired d3 app</a>.</p>
 
-<p>You can also think of this as a generative model vs. discriminative model distinction.</p>
+<p>Simply drop a file, and bam! Instant scatterplot:</p>
 
-<h1>Advantages of some particular algorithms</h1>
+<p><a href="http://minifolds.herokuapp.com/graphs/1?x=health&amp;y=speed"><img src="http://dl.dropbox.com/u/10506/blog/minifolds/swiss-roll-bw.png" alt="Swiss Roll B&amp;W" /></a></p>
 
-<p><strong>Advantages of Naive Bayes:</strong> Super simple, you&#8217;re just doing a bunch of counts. If the NB conditional independence assumption actually holds, a Naive Bayes classifier will converge quicker than discriminative models like logistic regression, so you need less training data. And even if the NB assumption doesn&#8217;t hold, a NB classifier still often does a great job in practice. A good bet if  want something fast and easy that performs pretty well. Its main disadvantage is that it can&#8217;t learn interactions between features (e.g., it can&#8217;t learn that although you love movies with Brad Pitt and Tom Cruise, you hate movies where they&#8217;re together).</p>
+<p>But wait &#8211; that&#8217;s only 2 dimensions. You can add some more through color, size, and groups:</p>
 
-<p><strong>Advantages of Logistic Regression:</strong> Lots of ways to regularize your model, and you don&#8217;t have to worry as much about your features being correlated, like you do in Naive Bayes. You also have a nice probabilistic interpretation, unlike decision trees or SVMs, and you can easily update your model to take in new data (using an online gradient descent method), again unlike decision trees or SVMs. Use it if you want a probabilistic framework (e.g., to easily adjust classification thresholds, to say when you&#8217;re unsure, or to get confidence intervals) or if you expect to receive more training data in the future that you want to be able to quickly incorporate into your model.</p>
+<p><a href="http://minifolds.herokuapp.com/graphs/1?x=health&amp;y=speed&amp;size=intelligence&amp;color=age&amp;group=height"><img src="http://dl.dropbox.com/u/10506/blog/minifolds/swiss-roll-edit.png" alt="Swiss Roll Edit" /></a></p>
 
-<p><strong>Advantages of Decision Trees:</strong> Easy to interpret and explain (for some people &#8211; I&#8217;m not sure I fall into this camp). They easily handle feature interactions and they&#8217;re non-parametric, so you don&#8217;t have to worry about outliers or whether the data is linearly separable (e.g., decision trees easily take care of cases where you have class A at the low end of some feature x, class B in the mid-range of feature x, and A again at the high end). One disadvantage is that they don&#8217;t support online learning, so you have to rebuild your tree when new examples come on. Another disadvantage is that they easily overfit, but that&#8217;s where ensemble methods like random forests (or boosted trees) come in. Plus, random forests are often the winner for lots of problems in classification (usually slightly ahead of SVMs, I believe), they&#8217;re fast and scalable, and you don&#8217;t have to worry about tuning a bunch of parameters like you do with SVMs, so they seem to be quite popular these days.</p>
+<p>(Click <a href="http://minifolds.herokuapp.com/graphs/1?x=health&amp;y=speed&amp;size=intelligence&amp;color=age&amp;group=height">here</a> to play with the data yourself.)</p>
 
-<p><strong>Advantages of SVMs:</strong> High accuracy, nice theoretical guarantees regarding overfitting, and with an appropriate kernel they can work well even if you&#8217;re data isn&#8217;t linearly separable in the base feature space. Especially popular in text classification problems where very high-dimensional spaces are the norm. Memory-intensive, hard to interpret, and kind of annoying to run and tune, though, so I think random forests are starting to steal the crown.</p>
+<p>And you can easily switch which variables are getting plotted, and see all the information associated with each point.</p>
 
-<h1>But&#8230;</h1>
+<p><a href="http://minifolds.herokuapp.com/graphs/1?x=weight&amp;y=speed&amp;size=health&amp;color=age&amp;group=height"><img src="http://dl.dropbox.com/u/10506/blog/minifolds/swiss-roll-pivot.png" alt="Swiss Roll Pivot" /></a></p>
 
-<p>Recall, though, that better data often beats better algorithms, and designing good features goes a long way. And if you have a huge dataset, then whichever classification algorithm you use might not matter so much in terms of classification performance (so choose your algorithm based on speed or ease of use instead).</p>
+<p>(Same dataset, different aesthetic assignments.)</p>
 
-<p>And to reiterate what I said above, if you really care about accuracy, you should definitely try a bunch of different classifiers and select the best one by cross-validation. Or, to take a lesson from the Netflix Prize (and Middle Earth), just use an ensemble method to choose them all.</p>
+<p>I&#8217;m thinking of adding more kinds of charts, support for categorical variables, more interactivity (sliders to interact with other dimensions?!), and making the UI even easier (e.g., simplify column naming). In the meantime, the code is <a href="https://github.com/echen/minifolds">here</a> on Github, and tips and suggestions are welcome!</p>
 </div>
 
 
@@ -145,21 +145,15 @@
   
 
 
-<time datetime="2011-04-27T18:43:15-07:00" pubdate data-updated="true">Apr 27<span>th</span>, 2011</time>
+<time datetime="2012-03-05T09:37:00-08:00" pubdate data-updated="true">Mar 5<span>th</span>, 2012</time>
       
-
-<span class="categories">
-  
-    <a class='category' href='/categories/expository/'>expository</a>
-  
-</span>
 
 
     </p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier/" data-via="edchedch" data-counturl="http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier/" >Tweet</a>
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.echen.me/2012/03/05/instant-interactive-visualization-with-d3-and-ggplot2/" data-via="edchedch" data-counturl="http://blog.echen.me/2012/03/05/instant-interactive-visualization-with-d3-and-ggplot2/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -172,10 +166,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/2011/04/25/kickstarter-data-analysis-success-and-pricing/" title="Previous Post: Kickstarter Data Analysis: Success and Pricing">&laquo; Kickstarter Data Analysis: Success and Pricing</a>
+        <a class="basic-alignment left" href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/" title="Previous Post: Movie recommendations and more via MapReduce and Scalding">&laquo; Movie recommendations and more via MapReduce and Scalding</a>
       
-      
-        <a class="basic-alignment right" href="/2011/05/01/eigensheep/" title="next Post: Eigensheep">Eigensheep &raquo;</a>
       
     </p>
   </footer>
@@ -284,8 +276,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier/';
-        var disqus_url = 'http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier/';
+        var disqus_identifier = 'http://blog.echen.me/2012/03/05/instant-interactive-visualization-with-d3-and-ggplot2/';
+        var disqus_url = 'http://blog.echen.me/2012/03/05/instant-interactive-visualization-with-d3-and-ggplot2/';
         var disqus_script = 'embed.js';
       
     (function () {
