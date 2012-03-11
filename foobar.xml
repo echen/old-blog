@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-10T21:51:59-08:00</updated>
+  <updated>2012-03-10T22:15:18-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -48,7 +48,9 @@
     <link href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/"/>
     <updated>2012-02-09T03:20:00-08:00</updated>
     <id>http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding</id>
-    <content type="html">&lt;p&gt;This is going to be an in-your-face introduction to &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding&lt;/a&gt;, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced.&lt;/p&gt;
+    <content type="html">&lt;p&gt;&lt;em&gt;Scalding is an in-house MapReduce framework that Twitter recently open-sourced. Like &lt;a href=&quot;http://pig.apache.org/&quot;&gt;Pig&lt;/a&gt;, it provides an abstraction on top of MapReduce that makes it easy to write big data jobs in a syntax that&amp;#8217;s simple and concise. Unlike Pig, Scalding is written in pure Scala &amp;#8211; which means all the power of Scala and the JVM is already built-in. No more UDFs, folks!&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;This is going to be an in-your-face introduction to &lt;a href=&quot;https://github.com/twitter/scalding&quot;&gt;Scalding&lt;/a&gt;, Twitter&amp;#8217;s (Scala + Cascading) MapReduce framework.&lt;/p&gt;
 
 &lt;p&gt;In 140: instead of forcing you to write raw &lt;code&gt;map&lt;/code&gt; and &lt;code&gt;reduce&lt;/code&gt; functions, Scalding allows you to write &lt;em&gt;natural&lt;/em&gt; code like&lt;/p&gt;
 

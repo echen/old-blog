@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="This is going to be an in-your-face introduction to Scalding, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced. In 140 &hellip;">
+  <meta name="description" content="Scalding is an in-house MapReduce framework that Twitter recently open-sourced. Like Pig, it provides an abstraction on top of MapReduce that makes &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -100,7 +100,9 @@
   </header>
 
 
-<div class="entry-content"><p>This is going to be an in-your-face introduction to <a href="https://github.com/twitter/scalding">Scalding</a>, the (Scala + Cascading) MapReduce framework that Twitter recently open-sourced.</p>
+<div class="entry-content"><p><em>Scalding is an in-house MapReduce framework that Twitter recently open-sourced. Like <a href="http://pig.apache.org/">Pig</a>, it provides an abstraction on top of MapReduce that makes it easy to write big data jobs in a syntax that&#8217;s simple and concise. Unlike Pig, Scalding is written in pure Scala &#8211; which means all the power of Scala and the JVM is already built-in. No more UDFs, folks!</em></p>
+
+<p>This is going to be an in-your-face introduction to <a href="https://github.com/twitter/scalding">Scalding</a>, Twitter&#8217;s (Scala + Cascading) MapReduce framework.</p>
 
 <p>In 140: instead of forcing you to write raw <code>map</code> and <code>reduce</code> functions, Scalding allows you to write <em>natural</em> code like</p>
 
