@@ -4,7 +4,7 @@
   <title><![CDATA[Category: expository | Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/categories/expository/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-10T22:15:18-08:00</updated>
+  <updated>2012-03-14T23:39:57-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -297,23 +297,23 @@ $ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
     <link href="http://blog.echen.me/2011/03/19/counting-clusters/"/>
     <updated>2011-03-19T04:22:16-07:00</updated>
     <id>http://blog.echen.me/2011/03/19/counting-clusters</id>
-    <content type="html"><![CDATA[<p>Given a set of datapoints, we often want to know how many clusters the datapoints form. Two practical algorithms for determining the number of clusters are the gap statistic and the prediction strength.</p>
+    <content type="html"><![CDATA[<p>Given a set of datapoints, we often want to know how many clusters the datapoints form. The <strong>gap statistic</strong> and the <strong>prediction strength</strong> are two practical algorithms for choosing the number of clusters.</p>
 
 <h1>Gap Statistic</h1>
 
-<p>The gap statistic algorithm (from <a href="http://www.stanford.edu/~hastie/Papers/gap.pdf">Estimating the number of clusters in a data set via the gap statistic</a>) works as follows.</p>
+<p>The <a href="http://www.stanford.edu/~hastie/Papers/gap.pdf">gap statistic algorithm</a> works as follows:</p>
 
-<p>For each i from 1 up to some maximum number of clusters:</p>
+<p>For each i from 1 up to some maximum number of clusters,</p>
 
 <ol>
-<li><p>Run a k-means algorithm on the original dataset to find i clusters, and sum the distance of all points from their cluster mean. Call this sum the <em>dispersion</em>.</p></li>
-<li><p>Generate a set of reference datasets (of the same size as the original). One simple way of generating a reference dataset is to sample uniformly from the original dataset's bounding rectangle; a more sophisticated approach is take into account the original dataset's shape by sampling, say, from a rectangle formed from the original dataset's principal components.</p></li>
+<li><p>Run a k-means algorithm on the original dataset to find i clusters, and sum the distance of all points from their cluster mean. Call this sum the <strong>dispersion</strong>.</p></li>
+<li><p>Generate a set of <em>reference</em> datasets (of the same size as the original). One simple way of generating a reference dataset is to sample uniformly from the original dataset's bounding rectangle; a more sophisticated approach is take into account the original dataset's shape by sampling, say, from a rectangle formed from the original dataset's principal components.</p></li>
 <li><p>Calculate the dispersion of each of these reference datasets, and take their mean.</p></li>
-<li><p>Define the ith <em>gap</em> by [log(mean dispersion of reference datasets) - log(dispersion of original dataset)].</p></li>
+<li><p>Define the ith <strong>gap</strong> by: log(mean dispersion of reference datasets) - log(dispersion of original dataset).</p></li>
 </ol>
 
 
-<p>Once we've calculated all the gaps (note that we can add confidence intervals as well; see the original paper for the formula), we can select the number of clusters to be the one that gives the maximum gap.</p>
+<p>Once we've calculated all the gaps (we can add confidence intervals as well; see <a href="http://www.stanford.edu/~hastie/Papers/gap.pdf">the original paper</a> for the formula), we can select the number of clusters to be the one that gives the maximum gap. (Sidenote: I view the gap statistic as a very statistical-minded algorithm, since it compares the original dataset against a set of reference "control" datasets.)</p>
 
 <p>For example, here I've generated three Gaussian clusters:</p>
 
@@ -323,17 +323,19 @@ $ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
 
 <p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png" alt="Gap Statistic on Three Gaussian Clusters" /></a></p>
 
-<p>(For a sample R implementation of the gap statistic, see <a href="https://github.com/echen/gap-statistic">here</a>.)</p>
+<p>For a sample R implementation of the gap statistic, see the Github repository <a href="https://github.com/echen/gap-statistic">here</a>.</p>
 
 <h1>Prediction Strength</h1>
 
-<p>Another cluster-counting algorithm is the prediction strength algorithm (from <a href="http://www-stat.stanford.edu/~tibs/ftp/predstr.ps">Cluster validation by prediction strength</a>). To run it, for each i from 1 up to some maximum number of clusters:</p>
+<p>Another cluster-counting algorithm is the <a href="http://www-stat.stanford.edu/~tibs/ftp/predstr.ps">prediction strength algorithm</a>. In contrast to the gap statistic (which, as mentioned above, I find very statistically), I see prediction strength as taking a more machine learning viewpoint, since it's formulated as a supervised learning problem validated against a test set.</p>
+
+<p>To calculate prediction strength, for each i from 1 up to some maximum number of clusters:</p>
 
 <ol>
 <li><p>Divide the dataset into two groups, a training set and a test set.</p></li>
 <li><p>Run a k-means algorithm on each set to find i clusters.</p></li>
 <li><p>For each <em>test</em> cluster, count the proportion of pairs of points in that cluster that would remain in the same cluster, if each were assigned to its closest <em>training</em> cluster mean.</p></li>
-<li><p>The minimum over these proportions is the prediction strength for i clusters.</p></li>
+<li><p>The minimum over these proportions is the <strong>prediction strength</strong> for i clusters.</p></li>
 </ol>
 
 
@@ -343,9 +345,71 @@ $ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
 
 <p><a href="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png"><img src="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png" alt="Prediction Strength on Three Gaussian Clusters" /></a></p>
 
-<p>(Again, for a sample R implementation of the prediction strength, see <a href="https://github.com/echen/prediction-strength">here</a>.)</p>
+<p>Again, check out a sample R implementation of the prediction strength <a href="https://github.com/echen/prediction-strength">here</a>.</p>
 
 <p>In practice, I tend to prefer using the gap statistic algorithm, since it's a little easier to code and it doesn't require selecting an arbitrary threshold like the prediction strength does. I've also found that it gives slightly better results (though the original prediction strength paper has the opposite finding).</p>
+
+<h1>Appendix</h1>
+
+<p>I ended up giving a brief description of two very common clustering algorithms, <strong>k-means</strong> and <strong>Gaussian mixture models</strong> in the comments, so I figured I might as well bring them up here.</p>
+
+<h2>k-means algorithm</h2>
+
+<p>Suppose we have a set of datapoints that we want to cluster. We want to learn two things:</p>
+
+<ul>
+<li>A description of the clusters themselves (so that if new points come in, we can assign them to a cluster).</li>
+<li>Which clusters our current points fall into.</li>
+</ul>
+
+
+<p>We start by initializing k cluster centers (e.g., by randomly choosing k points among our datapoints). Then we repeatedly</p>
+
+<ul>
+<li><strong>Step A</strong>: Assign each datapoint to the nearest cluster center.</li>
+<li><strong>Step B</strong>: Update all the cluster centers: for each cluster i, take the mean over all points currently in the cluster, and update cluster center i to be this mean.</li>
+<li>(Repeat steps A and B above until the cluster assignments stop changing.)</li>
+</ul>
+
+
+<p>And that's pretty much it for k-means.</p>
+
+<h2>k-means from an EM point of View</h2>
+
+<p>To ease the transition into Gaussian mixture models,
+let's also describe the k-means algorithm using <a href="http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">EM</a> language.</p>
+
+<p>Note that if we knew for certain either 1) the exact cluster centers or 2) the cluster each point belonged to, we could trivially solve k-means, since</p>
+
+<ul>
+<li>If we knew the exact cluster centers, all we'd have to do is assign each point to its nearest cluster center, and we'd be done.</li>
+<li>If we knew which cluster each point belonged to, we could pick the cluster center by simply taking the mean over all points in that cluster.</li>
+</ul>
+
+
+<p>The problem is that we know <em>neither</em> of these, and so we alternate between making educated guesses of each one:</p>
+
+<ul>
+<li>In A step above, we pretend that we know the cluster centers, and based off this pretense, we guess which cluster each point belongs to. (This is also known as the <strong>E step</strong> in the EM algorithm.)</li>
+<li>In the B step above, we do the reverse: we pretend that we know which cluster each point belongs to, and then try to guess the cluster centers. (This is also known as the <strong>M step</strong> in EM.)</li>
+</ul>
+
+
+<p>Our guesses keep getting better and better, and eventually we'll converge.</p>
+
+<h2>Gaussian Mixture Models</h2>
+
+<p>k-means has a <em>hard</em> notion of clustering: point X either belongs to cluster C or it doesn't. But sometimes we want a <em>soft</em> notion instead: point X belongs to cluster C with probability p (according to a Gaussian kernel). This is where <a href="http://en.wikipedia.org/wiki/Mixture_model">Gaussian mixture modeling</a> comes in.</p>
+
+<p>To run a GMM, we start by initializing $k$ Gaussians (say, by randomly choosing $k$ points to be the centers of the Gaussians and by setting the variance of each Gaussians to be the overall variance), and then we repeatedly:</p>
+
+<ul>
+<li><strong>E Step</strong>: Pretend we know the parameters of each Gaussian cluster, and assign each datapoint to Gaussian cluster i with appropriate probability.</li>
+<li><strong>M Step</strong>: Pretend we know the probabilities that each point belongs to a given cluster. Using these probabilities, update the means and variances of each Gaussian cluster: the new mean for cluster i is the weighted mean over all points (where the weight of each point X is the probability that X belongs to cluster i), and similarly for the new variance.</li>
+</ul>
+
+
+<p>This is exactly like k-means in the EM formulation, except we replace the binary clustering formula with Gaussian kernels.</p>
 ]]></content>
   </entry>
   

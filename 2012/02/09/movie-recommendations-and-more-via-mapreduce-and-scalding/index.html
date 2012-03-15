@@ -702,12 +702,69 @@
 
 <h1>RottenTomatoes Similarities</h1>
 
-<p>UPDATE: I grabbed RottenTomatoes data from tweets&#8230;</p>
+<p>UPDATE: I found some movie data after all&#8230;</p>
 
 <blockquote class="twitter-tweet"><p>My review for &#8216;How to Train Your Dragon&#8217; on Rotten Tomatoes: 4 1/2 stars &gt;<a href="http://t.co/YTOKWLEt" title="http://bit.ly/xtw3d3">bit.ly/xtw3d3</a></p>&mdash; Benjamin West (@BenTheWest) <a href="https://twitter.com/BenTheWest/status/171772890121895936" data-datetime="2012-02-21T01:47:03+00:00">February 21, 2012</a></blockquote>
 
 
-<p>So here&#8217;s a sample of the most similar movies:</p>
+<p>So let&#8217;s use RottenTomatoes tweets to recommend movies! Here&#8217;s the code for a class that searches for RottenTomatoes tweets:</p>
+
+<figure class='code'><figcaption><span>Movie similarities with RottenTomatoes </span><a href='https://github.com/echen/scaldingale/blob/master/RottenTomatoes.scala'>RottenTomatoes.scala</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">class</span> <span class="nc">RottenTomatoes</span><span class="o">(</span><span class="n">args</span> <span class="k">:</span> <span class="kt">Args</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">VectorSimilarities</span><span class="o">(</span><span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Example tweets:</span>
+</span><span class='line'><span class="cm">   * My review for &#39;Hop&#39; on Rotten Tomatoes: 1 star &gt; http://bit.ly/AB7Tl4</span>
+</span><span class='line'><span class="cm">   * My review for &#39;The Bothersome Man (Den Brysomme mannen)&#39; on Rotten Tomatoes: 3 stars-A muddled Playtime in Paris,... http://tmto.es/AvPoO2</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">val</span> <span class="nc">ROTTENTOMATOES_REGEX</span> <span class="k">=</span> <span class="s">&quot;&quot;&quot;My review for &#39;(.+?)&#39; on Rotten Tomatoes: (\d) star&quot;&quot;&quot;</span><span class="o">.</span><span class="n">r</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="nc">MIN_NUM_RATERS</span> <span class="k">=</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="nc">MAX_NUM_RATERS</span> <span class="k">=</span> <span class="mi">1000</span>
+</span><span class='line'>  <span class="k">override</span> <span class="k">val</span> <span class="nc">MIN_INTERSECTION</span> <span class="k">=</span> <span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">override</span> <span class="k">def</span> <span class="n">input</span><span class="o">(</span><span class="n">userField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">itemField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">,</span> <span class="n">ratingField</span> <span class="k">:</span> <span class="kt">Symbol</span><span class="o">)</span> <span class="k">:</span> <span class="kt">Pipe</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">rottenTomatoesRatings</span> <span class="k">=</span>
+</span><span class='line'>      <span class="nc">TweetSource</span><span class="o">()</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">mapTo</span><span class="o">(</span><span class="-Symbol">&#39;userId</span><span class="o">,</span> <span class="-Symbol">&#39;text</span><span class="o">)</span> <span class="o">{</span> <span class="n">s</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">s</span><span class="o">.</span><span class="n">getUserId</span><span class="o">.</span><span class="n">toLong</span><span class="o">,</span> <span class="n">s</span><span class="o">.</span><span class="n">getText</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="-Symbol">&#39;text</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">text</span> <span class="k">:</span> <span class="kt">String</span> <span class="o">=&gt;</span>
+</span><span class='line'>          <span class="nc">ROTTENTOMATOES_REGEX</span><span class="o">.</span><span class="n">findFirstMatchIn</span><span class="o">(</span><span class="n">text</span><span class="o">).</span><span class="n">map</span> <span class="o">{</span> <span class="n">_</span><span class="o">.</span><span class="n">subgroups</span> <span class="o">}.</span><span class="n">map</span> <span class="o">{</span> <span class="n">x</span> <span class="k">=&gt;</span> <span class="o">(</span><span class="n">x</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">x</span><span class="o">(</span><span class="mi">1</span><span class="o">).</span><span class="n">toInt</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">rename</span><span class="o">((</span><span class="-Symbol">&#39;userId</span><span class="o">,</span> <span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="n">userField</span><span class="o">,</span> <span class="n">itemField</span><span class="o">,</span> <span class="n">ratingField</span><span class="o">))</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">unique</span><span class="o">(</span><span class="n">userField</span><span class="o">,</span> <span class="n">itemField</span><span class="o">,</span> <span class="n">ratingField</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">rottenTomatoesRatings</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And here are the most similar movies discovered:</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/scaldingale/top-rottentomatoes-sims.png"><img src="http://dl.dropbox.com/u/10506/blog/scaldingale/top-rottentomatoes-sims.png" alt="Top RottenTomatoes Movies" /></a></p>
 
