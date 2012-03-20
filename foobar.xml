@@ -4,13 +4,697 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-14T23:39:57-07:00</updated>
+  <updated>2012-03-20T09:15:29-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
     
   </author>
 
+  
+  <entry>
+    <title>Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process</title>
+    <link href="http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/"/>
+    <updated>2012-03-20T09:14:00-07:00</updated>
+    <id>http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process</id>
+    <content type="html">&lt;p&gt;Imagine you&amp;#8217;re a budding chef. A data-curious one, of course, so you start by taking a set of foods (pizza, salad, spaghetti, etc.) and ask 10 friends how much of each they ate in the past day.&lt;/p&gt;
+
+&lt;p&gt;Your goal: to find natural &lt;em&gt;groups&lt;/em&gt; of foodies, so that you can better cater to each cluster&amp;#8217;s tastes. For example, your fratboy friends might love &lt;a href=&quot;https://twitter.com/#!/edchedch/status/166343879547822080&quot;&gt;wings and beer&lt;/a&gt;, your anime friends might love soba and sushi, your hipster friends probably dig tofu, and so on.&lt;/p&gt;
+
+&lt;p&gt;So how can you use the data you&amp;#8217;ve gathered to discover different kinds of groups?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/clustering-example.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/clustering-example.png&quot; alt=&quot;Clustering Example&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;One way is to use a standard clustering algorithm like &lt;strong&gt;k-means&lt;/strong&gt; or &lt;strong&gt;Gaussian mixture modeling&lt;/strong&gt; (see &lt;a href=&quot;http://blog.echen.me/2011/03/19/counting-clusters/&quot;&gt;this previous post&lt;/a&gt; for a brief introduction). The problem is that these both assume a &lt;em&gt;fixed&lt;/em&gt; number of clusters, which they need to be told to find. There are a couple methods for selecting the number of clusters to learn (e.g., the &lt;a href=&quot;http://blog.echen.me/2011/03/19/counting-clusters/&quot;&gt;gap and prediction strength statistics&lt;/a&gt;), but the problem is a more fundamental one: most real-world data simply doesn&amp;#8217;t have a fixed number of clusters.&lt;/p&gt;
+
+&lt;p&gt;That is, suppose we&amp;#8217;ve asked 10 of our friends what they ate in the past day, and we want to find groups of eating preferences. There&amp;#8217;s really an infinite number of foodie types (carnivore, vegan, snacker, Italian, healthy, fast food, heavy eaters, light eaters, and so on), but with only 10 friends, we simply don&amp;#8217;t have enough data to detect them all. (Indeed, we&amp;#8217;re limited to 10 clusters!) So whereas k-means starts with the incorrect assumption that there&amp;#8217;s a fixed, finite number of clusters that our points come from, &lt;em&gt;no matter if we feed it more data&lt;/em&gt;, what we&amp;#8217;d really like is a method positing an infinite number of hidden clusters that naturally arise as we ask more friends about their food habits. (For example, with only 2 data points, we might not be able to tell the difference between vegans and vegetarians, but with 200 data points, we probably could.)&lt;/p&gt;
+
+&lt;p&gt;Luckily for us, this is precisely the purview of &lt;strong&gt;nonparametric Bayes&lt;/strong&gt;.*&lt;/p&gt;
+
+&lt;p&gt;*Nonparametric Bayes refers to a class of techniques that allow some parameters to change with the data. In our case, for example, instead of fixing the number of clusters to be discovered, we allow it to grow as more data comes in.&lt;/p&gt;
+
+&lt;h1&gt;A Generative Story&lt;/h1&gt;
+
+&lt;p&gt;Let&amp;#8217;s describe a generative model for finding clusters in any set of data. We assume an infinite set of latent groups, where each group is described by some set of parameters. For example, each group could be a Gaussian with a specified mean $\mu_i$ and standard deviation $\sigma_i$, and these group parameters themselves are assumed to come from some base distribution $G_0$. Data is then generated in the following manner:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Select a cluster.&lt;/li&gt;
+&lt;li&gt;Sample from that cluster to generate a new point.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;(Note the resemblance to a &lt;a href=&quot;http://en.wikipedia.org/wiki/Mixture_model&quot;&gt;finite mixture model&lt;/a&gt;.)&lt;/p&gt;
+
+&lt;p&gt;For example, suppose we ask 10 friends how many calories of pizza, salad, and rice they ate yesterday. Our groups could be:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;A Gaussian centered at (pizza = 5000, salad = 100, rice = 500) (i.e., a pizza lovers group).&lt;/li&gt;
+&lt;li&gt;A Gaussian centered at (pizza = 100, salad = 3000, rice = 1000) (maybe a vegan group).&lt;/li&gt;
+&lt;li&gt;A Gaussian centered at (pizza = 100, salad = 100, rice = 10000) (definitely Asian).&lt;/li&gt;
+&lt;li&gt;&amp;#8230;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;When deciding what to eat when she woke up yesterday, Alice could have thought &lt;em&gt;girl, I&amp;#8217;m in the mood for pizza&lt;/em&gt; and her food consumption yesterday would have been a sample from the pizza Gaussian. Similarly, Bob could have spent the day in Chinatown, thereby sampling from the Asian Gaussian for his day&amp;#8217;s meals. And so on.&lt;/p&gt;
+
+&lt;p&gt;The big question, then, is: how do we assign each friend to a group?&lt;/p&gt;
+
+&lt;h1&gt;Assigning Groups&lt;/h1&gt;
+
+&lt;h2&gt;Chinese Restaurant Process&lt;/h2&gt;
+
+&lt;p&gt;One way to assign friends to groups is to use a &lt;strong&gt;Chinese Restaurant Process&lt;/strong&gt;. This works as follows: Imagine a restaurant where all your friends went to eat yesterday&amp;#8230;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Initially the restaurant is empty.&lt;/li&gt;
+&lt;li&gt;The first person to enter (Alice) sits down at a table (selects a group). She then orders food for the table (i.e., she selects parameters for the group); everyone else who joins the table will then be limited to eating from the food she ordered.&lt;/li&gt;
+&lt;li&gt;The second person to enter (Bob) sits down at a table. Which table does he sit at? With probability $\alpha / (1 + \alpha)$ he sits down at a new table (i.e., selects a new group) and orders food for the table; with probability $1 / (1 + \alpha)$ he sits with Alice and eats from the food she&amp;#8217;s already ordered (i.e., he&amp;#8217;s in the same group as Alice).&lt;/li&gt;
+&lt;li&gt;&amp;#8230;&lt;/li&gt;
+&lt;li&gt;The (n+1)-st person sits down at a new table with probability $\alpha / (n + \alpha)$, and at table k with probability $n_k / (n + \alpha)$, where $n_k$ is the number of people currently sitting at table k.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Note a couple things:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The more people (data points) there are at a table (cluster), the more likely it is that people (new data points) will join it. In other words, our groups satisfy a &lt;strong&gt;rich get richer&lt;/strong&gt; property.&lt;/li&gt;
+&lt;li&gt;There&amp;#8217;s always a small probability that someone joins an entirely new table (i.e., a new group is formed).&lt;/li&gt;
+&lt;li&gt;The probability of a new group depends on $\alpha$. So we can think of $\alpha$ as a &lt;strong&gt;dispersion parameter&lt;/strong&gt; that affects the dispersion of our datapoints. The lower alpha is, the more tightly clustered our data points; the higher it is, the more clusters we have in any finite set of points.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;(Also notice the resemblance between table selection probabilities and a Dirichlet distribution&amp;#8230;)&lt;/p&gt;
+
+&lt;p&gt;Just to summarize, given n data points, the Chinese Restaurant Process specifies a distribution over partitions (table assignments) of these points. We can also generate parameters for each partition/table from a base distribution $G_0$ (for example, each table could represent a Gaussian whose mean and standard deviation are sampled from $G_0$), though to be clear, this is not part of the CRP itself.&lt;/p&gt;
+
+&lt;h3&gt;Code&lt;/h3&gt;
+
+&lt;p&gt;Since code makes everything better, here&amp;#8217;s some Ruby to simulate a CRP:&lt;/p&gt;
+
+&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Chinese Restaurant Process &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/dirichlet-process/blob/master/chinese_restaurant_process.rb&#8217;&gt;chinese_restaurant_process.rb&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;20&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;21&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;22&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;23&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;24&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;25&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;26&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;27&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;ruby&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# Generate table assignments for `num_customers` customers, according to&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# a Chinese Restaurant Process with dispersion parameter `alpha`.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# returns an array of integer table assignments&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;chinese_restaurant_process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_customers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_customers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt; &lt;span class=&quot;n&quot;&gt;table_assignments&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# first customer sits at table 1&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt; &lt;span class=&quot;n&quot;&gt;next_open_table&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# index of the next empty table&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt; &lt;span class=&quot;c1&quot;&gt;# Now generate table assignments for the rest of the customers.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;upto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_customers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;   &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rand&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;     &lt;span class=&quot;c1&quot;&gt;# Customer sits at new table.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;     &lt;span class=&quot;n&quot;&gt;table_assignments&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;next_open_table&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;     &lt;span class=&quot;n&quot;&gt;next_open_table&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;   &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;     &lt;span class=&quot;c1&quot;&gt;# Customer sits at an existing table.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;     &lt;span class=&quot;c1&quot;&gt;# He chooses which table to sit at by giving equal weight to each&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;     &lt;span class=&quot;c1&quot;&gt;# customer already sitting at a table. &lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;     &lt;span class=&quot;n&quot;&gt;which_table&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;table_assignments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;table_assignments&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;     &lt;span class=&quot;n&quot;&gt;table_assignments&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;which_table&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;   &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt; &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt; &lt;span class=&quot;n&quot;&gt;table_assignments&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
+
+
+&lt;p&gt;And here&amp;#8217;s some sample output:&lt;/p&gt;
+
+&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Chinese Restaurant Process &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/dirichlet-process/blob/master/chinese_restaurant_process.rb&#8217;&gt;chinese_restaurant_process.rb&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;ruby&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chinese_restaurant_process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_customers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# table assignments from run 1&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# table assignments from run 2&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# table assignments from run 3&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chinese_restaurant_process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_customers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;chinese_restaurant_process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_customers&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
+
+
+&lt;p&gt;Notice that as we increase $\alpha$, so too does the number of distinct tables increase.&lt;/p&gt;
+
+&lt;h2&gt;Polya Urn Model&lt;/h2&gt;
+
+&lt;p&gt;Another method for assigning friends to groups is to follow the &lt;strong&gt;Polya Urn Model&lt;/strong&gt;. This is basically the same model as the Chinese Restaurant Process, just with a different metaphor.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We start with an urn containing $\alpha G_0(x)$ balls of &amp;#8220;color&amp;#8221; $x$, for each possible value of $x$. ($G_0$ is our base distribution, and $G_0(x)$ is the probability of sampling $x$ from $G_0$). Note that these are possibly fractional balls.&lt;/li&gt;
+&lt;li&gt;At each time step, draw a ball from the urn, note its color, and then drop both the original ball plus a new ball of the same color back into the urn.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Note the connection between this process and the CRP: balls correspond to people (i.e., data points), colors correspond to table assignments (i.e., clusters), alpha is again a dispersion parameter (put differently, a prior), colors satisfy a rich-get-richer property (since colors with many balls are more likely to get drawn), and so on. (Again, there&amp;#8217;s also a connection between this urn model and &lt;a href=&quot;http://en.wikipedia.org/wiki/Dirichlet_distribution#P.C3.B3lya.27s_urn&quot;&gt;the urn model for the (finite) Dirichlet distribution&lt;/a&gt;&amp;#8230;)&lt;/p&gt;
+
+&lt;p&gt;To be precise, the difference between the CRP and the Polya Urn Model is that the CRP specifies only a distribution over &lt;em&gt;partitions&lt;/em&gt; (i.e., table assignments), but doesn&amp;#8217;t assign parameters to each group, whereas the Polya Urn Model does both.&lt;/p&gt;
+
+&lt;h3&gt;Code&lt;/h3&gt;
+
+&lt;p&gt;Again, here&amp;#8217;s some code for simulating a Polya Urn Model:&lt;/p&gt;
+
+&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Polya Urn Model &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/dirichlet-process/blob/master/polya_urn_model.rb&#8217;&gt;polya_urn_model.rb&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;20&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;21&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;22&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;23&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;ruby&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# Draw `num_balls` colored balls according to a Polya Urn Model&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# with a specified base color distribution and dispersion parameter&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# `alpha`.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# returns an array of ball colors&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;polya_urn_model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;base_color_distribution&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_balls&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_balls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;balls_in_urn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;upto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_balls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;rand&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;balls_in_urn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;# Draw a new color, put a ball of this color in the urn.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;n&quot;&gt;new_color&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;base_color_distribution&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;call&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;n&quot;&gt;balls_in_urn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;new_color&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;# Draw a ball from the urn, add another ball of the same color.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;n&quot;&gt;ball&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;balls_in_urn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rand&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;balls_in_urn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;n&quot;&gt;balls_in_urn&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ball&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;balls_in_urn&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
+
+
+&lt;p&gt;And here&amp;#8217;s some sample output, using a uniform distribution over the unit interval as the color distribution to sample from:&lt;/p&gt;
+
+&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Polya Urn Model &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/dirichlet-process/blob/master/polya_urn_model.rb&#8217;&gt;polya_urn_model.rb&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;ruby&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;unit_uniform&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;lambda&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;rand&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;to_i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;polya_urn_model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unit_uniform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_balls&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;alpha&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;27&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;89&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;89&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;89&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;73&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;98&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;43&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;98&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;89&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;53&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# colors in the urn from run 1&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;46&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;85&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# colors in the urn from run 2&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;96&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;87&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;96&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;87&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;96&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;96&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;87&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;96&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;96&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;96&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;# colors in the urn from run 3&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
+
+
+&lt;h3&gt;Code, Take 2&lt;/h3&gt;
+
+&lt;p&gt;Here&amp;#8217;s the same code for a Polya Urn Model, but in R:&lt;/p&gt;
+
+&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Polya Urn Model &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/dirichlet-process/blob/master/polya_urn_model.R&#8217;&gt;polya_urn_model.R&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;14&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;15&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;16&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;17&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;18&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;19&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;20&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;r&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# Return a vector of `num_balls` ball colors according to a Polya Urn Model&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# with dispersion `alpha`, sampling from a specified base color distribution.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;polya_urn_model &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;base_color_distribution&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; num_balls&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; alpha&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  balls &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; c&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;kr&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;i in &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;:num_balls&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;kr&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;runif&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; alpha &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;alpha &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; length&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;balls&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;# Add a new ball color.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      new_color &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; base_color_distribution&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      balls &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; c&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;balls&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; new_color&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;# Pick out a ball from the urn, and add back a&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      &lt;span class=&quot;c1&quot;&gt;# ball of the same color.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      ball &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; balls&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;sample&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;:length&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;balls&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)]&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;      balls &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; c&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;balls&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; ball&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  balls
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
+
+
+&lt;p&gt;And some sample density plots of the colors in the urn, when using a unit normal as the base color distribution:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_1.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_1.png&quot; alt=&quot;Polya Urn Model, Alpha = 1&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_5.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_5.png&quot; alt=&quot;Polya Urn Model, Alpha = 5&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_25.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_25.png&quot; alt=&quot;Polya Urn Model, Alpha = 25&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_50.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_50.png&quot; alt=&quot;Polya Urn Model, Alpha = 50&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Notice that as alpha increases (i.e., we sample more new ball colors from our base; i.e., as we place more weight on our prior), the colors in the urn tend to a unit normal (our base color distribution).&lt;/p&gt;
+
+&lt;h2&gt;Stick-Breaking Process&lt;/h2&gt;
+
+&lt;p&gt;Imagine running either the Chinese Restaurant Process or the Polya Urn Model without stop. For each group $i$, this gives a proportion $w_i$ of points that fall into group $i$.&lt;/p&gt;
+
+&lt;p&gt;So instead of running the CRP or Polya Urn model to figure out these proportions, can we simply generate them directly?&lt;/p&gt;
+
+&lt;p&gt;This is exactly what the Stick-Breaking Process does:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Start with a stick of length one.&lt;/li&gt;
+&lt;li&gt;Generate a random variable $\beta_1 \sim Beta(1, \alpha)$. By the definition of the &lt;a href=&quot;http://en.wikipedia.org/wiki/Beta_distribution&quot;&gt;Beta distribution&lt;/a&gt;, this will be a real number between 0 and 1, with expected value $1 / (1 + \alpha)$. Break off the stick at $\beta_1$; $w_1$ is then the length of the stick on the left.&lt;/li&gt;
+&lt;li&gt;Now take the stick to the right, and generate $\beta_2 \sim Beta(1, \alpha)$. Break off the stick $\beta_2$ into the stick. Again, $w_2$ is the length of the stick to the left, i.e., $w_2 = (1 - \beta_1) \beta_2$.&lt;/li&gt;
+&lt;li&gt;And so on.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Thus, the Stick-Breaking process is simply the CRP or Polya Urn Model from a different point of view. For example, assigning customers to table 1 according to the Chinese Restaurant Process is equivalent to assigning customers to table 1 with probability $w_1$.&lt;/p&gt;
+
+&lt;h3&gt;Code&lt;/h3&gt;
+
+&lt;p&gt;Here&amp;#8217;s some R code for simulating a Stick-Breaking process:&lt;/p&gt;
+
+&lt;figure class=&#8217;code&#8217;&gt;&lt;figcaption&gt;&lt;span&gt;Stick-Breaking Process &lt;/span&gt;&lt;a href=&#8217;https://github.com/echen/dirichlet-process/blob/master/stick_breaking_process.R&#8217;&gt;stick_breaking_process.R&lt;/a&gt;&lt;/figcaption&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre class=&quot;line-numbers&quot;&gt;&lt;span class=&#8217;line-number&#8217;&gt;1&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;2&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;3&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;4&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;5&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;6&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;7&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;8&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;9&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;10&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;11&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;12&lt;/span&gt;
+&lt;span class=&#8217;line-number&#8217;&gt;13&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;r&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# Return a vector of weights drawn from a stick-breaking process&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# with dispersion `alpha`.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# Recall that the kth weight is&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;#   \beta_k = (1 - \beta_1) * (1 - \beta_2) * &#8230; * (1 - \beta_{k-1}) * beta_k&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# where each $&#92;beta\_i$ is drawn from a Beta distribution&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;#   \beta_i ~ Beta(1, \alpha)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;stick_breaking_process &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;num_weights&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; alpha&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  betas &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; rbeta&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;num_weights&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; alpha&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  remaining_stick_lengths &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; c&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; cumprod&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; betas&lt;span class=&quot;p&quot;&gt;))[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;:num_weights&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  weights &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; remaining_stick_lengths &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; betas
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  weights
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
+
+
+&lt;p&gt;And here&amp;#8217;s some sample output:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_1.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_1.png&quot; alt=&quot;Stick-Breaking Process, alpha = 1&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_3.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_3.png&quot; alt=&quot;Stick-Breaking Process, alpha = 3&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_5.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_5.png&quot; alt=&quot;Stick-Breaking Process, alpha = 5&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Notice that for low values of alpha, the stick weights are concentrated on the first few weights (meaning our data points are concentrated on a few clusters), while the weights become more evenly dispersed as we increase alpha (meaning we posit more clusters in our data points).&lt;/p&gt;
+
+&lt;h2&gt;Dirichlet Process&lt;/h2&gt;
+
+&lt;p&gt;Suppose we run a Polya Urn Model several times, where we sample colors from a base distribution $G_0$. Each run produces a distribution of colors in the urn (say, 5% blue balls, 3% red balls, 2% pink balls, etc.), and the distribution will be different each time (for example, 5% blue balls in run 1, but 1% blue balls in run 2).&lt;/p&gt;
+
+&lt;p&gt;For example, let&amp;#8217;s look again at the plots from above, where I generated samples from a Polya Urn Model with the standard unit normal as the base distribution:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_1.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_1.png&quot; alt=&quot;Polya Urn Model, Alpha = 1&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_5.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_5.png&quot; alt=&quot;Polya Urn Model, Alpha = 5&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_25.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_25.png&quot; alt=&quot;Polya Urn Model, Alpha = 25&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_50.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_50.png&quot; alt=&quot;Polya Urn Model, Alpha = 50&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Each run of the Polya Urn Model produces a slighly different distribution, though each is &amp;#8220;centered&amp;#8221; in some fashion around the standard Gaussian I used as base. In other words, the Polya Urn Model gives us a &lt;strong&gt;distribution over distributions&lt;/strong&gt; (we get a distribution of ball colors, and this distribution of colors changes each time) &amp;#8211; and so we finally get to the Dirichlet Process.&lt;/p&gt;
+
+&lt;p&gt;Formally, given a base distribution $G_0$ and a dispersion parameter $\alpha$, a sample from the Dirichlet Process $DP(G_0, \alpha)$ is a distribution $G \sim DP(G_0, \alpha)$. This sample $G$ can be thought of as a distribution of colors in a single simulation of the Polya Urn Model; sampling from $G$ gives us the balls in the urn.&lt;/p&gt;
+
+&lt;p&gt;So here&amp;#8217;s the connection between the Chinese Restaurant Process, the Polya Urn Model, the Stick-Breaking Process, and the Dirichlet Process:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Dirichlet Process&lt;/strong&gt;: Suppose we want samples $x_i \sim G$, where $G$ is a distribution sampled from the Dirichlet Process $G \sim DP(G_0, \alpha)$.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Polya Urn Model&lt;/strong&gt;: One way to generate these values $x_i$ would be to take a Polya Urn Model with color distribution $G_0$ and dispersion $\alpha$. ($x_i$ would be the color of the ith ball in the urn.)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Chinese Restaurant Process&lt;/strong&gt;: Another way to generate $x_i$ would be to first assign tables to customers according to a Chinese Restaurant Process with dispersion $\alpha$. Every customer at the nth table would then be given the same value (color) sampled from $G_0$. ($x_i$ would be the value given to the ith customer; $x_i$ can also be thought of as the food at table $i$, or as the parameters of table $i$.)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stick-Breaking Process&lt;/strong&gt;: Finally, we could generate weights $w_k$ according to a Stick-Breaking Process with dispersion $\alpha$. Next, we would give each weight $w_k$ a value (or color) $v_k$ sampled from $G_0$. Finally, we would assign $x_i$ to value (color) $v_k$ with probability $w_k$.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h1&gt;Recap&lt;/h1&gt;
+
+&lt;p&gt;Let&amp;#8217;s summarize what we&amp;#8217;ve discussed so far.&lt;/p&gt;
+
+&lt;p&gt;We have a bunch of data points $p_i$ that we want to cluster, and we&amp;#8217;ve described four essentially equivalent generative models that allow us to describe how each cluster and point could have arisen.&lt;/p&gt;
+
+&lt;p&gt;In the &lt;strong&gt;Chinese Restaurant Process&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We generate table assignments $g_1, \ldots, g_n \sim CRP(\alpha)$ according to a Chinese Restaurant Process. ($g_i$ is the table assigned to datapoint $i$.)&lt;/li&gt;
+&lt;li&gt;We generate table parameters $\phi_1, \ldots, \phi_n \sim G_0$ according to the base distribution $G_0$, where $\phi_k$ is the parameter for the kth distinct group.&lt;/li&gt;
+&lt;li&gt;Given table assignments and table parameters, we generate each datapoint $p_i \sim F(\phi_{g_i})$ from a distribution $F$ with the specified table parameters. (For example, $F$ could be a Gaussian, and $\phi_i$ could be a parameter vector specifying the mean and standard deviation).&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;In the &lt;strong&gt;Polya Urn Model&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We generate colors $\phi_1, \ldots, \phi_n \sim Polya(G_0, \alpha)$ according to a Polya Urn Model. ($\phi_i$ is the color of the ith ball.)&lt;/li&gt;
+&lt;li&gt;Given ball colors, we generate each datapoint $p_i \sim F(\phi_i)$.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;In the &lt;strong&gt;Stick-Breaking Process&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We generate group probabilities (stick lengths) $w_1, \ldots, w_{\infty} \sim Stick(\alpha)$ according to a Stick-Breaking process.&lt;/li&gt;
+&lt;li&gt;We generate group parameters $\phi_1, \ldots, \phi_{\infty} \sim G_0$ from $G_0$, where $\phi_k$ is the parameter for the kth distinct group.&lt;/li&gt;
+&lt;li&gt;We generate group assignments $g_1, \ldots, g_n \sim Multinomial(w_1, \ldots, w_{\infty})$ for each datapoint.&lt;/li&gt;
+&lt;li&gt;Given group assignments and group parameters, we generate each datapoint $p_i \sim F(\phi_{g_i})$.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;In the &lt;strong&gt;Dirichlet Process&lt;/strong&gt;:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;We generate a distribution $G \sim DP(G_0, \alpha)$ from a Dirichlet Process with base distribution $G_0$ and dispersion parameter $\alpha$.&lt;/li&gt;
+&lt;li&gt;We generate group-level parameters $x_i \sim G$ from $G$, where $x_i$ is the group parameter for the ith datapoint. (Note: this is not the same as $\phi_i$. $x_i$ is the parameter associated to the group that the ith datapoint belongs to, whereas $\phi_k$ is the parameter of the kth distinct group.)&lt;/li&gt;
+&lt;li&gt;Given group-level parameters $x_i$, we generate each datapoint $p_i \sim F(x_i)$.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Also, remember that each model naturally allows the number of clusters to grow as more points come in.&lt;/p&gt;
+
+&lt;h1&gt;Inference in the Dirichlet Process Mixture&lt;/h1&gt;
+
+&lt;p&gt;So we&amp;#8217;ve described a generative model that allows us to calculate the probability of any particular set of group assignments to data points, but we haven&amp;#8217;t described how to actually learn a good set of group assignments.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#8217;s briefly do this now. Very roughly, the &lt;strong&gt;Gibbs sampling&lt;/strong&gt; approach works as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Take the set of data points, and randomly initialize group assignments.&lt;/li&gt;
+&lt;li&gt;Pick a point. Fix the group assignments of all the other points, and assign the chosen point a new group (which can be either an existing cluster or a new cluster) with a CRP-ish probability (as described in the models above) that depends on the group assignments and values of all the other points.&lt;/li&gt;
+&lt;li&gt;We will eventually converge on a good set of group assignments, so repeat the previous step until happy.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;For more details, &lt;a href=&quot;http://www.cs.toronto.edu/~radford/ftp/mixmc.pdf&quot;&gt;this paper&lt;/a&gt; provides a good description.&lt;/p&gt;
+
+&lt;h1&gt;Fast Food Application: Clustering the McDonald&amp;#8217;s Menu&lt;/h1&gt;
+
+&lt;p&gt;Finally, let&amp;#8217;s show an application of the Dirichlet Process Mixture. Unfortunately, I didn&amp;#8217;t have a data set of people&amp;#8217;s food habits offhand, so instead I took &lt;a href=&quot;http://nutrition.mcdonalds.com/nutritionexchange/nutritionfacts.pdf&quot;&gt;this list&lt;/a&gt; of McDonald&amp;#8217;s foods and nutrition facts.&lt;/p&gt;
+
+&lt;p&gt;After normalizing each item to have an equal number of calories, and representing each item as a vector of &lt;strong&gt;(total fat, cholesterol, sodium, dietary fiber, sugars, protein, vitamin A, vitamin C, calcium, iron, calories from fat, satured fat, trans fat, carbohydrates)&lt;/strong&gt;, I ran &lt;a href=&quot;http://scikit-learn.sourceforge.net/dev/index.html&quot;&gt;scikit-learn&lt;/a&gt;&amp;#8217;s &lt;a href=&quot;http://scikit-learn.sourceforge.net/dev/modules/mixture.html&quot;&gt;Dirichlet Process Gaussian Mixture Model&lt;/a&gt; to cluster McDonald&amp;#8217;s menu based on nutritional value.&lt;/p&gt;
+
+&lt;p&gt;First, how does the number of clusters inferred by the Dirichlet Process mixture vary as we feed in more (randomly ordered) points?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/num-clusters-vary.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/num-clusters-vary.png&quot; alt=&quot;Growth of Number of Clusters&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;As expected, the Dirichlet Process model discovers more and more clusters as more and more food items arrive. (And indeed, the number of clusters appears to grow logarithmically, which can in fact be proved.)&lt;/p&gt;
+
+&lt;p&gt;How many clusters does the mixture model infer from the entire dataset? Running the Gibbs sampler several times, we find that the number of clusters tends around 11:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/num_mcdonalds_clusters.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/num_mcdonalds_clusters_small.png&quot; alt=&quot;Number of clusters&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#8217;s dive into one of these clusterings.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 1 (Desserts)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Looking at a sample of foods from the first cluster, we find a lot of desserts and dessert-y drinks:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Caramel Mocha&lt;/li&gt;
+&lt;li&gt;Frappe Caramel&lt;/li&gt;
+&lt;li&gt;Iced Hazelnut Latte&lt;/li&gt;
+&lt;li&gt;Iced Coffee&lt;/li&gt;
+&lt;li&gt;Strawberry Triple Thick Shake&lt;/li&gt;
+&lt;li&gt;Snack Size McFlurry&lt;/li&gt;
+&lt;li&gt;Hot Caramel Sundae&lt;/li&gt;
+&lt;li&gt;Baked Hot Apple Pie&lt;/li&gt;
+&lt;li&gt;Cinnamon Melts&lt;/li&gt;
+&lt;li&gt;Kiddie Cone&lt;/li&gt;
+&lt;li&gt;Strawberry Sundae&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;We can also look at the nutritional profile of some foods from this cluster (after &lt;a href=&quot;http://en.wikipedia.org/wiki/Standard_score&quot;&gt;z-scaling&lt;/a&gt; each nutrition dimension to have mean 0 and standard deviation 1):&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster1.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster1.png&quot; alt=&quot;Cluster 1&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We see that foods in this cluster tend to be high in trans fat and low in vitamins, protein, fiber, and sodium.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 2 (Sauces)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#8217;s a sample from the second cluster, which contains a lot of sauces:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Hot Mustard Sauce&lt;/li&gt;
+&lt;li&gt;Spicy Buffalo Sauce&lt;/li&gt;
+&lt;li&gt;Newman&amp;#8217;s Own Low Fat Balsamic Vinaigrette&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;And looking at the nutritional profile of points in this cluster, we see that it&amp;#8217;s heavy in sodium and fat:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster2.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster2.png&quot; alt=&quot;Cluster 2&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 3 (Burgers, Crispy Foods, High-Cholesterol)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;The third cluster is very burgery:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Hamburger&lt;/li&gt;
+&lt;li&gt;Cheeseburger&lt;/li&gt;
+&lt;li&gt;Filet-O-Fish&lt;/li&gt;
+&lt;li&gt;Quarter Pounder with Cheese&lt;/li&gt;
+&lt;li&gt;Premium Grilled Chicken Club Sandwich&lt;/li&gt;
+&lt;li&gt;Ranch Snack Wrap&lt;/li&gt;
+&lt;li&gt;Premium Asian Salad with Crispy Chicken&lt;/li&gt;
+&lt;li&gt;Butter Garlic Croutons&lt;/li&gt;
+&lt;li&gt;Sausage McMuffin&lt;/li&gt;
+&lt;li&gt;Sausage McGriddles&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;It&amp;#8217;s also high in fat and sodium, and low in carbs and sugar&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster3.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster3.png&quot; alt=&quot;Cluster 3&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 4 (Creamy Sauces)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Interestingly, even though we already found a cluster of sauces above, we discover another one as well. These sauces appear to be much more cream-based:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Creamy Ranch Sauce&lt;/li&gt;
+&lt;li&gt;Newman&amp;#8217;s Own Creamy Caesar Dressing&lt;/li&gt;
+&lt;li&gt;Coffee Cream&lt;/li&gt;
+&lt;li&gt;Iced Coffee with Sugar Free Vanilla Syrup&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Nutritionally, these sauces are higher in calories from fat, and much lower in sodium:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster4.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster4.png&quot; alt=&quot;Cluster 4&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 5 (Salads)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#8217;s a salad cluster. A lot of salads also appeared in the third cluster (along with hamburgers and McMuffins), but that&amp;#8217;s because those salads also all contained crispy chicken. The salads in this cluster are either crisp-free or have their chicken grilled instead:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Premium Southwest Salad with Grilled Chicken&lt;/li&gt;
+&lt;li&gt;Premium Caesar Salad with Grilled Chicken&lt;/li&gt;
+&lt;li&gt;Side Salad&lt;/li&gt;
+&lt;li&gt;Premium Asian Salad without Chicken&lt;/li&gt;
+&lt;li&gt;Premium Bacon Ranch Salad without Chicken&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;This is reflected in the higher content of iron, vitamin A, and fiber:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster5.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster5.png&quot; alt=&quot;Cluster 5&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 6 (More Sauces)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Again, we find another cluster of sauces:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Ketchup Packet&lt;/li&gt;
+&lt;li&gt;Barbeque Sauce&lt;/li&gt;
+&lt;li&gt;Chipotle Barbeque Sauce&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;These are still high in sodium, but much lower in fat compared to the other sauce clusters:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster6.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster6.png&quot; alt=&quot;Cluster 6&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 7 (Fruit and Maple Oatmeal)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Amusingly, fruit and maple oatmeal is in a cluster by itself:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fruit &amp;amp; Maple Oatmeal&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster7.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster7.png&quot; alt=&quot;Cluster 7&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 8 (Sugary Drinks)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We also get a cluster of sugary drinks:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Strawberry Banana Smoothie&lt;/li&gt;
+&lt;li&gt;Wild Berry Smoothie&lt;/li&gt;
+&lt;li&gt;Iced Nonfat Vanilla Latte&lt;/li&gt;
+&lt;li&gt;Nonfat Hazelnut&lt;/li&gt;
+&lt;li&gt;Nonfat Vanilla Cappuccino&lt;/li&gt;
+&lt;li&gt;Nonfat Caramel Cappuccino&lt;/li&gt;
+&lt;li&gt;Sweet Tea&lt;/li&gt;
+&lt;li&gt;Frozen Strawberry Lemonade&lt;/li&gt;
+&lt;li&gt;Coca-Cola&lt;/li&gt;
+&lt;li&gt;Minute Maid Orange Juice&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;In addition to high sugar content, this cluster is also high in carbohydrates and calcium, and low in fat.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster8.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster8.png&quot; alt=&quot;Cluster 8&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 9 (Breakfast Foods)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Here&amp;#8217;s a cluster of high-cholesterol breakfast foods:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Sausage McMuffin with Egg&lt;/li&gt;
+&lt;li&gt;Sausage Burrito&lt;/li&gt;
+&lt;li&gt;Egg McMuffin&lt;/li&gt;
+&lt;li&gt;Bacon, Egg &amp;amp; Chees Biscuit&lt;/li&gt;
+&lt;li&gt;McSkillet Burrito with Sausage&lt;/li&gt;
+&lt;li&gt;Big Breakfast with Hotcakes&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster9.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster9.png&quot; alt=&quot;Cluster 9&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 10 (Coffee Drinks)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;We find a group of coffee drinks next:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Nonfat Cappuccino&lt;/li&gt;
+&lt;li&gt;Nonfat Latte&lt;/li&gt;
+&lt;li&gt;Nonfat Latte with Sugar Free Vanilla Syrup&lt;/li&gt;
+&lt;li&gt;Iced Nonfat Latte&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;These are much higher in calcium and protein, and lower in sugar, than the other drink cluster above:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster11.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster11.png&quot; alt=&quot;Cluster 11&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Cluster 11 (Apples)&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;And finally, here&amp;#8217;s a cluster of apples:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Apple Dippers with Low Fat Caramel Dip&lt;/li&gt;
+&lt;li&gt;Apple Slices&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Vitamin C, check.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster10.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster10.png&quot; alt=&quot;Cluster 10&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1&gt;No More!&lt;/h1&gt;
+
+&lt;p&gt;I&amp;#8217;ll end with a couple notes:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Kevin Knight has a &lt;a href=&quot;http://www.isi.edu/natural-language/people/bayes-with-tears.pdf&quot;&gt;hilarious introduction&lt;/a&gt; to Bayesian inference that describes some applications of nonparametric Bayesian techniques to computational linguistics (though I don&amp;#8217;t think he ever quite says &amp;#8220;nonparametric Bayes&amp;#8221; directly).&lt;/li&gt;
+&lt;li&gt;In the Chinese Restaurant Process, each customer sits at a single table. The &lt;a href=&quot;http://en.wikipedia.org/wiki/Chinese_restaurant_process#The_Indian_buffet_process&quot;&gt;Indian Buffet Process&lt;/a&gt; is an extension that allows customers to sample food from multiple tables (i.e., belong to multiple clusters).&lt;/li&gt;
+&lt;li&gt;The Chinese Restaurant Process, the Polya Urn Model, and the Stick-Breaking Process are all &lt;em&gt;sequential&lt;/em&gt; models for generating groups: to figure out table parameters in the CRP, for example, you wait for customer 1 to come in, then customer 2, then customer 3, and so on. The equivalent Dirichlet Process, on the other hand, is a &lt;em&gt;parallelizable&lt;/em&gt; model for generating groups: just sample $G \sim DP(G_0, alpha)$, and then all your group parameters can be independently generated by sampling from $G$ at once. What&amp;#8217;s more, this duality is an instance of a more general phenomenon known as &lt;a href=&quot;http://en.wikipedia.org/wiki/De_Finetti&#8217;s_theorem&quot;&gt;de Finetti&amp;#8217;s theorem&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;And that&amp;#8217;s it.&lt;/p&gt;
+</content>
+  </entry>
   
   <entry>
     <title>Instant interactive visualization with d3 + ggplot2</title>
@@ -3202,156 +3886,6 @@ At $ \hat{\mu_1} $, the residual now makes equal angles with $ x_1, x_2 $, and s
 
 
 &lt;p&gt;So when should you use LARS, as opposed to some other regularization method like lasso? There&amp;#8217;s not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don&amp;#8217;t usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).&lt;/p&gt;
-</content>
-  </entry>
-  
-  <entry>
-    <title>Twifferences Between Californians and New Yorkers</title>
-    <link href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/"/>
-    <updated>2011-04-18T03:41:39-07:00</updated>
-    <id>http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers</id>
-    <content type="html">&lt;p&gt;How do people in Silicon Valley compare to those in New York City? For a data-driven answer, I pulled a couple days&amp;#8217; worth of Twitter data around the two areas.&lt;/p&gt;
-
-&lt;h2&gt;Silicon Valley vs. NYC&lt;/h2&gt;
-
-&lt;p&gt;So let&amp;#8217;s take a look. To compare the two places, I trained a simple Naive Bayes model on user profiles. Here are the words most predictive of being from Silicon Valley vs. NYC:&lt;/p&gt;
-
-&lt;h3&gt;Silicon Valley&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;word                    Prob(Silicon Valley | word)
-cloud                   0.9053263586466359
-stanford                0.8947378473880241
-hacker                  0.8759014372329466
-dev                     0.8684686297323906
-giants                  0.8522440881548609
-mac                     0.8453052631578948
-support                 0.8453052631578948
-ux                      0.8453052631578948
-engineer                0.8321693229113796
-software                0.8223647630482606
-google                  0.8199372672025093
-yahoo                   0.8095254553623891
-ui                      0.7978356566397651
-board                   0.7978356566397651
-programmer              0.7978356566397651
-health                  0.7946855178965604
-game                    0.7846171884159925
-bike                    0.7846171884159925
-gadgets                 0.7846171884159925
-surfer                  0.7846171884159925
-lead                    0.7846171884159925
-green                   0.7758225129356634
-product                 0.7707827422373662
-engineering             0.7662790401791395
-data                    0.7662790401791395
-biz                     0.7522143788498717
-games                   0.7503363731499477
-cto                     0.7474653744372272
-startup                 0.7474653744372272
-cofounder               0.745373899785155 
-team                    0.7399904460289096
-mobile                  0.7395369397321055
-entrepreneur            0.7346495409451503
-before                  0.7320595099183198
-corporate               0.7320595099183198
-companies               0.7320595099183198
-enterprise              0.7320595099183198
-careers                 0.7320595099183197
-help                    0.7320595099183197
-jobs                    0.7226147417213892
-systems                 0.7183120188916491
-dude                    0.7183120188916491
-solutions               0.7146518581802648
-startups                0.7146518581802648
-instructor              0.7146518581802648
-founder                 0.7136727946906866
-advocate                0.7119786767011602
-community               0.7107516339869281
-local                   0.7083355385022493
-cyclist                 0.7083355385022493
-formerly                0.7083355385022493
-tech                    0.7034995094145681
-dad                     0.699465571148113 
-developer               0.6933557437157872
-evangelist              0.6886440677966102
-architect               0.6886440677966102
-experience              0.6875894616006009
-designer                0.6861009534875773
-app                     0.6861009534875773
-gamer                   0.6701428216249068
-geek                    0.6699839438296025
-friend                  0.6692937011181566
-married                 0.6692937011181566
-past                    0.6670653907496013
-yoga                    0.6670653907496013
-baseball                0.6670653907496013
-iphone                  0.65665476702241  
-guy                     0.6396064208138196
-running                 0.6323876017254413
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h3&gt;New York City&lt;/h3&gt;
-
-&lt;pre&gt;&lt;code&gt;word                    Prob(New York | word)
-bbm                     0.9235374771480804
-mets                    0.9165294616574365
-teamfollowback          0.9165294616574365
-nyu                     0.9165294616574365
-columbia                0.8848747591522158
-actress                 0.8682158330051202
-chick                   0.845920058942715 
-theatre                 0.8010386109569492
-money                   0.7935205183585313
-publishing              0.7854119457864808
-moment                  0.7854119457864808
-self                    0.7854119457864808
-ya                      0.7545697268432944
-intern                  0.7545697268432944
-makeup                  0.7512175173798283
-financial               0.7512175173798283
-studio                  0.7329822041337483
-records                 0.7329822041337483
-magazine                0.7272706101537029
-history                 0.7249169653720938
-fashion                 0.718105290117341 
-myself                  0.7118622174381054
-soul                    0.7072308553828924
-peace                   0.7072308553828924
-dancer                  0.7017521519889981
-night                   0.687114269683935 
-president               0.6871142696839349
-event                   0.6577157178660937
-dreams                  0.6577157178660937
-model                   0.6577157178660937
-read                    0.6577157178660937
-journalism              0.6577157178660937
-filmmaker               0.6530588061027995
-news                    0.6466488313151225
-mother                  0.6466488313151224
-entertainment           0.6466488313151224
-party                   0.640842613712599 
-political               0.640842613712599 
-producer                0.6372663804691904
-communications          0.6222197132211811
-actor                   0.6169228655604573
-journalist              0.616094753936313 
-website                 0.6133083363295495
-radio                   0.6133083363295495
-executive               0.6058707124010555
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Some findings:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Silicon Valley is much more &lt;strong&gt;tech&lt;/strong&gt;- (&lt;em&gt;cloud, hacker, dev, engineer, software, programmer&lt;/em&gt;) and &lt;strong&gt;startup&lt;/strong&gt;-driven (&lt;em&gt;startup, entrepreneur, founder&lt;/em&gt;). New York is much more into &lt;strong&gt;arts/entertainment&lt;/strong&gt; (&lt;em&gt;actress, theatre, publishing, studio, records, magazine, journalism, filmmaker, news&lt;/em&gt;) and &lt;strong&gt;finance&lt;/strong&gt; (&lt;em&gt;money, financial&lt;/em&gt;). (Another way to look at it: Silicon Valley higher-ups call themselves &lt;em&gt;ctos&lt;/em&gt; and &lt;em&gt;founders&lt;/em&gt; and sit on &lt;em&gt;boards&lt;/em&gt;, while New York higher-ups call themselves &lt;em&gt;presidents&lt;/em&gt; and &lt;em&gt;executives&lt;/em&gt;.)&lt;/li&gt;
-&lt;li&gt;New Yorkers care a lot about &lt;strong&gt;looks&lt;/strong&gt; (&lt;em&gt;makeup, fashion&lt;/em&gt;). Silicon Valley folks care a lot about &lt;strong&gt;sports&lt;/strong&gt;, &lt;strong&gt;health&lt;/strong&gt;, and the &lt;strong&gt;outdoors&lt;/strong&gt; (&lt;em&gt;bike, surfer, cyclist, yoga, running, health&lt;/em&gt;).&lt;/li&gt;
-&lt;li&gt;Silicon Valley folks describe themselves through their &lt;strong&gt;past&lt;/strong&gt; (&lt;em&gt;before, formerly, past, former&lt;/em&gt;). New Yorkers describe themselves through their &lt;strong&gt;future&lt;/strong&gt; (&lt;em&gt;dreams&lt;/em&gt;).&lt;/li&gt;
-&lt;li&gt;Silicon Valley is big on &lt;strong&gt;community&lt;/strong&gt; (&lt;em&gt;support, team, help, helping, community&lt;/em&gt;). New York is focused on the &lt;strong&gt;individual&lt;/strong&gt; (&lt;em&gt;self, myself&lt;/em&gt;).&lt;/li&gt;
-&lt;li&gt;Silicon Valley has a larger proportion of &lt;strong&gt;men&lt;/strong&gt; (&lt;em&gt;dad, geek, dude, guy&lt;/em&gt;). New York has the &lt;strong&gt;women&lt;/strong&gt; (&lt;em&gt;mother, chick&lt;/em&gt;).&lt;/li&gt;
-&lt;li&gt;New York uses BlackBerrys (&lt;em&gt;bbm&lt;/em&gt; is short for BlackBerry Messenger), while Silicon Valley uses &lt;em&gt;iPhones&lt;/em&gt;.&lt;/li&gt;
-&lt;li&gt;Silicon Valley is more into the &lt;strong&gt;locavore&lt;/strong&gt; movement (&lt;em&gt;green, local&lt;/em&gt;).&lt;/li&gt;
-&lt;/ul&gt;
-
 </content>
   </entry>
   

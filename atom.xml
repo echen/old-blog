@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-14T23:39:57-07:00</updated>
+  <updated>2012-03-20T09:15:29-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -12,6 +12,690 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process]]></title>
+    <link href="http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/"/>
+    <updated>2012-03-20T09:14:00-07:00</updated>
+    <id>http://blog.echen.me/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process</id>
+    <content type="html"><![CDATA[<p>Imagine you&#8217;re a budding chef. A data-curious one, of course, so you start by taking a set of foods (pizza, salad, spaghetti, etc.) and ask 10 friends how much of each they ate in the past day.</p>
+
+<p>Your goal: to find natural <em>groups</em> of foodies, so that you can better cater to each cluster&#8217;s tastes. For example, your fratboy friends might love <a href="https://twitter.com/#!/edchedch/status/166343879547822080">wings and beer</a>, your anime friends might love soba and sushi, your hipster friends probably dig tofu, and so on.</p>
+
+<p>So how can you use the data you&#8217;ve gathered to discover different kinds of groups?</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/clustering-example.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/clustering-example.png" alt="Clustering Example" /></a></p>
+
+<p>One way is to use a standard clustering algorithm like <strong>k-means</strong> or <strong>Gaussian mixture modeling</strong> (see <a href="http://blog.echen.me/2011/03/19/counting-clusters/">this previous post</a> for a brief introduction). The problem is that these both assume a <em>fixed</em> number of clusters, which they need to be told to find. There are a couple methods for selecting the number of clusters to learn (e.g., the <a href="http://blog.echen.me/2011/03/19/counting-clusters/">gap and prediction strength statistics</a>), but the problem is a more fundamental one: most real-world data simply doesn&#8217;t have a fixed number of clusters.</p>
+
+<p>That is, suppose we&#8217;ve asked 10 of our friends what they ate in the past day, and we want to find groups of eating preferences. There&#8217;s really an infinite number of foodie types (carnivore, vegan, snacker, Italian, healthy, fast food, heavy eaters, light eaters, and so on), but with only 10 friends, we simply don&#8217;t have enough data to detect them all. (Indeed, we&#8217;re limited to 10 clusters!) So whereas k-means starts with the incorrect assumption that there&#8217;s a fixed, finite number of clusters that our points come from, <em>no matter if we feed it more data</em>, what we&#8217;d really like is a method positing an infinite number of hidden clusters that naturally arise as we ask more friends about their food habits. (For example, with only 2 data points, we might not be able to tell the difference between vegans and vegetarians, but with 200 data points, we probably could.)</p>
+
+<p>Luckily for us, this is precisely the purview of <strong>nonparametric Bayes</strong>.*</p>
+
+<p>*Nonparametric Bayes refers to a class of techniques that allow some parameters to change with the data. In our case, for example, instead of fixing the number of clusters to be discovered, we allow it to grow as more data comes in.</p>
+
+<h1>A Generative Story</h1>
+
+<p>Let&#8217;s describe a generative model for finding clusters in any set of data. We assume an infinite set of latent groups, where each group is described by some set of parameters. For example, each group could be a Gaussian with a specified mean $\mu_i$ and standard deviation $\sigma_i$, and these group parameters themselves are assumed to come from some base distribution $G_0$. Data is then generated in the following manner:</p>
+
+<ul>
+<li>Select a cluster.</li>
+<li>Sample from that cluster to generate a new point.</li>
+</ul>
+
+
+<p>(Note the resemblance to a <a href="http://en.wikipedia.org/wiki/Mixture_model">finite mixture model</a>.)</p>
+
+<p>For example, suppose we ask 10 friends how many calories of pizza, salad, and rice they ate yesterday. Our groups could be:</p>
+
+<ul>
+<li>A Gaussian centered at (pizza = 5000, salad = 100, rice = 500) (i.e., a pizza lovers group).</li>
+<li>A Gaussian centered at (pizza = 100, salad = 3000, rice = 1000) (maybe a vegan group).</li>
+<li>A Gaussian centered at (pizza = 100, salad = 100, rice = 10000) (definitely Asian).</li>
+<li>&#8230;</li>
+</ul>
+
+
+<p>When deciding what to eat when she woke up yesterday, Alice could have thought <em>girl, I&#8217;m in the mood for pizza</em> and her food consumption yesterday would have been a sample from the pizza Gaussian. Similarly, Bob could have spent the day in Chinatown, thereby sampling from the Asian Gaussian for his day&#8217;s meals. And so on.</p>
+
+<p>The big question, then, is: how do we assign each friend to a group?</p>
+
+<h1>Assigning Groups</h1>
+
+<h2>Chinese Restaurant Process</h2>
+
+<p>One way to assign friends to groups is to use a <strong>Chinese Restaurant Process</strong>. This works as follows: Imagine a restaurant where all your friends went to eat yesterday&#8230;</p>
+
+<ul>
+<li>Initially the restaurant is empty.</li>
+<li>The first person to enter (Alice) sits down at a table (selects a group). She then orders food for the table (i.e., she selects parameters for the group); everyone else who joins the table will then be limited to eating from the food she ordered.</li>
+<li>The second person to enter (Bob) sits down at a table. Which table does he sit at? With probability $\alpha / (1 + \alpha)$ he sits down at a new table (i.e., selects a new group) and orders food for the table; with probability $1 / (1 + \alpha)$ he sits with Alice and eats from the food she&#8217;s already ordered (i.e., he&#8217;s in the same group as Alice).</li>
+<li>&#8230;</li>
+<li>The (n+1)-st person sits down at a new table with probability $\alpha / (n + \alpha)$, and at table k with probability $n_k / (n + \alpha)$, where $n_k$ is the number of people currently sitting at table k.</li>
+</ul>
+
+
+<p>Note a couple things:</p>
+
+<ul>
+<li>The more people (data points) there are at a table (cluster), the more likely it is that people (new data points) will join it. In other words, our groups satisfy a <strong>rich get richer</strong> property.</li>
+<li>There&#8217;s always a small probability that someone joins an entirely new table (i.e., a new group is formed).</li>
+<li>The probability of a new group depends on $\alpha$. So we can think of $\alpha$ as a <strong>dispersion parameter</strong> that affects the dispersion of our datapoints. The lower alpha is, the more tightly clustered our data points; the higher it is, the more clusters we have in any finite set of points.</li>
+</ul>
+
+
+<p>(Also notice the resemblance between table selection probabilities and a Dirichlet distribution&#8230;)</p>
+
+<p>Just to summarize, given n data points, the Chinese Restaurant Process specifies a distribution over partitions (table assignments) of these points. We can also generate parameters for each partition/table from a base distribution $G_0$ (for example, each table could represent a Gaussian whose mean and standard deviation are sampled from $G_0$), though to be clear, this is not part of the CRP itself.</p>
+
+<h3>Code</h3>
+
+<p>Since code makes everything better, here&#8217;s some Ruby to simulate a CRP:</p>
+
+<figure class='code'><figcaption><span>Chinese Restaurant Process </span><a href='https://github.com/echen/dirichlet-process/blob/master/chinese_restaurant_process.rb'>chinese_restaurant_process.rb</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Generate table assignments for `num_customers` customers, according to</span>
+</span><span class='line'><span class="c1"># a Chinese Restaurant Process with dispersion parameter `alpha`.</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># returns an array of integer table assignments</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">chinese_restaurant_process</span><span class="p">(</span><span class="n">num_customers</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+</span><span class='line'> <span class="k">return</span> <span class="o">[]</span> <span class="k">if</span> <span class="n">num_customers</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">table_assignments</span> <span class="o">=</span> <span class="o">[</span><span class="mi">1</span><span class="o">]</span> <span class="c1"># first customer sits at table 1</span>
+</span><span class='line'> <span class="n">next_open_table</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># index of the next empty table</span>
+</span><span class='line'>
+</span><span class='line'> <span class="c1"># Now generate table assignments for the rest of the customers.</span>
+</span><span class='line'> <span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">num_customers</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>   <span class="k">if</span> <span class="nb">rand</span> <span class="o">&lt;</span> <span class="n">alpha</span><span class="o">.</span><span class="n">to_f</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">i</span><span class="p">)</span>
+</span><span class='line'>     <span class="c1"># Customer sits at new table.</span>
+</span><span class='line'>     <span class="n">table_assignments</span> <span class="o">&lt;&lt;</span> <span class="n">next_open_table</span>
+</span><span class='line'>     <span class="n">next_open_table</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>   <span class="k">else</span>
+</span><span class='line'>     <span class="c1"># Customer sits at an existing table.</span>
+</span><span class='line'>     <span class="c1"># He chooses which table to sit at by giving equal weight to each</span>
+</span><span class='line'>     <span class="c1"># customer already sitting at a table. </span>
+</span><span class='line'>     <span class="n">which_table</span> <span class="o">=</span> <span class="n">table_assignments</span><span class="o">[</span><span class="nb">rand</span><span class="p">(</span><span class="n">table_assignments</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">]</span>
+</span><span class='line'>     <span class="n">table_assignments</span> <span class="o">&lt;&lt;</span> <span class="n">which_table</span>
+</span><span class='line'>   <span class="k">end</span>
+</span><span class='line'> <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'> <span class="n">table_assignments</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And here&#8217;s some sample output:</p>
+
+<figure class='code'><figcaption><span>Chinese Restaurant Process </span><a href='https://github.com/echen/dirichlet-process/blob/master/chinese_restaurant_process.rb'>chinese_restaurant_process.rb</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">chinese_restaurant_process</span><span class="p">(</span><span class="n">num_customers</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span> <span class="c1"># table assignments from run 1</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span> <span class="c1"># table assignments from run 2</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span> <span class="c1"># table assignments from run 3</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">chinese_restaurant_process</span><span class="p">(</span><span class="n">num_customers</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">chinese_restaurant_process</span><span class="p">(</span><span class="n">num_customers</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span>
+</span><span class='line'><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice that as we increase $\alpha$, so too does the number of distinct tables increase.</p>
+
+<h2>Polya Urn Model</h2>
+
+<p>Another method for assigning friends to groups is to follow the <strong>Polya Urn Model</strong>. This is basically the same model as the Chinese Restaurant Process, just with a different metaphor.</p>
+
+<ul>
+<li>We start with an urn containing $\alpha G_0(x)$ balls of &#8220;color&#8221; $x$, for each possible value of $x$. ($G_0$ is our base distribution, and $G_0(x)$ is the probability of sampling $x$ from $G_0$). Note that these are possibly fractional balls.</li>
+<li>At each time step, draw a ball from the urn, note its color, and then drop both the original ball plus a new ball of the same color back into the urn.</li>
+</ul>
+
+
+<p>Note the connection between this process and the CRP: balls correspond to people (i.e., data points), colors correspond to table assignments (i.e., clusters), alpha is again a dispersion parameter (put differently, a prior), colors satisfy a rich-get-richer property (since colors with many balls are more likely to get drawn), and so on. (Again, there&#8217;s also a connection between this urn model and <a href="http://en.wikipedia.org/wiki/Dirichlet_distribution#P.C3.B3lya.27s_urn">the urn model for the (finite) Dirichlet distribution</a>&#8230;)</p>
+
+<p>To be precise, the difference between the CRP and the Polya Urn Model is that the CRP specifies only a distribution over <em>partitions</em> (i.e., table assignments), but doesn&#8217;t assign parameters to each group, whereas the Polya Urn Model does both.</p>
+
+<h3>Code</h3>
+
+<p>Again, here&#8217;s some code for simulating a Polya Urn Model:</p>
+
+<figure class='code'><figcaption><span>Polya Urn Model </span><a href='https://github.com/echen/dirichlet-process/blob/master/polya_urn_model.rb'>polya_urn_model.rb</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="c1"># Draw `num_balls` colored balls according to a Polya Urn Model</span>
+</span><span class='line'><span class="c1"># with a specified base color distribution and dispersion parameter</span>
+</span><span class='line'><span class="c1"># `alpha`.</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># returns an array of ball colors</span>
+</span><span class='line'><span class="k">def</span> <span class="nf">polya_urn_model</span><span class="p">(</span><span class="n">base_color_distribution</span><span class="p">,</span> <span class="n">num_balls</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="o">[]</span> <span class="k">if</span> <span class="n">num_balls</span> <span class="o">&lt;=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">balls_in_urn</span> <span class="o">=</span> <span class="o">[]</span>
+</span><span class='line'>  <span class="mi">0</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">num_balls</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+</span><span class='line'>    <span class="k">if</span> <span class="nb">rand</span> <span class="o">&lt;</span> <span class="n">alpha</span><span class="o">.</span><span class="n">to_f</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">balls_in_urn</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+</span><span class='line'>      <span class="c1"># Draw a new color, put a ball of this color in the urn.</span>
+</span><span class='line'>      <span class="n">new_color</span> <span class="o">=</span> <span class="n">base_color_distribution</span><span class="o">.</span><span class="n">call</span>
+</span><span class='line'>      <span class="n">balls_in_urn</span> <span class="o">&lt;&lt;</span> <span class="n">new_color</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>      <span class="c1"># Draw a ball from the urn, add another ball of the same color.</span>
+</span><span class='line'>      <span class="n">ball</span> <span class="o">=</span> <span class="n">balls_in_urn</span><span class="o">[</span><span class="nb">rand</span><span class="p">(</span><span class="n">balls_in_urn</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">]</span>
+</span><span class='line'>      <span class="n">balls_in_urn</span> <span class="o">&lt;&lt;</span> <span class="n">ball</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">balls_in_urn</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And here&#8217;s some sample output, using a uniform distribution over the unit interval as the color distribution to sample from:</p>
+
+<figure class='code'><figcaption><span>Polya Urn Model </span><a href='https://github.com/echen/dirichlet-process/blob/master/polya_urn_model.rb'>polya_urn_model.rb</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="o">&gt;</span> <span class="n">unit_uniform</span> <span class="o">=</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="p">(</span><span class="nb">rand</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span><span class="o">.</span><span class="n">to_i</span> <span class="o">/</span> <span class="mi">100</span><span class="o">.</span><span class="mi">0</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&gt;</span> <span class="n">polya_urn_model</span><span class="p">(</span><span class="n">unit_uniform</span><span class="p">,</span> <span class="n">num_balls</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="mi">0</span><span class="o">.</span><span class="mi">27</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">89</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">89</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">89</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">73</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">98</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">43</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">98</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">89</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">53</span> <span class="c1"># colors in the urn from run 1</span>
+</span><span class='line'><span class="mi">0</span><span class="o">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">46</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">26</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">85</span> <span class="c1"># colors in the urn from run 2</span>
+</span><span class='line'><span class="mi">0</span><span class="o">.</span><span class="mi">96</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">87</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">96</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">87</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">96</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">96</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">87</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">96</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">96</span><span class="p">,</span> <span class="mi">0</span><span class="o">.</span><span class="mi">96</span> <span class="c1"># colors in the urn from run 3</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Code, Take 2</h3>
+
+<p>Here&#8217;s the same code for a Polya Urn Model, but in R:</p>
+
+<figure class='code'><figcaption><span>Polya Urn Model </span><a href='https://github.com/echen/dirichlet-process/blob/master/polya_urn_model.R'>polya_urn_model.R</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'><span class="c1"># Return a vector of `num_balls` ball colors according to a Polya Urn Model</span>
+</span><span class='line'><span class="c1"># with dispersion `alpha`, sampling from a specified base color distribution.</span>
+</span><span class='line'>polya_urn_model <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>base_color_distribution<span class="p">,</span> num_balls<span class="p">,</span> alpha<span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  balls <span class="o">=</span> c<span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kr">for</span> <span class="p">(</span>i in <span class="m">1</span>:num_balls<span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">if</span> <span class="p">(</span>runif<span class="p">(</span><span class="m">1</span><span class="p">)</span> <span class="o">&lt;</span> alpha <span class="o">/</span> <span class="p">(</span>alpha <span class="o">+</span> length<span class="p">(</span>balls<span class="p">)))</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1"># Add a new ball color.</span>
+</span><span class='line'>      new_color <span class="o">=</span> base_color_distribution<span class="p">()</span>
+</span><span class='line'>      balls <span class="o">=</span> c<span class="p">(</span>balls<span class="p">,</span> new_color<span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span> <span class="kr">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="c1"># Pick out a ball from the urn, and add back a</span>
+</span><span class='line'>      <span class="c1"># ball of the same color.</span>
+</span><span class='line'>      ball <span class="o">=</span> balls<span class="p">[</span>sample<span class="p">(</span><span class="m">1</span>:length<span class="p">(</span>balls<span class="p">),</span> <span class="m">1</span><span class="p">)]</span>
+</span><span class='line'>      balls <span class="o">=</span> c<span class="p">(</span>balls<span class="p">,</span> ball<span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  balls
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And some sample density plots of the colors in the urn, when using a unit normal as the base color distribution:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_1.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_1.png" alt="Polya Urn Model, Alpha = 1" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_5.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_5.png" alt="Polya Urn Model, Alpha = 5" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_25.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_25.png" alt="Polya Urn Model, Alpha = 25" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_50.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_50.png" alt="Polya Urn Model, Alpha = 50" /></a></p>
+
+<p>Notice that as alpha increases (i.e., we sample more new ball colors from our base; i.e., as we place more weight on our prior), the colors in the urn tend to a unit normal (our base color distribution).</p>
+
+<h2>Stick-Breaking Process</h2>
+
+<p>Imagine running either the Chinese Restaurant Process or the Polya Urn Model without stop. For each group $i$, this gives a proportion $w_i$ of points that fall into group $i$.</p>
+
+<p>So instead of running the CRP or Polya Urn model to figure out these proportions, can we simply generate them directly?</p>
+
+<p>This is exactly what the Stick-Breaking Process does:</p>
+
+<ul>
+<li>Start with a stick of length one.</li>
+<li>Generate a random variable $\beta_1 \sim Beta(1, \alpha)$. By the definition of the <a href="http://en.wikipedia.org/wiki/Beta_distribution">Beta distribution</a>, this will be a real number between 0 and 1, with expected value $1 / (1 + \alpha)$. Break off the stick at $\beta_1$; $w_1$ is then the length of the stick on the left.</li>
+<li>Now take the stick to the right, and generate $\beta_2 \sim Beta(1, \alpha)$. Break off the stick $\beta_2$ into the stick. Again, $w_2$ is the length of the stick to the left, i.e., $w_2 = (1 - \beta_1) \beta_2$.</li>
+<li>And so on.</li>
+</ul>
+
+
+<p>Thus, the Stick-Breaking process is simply the CRP or Polya Urn Model from a different point of view. For example, assigning customers to table 1 according to the Chinese Restaurant Process is equivalent to assigning customers to table 1 with probability $w_1$.</p>
+
+<h3>Code</h3>
+
+<p>Here&#8217;s some R code for simulating a Stick-Breaking process:</p>
+
+<figure class='code'><figcaption><span>Stick-Breaking Process </span><a href='https://github.com/echen/dirichlet-process/blob/master/stick_breaking_process.R'>stick_breaking_process.R</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='r'><span class='line'><span class="c1"># Return a vector of weights drawn from a stick-breaking process</span>
+</span><span class='line'><span class="c1"># with dispersion `alpha`.</span>
+</span><span class='line'><span class="c1">#</span>
+</span><span class='line'><span class="c1"># Recall that the kth weight is</span>
+</span><span class='line'><span class="c1">#   \beta_k = (1 - \beta_1) * (1 - \beta_2) * ... * (1 - \beta_{k-1}) * beta_k</span>
+</span><span class='line'><span class="c1"># where each $\\beta\_i$ is drawn from a Beta distribution</span>
+</span><span class='line'><span class="c1">#   \beta_i ~ Beta(1, \alpha)</span>
+</span><span class='line'>stick_breaking_process <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>num_weights<span class="p">,</span> alpha<span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  betas <span class="o">=</span> rbeta<span class="p">(</span>num_weights<span class="p">,</span> <span class="m">1</span><span class="p">,</span> alpha<span class="p">)</span>
+</span><span class='line'>  remaining_stick_lengths <span class="o">=</span> c<span class="p">(</span><span class="m">1</span><span class="p">,</span> cumprod<span class="p">(</span><span class="m">1</span> <span class="o">-</span> betas<span class="p">))[</span><span class="m">1</span>:num_weights<span class="p">]</span>
+</span><span class='line'>  weights <span class="o">=</span> remaining_stick_lengths <span class="o">*</span> betas
+</span><span class='line'>  weights
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And here&#8217;s some sample output:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_1.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_1.png" alt="Stick-Breaking Process, alpha = 1" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_3.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_3.png" alt="Stick-Breaking Process, alpha = 3" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_5.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/sbp_alpha_5.png" alt="Stick-Breaking Process, alpha = 5" /></a></p>
+
+<p>Notice that for low values of alpha, the stick weights are concentrated on the first few weights (meaning our data points are concentrated on a few clusters), while the weights become more evenly dispersed as we increase alpha (meaning we posit more clusters in our data points).</p>
+
+<h2>Dirichlet Process</h2>
+
+<p>Suppose we run a Polya Urn Model several times, where we sample colors from a base distribution $G_0$. Each run produces a distribution of colors in the urn (say, 5% blue balls, 3% red balls, 2% pink balls, etc.), and the distribution will be different each time (for example, 5% blue balls in run 1, but 1% blue balls in run 2).</p>
+
+<p>For example, let&#8217;s look again at the plots from above, where I generated samples from a Polya Urn Model with the standard unit normal as the base distribution:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_1.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_1.png" alt="Polya Urn Model, Alpha = 1" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_5.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_5.png" alt="Polya Urn Model, Alpha = 5" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_25.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_25.png" alt="Polya Urn Model, Alpha = 25" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_50.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/polya_alpha_50.png" alt="Polya Urn Model, Alpha = 50" /></a></p>
+
+<p>Each run of the Polya Urn Model produces a slighly different distribution, though each is &#8220;centered&#8221; in some fashion around the standard Gaussian I used as base. In other words, the Polya Urn Model gives us a <strong>distribution over distributions</strong> (we get a distribution of ball colors, and this distribution of colors changes each time) &#8211; and so we finally get to the Dirichlet Process.</p>
+
+<p>Formally, given a base distribution $G_0$ and a dispersion parameter $\alpha$, a sample from the Dirichlet Process $DP(G_0, \alpha)$ is a distribution $G \sim DP(G_0, \alpha)$. This sample $G$ can be thought of as a distribution of colors in a single simulation of the Polya Urn Model; sampling from $G$ gives us the balls in the urn.</p>
+
+<p>So here&#8217;s the connection between the Chinese Restaurant Process, the Polya Urn Model, the Stick-Breaking Process, and the Dirichlet Process:</p>
+
+<ul>
+<li><strong>Dirichlet Process</strong>: Suppose we want samples $x_i \sim G$, where $G$ is a distribution sampled from the Dirichlet Process $G \sim DP(G_0, \alpha)$.</li>
+<li><strong>Polya Urn Model</strong>: One way to generate these values $x_i$ would be to take a Polya Urn Model with color distribution $G_0$ and dispersion $\alpha$. ($x_i$ would be the color of the ith ball in the urn.)</li>
+<li><strong>Chinese Restaurant Process</strong>: Another way to generate $x_i$ would be to first assign tables to customers according to a Chinese Restaurant Process with dispersion $\alpha$. Every customer at the nth table would then be given the same value (color) sampled from $G_0$. ($x_i$ would be the value given to the ith customer; $x_i$ can also be thought of as the food at table $i$, or as the parameters of table $i$.)</li>
+<li><strong>Stick-Breaking Process</strong>: Finally, we could generate weights $w_k$ according to a Stick-Breaking Process with dispersion $\alpha$. Next, we would give each weight $w_k$ a value (or color) $v_k$ sampled from $G_0$. Finally, we would assign $x_i$ to value (color) $v_k$ with probability $w_k$.</li>
+</ul>
+
+
+<h1>Recap</h1>
+
+<p>Let&#8217;s summarize what we&#8217;ve discussed so far.</p>
+
+<p>We have a bunch of data points $p_i$ that we want to cluster, and we&#8217;ve described four essentially equivalent generative models that allow us to describe how each cluster and point could have arisen.</p>
+
+<p>In the <strong>Chinese Restaurant Process</strong>:</p>
+
+<ul>
+<li>We generate table assignments $g_1, \ldots, g_n \sim CRP(\alpha)$ according to a Chinese Restaurant Process. ($g_i$ is the table assigned to datapoint $i$.)</li>
+<li>We generate table parameters $\phi_1, \ldots, \phi_n \sim G_0$ according to the base distribution $G_0$, where $\phi_k$ is the parameter for the kth distinct group.</li>
+<li>Given table assignments and table parameters, we generate each datapoint $p_i \sim F(\phi_{g_i})$ from a distribution $F$ with the specified table parameters. (For example, $F$ could be a Gaussian, and $\phi_i$ could be a parameter vector specifying the mean and standard deviation).</li>
+</ul>
+
+
+<p>In the <strong>Polya Urn Model</strong>:</p>
+
+<ul>
+<li>We generate colors $\phi_1, \ldots, \phi_n \sim Polya(G_0, \alpha)$ according to a Polya Urn Model. ($\phi_i$ is the color of the ith ball.)</li>
+<li>Given ball colors, we generate each datapoint $p_i \sim F(\phi_i)$.</li>
+</ul>
+
+
+<p>In the <strong>Stick-Breaking Process</strong>:</p>
+
+<ul>
+<li>We generate group probabilities (stick lengths) $w_1, \ldots, w_{\infty} \sim Stick(\alpha)$ according to a Stick-Breaking process.</li>
+<li>We generate group parameters $\phi_1, \ldots, \phi_{\infty} \sim G_0$ from $G_0$, where $\phi_k$ is the parameter for the kth distinct group.</li>
+<li>We generate group assignments $g_1, \ldots, g_n \sim Multinomial(w_1, \ldots, w_{\infty})$ for each datapoint.</li>
+<li>Given group assignments and group parameters, we generate each datapoint $p_i \sim F(\phi_{g_i})$.</li>
+</ul>
+
+
+<p>In the <strong>Dirichlet Process</strong>:</p>
+
+<ul>
+<li>We generate a distribution $G \sim DP(G_0, \alpha)$ from a Dirichlet Process with base distribution $G_0$ and dispersion parameter $\alpha$.</li>
+<li>We generate group-level parameters $x_i \sim G$ from $G$, where $x_i$ is the group parameter for the ith datapoint. (Note: this is not the same as $\phi_i$. $x_i$ is the parameter associated to the group that the ith datapoint belongs to, whereas $\phi_k$ is the parameter of the kth distinct group.)</li>
+<li>Given group-level parameters $x_i$, we generate each datapoint $p_i \sim F(x_i)$.</li>
+</ul>
+
+
+<p>Also, remember that each model naturally allows the number of clusters to grow as more points come in.</p>
+
+<h1>Inference in the Dirichlet Process Mixture</h1>
+
+<p>So we&#8217;ve described a generative model that allows us to calculate the probability of any particular set of group assignments to data points, but we haven&#8217;t described how to actually learn a good set of group assignments.</p>
+
+<p>Let&#8217;s briefly do this now. Very roughly, the <strong>Gibbs sampling</strong> approach works as follows:</p>
+
+<ul>
+<li>Take the set of data points, and randomly initialize group assignments.</li>
+<li>Pick a point. Fix the group assignments of all the other points, and assign the chosen point a new group (which can be either an existing cluster or a new cluster) with a CRP-ish probability (as described in the models above) that depends on the group assignments and values of all the other points.</li>
+<li>We will eventually converge on a good set of group assignments, so repeat the previous step until happy.</li>
+</ul>
+
+
+<p>For more details, <a href="http://www.cs.toronto.edu/~radford/ftp/mixmc.pdf">this paper</a> provides a good description.</p>
+
+<h1>Fast Food Application: Clustering the McDonald&#8217;s Menu</h1>
+
+<p>Finally, let&#8217;s show an application of the Dirichlet Process Mixture. Unfortunately, I didn&#8217;t have a data set of people&#8217;s food habits offhand, so instead I took <a href="http://nutrition.mcdonalds.com/nutritionexchange/nutritionfacts.pdf">this list</a> of McDonald&#8217;s foods and nutrition facts.</p>
+
+<p>After normalizing each item to have an equal number of calories, and representing each item as a vector of <strong>(total fat, cholesterol, sodium, dietary fiber, sugars, protein, vitamin A, vitamin C, calcium, iron, calories from fat, satured fat, trans fat, carbohydrates)</strong>, I ran <a href="http://scikit-learn.sourceforge.net/dev/index.html">scikit-learn</a>&#8217;s <a href="http://scikit-learn.sourceforge.net/dev/modules/mixture.html">Dirichlet Process Gaussian Mixture Model</a> to cluster McDonald&#8217;s menu based on nutritional value.</p>
+
+<p>First, how does the number of clusters inferred by the Dirichlet Process mixture vary as we feed in more (randomly ordered) points?</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/num-clusters-vary.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/num-clusters-vary.png" alt="Growth of Number of Clusters" /></a></p>
+
+<p>As expected, the Dirichlet Process model discovers more and more clusters as more and more food items arrive. (And indeed, the number of clusters appears to grow logarithmically, which can in fact be proved.)</p>
+
+<p>How many clusters does the mixture model infer from the entire dataset? Running the Gibbs sampler several times, we find that the number of clusters tends around 11:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/num_mcdonalds_clusters.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/num_mcdonalds_clusters_small.png" alt="Number of clusters" /></a></p>
+
+<p>Let&#8217;s dive into one of these clusterings.</p>
+
+<p><strong>Cluster 1 (Desserts)</strong></p>
+
+<p>Looking at a sample of foods from the first cluster, we find a lot of desserts and dessert-y drinks:</p>
+
+<ul>
+<li>Caramel Mocha</li>
+<li>Frappe Caramel</li>
+<li>Iced Hazelnut Latte</li>
+<li>Iced Coffee</li>
+<li>Strawberry Triple Thick Shake</li>
+<li>Snack Size McFlurry</li>
+<li>Hot Caramel Sundae</li>
+<li>Baked Hot Apple Pie</li>
+<li>Cinnamon Melts</li>
+<li>Kiddie Cone</li>
+<li>Strawberry Sundae</li>
+</ul>
+
+
+<p>We can also look at the nutritional profile of some foods from this cluster (after <a href="http://en.wikipedia.org/wiki/Standard_score">z-scaling</a> each nutrition dimension to have mean 0 and standard deviation 1):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster1.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster1.png" alt="Cluster 1" /></a></p>
+
+<p>We see that foods in this cluster tend to be high in trans fat and low in vitamins, protein, fiber, and sodium.</p>
+
+<p><strong>Cluster 2 (Sauces)</strong></p>
+
+<p>Here&#8217;s a sample from the second cluster, which contains a lot of sauces:</p>
+
+<ul>
+<li>Hot Mustard Sauce</li>
+<li>Spicy Buffalo Sauce</li>
+<li>Newman&#8217;s Own Low Fat Balsamic Vinaigrette</li>
+</ul>
+
+
+<p>And looking at the nutritional profile of points in this cluster, we see that it&#8217;s heavy in sodium and fat:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster2.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster2.png" alt="Cluster 2" /></a></p>
+
+<p><strong>Cluster 3 (Burgers, Crispy Foods, High-Cholesterol)</strong></p>
+
+<p>The third cluster is very burgery:</p>
+
+<ul>
+<li>Hamburger</li>
+<li>Cheeseburger</li>
+<li>Filet-O-Fish</li>
+<li>Quarter Pounder with Cheese</li>
+<li>Premium Grilled Chicken Club Sandwich</li>
+<li>Ranch Snack Wrap</li>
+<li>Premium Asian Salad with Crispy Chicken</li>
+<li>Butter Garlic Croutons</li>
+<li>Sausage McMuffin</li>
+<li>Sausage McGriddles</li>
+</ul>
+
+
+<p>It&#8217;s also high in fat and sodium, and low in carbs and sugar</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster3.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster3.png" alt="Cluster 3" /></a></p>
+
+<p><strong>Cluster 4 (Creamy Sauces)</strong></p>
+
+<p>Interestingly, even though we already found a cluster of sauces above, we discover another one as well. These sauces appear to be much more cream-based:</p>
+
+<ul>
+<li>Creamy Ranch Sauce</li>
+<li>Newman&#8217;s Own Creamy Caesar Dressing</li>
+<li>Coffee Cream</li>
+<li>Iced Coffee with Sugar Free Vanilla Syrup</li>
+</ul>
+
+
+<p>Nutritionally, these sauces are higher in calories from fat, and much lower in sodium:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster4.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster4.png" alt="Cluster 4" /></a></p>
+
+<p><strong>Cluster 5 (Salads)</strong></p>
+
+<p>Here&#8217;s a salad cluster. A lot of salads also appeared in the third cluster (along with hamburgers and McMuffins), but that&#8217;s because those salads also all contained crispy chicken. The salads in this cluster are either crisp-free or have their chicken grilled instead:</p>
+
+<ul>
+<li>Premium Southwest Salad with Grilled Chicken</li>
+<li>Premium Caesar Salad with Grilled Chicken</li>
+<li>Side Salad</li>
+<li>Premium Asian Salad without Chicken</li>
+<li>Premium Bacon Ranch Salad without Chicken</li>
+</ul>
+
+
+<p>This is reflected in the higher content of iron, vitamin A, and fiber:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster5.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster5.png" alt="Cluster 5" /></a></p>
+
+<p><strong>Cluster 6 (More Sauces)</strong></p>
+
+<p>Again, we find another cluster of sauces:</p>
+
+<ul>
+<li>Ketchup Packet</li>
+<li>Barbeque Sauce</li>
+<li>Chipotle Barbeque Sauce</li>
+</ul>
+
+
+<p>These are still high in sodium, but much lower in fat compared to the other sauce clusters:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster6.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster6.png" alt="Cluster 6" /></a></p>
+
+<p><strong>Cluster 7 (Fruit and Maple Oatmeal)</strong></p>
+
+<p>Amusingly, fruit and maple oatmeal is in a cluster by itself:</p>
+
+<ul>
+<li>Fruit &amp; Maple Oatmeal</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster7.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster7.png" alt="Cluster 7" /></a></p>
+
+<p><strong>Cluster 8 (Sugary Drinks)</strong></p>
+
+<p>We also get a cluster of sugary drinks:</p>
+
+<ul>
+<li>Strawberry Banana Smoothie</li>
+<li>Wild Berry Smoothie</li>
+<li>Iced Nonfat Vanilla Latte</li>
+<li>Nonfat Hazelnut</li>
+<li>Nonfat Vanilla Cappuccino</li>
+<li>Nonfat Caramel Cappuccino</li>
+<li>Sweet Tea</li>
+<li>Frozen Strawberry Lemonade</li>
+<li>Coca-Cola</li>
+<li>Minute Maid Orange Juice</li>
+</ul>
+
+
+<p>In addition to high sugar content, this cluster is also high in carbohydrates and calcium, and low in fat.</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster8.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster8.png" alt="Cluster 8" /></a></p>
+
+<p><strong>Cluster 9 (Breakfast Foods)</strong></p>
+
+<p>Here&#8217;s a cluster of high-cholesterol breakfast foods:</p>
+
+<ul>
+<li>Sausage McMuffin with Egg</li>
+<li>Sausage Burrito</li>
+<li>Egg McMuffin</li>
+<li>Bacon, Egg &amp; Chees Biscuit</li>
+<li>McSkillet Burrito with Sausage</li>
+<li>Big Breakfast with Hotcakes</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster9.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster9.png" alt="Cluster 9" /></a></p>
+
+<p><strong>Cluster 10 (Coffee Drinks)</strong></p>
+
+<p>We find a group of coffee drinks next:</p>
+
+<ul>
+<li>Nonfat Cappuccino</li>
+<li>Nonfat Latte</li>
+<li>Nonfat Latte with Sugar Free Vanilla Syrup</li>
+<li>Iced Nonfat Latte</li>
+</ul>
+
+
+<p>These are much higher in calcium and protein, and lower in sugar, than the other drink cluster above:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster11.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster11.png" alt="Cluster 11" /></a></p>
+
+<p><strong>Cluster 11 (Apples)</strong></p>
+
+<p>And finally, here&#8217;s a cluster of apples:</p>
+
+<ul>
+<li>Apple Dippers with Low Fat Caramel Dip</li>
+<li>Apple Slices</li>
+</ul>
+
+
+<p>Vitamin C, check.</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster10.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster10.png" alt="Cluster 10" /></a></p>
+
+<h1>No More!</h1>
+
+<p>I&#8217;ll end with a couple notes:</p>
+
+<ul>
+<li>Kevin Knight has a <a href="http://www.isi.edu/natural-language/people/bayes-with-tears.pdf">hilarious introduction</a> to Bayesian inference that describes some applications of nonparametric Bayesian techniques to computational linguistics (though I don&#8217;t think he ever quite says &#8220;nonparametric Bayes&#8221; directly).</li>
+<li>In the Chinese Restaurant Process, each customer sits at a single table. The <a href="http://en.wikipedia.org/wiki/Chinese_restaurant_process#The_Indian_buffet_process">Indian Buffet Process</a> is an extension that allows customers to sample food from multiple tables (i.e., belong to multiple clusters).</li>
+<li>The Chinese Restaurant Process, the Polya Urn Model, and the Stick-Breaking Process are all <em>sequential</em> models for generating groups: to figure out table parameters in the CRP, for example, you wait for customer 1 to come in, then customer 2, then customer 3, and so on. The equivalent Dirichlet Process, on the other hand, is a <em>parallelizable</em> model for generating groups: just sample $G \sim DP(G_0, alpha)$, and then all your group parameters can be independently generated by sampling from $G$ at once. What&#8217;s more, this duality is an instance of a more general phenomenon known as <a href="http://en.wikipedia.org/wiki/De_Finetti's_theorem">de Finetti&#8217;s theorem</a>.</li>
+</ul>
+
+
+<p>And that&#8217;s it.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Instant interactive visualization with d3 + ggplot2]]></title>
@@ -3203,156 +3887,6 @@ At $ \hat{\mu_1} $, the residual now makes equal angles with $ x_1, x_2 $, and s
 
 
 <p>So when should you use LARS, as opposed to some other regularization method like lasso? There&#8217;s not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don&#8217;t usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Twifferences Between Californians and New Yorkers]]></title>
-    <link href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/"/>
-    <updated>2011-04-18T03:41:39-07:00</updated>
-    <id>http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers</id>
-    <content type="html"><![CDATA[<p>How do people in Silicon Valley compare to those in New York City? For a data-driven answer, I pulled a couple days&#8217; worth of Twitter data around the two areas.</p>
-
-<h2>Silicon Valley vs. NYC</h2>
-
-<p>So let&#8217;s take a look. To compare the two places, I trained a simple Naive Bayes model on user profiles. Here are the words most predictive of being from Silicon Valley vs. NYC:</p>
-
-<h3>Silicon Valley</h3>
-
-<pre><code>word                    Prob(Silicon Valley | word)
-cloud                   0.9053263586466359
-stanford                0.8947378473880241
-hacker                  0.8759014372329466
-dev                     0.8684686297323906
-giants                  0.8522440881548609
-mac                     0.8453052631578948
-support                 0.8453052631578948
-ux                      0.8453052631578948
-engineer                0.8321693229113796
-software                0.8223647630482606
-google                  0.8199372672025093
-yahoo                   0.8095254553623891
-ui                      0.7978356566397651
-board                   0.7978356566397651
-programmer              0.7978356566397651
-health                  0.7946855178965604
-game                    0.7846171884159925
-bike                    0.7846171884159925
-gadgets                 0.7846171884159925
-surfer                  0.7846171884159925
-lead                    0.7846171884159925
-green                   0.7758225129356634
-product                 0.7707827422373662
-engineering             0.7662790401791395
-data                    0.7662790401791395
-biz                     0.7522143788498717
-games                   0.7503363731499477
-cto                     0.7474653744372272
-startup                 0.7474653744372272
-cofounder               0.745373899785155 
-team                    0.7399904460289096
-mobile                  0.7395369397321055
-entrepreneur            0.7346495409451503
-before                  0.7320595099183198
-corporate               0.7320595099183198
-companies               0.7320595099183198
-enterprise              0.7320595099183198
-careers                 0.7320595099183197
-help                    0.7320595099183197
-jobs                    0.7226147417213892
-systems                 0.7183120188916491
-dude                    0.7183120188916491
-solutions               0.7146518581802648
-startups                0.7146518581802648
-instructor              0.7146518581802648
-founder                 0.7136727946906866
-advocate                0.7119786767011602
-community               0.7107516339869281
-local                   0.7083355385022493
-cyclist                 0.7083355385022493
-formerly                0.7083355385022493
-tech                    0.7034995094145681
-dad                     0.699465571148113 
-developer               0.6933557437157872
-evangelist              0.6886440677966102
-architect               0.6886440677966102
-experience              0.6875894616006009
-designer                0.6861009534875773
-app                     0.6861009534875773
-gamer                   0.6701428216249068
-geek                    0.6699839438296025
-friend                  0.6692937011181566
-married                 0.6692937011181566
-past                    0.6670653907496013
-yoga                    0.6670653907496013
-baseball                0.6670653907496013
-iphone                  0.65665476702241  
-guy                     0.6396064208138196
-running                 0.6323876017254413
-</code></pre>
-
-<h3>New York City</h3>
-
-<pre><code>word                    Prob(New York | word)
-bbm                     0.9235374771480804
-mets                    0.9165294616574365
-teamfollowback          0.9165294616574365
-nyu                     0.9165294616574365
-columbia                0.8848747591522158
-actress                 0.8682158330051202
-chick                   0.845920058942715 
-theatre                 0.8010386109569492
-money                   0.7935205183585313
-publishing              0.7854119457864808
-moment                  0.7854119457864808
-self                    0.7854119457864808
-ya                      0.7545697268432944
-intern                  0.7545697268432944
-makeup                  0.7512175173798283
-financial               0.7512175173798283
-studio                  0.7329822041337483
-records                 0.7329822041337483
-magazine                0.7272706101537029
-history                 0.7249169653720938
-fashion                 0.718105290117341 
-myself                  0.7118622174381054
-soul                    0.7072308553828924
-peace                   0.7072308553828924
-dancer                  0.7017521519889981
-night                   0.687114269683935 
-president               0.6871142696839349
-event                   0.6577157178660937
-dreams                  0.6577157178660937
-model                   0.6577157178660937
-read                    0.6577157178660937
-journalism              0.6577157178660937
-filmmaker               0.6530588061027995
-news                    0.6466488313151225
-mother                  0.6466488313151224
-entertainment           0.6466488313151224
-party                   0.640842613712599 
-political               0.640842613712599 
-producer                0.6372663804691904
-communications          0.6222197132211811
-actor                   0.6169228655604573
-journalist              0.616094753936313 
-website                 0.6133083363295495
-radio                   0.6133083363295495
-executive               0.6058707124010555
-</code></pre>
-
-<p>Some findings:</p>
-
-<ul>
-<li>Silicon Valley is much more <strong>tech</strong>- (<em>cloud, hacker, dev, engineer, software, programmer</em>) and <strong>startup</strong>-driven (<em>startup, entrepreneur, founder</em>). New York is much more into <strong>arts/entertainment</strong> (<em>actress, theatre, publishing, studio, records, magazine, journalism, filmmaker, news</em>) and <strong>finance</strong> (<em>money, financial</em>). (Another way to look at it: Silicon Valley higher-ups call themselves <em>ctos</em> and <em>founders</em> and sit on <em>boards</em>, while New York higher-ups call themselves <em>presidents</em> and <em>executives</em>.)</li>
-<li>New Yorkers care a lot about <strong>looks</strong> (<em>makeup, fashion</em>). Silicon Valley folks care a lot about <strong>sports</strong>, <strong>health</strong>, and the <strong>outdoors</strong> (<em>bike, surfer, cyclist, yoga, running, health</em>).</li>
-<li>Silicon Valley folks describe themselves through their <strong>past</strong> (<em>before, formerly, past, former</em>). New Yorkers describe themselves through their <strong>future</strong> (<em>dreams</em>).</li>
-<li>Silicon Valley is big on <strong>community</strong> (<em>support, team, help, helping, community</em>). New York is focused on the <strong>individual</strong> (<em>self, myself</em>).</li>
-<li>Silicon Valley has a larger proportion of <strong>men</strong> (<em>dad, geek, dude, guy</em>). New York has the <strong>women</strong> (<em>mother, chick</em>).</li>
-<li>New York uses BlackBerrys (<em>bbm</em> is short for BlackBerry Messenger), while Silicon Valley uses <em>iPhones</em>.</li>
-<li>Silicon Valley is more into the <strong>locavore</strong> movement (<em>green, local</em>).</li>
-</ul>
-
 ]]></content>
   </entry>
   
