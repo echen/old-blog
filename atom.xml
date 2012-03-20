@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-20T09:15:29-07:00</updated>
+  <updated>2012-03-20T14:54:32-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -670,7 +670,7 @@
 
 <p><strong>Cluster 11 (Apples)</strong></p>
 
-<p>And finally, here&#8217;s a cluster of apples:</p>
+<p>Here&#8217;s a cluster of apples:</p>
 
 <ul>
 <li>Apple Dippers with Low Fat Caramel Dip</li>
@@ -681,6 +681,10 @@
 <p>Vitamin C, check.</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster10.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster10.png" alt="Cluster 10" /></a></p>
+
+<p>And finally, here&#8217;s an overview of all the clusters at once (using a different clustering run):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/dirichlet-process/all-clusters.png"><img src="http://dl.dropbox.com/u/10506/blog/dirichlet-process/all-clusters-small.png" alt="All Clusters" /></a></p>
 
 <h1>No More!</h1>
 

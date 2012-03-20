@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-20T09:15:29-07:00</updated>
+  <updated>2012-03-20T14:54:32-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -669,7 +669,7 @@
 
 &lt;p&gt;&lt;strong&gt;Cluster 11 (Apples)&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;And finally, here&amp;#8217;s a cluster of apples:&lt;/p&gt;
+&lt;p&gt;Here&amp;#8217;s a cluster of apples:&lt;/p&gt;
 
 &lt;ul&gt;
 &lt;li&gt;Apple Dippers with Low Fat Caramel Dip&lt;/li&gt;
@@ -680,6 +680,10 @@
 &lt;p&gt;Vitamin C, check.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster10.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/cluster10.png&quot; alt=&quot;Cluster 10&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;And finally, here&amp;#8217;s an overview of all the clusters at once (using a different clustering run):&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/all-clusters.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/dirichlet-process/all-clusters-small.png&quot; alt=&quot;All Clusters&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
 &lt;h1&gt;No More!&lt;/h1&gt;
 
