@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-20T14:54:32-07:00</updated>
+  <updated>2012-03-21T09:04:09-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -472,7 +472,7 @@
 &lt;/ul&gt;
 
 
-&lt;p&gt;For more details, &lt;a href=&quot;http://www.cs.toronto.edu/~radford/ftp/mixmc.pdf&quot;&gt;this paper&lt;/a&gt; provides a good description.&lt;/p&gt;
+&lt;p&gt;For more details, &lt;a href=&quot;http://www.cs.toronto.edu/~radford/ftp/mixmc.pdf&quot;&gt;this paper&lt;/a&gt; provides a good description. Philip Resnick and Eric Hardisty also have a friendlier, more general description of Gibbs sampling (plus an application to naive Bayes) &lt;a href=&quot;http://www.cs.umd.edu/~hardisty/papers/gsfu.pdf&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
 &lt;h1&gt;Fast Food Application: Clustering the McDonald&amp;#8217;s Menu&lt;/h1&gt;
 
