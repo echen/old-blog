@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-23T09:02:49-07:00</updated>
+  <updated>2012-04-06T15:15:30-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -1960,7 +1960,7 @@ might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quo
 
 &lt;ul&gt;
 &lt;li&gt;$p(l_i | l_{i-1})$ are &lt;strong&gt;transition&lt;/strong&gt; probabilities (e.g., the probability that a preposition is followed by a noun);&lt;/li&gt;
-&lt;li&gt;$p(w_i | l_{i-1})$ are &lt;strong&gt;emission&lt;/strong&gt; probabilities (e.g., the probability that a noun emits the word &amp;#8220;dad&amp;#8221;).&lt;/li&gt;
+&lt;li&gt;$p(w_i | l_i)$ are &lt;strong&gt;emission&lt;/strong&gt; probabilities (e.g., the probability that a noun emits the word &amp;#8220;dad&amp;#8221;).&lt;/li&gt;
 &lt;/ul&gt;
 
 

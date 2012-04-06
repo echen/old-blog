@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-03-23T09:02:49-07:00</updated>
+  <updated>2012-04-06T15:15:30-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -1961,7 +1961,7 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 
 <ul>
 <li>$p(l_i | l_{i-1})$ are <strong>transition</strong> probabilities (e.g., the probability that a preposition is followed by a noun);</li>
-<li>$p(w_i | l_{i-1})$ are <strong>emission</strong> probabilities (e.g., the probability that a noun emits the word &#8220;dad&#8221;).</li>
+<li>$p(w_i | l_i)$ are <strong>emission</strong> probabilities (e.g., the probability that a noun emits the word &#8220;dad&#8221;).</li>
 </ul>
 
 
