@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-04-06T15:15:30-07:00</updated>
+  <updated>2012-04-06T16:06:00-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -1449,7 +1449,7 @@
 <li>Check out <a href="https://github.com/twitter/scalding">Scalding on Github</a>.</li>
 <li>Read <a href="https://github.com/twitter/scalding/wiki/Getting-Started">this Getting Started Guide</a> on the Scalding wiki.</li>
 <li>Run through <a href="https://github.com/twitter/scalding/tree/master/tutorial">this code-based introduction</a>, complete with Scalding jobs that you can run in local mode.</li>
-<li>Browse <a href="https://github.com/twitter/scalding/blob/master/tutorial/CodeSnippets.md">this set of code snippets</a>, which shows examples of different Scalding functions (e.g., <code>map</code>, <code>filter</code>, <code>flatMap</code>, <code>groupBy</code>, <code>count</code>, <code>join</code>).</li>
+<li>Browse <a href="https://github.com/twitter/scalding/wiki/API-Reference">the API reference</a>, which also contains many code snippets illustrating different Scalding functions (e.g., <code>map</code>, <code>filter</code>, <code>flatMap</code>, <code>groupBy</code>, <code>count</code>, <code>join</code>).</li>
 <li>And all the code for this post is <a href="https://github.com/echen/scaldingale">here</a>.</li>
 </ul>
 
