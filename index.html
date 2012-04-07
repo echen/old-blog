@@ -948,12 +948,6 @@
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
 <span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
 </pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="cm">/**</span>
 </span><span class='line'><span class="cm"> * The input is a TSV file with three columns: (user, movie, rating).</span>
 </span><span class='line'><span class="cm"> */</span>
@@ -962,9 +956,7 @@
 </span><span class='line'><span class="cm">/**</span>
 </span><span class='line'><span class="cm"> * Read in the input and give each field a type and name.</span>
 </span><span class='line'><span class="cm"> */</span>
-</span><span class='line'><span class="k">val</span> <span class="n">ratings</span> <span class="k">=</span>
-</span><span class='line'>  <span class="nc">Tsv</span><span class="o">(</span><span class="nc">INPUT_FILENAME</span><span class="o">).</span><span class="n">read</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">mapTo</span><span class="o">((</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="-Symbol">&#39;user</span><span class="o">,</span> <span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">))</span> <span class="o">{</span> <span class="n">fields</span> <span class="k">:</span> <span class="o">(</span><span class="kt">String</span><span class="o">,</span> <span class="kt">String</span><span class="o">,</span> <span class="nc">Double</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">fields</span> <span class="o">}</span>
+</span><span class='line'><span class="k">val</span> <span class="n">ratings</span> <span class="k">=</span> <span class="nc">Tsv</span><span class="o">(</span><span class="nc">INPUT_FILENAME</span><span class="o">,</span> <span class="o">(</span><span class="-Symbol">&#39;user</span><span class="o">,</span> <span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="-Symbol">&#39;rating</span><span class="o">))</span>
 </span><span class='line'>
 </span><span class='line'><span class="cm">/**</span>
 </span><span class='line'><span class="cm"> * Let&#39;s also keep track of the total number of people who rated each movie.</span>
@@ -973,14 +965,10 @@
 </span><span class='line'>  <span class="n">ratings</span>
 </span><span class='line'>    <span class="c1">// Put the number of people who rated each movie into a field called &quot;numRaters&quot;.    </span>
 </span><span class='line'>    <span class="o">.</span><span class="n">groupBy</span><span class="o">(</span><span class="-Symbol">&#39;movie</span><span class="o">)</span> <span class="o">{</span> <span class="n">_</span><span class="o">.</span><span class="n">size</span> <span class="o">}.</span><span class="n">rename</span><span class="o">(</span><span class="-Symbol">&#39;size</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;numRaters</span><span class="o">)</span>
-</span><span class='line'>    <span class="c1">// Rename, since Scalding requires both sides to have distinct fields when we join.</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">rename</span><span class="o">(</span><span class="-Symbol">&#39;movie</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;movieX</span><span class="o">)</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1">// Merge `ratings` with `numRaters`, by joining on their movie fields.</span>
 </span><span class='line'><span class="k">val</span> <span class="n">ratingsWithSize</span> <span class="k">=</span>
-</span><span class='line'>  <span class="n">ratings</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">joinWithSmaller</span><span class="o">(</span><span class="-Symbol">&#39;movie</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;movieX</span><span class="o">,</span> <span class="n">numRaters</span><span class="o">)</span>
-</span><span class='line'>    <span class="o">.</span><span class="n">discard</span><span class="o">(</span><span class="-Symbol">&#39;movieX</span><span class="o">)</span> <span class="c1">// Remove the extra field.</span>
+</span><span class='line'>  <span class="n">ratings</span><span class="o">.</span><span class="n">joinWithSmaller</span><span class="o">(</span><span class="-Symbol">&#39;movie</span> <span class="o">-&gt;</span> <span class="-Symbol">&#39;movie</span><span class="o">,</span> <span class="n">numRaters</span><span class="o">)</span>
 </span><span class='line'>
 </span><span class='line'><span class="c1">// ratingsWithSize now contains the following fields: (user, movie, rating, numRaters).</span>
 </span></code></pre></td></tr></table></div></figure>

@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-04-06T16:06:00-07:00</updated>
+  <updated>2012-04-06T18:43:48-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -808,12 +808,6 @@
 &lt;span class=&#8217;line-number&#8217;&gt;21&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;22&lt;/span&gt;
 &lt;span class=&#8217;line-number&#8217;&gt;23&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;24&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;25&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;26&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;27&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;28&lt;/span&gt;
-&lt;span class=&#8217;line-number&#8217;&gt;29&lt;/span&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;scala&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * The input is a TSV file with three columns: (user, movie, rating).&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
@@ -822,9 +816,7 @@
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * Read in the input and give each field a type and name.&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; */&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;nc&quot;&gt;Tsv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;INPUT_FILENAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;read&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mapTo&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Double&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fields&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Tsv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;INPUT_FILENAME&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;user&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;rating&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;))&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt;/**&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;cm&quot;&gt; * Let&amp;#39;s also keep track of the total number of people who rated each movie.&lt;/span&gt;
@@ -833,14 +825,10 @@
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// Put the number of people who rated each movie into a field called &amp;quot;numRaters&amp;quot;.    &lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;groupBy&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;size&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;c1&quot;&gt;// Rename, since Scalding requires both sides to have distinct fields when we join.&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;rename&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movieX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// Merge `ratings` with `numRaters`, by joining on their movie fields.&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;k&quot;&gt;val&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ratingsWithSize&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;=&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;joinWithSmaller&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movieX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;    &lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;discard&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movieX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// Remove the extra field.&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  &lt;span class=&quot;n&quot;&gt;ratings&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;joinWithSmaller&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;-Symbol&quot;&gt;&amp;#39;movie&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numRaters&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;// ratingsWithSize now contains the following fields: (user, movie, rating, numRaters).&lt;/span&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
