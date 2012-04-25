@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="Imagine you&#8217;re a budding chef. A data-curious one, of course, so you start by taking a set of foods (pizza, salad, spaghetti, etc.) and ask 10 &hellip;">
+  <meta name="description" content="(Note: I&#8217;m available for freelance work. Send me a message if you&#8217;re hiring.) Big data&#8217;s all the rage, but sometimes a couple &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,288 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/">Making the Most of Mechanical Turk: Tips and Best Practices</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-25T13:50:00-07:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>(Note: I&#8217;m available for freelance work. <a href="mailto:hello@echen.me">Send me a message</a> if you&#8217;re hiring.)</em></p>
+
+<p>Big data&#8217;s all the rage, but sometimes a couple thousand <em>human</em>-generated labels can be pretty effective as well. And since I&#8217;ve been using Amazon&#8217;s Mechanical Turk system a lot recently, I figured I&#8217;d share some of the things I&#8217;ve learned.</p>
+
+<h1>What is MTurk?</h1>
+
+<p><a href="https://www.mturk.com/mturk/welcome">Mechanical Turk</a> is a crowdsourcing system developed by Amazon that connects you to a relatively cheap source of human labor on the fly.</p>
+
+<p>For example, suppose you have 10,000 websites that you want to classify as spam or not. To get these classifications, you (the <em>Requester</em>):</p>
+
+<ol>
+<li>Create a CSV file containing the links and any other information.</li>
+<li>Log onto MTurk and create a <em>HIT</em> (Human Intelligence Task) describing the job (possibly by using Amazon&#8217;s WYSIWYG editor or writing your own HTML, which can refer to columns in your CSV). [There&#8217;s also an MTurk API, if you don&#8217;t want to use the terrible UI.]</li>
+<li>Within hours of starting the task, your judgments will be completed by <em>Turkers</em> around the world for pennies each.</li>
+</ol>
+
+
+<h1>More Example Tasks</h1>
+
+<p>So what can you use MTurk for? Here are three of my favorite uses:</p>
+
+<ul>
+<li><a href="http://boingboing.net/2011/02/18/straight-line-traced.html">A Sequence of Lines Consecutively Traced by Five Hundred Individuals</a></li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/lines.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/lines.png" alt="Lines Mutation" /></a></p>
+
+<ul>
+<li><a href="http://www.thesheepmarket.com/">The Sheep Market</a>: asking Turkers to draw sheep</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/sheep.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/sheep.png" alt="Sheep" /></a></p>
+
+<ul>
+<li><a href="http://groups.csail.mit.edu/uid/deneme/?p=329">Blurry Text Transcription</a> (Seriously! How is this possible?!)</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/blurry.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/blurry.png" alt="Blurry Text" /></a></p>
+
+<p>And here are some more practical tasks, from HITs running right now:</p>
+
+<ul>
+<li>Categorize the sentiment of a tweet towards Panera Bread</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/panera.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/panera.png" alt="Panera" /></a></p>
+
+<ul>
+<li>Copy text from a business card</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/business-card.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/business-card.png" alt="Business Card" /></a></p>
+
+<ul>
+<li>Judge entity relatedness</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/entity.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/entity.png" alt="Angelina Jolie" /></a></p>
+
+<h1>Increasing the quality of your judgments</h1>
+
+<p>So what will the quality of your judgments look like?</p>
+
+<p>If you don&#8217;t do anything special, then your output will contain a lot of garbage. I&#8217;ve thrown out entire tasks because of scammers who spend less than 5 seconds on each judgment (Amazon records the time each worker spends) and submit random clicks as output (e.g., labeling Nike as a food category).</p>
+
+<p>Luckily, Amazon provides a few worker filters:</p>
+
+<ul>
+<li>You can require that only Turkers who have received at least (say) <strong>99% approval rate on at least 10,000 judgments in the past</strong> are allowed to work on your judgment. (If you see bad judgments from a worker, you can reject them and get your money back.)</li>
+<li>About a year ago, Amazon launched a <strong>&#8220;categorization masters&#8221; and &#8220;photo masters&#8221;</strong> program, which allows only masters to work on your HITs. According to a chat with a member of the MTurk team, Amazon assigns these master badges by creating special tasks (anonymously, and for which Amazon already knows the answer) and measuring the quality of each worker&#8217;s response to these tasks.</li>
+<li>You can also create a custom filter and <strong>handpick who gets allowed to work for you</strong>, or set up a <strong>qualification test</strong> that workers are required to take before working on your tasks.</li>
+</ul>
+
+
+<p>I&#8217;ve used different combinations of the first two filters, and gotten excellent results &#8211; compared to in-house judges I&#8217;ve worked with in person and paid \$20-30 an hour, the judgments on Mechanical Turk have been just as good and sometimes even better. (I often ask my judges to explain their judgments, which makes it easy to detect high quality workers.) For example, here are some typical response I&#8217;ve received when asking judges to determine which of two products a given Twitter user might be more interested in:</p>
+
+<blockquote><p>The user is a female obsessed with Twilight Movies and Rob Pattinson. She tweets and follows both subjects. Movie tickets would be interesting to her.</p></blockquote>
+
+
+
+
+<blockquote><p>He doesn&#8217;t seem to play video games, and he doesn&#8217;t seem technical enough to care about running Windows on a Mac. Neither of these products are a good fit for him.</p></blockquote>
+
+
+<p>In fact, I&#8217;ll frequently also get emails from Turkers giving me suggestions on how to improve my tasks or asking how they can do them better. (Amazon allows workers to email you. The only way for the requester to initiate a conversation, though, is by paying the worker a small bonus for excellent work, and including a message with the bonus.) Here are excerpts from some emails I&#8217;ve received:</p>
+
+<blockquote><p>I just wanted to check in to be sure that once I figured things out that I was doing your hits the way you intended them to be done. I want to be sure that you are getting the data that you need from the work. Please do not hesitate to let me know if there is anything that I can do to improve the way I am working your HITs. This is my full time job while I stay at home with my kids, so I like to check with the requesters to be sure that I am putting out the work that they are looking for. Any suggestion is welcome.</p></blockquote>
+
+
+
+
+<blockquote><p>Frankly, lingerie, makeup, and feminine hygiene are the only male-exclusionary topics I can think of, and it feels knee-jerk sexist to mark any sports-related site for men. That said, should I hew more closely to gender stereotypes or be politically correct? (from a HIT where I was gathering gender classification data)</p></blockquote>
+
+
+
+
+<blockquote><p>I do think a few more categories are needed but keeping the number down overall is good - 50 or 60 to choose from can be overwhelming and not worth the time. I may have mentioned I never used the Photography one (and I did a lot of those) so that is a good candidate for elimination.</p></blockquote>
+
+
+<p>That said, despite the approval rate filters and masters badges, I do occasionally get a couple scammers in the mix (or even just judges who don&#8217;t produce as excellent work). So one suggestion is to run an initial task with these filters applied, find the workers with the best quality, and from then on use a custom pool containing these Turkers alone.</p>
+
+<h1>How much to pay</h1>
+
+<p>So how much should you pay your workers?</p>
+
+<p>New Turkers and Turkers who don&#8217;t meet the strict filters can be paid less, but most of my high-quality workers expect to make about \$8-14 an hour. (You can only specify how much you pay per judgment, but Amazon will tell you how long each item ends up taking on average.) For example, here&#8217;s what several Turkers said what I asked them directly how much they make:</p>
+
+<blockquote><p>Most of the work I do is either writing or editing.  When editing work is available, I make \$15-20 per hour.  I&#8217;m a slower writer than an editor, so I average \$10-12 per hour with writing.  I also judge sentiments of messages and average about \$8 per hour with that type of work. I would like to average a minimum of no less than \$8 per hour.</p><p>A big factor in deciding to do a task or not comes from the time investment involved. The two big time sinks are either googling/searching/having to go to another site, or having to write something as part of your reply. If I remember correctly, a) your tasks did require looking at another page but either the link was right there OR, better yet, you had that page embedded in the HIT itself so clicking out of the window wasn&#8217;t necessary (turkers get very excited about this), and b) the quality of the pay rate was such that it easily outweighed the time it took to leave an explanatory comment. </p><p>For me at least, those things can&#8217;t be underestimated. Sure, your tasks may be a little time-consuming, but I figure a good task is one I can make 10 to 12 cents a minute on. Your task might take longer but I&#8217;m definitely still coming out ahead.</p><p>From my own experience, I work hardest and best for a requester that pays well and doesn&#8217;t reject (or at least seems to have a reason for a rejection when it happens). If a requester is going to accept the majority of my work, I as a worker feel that obligates me to provide them with the best quality possible. Similarly, although I&#8217;m conscientious with all tasks, I&#8217;m especially so with a high-paying one: it would be easy to take advantage of a high-pay, low-reject requester - which would ultimately lead them to either lower the pay or change the acceptance criteria. I don&#8217;t want that!! That&#8217;s the kind of requester I want around. I&#8217;m grateful for high pay and fair policies and that kind of requester gets an above-and-beyond effort from me.</p></blockquote>
+
+
+
+
+<blockquote><p>For the pay, I have worked on master&#8217;s hits that have ranged from \$6-\$16 per hour. Averaging them out works out to around \$9, which isn&#8217;t a bad wage. I have two requesters that I work for that don&#8217;t use the master qualification but instead have closed qualifications that they&#8217;ve assigned to their best workers. Those tasks pay between \$12 and \$15 per hour, so no matter what I&#8217;m working on I will stop what I&#8217;m doing to work on them. The best paying hits are always done very quickly, so most of the time if you check out mturk and look at the tasks available you won&#8217;t get a very good idea of average pay because the terrible paying hits will sit on the board until they expire.</p></blockquote>
+
+
+<p>Obviously, this is self-reported, so there&#8217;s a strong possibility that the Turkers are artificially inflating their numbers. But this does match what I&#8217;ve been told by a manager on the MTurk team, as well as what Turkers self-report on <a href="http://turkernation.com/">TurkerNation</a>.</p>
+
+<p>A good suggestion regarding pay is to start at the lower end of the scale, around \$6-8 per hour, and increase that until you get both the quality and speed you want.</p>
+
+<h1>Other design tips</h1>
+
+<p>Interestingly, according to what Turkers (see the excerpts above) and my Amazon contact say, as well as other research I&#8217;ve seen (e.g., <a href="http://groups.csail.mit.edu/uid/deneme/?p=680">this paper</a>), pay is <em>not</em> at the absolute forefront of Turkers&#8217; minds when they decide what to work on. Instead, they focus more on requesters they&#8217;ve already established a good relationship with, HITs with many items (so they can quickly settle into a rhythm), HITs they know they&#8217;ll be paid for (so they&#8217;re not worried about rejections), and HITs that they generally enjoy doing more.</p>
+
+<p>So here are a couple suggestions:</p>
+
+<ul>
+<li>If your task is hard and there&#8217;s no clearly correct answer, even good Turkers might be worried that you&#8217;ll reject their judgments (and so they might skip over your HIT). So make it clear in your instructions that you won&#8217;t reject any judgments, or that you won&#8217;t reject any judgments with an honest effort.</li>
+<li>Make your instructions collapsible, or link to them in a separate site. Scrolling is kind of annoying on Mechanical Turk (I know &#8211; I&#8217;ve tried working on HITs myself), so you should minimize the amount workers have to scroll. Ideally, everything fits on a single screen. Plus, the less workers have to scroll, the faster your HITs will get done. For example, here are excerpts from emails I received from two different Turkers when I first started out:</li>
+</ul>
+
+
+<blockquote><p>I have a suggestion that would really make things go a little quicker. Is there anyway you could script the twitter link to automatically open in a new tab? It amazes me how much it can slow you down to have to right click and open it manually in another tab, and when you forget, you have to take a few more steps to get back to where you were.</p></blockquote>
+
+
+
+
+<blockquote><p>It would be amazing if the Twitter account could be on the same page instead of having to click to get to another screen - the work would go *exponentially* faster! Overall, I&#8217;m enjoying them - and I&#8217;m not the only one. Despite your stringent requirements these are disappearing pretty quickly.</p></blockquote>
+
+
+<ul>
+<li>Introduce yourself on <a href="http://turkernation.com/">TurkerNation</a>, a forum where Turkers and Requesters go to talk about Mechanical Turk. This helps establish your reputation as a good requester who listens to feedback, which will make good Turkers want to work for you. (More on this below.)</li>
+<li>Approve judgments quickly: Turkers want <a href="http://en.wikipedia.org/wiki/Hyperbolic_discounting">money now instead of money later</a>. For example, one worker told me:</li>
+</ul>
+
+
+<blockquote><p>Quick approval is important, too. Watching that money pile up is a serious motivator; I&#8217;ll sometimes choose a lower-paying task that approves in close to real time over a higher-paying one that won&#8217;t pay out for several days.</p></blockquote>
+
+
+<p>When using my trusted set of workers, I let Amazon auto-approve all judgments within a couple hours.</p>
+
+<h1>Reputation</h1>
+
+<p>Reputation is pretty important. Turkers love requesters who take the time to respond to emails and incorporate suggestions. Excerpts from emails I&#8217;ve received:</p>
+
+<blockquote><p>I LOVE it when requesters care enough to ask the opinion of us lowly turkers and am more than willing to take a few minutes to help them with anything. I look forward to seeing what you cook up!</p></blockquote>
+
+
+
+
+<blockquote><p>Thanks for taking the time to try to make your hits better in both pay and design. It&#8217;s great to see a requester that actually cares, when most don&#8217;t. If you have any other questions for me, feel free to ask. I hope to work for you again soon.</p></blockquote>
+
+
+
+
+<blockquote><p>From my own experience, I work hardest and best for a requester that pays well and doesn&#8217;t reject (or at least seems to have a reason for a rejection when it happens). If a requester is going to accept the majority of my work, I as a worker feel that obligates me to provide them with the best quality possible. Similarly, although I&#8217;m conscientious with all tasks, I&#8217;m especially so with a high-paying one: it would be easy to take advantage of a high-pay, low-reject requester - which would ultimately lead them to either lower the pay or change the acceptance criteria. I don&#8217;t want that!! That&#8217;s the kind of requester I want around. I&#8217;m grateful for high pay and fair policies and that kind of requester gets an above-and-beyond effort from me.</p></blockquote>
+
+
+<p>I&#8217;ve gotten great suggestions from a lot of Turkers (sometimes, when launching a new type of experiment, I&#8217;ll do a quick trial run in order to get some fast feedback before spending more time on the HIT design), and I suspect it&#8217;s partly because I&#8217;ve taken the time to connect with my workers.</p>
+
+<p>So, as suggested above, one way of quickly garnering some goodwill when you&#8217;re first getting started is to make a post introducing yourself on TurkerNation. (There&#8217;s a <a href="http://turkernation.com/forumdisplay.php?23-Requester-Introductions">sub-forum</a> devoted to this exact purpose, in fact.)</p>
+
+<p>This is useful because workers will often start new threads recommending particular requesters and encouraging other Turkers to work for them. In the amusing thread praising me, for example, one worker mentioned that she&#8217;d been hesitant to work on my HITs until she saw the post confirming I was a good requester.</p>
+
+<p>Also, many Turkers mention that they always refer to <a href="http://turkopticon.differenceengines.com/">Turkopticon</a>, a Firefox extension that displays ratings of requesters by other Turkers, before accepting work from a requester they haven&#8217;t worked for before.</p>
+
+<p>This is what TurkOpticon looks like:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/jimyoung.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/jimyoung.png" alt="Jim Young" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/productrnr.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/productrnr.png" alt="ProductRNR" /></a></p>
+
+<p>Here are some comments about TurkOpticon on TurkerNation:</p>
+
+<blockquote><p>I think that it is well worth taking the time to check reputation of requesters via TurkOpticon and/or in this forum. Checking first substantially minimizes your risk of rejection, of being blocked, and of being paid sub-human wages.</p></blockquote>
+
+
+
+
+<blockquote><p>Blindly doing hits for requesters that were never heard of before got me with a pretty bad approval rate when I first started turking. After that, I rigorously inspect every requester that doesn&#8217;t have any ratings on Turkopticon. Actually, because of that little add-on I&#8217;ve been able to maintain a steady 98-99% approval rate ever since I began using it.</p></blockquote>
+
+
+<h1>Waiting Time</h1>
+
+<p>So how long does it take to get judgments? I&#8217;ve restricted the available worker pool pretty strongly to ensure high quality, and it&#8217;s still only taken a few hours to get a thousand judgments.</p>
+
+<p>That&#8217;s pretty awesome. I&#8217;ve worked a lot with human evaluation systems before, but always using a small in-house set of judges &#8211; and what with constraints on when those judges were available, how much they were able to work each week, and other tasks taking higher priority, it&#8217;d invariably take at least a few days before I&#8217;d receive any useful data back.</p>
+
+<p>Getting thousands of judgments in a couple hours means I can launch an MTurk task when I leave for work in the morning and have it done before lunch, which makes experimenting with a lot of different ideas much faster and easier.</p>
+
+<h1>Scale</h1>
+
+<p>So how many judgments can you actually get before you run out of workers? I&#8217;m still a small fish in the MTurk system, but I&#8217;m told by my MTurk contact at Amazon that there are companies getting over a million judgments each month.</p>
+
+<p>I also asked my pool of workers how much they&#8217;re available to work, in case I would need to scale up to more judgments later on, and here are some samples from what they said:</p>
+
+<blockquote><p>Typically, I work a total of 20-25 hours per week for a small select group of requesters.  I could put in at least 20 hours per week for you alone if you were to make a custom qualification for me.  If I know that I can continue to do exemplary work beyond 20 hours, I would be willing to put forth more hours of work.  I want to make sure that you are getting the quality of work that you need.</p></blockquote>
+
+
+
+
+<blockquote><p>On a day when I don&#8217;t have those other assignments, I&#8217;d guess I&#8217;m turking 5 to 7 hours a day  (including weekends). I like to look for a large batch of HITs (preferably in the thousands) so that I can settle into a groove of being able to do them fairly quickly and once I find something like that I can happily settle in for several hours at a time.</p></blockquote>
+
+
+
+
+<blockquote><p>I spend more time than the average person on mturk. I log on at about 5:30 AM and am constantly checking for work throughout the day. If the work is available, I will spend until 9PM working. Granted, I do have to take some breaks throughout the day to take care of my 3 year old, but for the most part, I am doing my best to earn while the hits are posted. If I take any time off, it is on the weekend (if I reach my earning goals for the week).</p></blockquote>
+
+
+
+
+<blockquote><p>Of course, how much I can work varies. My main source of income is transcription for a market research company and mturk fills in my downtime. If I have an audio file from them, that gets my attention. If not, I&#8217;m on mturk. As a single mother working from home, I love the flexibility.</p></blockquote>
+
+
+<h1>End</h1>
+
+<p>I&#8217;ll end with a couple other notes.</p>
+
+<ul>
+<li>How do other companies use human evaluation systems? Google and Bing use human judgments in their search metrics, though I think they an in-house set of judges rather than Mechanical Turk. I&#8217;ve also heard that Aardvark and Quora used Mechanical Turk to create answers when they first launched their sites.</li>
+<li>I&#8217;ve described one way of finding good workers, namely, using the filters Amazon provides. Another way could be to build a reputation system yourself, perhaps using an EM-style algorithm to determine judge quality.</li>
+<li><a href="http://crowdflower.com/">Crowdflower</a> is another crowdsourcing system. There are a couple differences with MTurk:
+
+<ul>
+<li>Crowdflower&#8217;s worker pool consists of about 20 different sources, including Mechanical Turk, as well as sources like TrialPay (people can opt to complete a MTurk task to receive some kind of TrialPay deal).</li>
+<li>Crowdflower offers both a self-serve platform (like MTurk), as well as a more enterprise-centric solution (where you work directly with a Crowdflower employee). The enterprise offering is pretty nice, since that means Crowdflower will take care of the lower-level details for you (like actually designing and creating the job), and they can offer suggestions for designing the HIT based on their experience.</li>
+<li>Crowdflower provides the option of adding gold standard judgments to your task (items where you provide a golden answer, which are then randomly shown to workers; these are then used to monitor judges) and they try to automatically determine judge quality and item accuracy for you (e.g., by having each item judged by three different workers).</li>
+</ul>
+</li>
+<li>An excellent crowdsourcing resource is <a href="http://crowdscope.org/index.php?title=Main_Page">CrowdScope</a>. I also like the <a href="http://groups.csail.mit.edu/uid/deneme/">Deneme</a> blog (though it hasn&#8217;t been updated in a while) for a lot of fun experiments. Panos Ipeirotis&#8217; <a href="http://www.behind-the-enemy-lines.com/">blog</a> has good information as well.</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -3251,325 +3533,6 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-07-28T07:55:29-07:00" pubdate data-updated="true">Jul 28<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>It always strikes me as curious that some posts get a lot of love on Twitter, while others get many more shares on Facebook:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/twitter-beats-fb.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/twitter-beats-fb.png" alt="Twitter Beats FB" /></a></p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/fb-beats-twitter.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/fb-beats-twitter.png" alt="FB Beats Twitter" /></a></p>
-
-<p>What accounts for this difference? Some of it is surely site-dependent: maybe one blogger has a Facebook page but not a Twitter account, while another has these roles reversed. But even on sites maintained by a single author, tweet-to-likes ratios can vary widely from post to post.</p>
-
-<p>So what kinds of articles tend to be more popular on Twitter, and which spread more easily on Facebook? To take a stab at an answer, I scraped data from a couple of websites over the weekend.</p>
-
-<p><strong>tl;dr</strong> Twitter is still for the <em>techies</em>: articles where the number of tweets greatly outnumber FB likes tend to revolve around software companies and programming. Facebook, on the other hand, appeals to <em>everyone else</em>: yeah, to the masses, and to non-software technical folks in general as well.</p>
-
-<h1>FlowingData</h1>
-
-<p>The first site I looked at was Nathan Yau&#8217;s awesome <a href="http://www.flowingdata.com">FlowingData</a> website on data visualization. To see which articles are more popular on Facebook and which are more popular on Twitter, let&#8217;s sort all the FlowingData articles by their # tweets / # likes ratio.</p>
-
-<p>Here are the 10 posts with the lowest tweets-to-likes ratio (i.e., the posts that were especially popular with Facebook users):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-facebook2.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-facebook2-small.png" alt="FlowingData Facebook" /></a></p>
-
-<ul>
-<li><a href="http://flowingdata.com/2011/01/30/what-your-state-is-the-worst-at-united-states-of-shame/">What your state is the worst at – United States of shame</a></li>
-<li><a href="http://flowingdata.com/2011/05/13/plush-statistical-distribution-pillows/">Plush statistical distribution pillows</a></li>
-<li><a href="http://flowingdata.com/2011/03/22/are-gas-prices-really-that-high/">Are gas prices really that high?</a></li>
-<li><a href="http://flowingdata.com/2011/01/21/hey-jude-flowchart/">Hey Jude flowchart</a></li>
-<li><a href="http://flowingdata.com/2011/04/28/womens-dress-sizes-demystified/">Women’s dress sizes demystified</a></li>
-<li><a href="http://flowingdata.com/2011/02/22/america-is-not-the-best-at-everything/">America is not the best at everything</a></li>
-<li><a href="http://flowingdata.com/2011/06/10/what-you-need-to-get-together/">What you need to get together</a></li>
-<li><a href="http://flowingdata.com/2011/01/27/dexters-victims-through-season-five/">Dexter’s victims through season five</a></li>
-<li><a href="http://flowingdata.com/2011/05/06/correlating-dog/">Correlating dog</a></li>
-<li><a href="http://flowingdata.com/2011/02/14/valentines-day-importance/">Valentine’s Day importance</a></li>
-</ul>
-
-
-<p>And here are the 10 posts with the highest tweets-to-like ratio (i.e., the posts especially popular with Twitter users):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-twitter.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-twitter-small.png" alt="FlowingData Twitter" /></a></p>
-
-<ul>
-<li><a href="http://flowingdata.com/2011/01/04/delicious-mass-exodus/">Delicious mass exodus</a></li>
-<li><a href="http://flowingdata.com/2011/05/25/pew-research-raw-survey-data-now-available/">Pew Research raw survey data now available</a></li>
-<li><a href="http://flowingdata.com/2011/02/03/stock-market-predictions-with-twitter/">Stock market predictions with Twitter</a></li>
-<li><a href="http://flowingdata.com/2011/01/25/growth-and-usage-of-foursquare-in-2010/">Growth and usage of foursquare in 2010</a></li>
-<li><a href="http://flowingdata.com/2011/02/17/sunlight-labs-opens-up-real-time-congress-api/">Sunlight Labs opens up Real Time Congress API</a></li>
-<li><a href="http://flowingdata.com/2011/03/25/open-source-data-science-toolkit/">Open-source Data Science Toolkit</a></li>
-<li><a href="http://flowingdata.com/2011/01/24/explore-your-linkedin-network-visually-with-inmaps/">Explore your LinkedIn network visually with InMaps</a></li>
-<li><a href="http://flowingdata.com/2011/05/03/perceived-vs-actual-country-rankings/">Perceived vs. actual country rankings</a></li>
-<li><a href="http://flowingdata.com/2011/04/20/see-what-you-and-others-tweet-about-with-the-topic-explorer/">See what you and others tweet about with the Topic Explorer</a></li>
-<li><a href="http://flowingdata.com/2011/04/24/history-of-detainees-at-guantnamo/">History of detainees at Guantánamo</a></li>
-</ul>
-
-
-<p>Notice any differences between the two?</p>
-
-<ul>
-<li>Instant gratification infographics, cuteness, comics, and pop culture get liked on Facebook.</li>
-<li>APIs, datasets, visualizations related to techie sites (Delicious, foursquare, Twitter, LinkedIn), and picture-less articles get tweeted instead.</li>
-</ul>
-
-
-<p>Interestingly, it also looks like the colors in the top 10 Facebook articles tend to the red end of the spectrum, while the colors in the top 10 Twitter articles tend to the blue end of the spectrum. Does this pattern hold if we look at more data? Here&#8217;s a meta-visualization of the FlowingData articles, sorted by articles popular on Facebook in the top left to articles popular on Twitter in the bottom right (see <a href="http://flowingdata-melted.heroku.com/">here</a> for some interactivity and more details):</p>
-
-<p><a href="http://flowingdata-melted.heroku.com/"><img src="http://dl.dropbox.com/u/10506/blog/flowingdata-metaviz/flowingdata-metaviz.png" alt="FlowingData MetaViz" /></a></p>
-
-<p>It does indeed look like the images at the top (the articles popular on Facebook) are more pink, while the images at the bottom (the articles popular on Twitter) are more blue (though it would be nice to quantify this in some way)!</p>
-
-<p>Furthermore, we can easily see from the grid that articles with no visualizations (represented by lorem ipsum text in the grid) cluster at the bottom. Grabbing some actual numbers, we find that 32% of articles with at least one picture have more shares on Facebook than on Twitter, compared to only 4% of articles with no picture at all.</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-viz-effect.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-viz-effect.png" alt="Effect of a visualization" /></a></p>
-
-<p>Finally, let&#8217;s break down the percentage of articles with more Facebook shares by category.</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-categories.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-categories.png" alt="FlowingData Categories" /></a></p>
-
-<p>(I filtered the categories so that each category in the plot above contains at least 5 articles.)</p>
-
-<p>What do we find?</p>
-
-<ul>
-<li>Articles in the Software, Online Applications, News, and Data sources categories (yawn) get 100% of their shares from Twitter.</li>
-<li>Articles tagged with <a href="http://flowingdata.com/category/projects/data-underload/">Data Underload</a> (which seems to contain short and sweet visualizations of everyday things), <a href="http://flowingdata.com/category/miscellaneous-data/">Miscellaneous</a> (which contains lots of comics or comic-like visualizations), and <a href="http://flowingdata.com/category/visualization/infographics/">Infographics</a> get the most shares on Facebook.</li>
-<li>This category breakdown matches precisely what we saw in the top 10 examples above.</li>
-</ul>
-
-
-<h1>New Scientist</h1>
-
-<p>When looking at FlowingData, we saw that Twitter users are much bigger on sharing technical articles. But is this true for technical articles in general, or only for programming-related posts? (In my experience with Twitter, I haven&#8217;t seen many people from math and the non-computer sciences.)</p>
-
-<p>To answer, I took articles from the <a href="http://www.newscientist.com/search?rbsection1=Physics+%26+Math&amp;sortby=rbpubdate">Physics &amp; Math</a> and <a href="http://www.newscientist.com/search?rbsection1=tech&amp;sortby=rbpubdate">Technology</a> sections of <a href="http://www.newscientist.com">New Scientist</a>, and</p>
-
-<ul>
-<li>Calculated the percentage of shares each article received on Twitter (i.e., # tweets / (# tweets + # likes)).</li>
-<li>Grouped articles by their number of tweets rounded to the nearest multiple of 25 (bin #1 contains articles close to 25 tweets, bin #2 contains articles close to 50 tweets, etc.).</li>
-<li>Calculated the median percentage of shares on Twitter for each bin.</li>
-</ul>
-
-
-<p>Here&#8217;s a graph of the result:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/tech_vs_physicsmath.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/tech_vs_physicsmath.png" alt="Technology vs. Physics &amp; Math" /></a></p>
-
-<p>Notice that:</p>
-
-<ul>
-<li>The technology articles get consistently more shares from Twitter than the physics and math articles do.</li>
-<li>Twitter accounts for the majority of the technology shares.</li>
-<li>Facebook accounts for the majority of the physics and math shares.</li>
-</ul>
-
-
-<p>So this suggests that Twitter really is for computer technology in particular, not technical matters in general (though it would be nice to look at areas other than physics and math as well).</p>
-
-<h1>Quora</h1>
-
-<p>To get some additional evidence on the computer science vs. math/physics divide, I</p>
-
-<ul>
-<li>Scraped about 350 profiles of followers from each of the Computer Science, Software Engineering, Mathematics, and Physics categories on Quora;</li>
-<li>Checked each user to see whether they link to their Facebook and Twitter accounts on their profile.</li>
-</ul>
-
-
-<p>Here&#8217;s the ratio of the number of people linking to their Facebook account to the number of people linking to their Twitter account, sliced by topic:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/math-physics-vs-cs-software.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/math-physics-vs-cs-software.png" alt="Math/Physics vs. CS/Software" /></a></p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/math-physics-vs-cs-software-collapsed.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/math-physics-vs-cs-software-collapsed.png" alt="Math/Physics vs. CS/Software, Collapsed" /></a></p>
-
-<p>We find exactly what we expect from the New Scientist data: people following the math and physics categories have noticeably smaller Twitter / Facebook ratios compared to people following the computer science and software engineering categories (i.e., compared to computer scientists and software engineers, mathematicians and physicists are more likely to be on Facebook than on Twitter). What&#8217;s more, this difference is in fact significant: the graphs display individual 90% confidence intervals (which overlap not at all or only slightly), and we do indeed get significance at the 95% level if we look at the differences between categories.</p>
-
-<p>This corroborates the New Scientist evidence that Twitter gets the computer technology shares, while Facebook gets the math and physics shares.</p>
-
-<h1>XKCD</h1>
-
-<p>Finally, let&#8217;s take a look at which XKCD comics are especially popular on Facebook vs. Twitter.</p>
-
-<p>Here are the 10 comics with the highest likes-to-tweets ratio (i.e., the comics especially popular on Facebook):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/xkcd-facebook.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/xkcd-facebook-small.png" alt="XKCD Facebook" /></a></p>
-
-<ul>
-<li><a href="http://xkcd.com/846/">Dental Nerve</a></li>
-<li><a href="http://xkcd.com/861/">Wisdom Teeth</a></li>
-<li><a href="http://xkcd.com/876/">Trapped</a></li>
-<li><a href="http://xkcd.com/849/">Complex Conjugate</a></li>
-<li><a href="http://xkcd.com/854/">Learning to Cook</a></li>
-<li><a href="http://xkcd.com/840/">Serious</a></li>
-<li><a href="http://xkcd.com/839/">Explorers</a></li>
-<li><a href="http://xkcd.com/815/">Mu</a></li>
-<li><a href="http://xkcd.com/809/">Los Alamos</a></li>
-<li><a href="http://xkcd.com/911/">Magic School Bus</a></li>
-</ul>
-
-
-<p>Here are the 10 comics with the highest tweets-to-likes ratio (i.e., the comics especially popular on Twitter):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/xkcd-twitter.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/xkcd-twitter-small.png" alt="XKCD Twitter" /></a></p>
-
-<ul>
-<li><a href="http://xkcd.com/869/">Server Attention Span</a></li>
-<li><a href="http://xkcd.com/818/">Illness</a></li>
-<li><a href="http://xkcd.com/865/">Nanobots</a></li>
-<li><a href="http://xkcd.com/912/">Manual Override</a></li>
-<li><a href="http://xkcd.com/908/">The Cloud</a></li>
-<li><a href="http://xkcd.com/810/">Constructive</a></li>
-<li><a href="http://xkcd.com/887/">Future Timeline</a></li>
-<li><a href="http://xkcd.com/844/">Good Code</a></li>
-<li><a href="http://xkcd.com/801/">Golden Hammer</a></li>
-<li><a href="http://xkcd.com/906/">Advertising Discovery</a></li>
-<li><a href="http://xkcd.com/802/">Online Communities 2</a></li>
-</ul>
-
-
-<p>Note that the XKCD comics popular on Facebook have more of a layman flavor, while the XKCD comics popular on Twitter are much more programming-related:</p>
-
-<ul>
-<li>Of the XKCD comics popular on Twitter, one&#8217;s about server attention spans, another&#8217;s about IPv6 addresses, a third is about GNU info pages, another deals with cloud computing, a fifth talks about Java, and the last is about a bunch of techie sites. (This is just like what we saw with the FlowingData visualizations.)</li>
-<li>Facebook, on the other hand, gets Ke$ha and Magic School Bus.</li>
-<li>And while both top 10&#8217;s contain a flowchart, the one popular on FB is about <em>cooking</em>, while the one popular on Twitter is about <em>code</em>!</li>
-<li>What&#8217;s more, if we look at the few technical-ish comics that are more popular on Facebook (the complex conjugate, mu, and Los Alamos comics), we see that they&#8217;re about physics and math, not programming (which matches our findings from the New Scientist articles).</li>
-</ul>
-
-
-<h1>Lesson</h1>
-
-<p>So why should you care? Here&#8217;s one takeaway:</p>
-
-<ul>
-<li>If you&#8217;re blogging about technology, programming, and computer science, Twitter is your friend.</li>
-<li>But if you&#8217;re blogging about anything else, be it math/physics or pop culture, don&#8217;t rely on a Twitter account alone; your shares are more likely to propagate on Facebook, so make sure to have a Facebook page as well.</li>
-</ul>
-
-
-<h1>What&#8217;s Next?</h1>
-
-<p>The three websites I looked at are all fairly tech-oriented, so it would be nice to gather data from other kinds of websites as well.</p>
-
-<p>And now that we have an idea how Twitter and Facebook compare, the next burning question is surely: <a href="http://finalbossform.com/post/7214184180/google-is-fast-becoming-the-leading-social">what do people share on Google+?!</a></p>
-
-<h1>Addendum</h1>
-
-<p>Let&#8217;s consider the following thought experiment. Suppose you come across the most unpopular article ever written. What will its FB vs. Twitter shares look like? Although no <em>real</em> person will ever share this article, I think Twitter has many more spambots (who tweet out any and every link) than FB does, so maybe unpopular articles will have more tweets than likes by default. Conversely, suppose you come across the most popular article ever written, which everybody wants to share. Then since FB has many more users than Twitter does, maybe popular articles will tend to have more likes than tweets anyways.</p>
-
-<p>Thus, in order to find out which types of articles are <em>especially</em> popular on FB vs. Twitter, instead of looking at tweets-to-likes ratios directly, we could try to remove this baseline popularity effect. (Taking ratios instead of raw number of tweets or raw number of likes is one kind of normalization; this is another.)</p>
-
-<p>So does this scenario (or something similar to it) actually play out in practice?</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-overall-popularity-vs-fb.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-overall-popularity-vs-fb.png" alt="Overall Popularity vs. Facebook" /></a></p>
-
-<p>Here I&#8217;ve plotted the overall popularity of a post (the total number of shares it received on either Twitter or FB) against the percentage of shares on Facebook alone, and we can see that as a post&#8217;s popularity grows, more and more shares do indeed tend to come from Facebook rather than Twitter.</p>
-
-<p>Also, see the posts at the lower end of the popularity scale that are only getting shares on Twitter? Let&#8217;s take a look at the five most unpopular of these:</p>
-
-<ul>
-<li><a href="http://flowingdata.com/2011/03/31/flowingdata-is-brought-to-you-by-8/">Flowing Data is brought to you by&#8230; (March 2011 edition)</a> (11 tweets, 0 likes)</li>
-<li><a href="http://flowingdata.com/2011/07/05/flowingdata-is-brought-to-you-by-11/">Flowing Data is brought to you by&#8230; (July 2011 edition)</a> (14 tweets, 0 likes)</li>
-<li><a href="http://flowingdata.com/2011/06/06/flowingdata-is-brought-to-you-by-10/">Flowing Data is brought to you by&#8230; (June 2011 edition)</a> (17 tweets, 0 likes)</li>
-<li><a href="http://flowingdata.com/2011/05/09/flowingdata-is-brought-to-you-by-9/">Flowing Data is brought to you by&#8230; (May 2011 edition)</a> (18 tweets, 0 likes)</li>
-<li><a href="http://flowingdata.com/2011/02/28/flowingdata-is-brought-to-you-by-7/">Flowing Data is brought to you by&#8230; (May 2011 edition)</a> (12 tweets, 1 like)</li>
-</ul>
-
-
-<p>Notice that they&#8217;re all shoutouts to FlowingData&#8217;s sponsors! There&#8217;s pretty much no reason any <em>real</em> person would share these on Twitter or Facebook, and indeed, checking Twitter to see who actually tweeted out these links, we see that the tweeters are bots:</p>
-
-<ul>
-<li><a href="https://twitter.com/#!/myVisualization/status/77685824224894976">https://twitter.com/#!/myVisualization/status/77685824224894976</a></li>
-<li><a href="https://twitter.com/#!/InfographicTwts/status/67668615142457344">https://twitter.com/#!/InfographicTwts/status/6766861514245734</a></li>
-<li><a href="https://twitter.com/#!/guysgoogle/status/77644902510493696">https://twitter.com/#!/guysgoogle/status/77644902510493696</a></li>
-<li><a href="https://twitter.com/#!/WhereIsYourData/status/77631743292735488">https://twitter.com/#!/WhereIsYourData/status/77631743292735488</a></li>
-</ul>
-
-
-<p>Now let&#8217;s switch to a slightly different view of the above scenario, where I plot number of tweets against number of likes:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-tweets-vs-likes.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/flowingdata-tweets-vs-likes.png" alt="FlowingData Tweets vs. Likes" /></a></p>
-
-<p>We see that as popularity on Twitter increases, so too does popularity on Facebook &#8211; but at a slightly faster rate. (The form of the blue line plotted is roughly $\log(likes) = -3.87 + 1.70 \log(tweets)$.)</p>
-
-<p>So instead of looking at the ratios above, to figure out which articles are popular on FB vs. Twitter, we could look at the residuals of the above plot. Posts with large positive residuals would be posts that are especially popular on FB, and posts with negative residuals would be posts that are especially popular on Twitter.</p>
-
-<p>In practice, however, there wasn&#8217;t much difference between looking at residuals vs. ratios directly when using the datasets I had, so to keep things simple in the main discussion above, I stuck to ratios alone. Still, it&#8217;s another option which might be useful when looking at different questions or different sources of data, so just for completeness, here&#8217;s what the FlowingData results look like if we use residuals instead.</p>
-
-<p>The 10 articles with the highest residuals (i.e., the articles most popular on Facebook):</p>
-
-<ul>
-<li><a href="http://flowingdata.com/2011/06/10/what-you-need-to-get-together/">What you need to get together</a></li>
-<li><a href="http://flowingdata.com/2011/02/14/valentines-day-importance/">Valentine’s Day importance</a></li>
-<li><a href="http://flowingdata.com/2011/01/30/what-your-state-is-the-worst-at-united-states-of-shame/">What your state is the worst at – United States of shame</a></li>
-<li><a href="http://flowingdata.com/2011/05/13/plush-statistical-distribution-pillows/">Plush statistical distribution pillows</a></li>
-<li><a href="http://flowingdata.com/2011/07/01/hitler-learns-topology/">Hitler learns topology</a></li>
-<li><a href="http://flowingdata.com/2011/01/27/dexters-victims-through-season-five/">Dexter’s victims through season five</a></li>
-<li><a href="http://flowingdata.com/2011/07/06/access-to-education-where-you-live/">Access to education where you live</a></li>
-<li><a href="http://flowingdata.com/2011/03/09/watching-costco-warehouses-open-nationwide/">Watching the growth of Costco warehouses</a></li>
-<li><a href="http://flowingdata.com/2011/03/22/are-gas-prices-really-that-high/">Are gas prices really that high?</a></li>
-<li><a href="http://flowingdata.com/2011/01/21/flight-safety-esque-beer-pong-guide/">Flight safety-esque beer pong guide</a></li>
-</ul>
-
-
-<p>The 10 articles with the lowest residuals (i.e., the articles most popular on Twitter):</p>
-
-<ul>
-<li><a href="http://flowingdata.com/2011/05/25/pew-research-raw-survey-data-now-available/">Pew Research raw survey data now available</a></li>
-<li><a href="http://flowingdata.com/2011/01/24/explore-your-linkedin-network-visually-with-inmaps/">Explore your LinkedIn network visually with InMaps</a></li>
-<li><a href="http://flowingdata.com/2011/02/03/stock-market-predictions-with-twitter/">Stock market predictions with Twitter</a></li>
-<li><a href="http://flowingdata.com/2011/01/04/delicious-mass-exodus/">Delicious mass exodus</a></li>
-<li><a href="http://flowingdata.com/2011/03/25/open-source-data-science-toolkit/">Open-source Data Science Toolkit</a></li>
-<li><a href="http://flowingdata.com/2011/04/17/business-intelligence-vs-infotainment/">Business intelligence vs. infotainment</a></li>
-<li><a href="http://flowingdata.com/2011/04/20/see-what-you-and-others-tweet-about-with-the-topic-explorer/">See what you and others tweet about with the Topic Explorer</a></li>
-<li><a href="http://flowingdata.com/2011/01/25/growth-and-usage-of-foursquare-in-2010/">Growth and usage of foursquare in 2010</a></li>
-<li><a href="http://flowingdata.com/2011/05/10/flash-vs-html5/">Flash vs. HTML5</a></li>
-<li><a href="http://flowingdata.com/2011/06/09/gender-and-time-comparisons-on-twitter/">Gender and time comparisons on Twitter</a></li>
-</ul>
-
-
-<p>Here&#8217;s a density plot of article residuals, split by whether the article has a visualization or not (residuals of picture-free articles are clearly shifted towards the negative end):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/has-viz-residuals.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/has-viz-residuals.png" alt="Residuals" /></a></p>
-
-<p>Here are the mean residuals per category (again, we see that the miscellaneous, data underload, data art, and infographics categories tend to be more popular on Facebook, while the data sources, software, online applications, and news categories tend to be more popular on Twitter):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/category-residuals.png"><img src="http://dl.dropbox.com/u/10506/blog/likes-vs-tweets/category-residuals.png" alt="Category Residuals" /></a></p>
-
-<p>And that&#8217;s it! In the spirit of these findings, I hope this article gets <a href="http://blog.echen.me/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/?share=facebook&amp;nb=1">liked</a> a little and <a href="https://twitter.com/share?original_referer=http%3A%2F%2Fblog.echen.me%2F2011%2F07%2F28%2Ftweets-vs-likes-what-gets-shared-on-twitter-vs-facebook%2F&amp;source=tweetbutton&amp;text=Tweets%20vs.%20Likes%3A%20What%20gets%20shared%20on%20Twitter%20vs.%20Facebook%3F%3A&amp;url=http%3A%2F%2Fwp.me%2Fpy9AS-6P">tweeted</a> lots and lots.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/2/">&larr; Older</a>
@@ -3593,6 +3556,10 @@ To shift these randomly initialized weights to the correct ones, for each traini
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/">Making the Most of Mechanical Turk: Tips and Best Practices</a>
+      </li>
     
       <li class="post">
         <a href="/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/">Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process</a>
@@ -3628,10 +3595,6 @@ To shift these randomly initialized weights to the correct ones, for each traini
     
       <li class="post">
         <a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a>
       </li>
     
   </ul>

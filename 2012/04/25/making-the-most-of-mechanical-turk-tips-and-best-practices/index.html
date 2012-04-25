@@ -1,0 +1,568 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Making the Most of Mechanical Turk: Tips and Best Practices - Edwin Chen's Blog</title>
+  <meta name="author" content="Edwin Chen">
+
+  
+  <meta name="description" content="(Note: I&#8217;m available for freelance work. Send me a message if you&#8217;re hiring.) Big data&#8217;s all the rage, but sometimes a couple &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/feed/" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29005692-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Edwin Chen's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/feed/" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.echen.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Making the Most of Mechanical Turk: Tips and Best Practices</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-25T13:50:00-07:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>(Note: I&#8217;m available for freelance work. <a href="mailto:hello@echen.me">Send me a message</a> if you&#8217;re hiring.)</em></p>
+
+<p>Big data&#8217;s all the rage, but sometimes a couple thousand <em>human</em>-generated labels can be pretty effective as well. And since I&#8217;ve been using Amazon&#8217;s Mechanical Turk system a lot recently, I figured I&#8217;d share some of the things I&#8217;ve learned.</p>
+
+<h1>What is MTurk?</h1>
+
+<p><a href="https://www.mturk.com/mturk/welcome">Mechanical Turk</a> is a crowdsourcing system developed by Amazon that connects you to a relatively cheap source of human labor on the fly.</p>
+
+<p>For example, suppose you have 10,000 websites that you want to classify as spam or not. To get these classifications, you (the <em>Requester</em>):</p>
+
+<ol>
+<li>Create a CSV file containing the links and any other information.</li>
+<li>Log onto MTurk and create a <em>HIT</em> (Human Intelligence Task) describing the job (possibly by using Amazon&#8217;s WYSIWYG editor or writing your own HTML, which can refer to columns in your CSV). [There&#8217;s also an MTurk API, if you don&#8217;t want to use the terrible UI.]</li>
+<li>Within hours of starting the task, your judgments will be completed by <em>Turkers</em> around the world for pennies each.</li>
+</ol>
+
+
+<h1>More Example Tasks</h1>
+
+<p>So what can you use MTurk for? Here are three of my favorite uses:</p>
+
+<ul>
+<li><a href="http://boingboing.net/2011/02/18/straight-line-traced.html">A Sequence of Lines Consecutively Traced by Five Hundred Individuals</a></li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/lines.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/lines.png" alt="Lines Mutation" /></a></p>
+
+<ul>
+<li><a href="http://www.thesheepmarket.com/">The Sheep Market</a>: asking Turkers to draw sheep</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/sheep.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/sheep.png" alt="Sheep" /></a></p>
+
+<ul>
+<li><a href="http://groups.csail.mit.edu/uid/deneme/?p=329">Blurry Text Transcription</a> (Seriously! How is this possible?!)</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/blurry.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/blurry.png" alt="Blurry Text" /></a></p>
+
+<p>And here are some more practical tasks, from HITs running right now:</p>
+
+<ul>
+<li>Categorize the sentiment of a tweet towards Panera Bread</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/panera.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/panera.png" alt="Panera" /></a></p>
+
+<ul>
+<li>Copy text from a business card</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/business-card.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/business-card.png" alt="Business Card" /></a></p>
+
+<ul>
+<li>Judge entity relatedness</li>
+</ul>
+
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/entity.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/entity.png" alt="Angelina Jolie" /></a></p>
+
+<h1>Increasing the quality of your judgments</h1>
+
+<p>So what will the quality of your judgments look like?</p>
+
+<p>If you don&#8217;t do anything special, then your output will contain a lot of garbage. I&#8217;ve thrown out entire tasks because of scammers who spend less than 5 seconds on each judgment (Amazon records the time each worker spends) and submit random clicks as output (e.g., labeling Nike as a food category).</p>
+
+<p>Luckily, Amazon provides a few worker filters:</p>
+
+<ul>
+<li>You can require that only Turkers who have received at least (say) <strong>99% approval rate on at least 10,000 judgments in the past</strong> are allowed to work on your judgment. (If you see bad judgments from a worker, you can reject them and get your money back.)</li>
+<li>About a year ago, Amazon launched a <strong>&#8220;categorization masters&#8221; and &#8220;photo masters&#8221;</strong> program, which allows only masters to work on your HITs. According to a chat with a member of the MTurk team, Amazon assigns these master badges by creating special tasks (anonymously, and for which Amazon already knows the answer) and measuring the quality of each worker&#8217;s response to these tasks.</li>
+<li>You can also create a custom filter and <strong>handpick who gets allowed to work for you</strong>, or set up a <strong>qualification test</strong> that workers are required to take before working on your tasks.</li>
+</ul>
+
+
+<p>I&#8217;ve used different combinations of the first two filters, and gotten excellent results &#8211; compared to in-house judges I&#8217;ve worked with in person and paid \$20-30 an hour, the judgments on Mechanical Turk have been just as good and sometimes even better. (I often ask my judges to explain their judgments, which makes it easy to detect high quality workers.) For example, here are some typical response I&#8217;ve received when asking judges to determine which of two products a given Twitter user might be more interested in:</p>
+
+<blockquote><p>The user is a female obsessed with Twilight Movies and Rob Pattinson. She tweets and follows both subjects. Movie tickets would be interesting to her.</p></blockquote>
+
+
+
+
+<blockquote><p>He doesn&#8217;t seem to play video games, and he doesn&#8217;t seem technical enough to care about running Windows on a Mac. Neither of these products are a good fit for him.</p></blockquote>
+
+
+<p>In fact, I&#8217;ll frequently also get emails from Turkers giving me suggestions on how to improve my tasks or asking how they can do them better. (Amazon allows workers to email you. The only way for the requester to initiate a conversation, though, is by paying the worker a small bonus for excellent work, and including a message with the bonus.) Here are excerpts from some emails I&#8217;ve received:</p>
+
+<blockquote><p>I just wanted to check in to be sure that once I figured things out that I was doing your hits the way you intended them to be done. I want to be sure that you are getting the data that you need from the work. Please do not hesitate to let me know if there is anything that I can do to improve the way I am working your HITs. This is my full time job while I stay at home with my kids, so I like to check with the requesters to be sure that I am putting out the work that they are looking for. Any suggestion is welcome.</p></blockquote>
+
+
+
+
+<blockquote><p>Frankly, lingerie, makeup, and feminine hygiene are the only male-exclusionary topics I can think of, and it feels knee-jerk sexist to mark any sports-related site for men. That said, should I hew more closely to gender stereotypes or be politically correct? (from a HIT where I was gathering gender classification data)</p></blockquote>
+
+
+
+
+<blockquote><p>I do think a few more categories are needed but keeping the number down overall is good - 50 or 60 to choose from can be overwhelming and not worth the time. I may have mentioned I never used the Photography one (and I did a lot of those) so that is a good candidate for elimination.</p></blockquote>
+
+
+<p>That said, despite the approval rate filters and masters badges, I do occasionally get a couple scammers in the mix (or even just judges who don&#8217;t produce as excellent work). So one suggestion is to run an initial task with these filters applied, find the workers with the best quality, and from then on use a custom pool containing these Turkers alone.</p>
+
+<h1>How much to pay</h1>
+
+<p>So how much should you pay your workers?</p>
+
+<p>New Turkers and Turkers who don&#8217;t meet the strict filters can be paid less, but most of my high-quality workers expect to make about \$8-14 an hour. (You can only specify how much you pay per judgment, but Amazon will tell you how long each item ends up taking on average.) For example, here&#8217;s what several Turkers said what I asked them directly how much they make:</p>
+
+<blockquote><p>Most of the work I do is either writing or editing.  When editing work is available, I make \$15-20 per hour.  I&#8217;m a slower writer than an editor, so I average \$10-12 per hour with writing.  I also judge sentiments of messages and average about \$8 per hour with that type of work. I would like to average a minimum of no less than \$8 per hour.</p><p>A big factor in deciding to do a task or not comes from the time investment involved. The two big time sinks are either googling/searching/having to go to another site, or having to write something as part of your reply. If I remember correctly, a) your tasks did require looking at another page but either the link was right there OR, better yet, you had that page embedded in the HIT itself so clicking out of the window wasn&#8217;t necessary (turkers get very excited about this), and b) the quality of the pay rate was such that it easily outweighed the time it took to leave an explanatory comment. </p><p>For me at least, those things can&#8217;t be underestimated. Sure, your tasks may be a little time-consuming, but I figure a good task is one I can make 10 to 12 cents a minute on. Your task might take longer but I&#8217;m definitely still coming out ahead.</p><p>From my own experience, I work hardest and best for a requester that pays well and doesn&#8217;t reject (or at least seems to have a reason for a rejection when it happens). If a requester is going to accept the majority of my work, I as a worker feel that obligates me to provide them with the best quality possible. Similarly, although I&#8217;m conscientious with all tasks, I&#8217;m especially so with a high-paying one: it would be easy to take advantage of a high-pay, low-reject requester - which would ultimately lead them to either lower the pay or change the acceptance criteria. I don&#8217;t want that!! That&#8217;s the kind of requester I want around. I&#8217;m grateful for high pay and fair policies and that kind of requester gets an above-and-beyond effort from me.</p></blockquote>
+
+
+
+
+<blockquote><p>For the pay, I have worked on master&#8217;s hits that have ranged from \$6-\$16 per hour. Averaging them out works out to around \$9, which isn&#8217;t a bad wage. I have two requesters that I work for that don&#8217;t use the master qualification but instead have closed qualifications that they&#8217;ve assigned to their best workers. Those tasks pay between \$12 and \$15 per hour, so no matter what I&#8217;m working on I will stop what I&#8217;m doing to work on them. The best paying hits are always done very quickly, so most of the time if you check out mturk and look at the tasks available you won&#8217;t get a very good idea of average pay because the terrible paying hits will sit on the board until they expire.</p></blockquote>
+
+
+<p>Obviously, this is self-reported, so there&#8217;s a strong possibility that the Turkers are artificially inflating their numbers. But this does match what I&#8217;ve been told by a manager on the MTurk team, as well as what Turkers self-report on <a href="http://turkernation.com/">TurkerNation</a>.</p>
+
+<p>A good suggestion regarding pay is to start at the lower end of the scale, around \$6-8 per hour, and increase that until you get both the quality and speed you want.</p>
+
+<h1>Other design tips</h1>
+
+<p>Interestingly, according to what Turkers (see the excerpts above) and my Amazon contact say, as well as other research I&#8217;ve seen (e.g., <a href="http://groups.csail.mit.edu/uid/deneme/?p=680">this paper</a>), pay is <em>not</em> at the absolute forefront of Turkers&#8217; minds when they decide what to work on. Instead, they focus more on requesters they&#8217;ve already established a good relationship with, HITs with many items (so they can quickly settle into a rhythm), HITs they know they&#8217;ll be paid for (so they&#8217;re not worried about rejections), and HITs that they generally enjoy doing more.</p>
+
+<p>So here are a couple suggestions:</p>
+
+<ul>
+<li>If your task is hard and there&#8217;s no clearly correct answer, even good Turkers might be worried that you&#8217;ll reject their judgments (and so they might skip over your HIT). So make it clear in your instructions that you won&#8217;t reject any judgments, or that you won&#8217;t reject any judgments with an honest effort.</li>
+<li>Make your instructions collapsible, or link to them in a separate site. Scrolling is kind of annoying on Mechanical Turk (I know &#8211; I&#8217;ve tried working on HITs myself), so you should minimize the amount workers have to scroll. Ideally, everything fits on a single screen. Plus, the less workers have to scroll, the faster your HITs will get done. For example, here are excerpts from emails I received from two different Turkers when I first started out:</li>
+</ul>
+
+
+<blockquote><p>I have a suggestion that would really make things go a little quicker. Is there anyway you could script the twitter link to automatically open in a new tab? It amazes me how much it can slow you down to have to right click and open it manually in another tab, and when you forget, you have to take a few more steps to get back to where you were.</p></blockquote>
+
+
+
+
+<blockquote><p>It would be amazing if the Twitter account could be on the same page instead of having to click to get to another screen - the work would go *exponentially* faster! Overall, I&#8217;m enjoying them - and I&#8217;m not the only one. Despite your stringent requirements these are disappearing pretty quickly.</p></blockquote>
+
+
+<ul>
+<li>Introduce yourself on <a href="http://turkernation.com/">TurkerNation</a>, a forum where Turkers and Requesters go to talk about Mechanical Turk. This helps establish your reputation as a good requester who listens to feedback, which will make good Turkers want to work for you. (More on this below.)</li>
+<li>Approve judgments quickly: Turkers want <a href="http://en.wikipedia.org/wiki/Hyperbolic_discounting">money now instead of money later</a>. For example, one worker told me:</li>
+</ul>
+
+
+<blockquote><p>Quick approval is important, too. Watching that money pile up is a serious motivator; I&#8217;ll sometimes choose a lower-paying task that approves in close to real time over a higher-paying one that won&#8217;t pay out for several days.</p></blockquote>
+
+
+<p>When using my trusted set of workers, I let Amazon auto-approve all judgments within a couple hours.</p>
+
+<h1>Reputation</h1>
+
+<p>Reputation is pretty important. Turkers love requesters who take the time to respond to emails and incorporate suggestions. Excerpts from emails I&#8217;ve received:</p>
+
+<blockquote><p>I LOVE it when requesters care enough to ask the opinion of us lowly turkers and am more than willing to take a few minutes to help them with anything. I look forward to seeing what you cook up!</p></blockquote>
+
+
+
+
+<blockquote><p>Thanks for taking the time to try to make your hits better in both pay and design. It&#8217;s great to see a requester that actually cares, when most don&#8217;t. If you have any other questions for me, feel free to ask. I hope to work for you again soon.</p></blockquote>
+
+
+
+
+<blockquote><p>From my own experience, I work hardest and best for a requester that pays well and doesn&#8217;t reject (or at least seems to have a reason for a rejection when it happens). If a requester is going to accept the majority of my work, I as a worker feel that obligates me to provide them with the best quality possible. Similarly, although I&#8217;m conscientious with all tasks, I&#8217;m especially so with a high-paying one: it would be easy to take advantage of a high-pay, low-reject requester - which would ultimately lead them to either lower the pay or change the acceptance criteria. I don&#8217;t want that!! That&#8217;s the kind of requester I want around. I&#8217;m grateful for high pay and fair policies and that kind of requester gets an above-and-beyond effort from me.</p></blockquote>
+
+
+<p>I&#8217;ve gotten great suggestions from a lot of Turkers (sometimes, when launching a new type of experiment, I&#8217;ll do a quick trial run in order to get some fast feedback before spending more time on the HIT design), and I suspect it&#8217;s partly because I&#8217;ve taken the time to connect with my workers.</p>
+
+<p>So, as suggested above, one way of quickly garnering some goodwill when you&#8217;re first getting started is to make a post introducing yourself on TurkerNation. (There&#8217;s a <a href="http://turkernation.com/forumdisplay.php?23-Requester-Introductions">sub-forum</a> devoted to this exact purpose, in fact.)</p>
+
+<p>This is useful because workers will often start new threads recommending particular requesters and encouraging other Turkers to work for them. In the amusing thread praising me, for example, one worker mentioned that she&#8217;d been hesitant to work on my HITs until she saw the post confirming I was a good requester.</p>
+
+<p>Also, many Turkers mention that they always refer to <a href="http://turkopticon.differenceengines.com/">Turkopticon</a>, a Firefox extension that displays ratings of requesters by other Turkers, before accepting work from a requester they haven&#8217;t worked for before.</p>
+
+<p>This is what TurkOpticon looks like:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/jimyoung.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/jimyoung.png" alt="Jim Young" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/mturk/productrnr.png"><img src="http://dl.dropbox.com/u/10506/blog/mturk/productrnr.png" alt="ProductRNR" /></a></p>
+
+<p>Here are some comments about TurkOpticon on TurkerNation:</p>
+
+<blockquote><p>I think that it is well worth taking the time to check reputation of requesters via TurkOpticon and/or in this forum. Checking first substantially minimizes your risk of rejection, of being blocked, and of being paid sub-human wages.</p></blockquote>
+
+
+
+
+<blockquote><p>Blindly doing hits for requesters that were never heard of before got me with a pretty bad approval rate when I first started turking. After that, I rigorously inspect every requester that doesn&#8217;t have any ratings on Turkopticon. Actually, because of that little add-on I&#8217;ve been able to maintain a steady 98-99% approval rate ever since I began using it.</p></blockquote>
+
+
+<h1>Waiting Time</h1>
+
+<p>So how long does it take to get judgments? I&#8217;ve restricted the available worker pool pretty strongly to ensure high quality, and it&#8217;s still only taken a few hours to get a thousand judgments.</p>
+
+<p>That&#8217;s pretty awesome. I&#8217;ve worked a lot with human evaluation systems before, but always using a small in-house set of judges &#8211; and what with constraints on when those judges were available, how much they were able to work each week, and other tasks taking higher priority, it&#8217;d invariably take at least a few days before I&#8217;d receive any useful data back.</p>
+
+<p>Getting thousands of judgments in a couple hours means I can launch an MTurk task when I leave for work in the morning and have it done before lunch, which makes experimenting with a lot of different ideas much faster and easier.</p>
+
+<h1>Scale</h1>
+
+<p>So how many judgments can you actually get before you run out of workers? I&#8217;m still a small fish in the MTurk system, but I&#8217;m told by my MTurk contact at Amazon that there are companies getting over a million judgments each month.</p>
+
+<p>I also asked my pool of workers how much they&#8217;re available to work, in case I would need to scale up to more judgments later on, and here are some samples from what they said:</p>
+
+<blockquote><p>Typically, I work a total of 20-25 hours per week for a small select group of requesters.  I could put in at least 20 hours per week for you alone if you were to make a custom qualification for me.  If I know that I can continue to do exemplary work beyond 20 hours, I would be willing to put forth more hours of work.  I want to make sure that you are getting the quality of work that you need.</p></blockquote>
+
+
+
+
+<blockquote><p>On a day when I don&#8217;t have those other assignments, I&#8217;d guess I&#8217;m turking 5 to 7 hours a day  (including weekends). I like to look for a large batch of HITs (preferably in the thousands) so that I can settle into a groove of being able to do them fairly quickly and once I find something like that I can happily settle in for several hours at a time.</p></blockquote>
+
+
+
+
+<blockquote><p>I spend more time than the average person on mturk. I log on at about 5:30 AM and am constantly checking for work throughout the day. If the work is available, I will spend until 9PM working. Granted, I do have to take some breaks throughout the day to take care of my 3 year old, but for the most part, I am doing my best to earn while the hits are posted. If I take any time off, it is on the weekend (if I reach my earning goals for the week).</p></blockquote>
+
+
+
+
+<blockquote><p>Of course, how much I can work varies. My main source of income is transcription for a market research company and mturk fills in my downtime. If I have an audio file from them, that gets my attention. If not, I&#8217;m on mturk. As a single mother working from home, I love the flexibility.</p></blockquote>
+
+
+<h1>End</h1>
+
+<p>I&#8217;ll end with a couple other notes.</p>
+
+<ul>
+<li>How do other companies use human evaluation systems? Google and Bing use human judgments in their search metrics, though I think they an in-house set of judges rather than Mechanical Turk. I&#8217;ve also heard that Aardvark and Quora used Mechanical Turk to create answers when they first launched their sites.</li>
+<li>I&#8217;ve described one way of finding good workers, namely, using the filters Amazon provides. Another way could be to build a reputation system yourself, perhaps using an EM-style algorithm to determine judge quality.</li>
+<li><a href="http://crowdflower.com/">Crowdflower</a> is another crowdsourcing system. There are a couple differences with MTurk:
+
+<ul>
+<li>Crowdflower&#8217;s worker pool consists of about 20 different sources, including Mechanical Turk, as well as sources like TrialPay (people can opt to complete a MTurk task to receive some kind of TrialPay deal).</li>
+<li>Crowdflower offers both a self-serve platform (like MTurk), as well as a more enterprise-centric solution (where you work directly with a Crowdflower employee). The enterprise offering is pretty nice, since that means Crowdflower will take care of the lower-level details for you (like actually designing and creating the job), and they can offer suggestions for designing the HIT based on their experience.</li>
+<li>Crowdflower provides the option of adding gold standard judgments to your task (items where you provide a golden answer, which are then randomly shown to workers; these are then used to monitor judges) and they try to automatically determine judge quality and item accuracy for you (e.g., by having each item judged by three different workers).</li>
+</ul>
+</li>
+<li>An excellent crowdsourcing resource is <a href="http://crowdscope.org/index.php?title=Main_Page">CrowdScope</a>. I also like the <a href="http://groups.csail.mit.edu/uid/deneme/">Deneme</a> blog (though it hasn&#8217;t been updated in a while) for a lot of fun experiments. Panos Ipeirotis&#8217; <a href="http://www.behind-the-enemy-lines.com/">blog</a> has good information as well.</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Edwin Chen</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-25T13:50:00-07:00" pubdate data-updated="true">Apr 25<span>th</span>, 2012</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/" data-via="echen" data-counturl="http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/" title="Previous Post: Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process">&laquo; Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Edwin Chen</h1>
+  
+  <p>Data scientist at Twitter. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
+  
+  <p>I like math, statistics, machine learning, and linguistics.</p>
+
+  <p>Email: hello[at]echen.me<br/>
+  Twitter: <a href="https://twitter.com/#!/echen">@echen</a><br/>
+  Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/">Making the Most of Mechanical Turk: Tips and Best Practices</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/">Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/03/05/instant-interactive-visualization-with-d3-and-ggplot2/">Instant interactive visualization with d3 + ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("echen", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/echen" class="twitter-follow-button" data-show-count="true">Follow @echen</a>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Edwin Chen -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'edwinchen';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/';
+        var disqus_url = 'http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>

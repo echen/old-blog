@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="How do people in Silicon Valley compare to those in New York City? For a data-driven answer, I pulled a couple days&#8217; worth of Twitter data &hellip;">
+  <meta name="description" content="(For a layman&#8217;s introduction, see here.) Least Angle Regression (aka LARS) is a model selection method for linear regression (when you&#8217;re &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,79 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/04/21/a-mathematical-introduction-to-least-angle-regression/">A Mathematical Introduction to Least Angle Regression</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-21T00:16:36-07:00" pubdate data-updated="true">Apr 21<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(For a layman&#8217;s introduction, see <a href="http://blog.echen.me/2011/03/14/least-angle-regression-for-the-hungry-layman/">here</a>.)</p>
+
+<p>Least Angle Regression (aka LARS) is a <strong>model selection method</strong> for linear regression (when you&#8217;re worried about overfitting or want your model to be easily interpretable). To motivate it, let&#8217;s consider some other model selection methods:</p>
+
+<ul>
+<li><strong>Forward selection</strong> starts with no variables in the model, and at each step it adds to the model the variable with the most explanatory power, stopping if the explanatory power falls below some threshold. This is a fast and simple method, but it can also be too greedy: we fully add variables at each step, so correlated predictors don&#8217;t get much of a chance to be included in the model. (For example, suppose we want to build a model for the deliciousness of a PB&amp;J sandwich, and two of our variables are the amount of peanut butter and the amount of jelly. We&#8217;d like both variables to appear in our model, but since amount of peanut butter is (let&#8217;s assume) strongly correlated with the amount of jelly, once we fully add peanut butter to our model, jelly doesn&#8217;t add much explanatory power anymore, and so it&#8217;s unlikely to be added.)</li>
+<li><strong>Forward stagewise regression</strong> tries to remedy the greediness of forward selection by only partially adding variables. Whereas forward selection finds the variable with the most explanatory power and goes all out in adding it to the model, forward stagewise finds the variable with the most explanatory power and updates its weight by only epsilon in the correct direction. (So we might first increase the weight of peanut butter a little bit, then increase the weight of peanut butter again, then increase the weight of jelly, then increase the weight of bread, and then increase the weight of peanut butter once more.) The problem now is that we have to make a ton of updates, so forward stagewise can be very inefficient.</li>
+</ul>
+
+
+<p>LARS, then, is essentially forward stagewise made fast. Instead of making tiny hops in the direction of one variable at a time, LARS makes optimally-sized leaps in optimal directions. These directions are chosen to make equal angles (equal correlations) with each of the variables currently in our model. (We like peanut butter best, so we start eating it first; as we eat more, we get a little sick of it, so jelly starts looking equally appetizing, and we start eating peanut butter and jelly simultaneously; later, we add bread to the mix, etc.)</p>
+
+<p>In more detail, LARS works as follows:</p>
+
+<ul>
+<li>Assume for simplicity that we&#8217;ve standardized our explanatory variables to have zero mean and unit variance, and that our response variable also has zero mean.</li>
+<li>Start with no variables in your model.</li>
+<li>Find the variable $ x_1 $ most correlated with the residual. (Note that the variable most correlated with the residual is equivalently the one that makes the least angle with the residual, whence the name.)</li>
+<li>Move in the direction of this variable until some other variable $ x_2 $ is just as correlated.</li>
+<li>At this point, start moving in a direction such that the residual stays equally correlated with $ x_1 $ and $ x_2 $ (i.e., so that the residual makes equal angles with both variables), and keep moving until some variable $ x_3 $ becomes equally correlated with our residual.</li>
+<li>And so on, stopping when we&#8217;ve decided our model is big enough.</li>
+</ul>
+
+
+<p>For example, consider the following image (slightly simplified from the <a href="http://www.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf">original LARS paper</a>; $x_1, x_2$ are our variables, and $y$ is our response):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png"><img src="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png" alt="LARS Example" /></a></p>
+
+<p>Our model starts at $ \hat{\mu_0} $.</p>
+
+<ul>
+<li>The residual (the green line) makes a smaller angle with $ x_1 $ than with $ x_2 $, so we start moving in the direction of $ x_1 $.
+At $ \hat{\mu_1} $, the residual now makes equal angles with $ x_1, x_2 $, and so we start moving in a new direction that preserves this equiangularity/equicorrelation.</li>
+<li>If there were more variables, we&#8217;d change directions again once a new variable made equal angles with our residual, and so on.</li>
+</ul>
+
+
+<p>So when should you use LARS, as opposed to some other regularization method like lasso? There&#8217;s not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don&#8217;t usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1042,63 +1115,6 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/03/14/laymans-introduction-to-measure-theory/">Layman&#8217;s Introduction to Measure Theory</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-14T04:24:37-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Measure theory studies ways of generalizing the notions of length/area/volume. Even in 2 dimensions, it might not be clear how to measure the area of the following fairly tame shape:</p>
-
-<p><img src="http://d2o7bfz2il9cb7.cloudfront.net/main-qimg-809c3bdb18539dfa2917ee766a0a6159" alt="What's the area of this shape?" /></p>
-
-<p>much less the &#8220;area&#8221; of even weirder shapes in higher dimensions or different spaces entirely.</p>
-
-<p>For example, suppose you want to measure the length of a book (so that you can get a good sense of how long it takes to read). What&#8217;s a good measure? One possibility is to measure a book&#8217;s length in <em>pages</em>. Since books provide page counts, this is a fairly easy measure to get. However, different versions of the same book (e.g., hardcover and paperback versions) tend to have different page counts, so this page measure doesn&#8217;t satisfy the nice property of version invariance (which we would like to have, since hardcover and paperback versions of the same book take the same time to read). Also, not all books even have page counts (think Kindle books), so this measure doesn&#8217;t allow us to measure the length of all books we might want to read.</p>
-
-<p>Another, possibly better measure is to measure a book&#8217;s length in terms of the number of <em>words</em> it contains. Now we do have version invariance (hardcover and paperback versions contain the same number of words) and we can measure the length of Kindle books as well. We can even do things like add two books together, and the measure/number of words of the concatenated books will pleasantly equal the sum of the measures/number of words of each book alone.</p>
-
-<p>However, what happens when we try to measure a picture book&#8217;s length in words? We can&#8217;t &#8211; picture books are too pathological. Maybe we could say that a picture book has measure zero (since a picture book has no words), but then we get unhappy things like books of measure zero taking a really long time to read (imagine a really long picture book). So maybe a better option is to say that picture books are simply unmeasurable. Whenever someone asks for the length of a picture book, we ignore them, and this way our measure will continue to be a good approximation of reading time and we get to keep our other nice properties as well.</p>
-
-<p>Similarly, measure theory asks questions like:</p>
-
-<ul>
-<li>How do we define a measure on our space? (Jordan measure and Lebesgue measure are two different options in Euclidean space.)</li>
-<li>What properties does our measure satisfy? (For example, does it satisfy translational invariance, rotational invariance, additivity?)</li>
-<li>Which objects are measurable/which objects can we say it&#8217;s okay not to measure in order to preserve nice properties of our measure? (The Banach-Tarski ball can be rigidly reassembled into two copies of the same shape and size as the original, so we don&#8217;t want it to be measurable, since then we would lose additivity properties.)</li>
-</ul>
-
-
-<p>And once we&#8217;ve defined a &#8220;generalized area&#8221; (our measure), we can try to generalize other mathematical concepts as well. For example, recall that the (Riemann) integral that you learn in calculus measures the area under a curve. What happens if we replace the &#8220;area&#8221; in the Riemann integral with our new, generalized measure (e.g., to get the Lebesgue integral)? Measure theory also helps make certain probability statements mathematically precise (e.g., we can say exactly what it means that a fair coin flipped infinitely often will &#8220;almost never&#8221; land heads more than 50% of the time).</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -1124,6 +1140,10 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/">Making the Most of Mechanical Turk: Tips and Best Practices</a>
+      </li>
     
       <li class="post">
         <a href="/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/">Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process</a>
@@ -1159,10 +1179,6 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
     
       <li class="post">
         <a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/07/28/tweets-vs-likes-what-gets-shared-on-twitter-vs-facebook/">Tweets vs. Likes: What gets shared on Twitter vs. Facebook?</a>
       </li>
     
   </ul>

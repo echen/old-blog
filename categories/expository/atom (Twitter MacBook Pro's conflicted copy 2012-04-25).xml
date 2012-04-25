@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: expository | Edwin Chen's Blog]]></title>
+  <link href="http://blog.echen.me/categories/expository/atom.xml" rel="self"/>
+  <link href="http://blog.echen.me/"/>
+  <updated>2012-04-25T14:30:42-07:00</updated>
+  <id>http://blog.echen.me/</id>
+  <author>
+    <name><![CDATA[Edwin Chen]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Restricted Boltzmann Machines]]></title>
+    <link href="http://blog.echen.me/2011/07/18/introduction-to-restricted-boltzmann-machines/"/>
+    <updated>2011-07-18T09:32:52-07:00</updated>
+    <id>http://blog.echen.me/2011/07/18/introduction-to-restricted-boltzmann-machines</id>
+    <content type="html"><![CDATA[<h1>Introduction</h1>
+
+<p>Suppose you ask a bunch of users to rate a set of movies on a 0-100 scale. In classical <a href="http://en.wikipedia.org/wiki/Factor_analysis">factor analysis</a>, you could then try to explain each movie and user in terms of a set of latent <em>factors</em>. For example, movies like Star Wars and Lord of the Rings might have strong associations with a latent science fiction and fantasy factor, and users who like Wall-E and Toy Story might have strong associations with a latent Pixar factor.</p>
+
+<p>Restricted Boltzmann Machines essentially perform a <em>binary</em> version of factor analysis. (This is one way of thinking about RBMs; there are, of course, others, and lots of different ways to use RBMs, but I'll adopt this approach for this post.) Instead of users rating a set of movies on a continuous scale, they simply tell you whether they like a movie or not, and the RBM will try to discover latent factors that can explain the activation of these movie choices.</p>
+
+<p>More technically, a Restricted Boltzmann Machine is a <strong>stochastic neural network</strong> (<em>neural network</em> meaning we have neuron-like units whose binary activations depend on the neighbors they're connected to; <em>stochastic</em> meaning these activations have a probabilistic element) consisting of:</p>
+
+<ul>
+<li>One layer of <strong>visible units</strong> (users' movie preferences whose states we know and set);</li>
+<li>One layer of <strong>hidden units</strong> (the latent factors we try to learn); and</li>
+<li>A bias unit (whose state is always on, and is a way of adjusting for the different inherent popularities of each movie).</li>
+</ul>
+
+
+<p>Furthermore, each visible unit is connected to all the hidden units (this connection is undirected, so each hidden unit is also connected to all the visible units), and the bias unit is connected to all the visible units and all the hidden units. To make learning easier, we restrict the network so that no visible unit is connected to any other visible unit and no hidden unit is connected to any other hidden unit.</p>
+
+<p>For example, suppose we have a set of six movies (Harry Potter, Avatar, LOTR 3, Gladiator, Titanic, and Glitter) and we ask users to tell us which ones they want to watch. If we want to learn two latent units underlying movie preferences -- for example, two natural groups in our set of six movies appear to be SF/fantasy (containing Harry Potter, Avatar, and LOTR 3) and Oscar winners (containing LOTR 3, Gladiator, and Titanic), so we might hope that our latent units will correspond to these categories -- then our RBM would look like the following:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/rbms/rbm-example.png"><img src="http://dl.dropbox.com/u/10506/blog/rbms/rbm-example.png" alt="RBM Example" /></a></p>
+
+<p>(Note the resemblance to a factor analysis graphical model.)</p>
+
+<h1>State Activation</h1>
+
+<p>Restricted Boltzmann Machines, and neural networks in general, work by updating the states of some neurons given the states of others, so let's talk about how the states of individual units change. Assuming we know the connection weights in our RBM (we'll explain how to learn these below), to update the state of unit $i$:</p>
+
+<ul>
+<li>Compute the <strong>activation energy</strong> $a_i = \sum_j w_{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w_{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$'s neighbors send it a message, and we compute the sum of all these messages.</li>
+<li>Let $p_i = \sigma(a_i)$, where $\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p_i$ is close to 1 for large positive activation energies, and $p_i$ is close to 0 for negative activation energies.</li>
+<li>We then turn unit $i$ on with probability $p_i$, and turn it off with probability $1 - p_i$.</li>
+<li>(In layman's terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)</li>
+</ul>
+
+
+<p>For example, let's suppose our two hidden units really do correspond to SF/fantasy and Oscar winners.</p>
+
+<ul>
+<li>If Alice has told us her six binary preferences on our set of movies, we could then ask our RBM which of the hidden units her preferences activate (i.e., ask the RBM to explain her preferences in terms of latent factors). So the six movies send messages to the hidden units, telling them to update themselves. (Note that even if Alice has declared she wants to watch Harry Potter, Avatar, and LOTR 3, this doesn't guarantee that the SF/fantasy hidden unit will turn on, but only that it will turn on with high <em>probability</em>. This makes a bit of sense: in the real world, Alice wanting to watch all three of those movies makes us highly suspect she likes SF/fantasy in general, but there's a small chance she wants to watch them for other reasons. Thus, the RBM allows us to <em>generate</em> models of people in the messy, real world.)</li>
+<li>Conversely, if we know that one person likes SF/fantasy (so that the SF/fantasy unit is on), we can then ask the RBM which of the movie units that hidden unit turns on (i.e., ask the RBM to generate a set of movie recommendations). So the hidden units send messages to the movie units, telling them to update their states. (Again, note that the SF/fantasy unit being on doesn't guarantee that we'll always recommend all three of Harry Potter, Avatar, and LOTR 3 because, hey, not everyone who likes science fiction liked Avatar.)</li>
+</ul>
+
+
+<h1>Learning Weights</h1>
+
+<p>So how do we learn the connection weights in our network? Suppose we have a bunch of training examples, where each training example is a binary vector with six elements corresponding to a user's movie preferences. Then for each epoch, do the following:</p>
+
+<ul>
+<li>Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.</li>
+<li>Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w_{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e_{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they're both on).</li>
+<li>Now <strong>reconstruct</strong> the visible units in a similar manner: for each visible unit, compute its activation energy $a_i$, and update its state. (Note that this <em>reconstruction</em> may not match the original preferences.) Then update the hidden units again, and compute $Negative(e_{ij}) = x_i * x_j$ for each edge.</li>
+<li>Update the weight of each edge $e_{ij}$ by setting $w_{ij} = w_{ij} + L * (Positive(e_{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.</li>
+<li>Repeat over all training examples.</li>
+</ul>
+
+
+<p>Continue until the network converges (i.e., the error between the training examples and their reconstructions falls below some threshold) or we reach some maximum number of epochs.</p>
+
+<p>Why does this update rule make sense? Note that</p>
+
+<ul>
+<li>In the first phase, $Positive(e_{ij})$ measures the association between the $i$th and $j$th unit that we <em>want</em> the network to learn from our training examples;</li>
+<li>In the "reconstruction" phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $Negative(e_{ij})$ measures the association that the network <em>itself</em> generates (or "daydreams" about) when no units are fixed to training data.</li>
+</ul>
+
+
+<p>So by adding $Positive(e_{ij}) - Negative(e_{ij})$ to each edge weight, we're helping the network's daydreams better match the reality of our training examples.</p>
+
+<p>(You may hear this update rule called <strong>contrastive divergence</strong>, which is basically a funky term for "approximate gradient descent".)</p>
+
+<h1>Examples</h1>
+
+<p>I wrote <a href="https://github.com/echen/restricted-boltzmann-machines">a simple RBM implementation</a> in Python (the code is heavily commented, so take a look if you're still a little fuzzy on how everything works), so let's use it to walk through some examples.</p>
+
+<p>First, I trained the RBM using some fake data.</p>
+
+<ul>
+<li>Alice: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.</li>
+<li>Bob: (Harry Potter = 1, Avatar = 0, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). SF/fantasy fan, but doesn't like Avatar.</li>
+<li>Carol: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.</li>
+<li>David: (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Big Oscar winners fan.</li>
+<li>Eric:  (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Oscar winners fan, except for Titanic.</li>
+<li>Fred: (Harry Potter = 0, Avatar = 0, LOTR 3 = 1, Gladiator = 1, Titanic = 1, Glitter = 0). Big Oscar winners fan.</li>
+</ul>
+
+
+<p>The network learned the following weights:</p>
+
+<pre><code>                 Bias Unit       Hidden 1        Hidden 2
+Bias Unit       -0.08257658     -0.19041546      1.57007782 
+Harry Potter    -0.82602559     -7.08986885      4.96606654 
+Avatar          -1.84023877     -5.18354129      2.27197472 
+LOTR 3           3.92321075      2.51720193      4.11061383 
+Gladiator        0.10316995      6.74833901     -4.00505343 
+Titanic         -0.97646029      3.25474524     -5.59606865 
+Glitter         -4.44685751     -2.81563804     -2.91540988
+</code></pre>
+
+<p>Note that the first hidden unit seems to correspond to the Oscar winners, and the second hidden unit seems to correspond to the SF/fantasy movies, just as we were hoping.</p>
+
+<p>What happens if we give the RBM a new user, George, who has (Harry Potter = 0, Avatar = 0, LOTR 3 = 0, Gladiator = 1, Titanic = 1, Glitter = 0) as his preferences? It turns the Oscar winners unit on (but not the SF/fantasy unit), correctly guessing that George probably likes movies that are Oscar winners.</p>
+
+<p>What happens if we activate only the SF/fantasy unit, and run the RBM a bunch of different times? In my trials, it turned on Harry Potter, Avatar, and LOTR 3 three times; it turned on Avatar and LOTR 3, but not Harry Potter, once; and it turned on Harry Potter and LOTR 3, but not Avatar, twice. Note that, based on our training examples, these generated preferences do indeed match what we might expect real SF/fantasy fans want to watch.</p>
+
+<h1>Modifications</h1>
+
+<p>I tried to keep the connection-learning algorithm I described above pretty simple, so here are some modifications that often appear in practice:</p>
+
+<ul>
+<li>Above, $Negative(e_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units <em>once</em> and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network's daydreams more accurately.</li>
+<li>Instead of using $Positive(e_{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 <em>states</em>, we could also let $x_i$ and/or $x_j$ be activation <em>probabilities</em>. Similarly for $Negative(e_{ij})$.</li>
+<li>We could penalize larger edge weights, in order to get a sparser or more regularized model.</li>
+<li>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e_{ij}) - Negative(e_{ij})$) and the step previously taken.</li>
+<li>Instead of using only one training example in each epoch, we could use <em>batches</em> of examples in each epoch, and only update the network's weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.</li>
+</ul>
+
+
+<h1>Further</h1>
+
+<p>If you're interested in learning more about Restricted Boltzmann Machines, here are some good links.</p>
+
+<ul>
+<li><a href="http://www.cs.toronto.edu/~hinton/absps/guideTR.pdf">A Practical guide to training restricted Boltzmann machines</a>, by Geoffrey Hinton.</li>
+<li>A talk by Andrew Ng on <a href="http://www.youtube.com/watch?v=ZmNOAtZIgIk">Unsupervised Feature Learning and Deep Learning</a>.</li>
+<li><a href="http://www.machinelearning.org/proceedings/icml2007/papers/407.pdf">Restricted Boltzmann Machines for Collaborative Filtering</a>. I found this paper hard to read, but it's an interesting application to the Netflix Prize.</li>
+<li><a href="http://arxiv.org/abs/0908.4425">Geometry of the Restricted Boltzmann Machine</a>. A very readable introduction to RBMs, "starting with the observation that its Zariski closure is a Hadamard power of the first secant variety of the Segre variety of projective lines". (I kid, I kid.)</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Choosing a Machine Learning Classifier]]></title>
+    <link href="http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier/"/>
+    <updated>2011-04-27T18:43:15-07:00</updated>
+    <id>http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier</id>
+    <content type="html"><![CDATA[<p>How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best bet is to test out a couple different ones (making sure to try different parameters within each algorithm as well), and select the best one by cross-validation. But if you're simply looking for a "good enough" algorithm for your problem, or a place to start, here are some general guidelines I've found to work well over the years.</p>
+
+<h1>How large is your training set?</h1>
+
+<p>If your training set is small, high bias/low variance classifiers (e.g., Naive Bayes) have an advantage over low bias/high variance classifiers (e.g., kNN), since the latter will overfit. But low bias/high variance classifiers start to win out as your training set grows (they have lower asymptotic error), since high bias classifiers aren't powerful enough to provide accurate models.</p>
+
+<p>You can also think of this as a generative model vs. discriminative model distinction.</p>
+
+<h1>Advantages of some particular algorithms</h1>
+
+<p><strong>Advantages of Naive Bayes:</strong> Super simple, you're just doing a bunch of counts. If the NB conditional independence assumption actually holds, a Naive Bayes classifier will converge quicker than discriminative models like logistic regression, so you need less training data. And even if the NB assumption doesn't hold, a NB classifier still often does a great job in practice. A good bet if  want something fast and easy that performs pretty well. Its main disadvantage is that it can't learn interactions between features (e.g., it can't learn that although you love movies with Brad Pitt and Tom Cruise, you hate movies where they're together).</p>
+
+<p><strong>Advantages of Logistic Regression:</strong> Lots of ways to regularize your model, and you don't have to worry as much about your features being correlated, like you do in Naive Bayes. You also have a nice probabilistic interpretation, unlike decision trees or SVMs, and you can easily update your model to take in new data (using an online gradient descent method), again unlike decision trees or SVMs. Use it if you want a probabilistic framework (e.g., to easily adjust classification thresholds, to say when you're unsure, or to get confidence intervals) or if you expect to receive more training data in the future that you want to be able to quickly incorporate into your model.</p>
+
+<p><strong>Advantages of Decision Trees:</strong> Easy to interpret and explain (for some people -- I'm not sure I fall into this camp). They easily handle feature interactions and they're non-parametric, so you don't have to worry about outliers or whether the data is linearly separable (e.g., decision trees easily take care of cases where you have class A at the low end of some feature x, class B in the mid-range of feature x, and A again at the high end). One disadvantage is that they don't support online learning, so you have to rebuild your tree when new examples come on. Another disadvantage is that they easily overfit, but that's where ensemble methods like random forests (or boosted trees) come in. Plus, random forests are often the winner for lots of problems in classification (usually slightly ahead of SVMs, I believe), they're fast and scalable, and you don't have to worry about tuning a bunch of parameters like you do with SVMs, so they seem to be quite popular these days.</p>
+
+<p><strong>Advantages of SVMs:</strong> High accuracy, nice theoretical guarantees regarding overfitting, and with an appropriate kernel they can work well even if you're data isn't linearly separable in the base feature space. Especially popular in text classification problems where very high-dimensional spaces are the norm. Memory-intensive, hard to interpret, and kind of annoying to run and tune, though, so I think random forests are starting to steal the crown.</p>
+
+<h1>But...</h1>
+
+<p>Recall, though, that better data often beats better algorithms, and designing good features goes a long way. And if you have a huge dataset, then whichever classification algorithm you use might not matter so much in terms of classification performance (so choose your algorithm based on speed or ease of use instead).</p>
+
+<p>And to reiterate what I said above, if you really care about accuracy, you should definitely try a bunch of different classifiers and select the best one by cross-validation. Or, to take a lesson from the Netflix Prize (and Middle Earth), just use an ensemble method to choose them all.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A Mathematical Introduction to Least Angle Regression]]></title>
+    <link href="http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
+    <updated>2011-04-21T00:16:36-07:00</updated>
+    <id>http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
+    <content type="html"><![CDATA[<p>(For a layman's introduction, see <a href="http://blog.echen.me/2011/03/14/least-angle-regression-for-the-hungry-layman/">here</a>.)</p>
+
+<p>Least Angle Regression (aka LARS) is a <strong>model selection method</strong> for linear regression (when you're worried about overfitting or want your model to be easily interpretable). To motivate it, let's consider some other model selection methods:</p>
+
+<ul>
+<li><strong>Forward selection</strong> starts with no variables in the model, and at each step it adds to the model the variable with the most explanatory power, stopping if the explanatory power falls below some threshold. This is a fast and simple method, but it can also be too greedy: we fully add variables at each step, so correlated predictors don't get much of a chance to be included in the model. (For example, suppose we want to build a model for the deliciousness of a PB&amp;J sandwich, and two of our variables are the amount of peanut butter and the amount of jelly. We'd like both variables to appear in our model, but since amount of peanut butter is (let's assume) strongly correlated with the amount of jelly, once we fully add peanut butter to our model, jelly doesn't add much explanatory power anymore, and so it's unlikely to be added.)</li>
+<li><strong>Forward stagewise regression</strong> tries to remedy the greediness of forward selection by only partially adding variables. Whereas forward selection finds the variable with the most explanatory power and goes all out in adding it to the model, forward stagewise finds the variable with the most explanatory power and updates its weight by only epsilon in the correct direction. (So we might first increase the weight of peanut butter a little bit, then increase the weight of peanut butter again, then increase the weight of jelly, then increase the weight of bread, and then increase the weight of peanut butter once more.) The problem now is that we have to make a ton of updates, so forward stagewise can be very inefficient.</li>
+</ul>
+
+
+<p>LARS, then, is essentially forward stagewise made fast. Instead of making tiny hops in the direction of one variable at a time, LARS makes optimally-sized leaps in optimal directions. These directions are chosen to make equal angles (equal correlations) with each of the variables currently in our model. (We like peanut butter best, so we start eating it first; as we eat more, we get a little sick of it, so jelly starts looking equally appetizing, and we start eating peanut butter and jelly simultaneously; later, we add bread to the mix, etc.)</p>
+
+<p>In more detail, LARS works as follows:</p>
+
+<ul>
+<li>Assume for simplicity that we've standardized our explanatory variables to have zero mean and unit variance, and that our response variable also has zero mean.</li>
+<li>Start with no variables in your model.</li>
+<li>Find the variable $ x_1 $ most correlated with the residual. (Note that the variable most correlated with the residual is equivalently the one that makes the least angle with the residual, whence the name.)</li>
+<li>Move in the direction of this variable until some other variable $ x_2 $ is just as correlated.</li>
+<li>At this point, start moving in a direction such that the residual stays equally correlated with $ x_1 $ and $ x_2 $ (i.e., so that the residual makes equal angles with both variables), and keep moving until some variable $ x_3 $ becomes equally correlated with our residual.</li>
+<li>And so on, stopping when we've decided our model is big enough.</li>
+</ul>
+
+
+<p>For example, consider the following image (slightly simplified from the <a href="http://www.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf">original LARS paper</a>; $x_1, x_2$ are our variables, and $y$ is our response):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png"><img src="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png" alt="LARS Example" /></a></p>
+
+<p>Our model starts at $ \hat{\mu_0} $.</p>
+
+<ul>
+<li>The residual (the green line) makes a smaller angle with $ x_1 $ than with $ x_2 $, so we start moving in the direction of $ x_1 $.
+At $ \hat{\mu_1} $, the residual now makes equal angles with $ x_1, x_2 $, and so we start moving in a new direction that preserves this equiangularity/equicorrelation.</li>
+<li>If there were more variables, we'd change directions again once a new variable made equal angles with our residual, and so on.</li>
+</ul>
+
+
+<p>So when should you use LARS, as opposed to some other regularization method like lasso? There's not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don't usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Introduction to Cointegration and Pairs Trading]]></title>
+    <link href="http://blog.echen.me/2011/04/16/what-is-cointegration-2/"/>
+    <updated>2011-04-16T03:44:14-07:00</updated>
+    <id>http://blog.echen.me/2011/04/16/what-is-cointegration-2</id>
+    <content type="html"><![CDATA[<h1>Introduction</h1>
+
+<p>Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don't know each other (they're independent), so there's no meaningful relationship between their paths.</p>
+
+<p>But suppose instead you have a drunk walking with her dog. This time there <em>is</em> a connection. What's the nature of this connection? Notice that although each path individually is still an unpredictable random walk, given the location of one of the drunk or dog, we have a pretty good idea of where the other is; that is, the distance between the two is fairly predictable. (For example, if the dog wanders too far away from his owner, she'll tend to move in his direction to avoid losing him, so the two stay close together despite a tendency to wander around on their own.) We describe this relationship by saying that the drunk and her dog form a cointegrating pair.</p>
+
+<p>In more technical terms, if we have two non-stationary time series X and Y that become stationary when differenced (these are called integrated of order one series, or I(1) series; random walks are one example) such that some linear combination of X and Y is stationary (aka, I(0)), then we say that X and Y are cointegrated. In other words, while neither X nor Y alone hovers around a constant value, some combination of them does, so we can think of cointegration as describing a particular kind of long-run equilibrium relationship. (The definition of cointegration can be extended to multiple time series, with higher orders of integration.)</p>
+
+<p>Other examples of cointegrated pairs:</p>
+
+<ul>
+<li>Income and consumption: as income increases/decreases, so too does consumption.</li>
+<li>Size of police force and amount of criminal activity</li>
+<li>A book and its movie adaptation: while the book and the movie may differ in small details, the overall plot will remain the same.</li>
+<li>Number of patients entering or leaving a hospital</li>
+</ul>
+
+
+<h1>An application</h1>
+
+<p>So why do we care about cointegration? In quantitative finance, cointegration forms the basis of the pairs trading strategy: suppose we have two cointegrated stocks X and Y, with the particular (for concreteness) cointegrating relationship X - 2Y = Z, where Z is a stationary series of zero mean. For example, X could be McDonald's, Y could be Burger King, and the cointegration relationship would mean that X tends to be priced twice as high as Y, so that when X is more than twice the price of Y, we expect X to move down or Y to move up in the near future (and analogously, if X is less than twice the price of Y, we expect X to move up or Y to move down). This suggests the following trading strategy: if X - 2Y > d, for some positive threshold d, then we should sell X and buy Y (since we expect X to decrease in price and Y to increase), and similarly, if X - 2Y &lt; -d, then we should buy X and sell Y.</p>
+
+<h1>Spurious regression</h1>
+
+<p>But why do we need the notion of cointegration at all? Why can't we simply use, say, the R-squared between X or Y to see if X and Y have some kind of relationship? The reason is that standard regression analysis fails when dealing with non-stationary variables, leading to spurious regressions that suggest relationships even when there are none.</p>
+
+<p>For example, suppose we regress two independent random walks against each other, and test for a linear relationship. A large percentage of the time, we'll find high R-squared values and low p-values when using standard OLS statistics, even though there's absolutely no relationship between the two random walks. As an illustration, here I simulated 1000 pairs of random walks of length 100, and found p-values less than 0.05 in 77% of the cases:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png"><img src="http://dl.dropbox.com/u/10506/blog/cointegration/spurious-regression.png" alt="Spurious Regression" /></a></p>
+
+<h1>A Cointegration Test</h1>
+
+<p>So how do you detect cointegration? There are several different methods, but the simplest is the Engle-Granger test, which works roughly as follows:</p>
+
+<ul>
+<li>Check that $ X_t $ and $ Y_t $ are both I(1).</li>
+<li>Estimate the cointegrating relationship $ Y_t = aX_t + e_t $ by ordinary least squares.</li>
+<li>Check that the cointegrating residuals $ e_t $ are stationary (say, by using a so-called unit root test, e.g., the Dickey-Fuller test).</li>
+</ul>
+
+
+<h1>Error-correction and Granger representation</h1>
+
+<p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations</p>
+
+<p>$ X_t = a X_{t-1} + b Y_{t-1} + u_t $
+$ Y_t = c X_{t-1} + d Y_{t-1} + v_t $</p>
+
+<p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
+
+<p>$ \Delta X_t = \alpha_1 (Y_{t-1} - \beta X_{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
+
+<p>where $ Y_{t-1} - \beta X_{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y_{t-1} - \beta X_{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+
+<h1>Summary</h1>
+
+<p>So, just to summarize a bit, cointegration is an equilibrium relationship between time series that individually aren't in equilbrium (you can kind of contrast this with (Pearson) correlation, which describes a linear relationship), and it's useful because it allows us to incorporate both short-term dynamics (deviations from equilibrium) and long-run expectations (corrections to equilibrium).</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Counting Clusters]]></title>
+    <link href="http://blog.echen.me/2011/03/19/counting-clusters/"/>
+    <updated>2011-03-19T04:22:16-07:00</updated>
+    <id>http://blog.echen.me/2011/03/19/counting-clusters</id>
+    <content type="html"><![CDATA[<p>Given a set of datapoints, we often want to know how many clusters the datapoints form. The <strong>gap statistic</strong> and the <strong>prediction strength</strong> are two practical algorithms for choosing the number of clusters.</p>
+
+<h1>Gap Statistic</h1>
+
+<p>The <a href="http://www.stanford.edu/~hastie/Papers/gap.pdf">gap statistic algorithm</a> works as follows:</p>
+
+<p>For each i from 1 up to some maximum number of clusters,</p>
+
+<ol>
+<li><p>Run a k-means algorithm on the original dataset to find i clusters, and sum the distance of all points from their cluster mean. Call this sum the <strong>dispersion</strong>.</p></li>
+<li><p>Generate a set of <em>reference</em> datasets (of the same size as the original). One simple way of generating a reference dataset is to sample uniformly from the original dataset's bounding rectangle; a more sophisticated approach is take into account the original dataset's shape by sampling, say, from a rectangle formed from the original dataset's principal components.</p></li>
+<li><p>Calculate the dispersion of each of these reference datasets, and take their mean.</p></li>
+<li><p>Define the ith <strong>gap</strong> by: log(mean dispersion of reference datasets) - log(dispersion of original dataset).</p></li>
+</ol>
+
+
+<p>Once we've calculated all the gaps (we can add confidence intervals as well; see <a href="http://www.stanford.edu/~hastie/Papers/gap.pdf">the original paper</a> for the formula), we can select the number of clusters to be the one that gives the maximum gap. (Sidenote: I view the gap statistic as a very statistical-minded algorithm, since it compares the original dataset against a set of reference "control" datasets.)</p>
+
+<p>For example, here I've generated three Gaussian clusters:</p>
+
+<p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d.png" alt="Three Gaussian Clusters" /></a></p>
+
+<p>And running the gap statistic algorithm, we see that it correctly detects the number of clusters to be three:</p>
+
+<p><a href="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png"><img src="https://github.com/echen/gap-statistic/raw/master/examples/3_clusters_2d_gaps.png" alt="Gap Statistic on Three Gaussian Clusters" /></a></p>
+
+<p>For a sample R implementation of the gap statistic, see the Github repository <a href="https://github.com/echen/gap-statistic">here</a>.</p>
+
+<h1>Prediction Strength</h1>
+
+<p>Another cluster-counting algorithm is the <a href="http://www-stat.stanford.edu/~tibs/ftp/predstr.ps">prediction strength algorithm</a>. In contrast to the gap statistic (which, as mentioned above, I find very statistically), I see prediction strength as taking a more machine learning viewpoint, since it's formulated as a supervised learning problem validated against a test set.</p>
+
+<p>To calculate prediction strength, for each i from 1 up to some maximum number of clusters:</p>
+
+<ol>
+<li><p>Divide the dataset into two groups, a training set and a test set.</p></li>
+<li><p>Run a k-means algorithm on each set to find i clusters.</p></li>
+<li><p>For each <em>test</em> cluster, count the proportion of pairs of points in that cluster that would remain in the same cluster, if each were assigned to its closest <em>training</em> cluster mean.</p></li>
+<li><p>The minimum over these proportions is the <strong>prediction strength</strong> for i clusters.</p></li>
+</ol>
+
+
+<p>Once we've calculated the prediction strength for each number of clusters, we select the number of clusters to be the maximum i such that the prediction strength for i is greater than some threshold. (The paper suggests 0.8 - 0.9 as a good threshold, and I've seen 0.8 work well in practice.)</p>
+
+<p>Here's the prediction strength algorithm run on the same example above:</p>
+
+<p><a href="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png"><img src="https://github.com/echen/prediction-strength/raw/master/examples/3_clusters_2d_ps.png" alt="Prediction Strength on Three Gaussian Clusters" /></a></p>
+
+<p>Again, check out a sample R implementation of the prediction strength <a href="https://github.com/echen/prediction-strength">here</a>.</p>
+
+<p>In practice, I tend to prefer using the gap statistic algorithm, since it's a little easier to code and it doesn't require selecting an arbitrary threshold like the prediction strength does. I've also found that it gives slightly better results (though the original prediction strength paper has the opposite finding).</p>
+
+<h1>Appendix</h1>
+
+<p>I ended up giving a brief description of two very common clustering algorithms, <strong>k-means</strong> and <strong>Gaussian mixture models</strong> in the comments, so I figured I might as well bring them up here.</p>
+
+<h2>k-means algorithm</h2>
+
+<p>Suppose we have a set of datapoints that we want to cluster. We want to learn two things:</p>
+
+<ul>
+<li>A description of the clusters themselves (so that if new points come in, we can assign them to a cluster).</li>
+<li>Which clusters our current points fall into.</li>
+</ul>
+
+
+<p>We start by initializing k cluster centers (e.g., by randomly choosing k points among our datapoints). Then we repeatedly</p>
+
+<ul>
+<li><strong>Step A</strong>: Assign each datapoint to the nearest cluster center.</li>
+<li><strong>Step B</strong>: Update all the cluster centers: for each cluster i, take the mean over all points currently in the cluster, and update cluster center i to be this mean.</li>
+<li>(Repeat steps A and B above until the cluster assignments stop changing.)</li>
+</ul>
+
+
+<p>And that's pretty much it for k-means.</p>
+
+<h2>k-means from an EM point of View</h2>
+
+<p>To ease the transition into Gaussian mixture models,
+let's also describe the k-means algorithm using <a href="http://en.wikipedia.org/wiki/Expectation%E2%80%93maximization_algorithm">EM</a> language.</p>
+
+<p>Note that if we knew for certain either 1) the exact cluster centers or 2) the cluster each point belonged to, we could trivially solve k-means, since</p>
+
+<ul>
+<li>If we knew the exact cluster centers, all we'd have to do is assign each point to its nearest cluster center, and we'd be done.</li>
+<li>If we knew which cluster each point belonged to, we could pick the cluster center by simply taking the mean over all points in that cluster.</li>
+</ul>
+
+
+<p>The problem is that we know <em>neither</em> of these, and so we alternate between making educated guesses of each one:</p>
+
+<ul>
+<li>In A step above, we pretend that we know the cluster centers, and based off this pretense, we guess which cluster each point belongs to. (This is also known as the <strong>E step</strong> in the EM algorithm.)</li>
+<li>In the B step above, we do the reverse: we pretend that we know which cluster each point belongs to, and then try to guess the cluster centers. (This is also known as the <strong>M step</strong> in EM.)</li>
+</ul>
+
+
+<p>Our guesses keep getting better and better, and eventually we'll converge.</p>
+
+<h2>Gaussian Mixture Models</h2>
+
+<p>k-means has a <em>hard</em> notion of clustering: point X either belongs to cluster C or it doesn't. But sometimes we want a <em>soft</em> notion instead: point X belongs to cluster C with probability p (according to a Gaussian kernel). This is where <a href="http://en.wikipedia.org/wiki/Mixture_model">Gaussian mixture modeling</a> comes in.</p>
+
+<p>To run a GMM, we start by initializing $k$ Gaussians (say, by randomly choosing $k$ points to be the centers of the Gaussians and by setting the variance of each Gaussians to be the overall variance), and then we repeatedly:</p>
+
+<ul>
+<li><strong>E Step</strong>: Pretend we know the parameters of each Gaussian cluster, and assign each datapoint to Gaussian cluster i with appropriate probability.</li>
+<li><strong>M Step</strong>: Pretend we know the probabilities that each point belongs to a given cluster. Using these probabilities, update the means and variances of each Gaussian cluster: the new mean for cluster i is the weighted mean over all points (where the weight of each point X is the probability that X belongs to cluster i), and similarly for the new variance.</li>
+</ul>
+
+
+<p>This is exactly like k-means in the EM formulation, except we replace the binary clustering formula with Gaussian kernels.</p>
+]]></content>
+  </entry>
+  
+</feed>
