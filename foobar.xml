@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-04-25T14:35:31-07:00</updated>
+  <updated>2012-04-30T01:22:34-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -251,7 +251,7 @@
 &lt;p&gt;I&amp;#8217;ll end with a couple other notes.&lt;/p&gt;
 
 &lt;ul&gt;
-&lt;li&gt;How do other companies use human evaluation systems? Google and Bing use human judgments in their search metrics, though I think they an in-house set of judges rather than Mechanical Turk. I&amp;#8217;ve also heard that Aardvark and Quora used Mechanical Turk to create answers when they first launched their sites.&lt;/li&gt;
+&lt;li&gt;How do other companies use human evaluation systems? Google and Bing use human judgments in their search metrics, though I think they use an in-house set of judges rather than Mechanical Turk. I&amp;#8217;ve heard Aardvark and Quora used Mechanical Turk to seed answers when they first launched their sites. There&amp;#8217;s also a nice set of case studies &lt;a href=&quot;http://aws.amazon.com/solutions/case-studies/&quot;&gt;here&lt;/a&gt; (search for the &amp;#8220;On-Demand Workforce&amp;#8221; section); in particular, Knewton&amp;#8217;s use of &lt;a href=&quot;http://aws.amazon.com/solutions/case-studies/knewton/&quot;&gt;MTurk for performance and QA testing&lt;/a&gt; is pretty interesting.&lt;/li&gt;
 &lt;li&gt;I&amp;#8217;ve described one way of finding good workers, namely, using the filters Amazon provides. Another way could be to build a reputation system yourself, perhaps using an EM-style algorithm to determine judge quality.&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;http://crowdflower.com/&quot;&gt;Crowdflower&lt;/a&gt; is another crowdsourcing system. There are a couple differences with MTurk:
 
