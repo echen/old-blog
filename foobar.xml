@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-04-30T01:22:34-07:00</updated>
+  <updated>2012-05-06T20:18:36-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -17,9 +17,7 @@
     <link href="http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/"/>
     <updated>2012-04-25T13:50:00-07:00</updated>
     <id>http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices</id>
-    <content type="html">&lt;p&gt;&lt;em&gt;(Note: I&amp;#8217;m available for freelance work. &lt;a href=&quot;mailto:hello@echen.me&quot;&gt;Send me a message&lt;/a&gt; if you&amp;#8217;re looking.)&lt;/em&gt;&lt;/p&gt;
-
-&lt;p&gt;Big data&amp;#8217;s all the rage, but sometimes a couple thousand &lt;em&gt;human&lt;/em&gt;-generated labels can be pretty effective as well. And since I&amp;#8217;ve been using Amazon&amp;#8217;s Mechanical Turk system a lot recently, I figured I&amp;#8217;d share some of the things I&amp;#8217;ve learned.&lt;/p&gt;
+    <content type="html">&lt;p&gt;Big data&amp;#8217;s all the rage, but sometimes a couple thousand &lt;em&gt;human&lt;/em&gt;-generated labels can be pretty effective as well. And since I&amp;#8217;ve been using Amazon&amp;#8217;s Mechanical Turk system a lot recently, I figured I&amp;#8217;d share some of the things I&amp;#8217;ve learned.&lt;/p&gt;
 
 &lt;h1&gt;What is MTurk?&lt;/h1&gt;
 
