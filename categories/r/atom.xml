@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: r | Edwin Chen's Blog]]></title>
+  <link href="http://blog.echen.me/categories/r/atom.xml" rel="self"/>
+  <link href="http://blog.echen.me/"/>
+  <updated>2012-07-06T11:35:04-07:00</updated>
+  <id>http://blog.echen.me/</id>
+  <author>
+    <name><![CDATA[Edwin Chen]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Soda vs. Pop with Twitter]]></title>
+    <link href="http://blog.echen.me/2012/07/06/soda-vs-pop-with-twitter/"/>
+    <updated>2012-07-06T10:51:00-07:00</updated>
+    <id>http://blog.echen.me/2012/07/06/soda-vs-pop-with-twitter</id>
+    <content type="html"><![CDATA[<p>One of the great things about Twitter is that it's a global conversation anyone can join anytime. And it gets even better when you can <em>mine</em> this chatter to study the way humans live and interact.</p>
+
+<p>For example, <a href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/">how do people in New York City differ from those in Silicon Valley?</a></p>
+
+<p>Or how does language vary as you travel across different regions? Recall the classic <a href="http://ideas.blogs.nytimes.com/2008/09/11/the-soda-vs-pop-map/">soda vs. pop. vs. coke</a> question: some people use the word "soda" to describe their soft drinks, others use "pop", and still others use "coke". Who says what where?</p>
+
+<p>Let's take a look.</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/united-states.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/united-states.png" alt="United States" /></a></p>
+
+<p>To make this map, I sampled geo-tagged tweets containing the words "soda", "pop", or "coke", performed some state-of-the-art NLP technology to ensure the tweets were soft drink related (e.g., the tweets had to contain "drink soda" or "drink a pop"), and filtered out coke tweets that were specifically about the Coke brand (e.g., Coke Zero).</p>
+
+<p>It's a little cluttered, though, so let's clean it up by aggregating nearby tweets.</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/united_states_binned.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/united_states_binned.png" alt="United States Binned" /></a></p>
+
+<p>Here, I bucketed all tweets within a 0.333 latitude/longitude radius, calculated the term distribution within each bucket, and colored each bucket with the word furthest from its overall mean. I also sized each point according to the (log-transformed) number of tweets in the bucket.</p>
+
+<p>We can see that:</p>
+
+<ul>
+<li>The South is pretty Coke-heavy.</li>
+<li>Soda belongs to the Northeast and far West.</li>
+<li>Pop gets the mid-West, except for some interesting spots of blue around Wisconsin and the Illinois-Missouri border.</li>
+</ul>
+
+
+<p>For comparison, here's another map based on a survey at <a href="http://www.popvssoda.com/">popvssoda.com</a>.</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/popvssoda.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/popvssoda.png" alt="Pop vs. Soda Map" /></a></p>
+
+<p>We can see similar patterns, though interestingly, our map has less Coke in the Southeast and less pop in the Northwest.</p>
+
+<p>Finally, here's a world map of the terms, bucketed again. Notice that "pop" seems to be prevalent only in parts of the United States and Canada.</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png" alt="World" /></a></p>
+
+<p>I've been getting a lot of questions lately about interesting things you can do with the Twitter API, so this was just one small project I've worked on to illustrate. <a href="http://www.cc.gatech.edu/~jeisenst/papers/emnlp2010.pdf">This paper</a> contains another awesome application of Twitter data to geographic language variation, and just for fun, here are two other cute mini-projects I did a while ago:</p>
+
+<p>What do people eat during the Super Bowl? (wings and beer, apparently)</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/superbowl-snacks.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/superbowl-snacks.png" alt="Superbowl Snacks" /></a></p>
+
+<p>What do people want for Christmas, compared to what they actually get?</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/xmas.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/xmas.png" alt="Christmas" /></a></p>
+]]></content>
+  </entry>
+  
+</feed>

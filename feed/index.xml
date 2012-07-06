@@ -4,13 +4,67 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-05-06T20:18:36-07:00</updated>
+  <updated>2012-07-06T11:35:04-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
     
   </author>
 
+  
+  <entry>
+    <title>Soda vs. Pop with Twitter</title>
+    <link href="http://blog.echen.me/2012/07/06/soda-vs-pop-with-twitter/"/>
+    <updated>2012-07-06T10:51:00-07:00</updated>
+    <id>http://blog.echen.me/2012/07/06/soda-vs-pop-with-twitter</id>
+    <content type="html">&lt;p&gt;One of the great things about Twitter is that it&amp;#8217;s a global conversation anyone can join anytime. And it gets even better when you can &lt;em&gt;mine&lt;/em&gt; this chatter to study the way humans live and interact.&lt;/p&gt;
+
+&lt;p&gt;For example, &lt;a href=&quot;http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/&quot;&gt;how do people in New York City differ from those in Silicon Valley?&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Or how does language vary as you travel across different regions? Recall the classic &lt;a href=&quot;http://ideas.blogs.nytimes.com/2008/09/11/the-soda-vs-pop-map/&quot;&gt;soda vs. pop. vs. coke&lt;/a&gt; question: some people use the word &amp;#8220;soda&amp;#8221; to describe their soft drinks, others use &amp;#8220;pop&amp;#8221;, and still others use &amp;#8220;coke&amp;#8221;. Who says what where?&lt;/p&gt;
+
+&lt;p&gt;Let&amp;#8217;s take a look.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/united-states.png&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/united-states.png&quot; alt=&quot;United States&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;To make this map, I sampled geo-tagged tweets containing the words &amp;#8220;soda&amp;#8221;, &amp;#8220;pop&amp;#8221;, or &amp;#8220;coke&amp;#8221;, performed some state-of-the-art NLP technology to ensure the tweets were soft drink related (e.g., the tweets had to contain &amp;#8220;drink soda&amp;#8221; or &amp;#8220;drink a pop&amp;#8221;), and filtered out coke tweets that were specifically about the Coke brand (e.g., Coke Zero).&lt;/p&gt;
+
+&lt;p&gt;It&amp;#8217;s a little cluttered, though, so let&amp;#8217;s clean it up by aggregating nearby tweets.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/united_states_binned.png&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/united_states_binned.png&quot; alt=&quot;United States Binned&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Here, I bucketed all tweets within a 0.333 latitude/longitude radius, calculated the term distribution within each bucket, and colored each bucket with the word furthest from its overall mean. I also sized each point according to the (log-transformed) number of tweets in the bucket.&lt;/p&gt;
+
+&lt;p&gt;We can see that:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The South is pretty Coke-heavy.&lt;/li&gt;
+&lt;li&gt;Soda belongs to the Northeast and far West.&lt;/li&gt;
+&lt;li&gt;Pop gets the mid-West, except for some interesting spots of blue around Wisconsin and the Illinois-Missouri border.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;For comparison, here&amp;#8217;s another map based on a survey at &lt;a href=&quot;http://www.popvssoda.com/&quot;&gt;popvssoda.com&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/popvssoda.png&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/popvssoda.png&quot; alt=&quot;Pop vs. Soda Map&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;We can see similar patterns, though interestingly, our map has less Coke in the Southeast and less pop in the Northwest.&lt;/p&gt;
+
+&lt;p&gt;Finally, here&amp;#8217;s a world map of the terms, bucketed again. Notice that &amp;#8220;pop&amp;#8221; seems to be prevalent only in parts of the United States and Canada.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png&quot; alt=&quot;World&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;I&amp;#8217;ve been getting a lot of questions lately about interesting things you can do with the Twitter API, so this was just one small project I&amp;#8217;ve worked on to illustrate. &lt;a href=&quot;http://www.cc.gatech.edu/~jeisenst/papers/emnlp2010.pdf&quot;&gt;This paper&lt;/a&gt; contains another awesome application of Twitter data to geographic language variation, and just for fun, here are two other cute mini-projects I did a while ago:&lt;/p&gt;
+
+&lt;p&gt;What do people eat during the Super Bowl? (wings and beer, apparently)&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/superbowl-snacks.png&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/superbowl-snacks.png&quot; alt=&quot;Superbowl Snacks&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;What do people want for Christmas, compared to what they actually get?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/xmas.png&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/xmas.png&quot; alt=&quot;Christmas&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+</content>
+  </entry>
   
   <entry>
     <title>Making the Most of Mechanical Turk: Tips and Best Practices</title>
@@ -4036,75 +4090,6 @@ its so          0.8916207044791409
 &lt;p&gt;Recall, though, that better data often beats better algorithms, and designing good features goes a long way. And if you have a huge dataset, then whichever classification algorithm you use might not matter so much in terms of classification performance (so choose your algorithm based on speed or ease of use instead).&lt;/p&gt;
 
 &lt;p&gt;And to reiterate what I said above, if you really care about accuracy, you should definitely try a bunch of different classifiers and select the best one by cross-validation. Or, to take a lesson from the Netflix Prize (and Middle Earth), just use an ensemble method to choose them all.&lt;/p&gt;
-</content>
-  </entry>
-  
-  <entry>
-    <title>Kickstarter Data Analysis: Success and Pricing</title>
-    <link href="http://blog.echen.me/2011/04/25/kickstarter-data-analysis-success-and-pricing/"/>
-    <updated>2011-04-25T21:19:40-07:00</updated>
-    <id>http://blog.echen.me/2011/04/25/kickstarter-data-analysis-success-and-pricing</id>
-    <content type="html">&lt;p&gt;&lt;a href=&quot;http://www.kickstarter.com/&quot;&gt;Kickstarter&lt;/a&gt; is an online crowdfunding platform for launching creative projects. When starting a new project, project owners specify a deadline and the minimum amount of money they need to raise. They receive the money (less a transaction fee) only if they reach or exceed that minimum; otherwise, no money changes hands.&lt;/p&gt;
-
-&lt;p&gt;What&amp;#8217;s particularly fun about Kickstarter is that in contrast to &lt;a href=&quot;http://www.kiva.org/&quot;&gt;that other microfinance site&lt;/a&gt;, Kickstarter projects don&amp;#8217;t ask for loans; instead, patrons receive pre-specified rewards unique to each project. For example, someone donating money to help an artist record an album might receive a digital copy of the album if they donate 20 dollars, or a digital copy plus a signed physical cd if they donate 50 dollars.&lt;/p&gt;
-
-&lt;p&gt;There are &lt;a href=&quot;http://www.kickstarter.com/discover/hall-of-fame?ref=sidebar&quot;&gt;a bunch&lt;/a&gt; of &lt;a href=&quot;http://www.kickstarter.com/projects/1104350651/tiktok-lunatik-multi-touch-watch-kits&quot;&gt;neat&lt;/a&gt; &lt;a href=&quot;http://www.kickstarter.com/projects/2024077040/neil-gaimans-the-price&quot;&gt;projects&lt;/a&gt;, and I&amp;#8217;m tempted to put one of my own on there soon, so I thought it would be fun to gather some data from the site and see what makes a project successful.&lt;/p&gt;
-
-&lt;h1&gt;Categories&lt;/h1&gt;
-
-&lt;p&gt;I started by scraping the categories section.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png&quot; alt=&quot;Successful projects by category&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;In true indie fashion, the artsy categories tend to dominate. (I&amp;#8217;m surprised/disappointed how little love the Technology category gets.)&lt;/p&gt;
-
-&lt;h1&gt;Ending Soon&lt;/h1&gt;
-
-&lt;p&gt;The categories section really only provides a history of &lt;em&gt;successful&lt;/em&gt; projects, though, so to get some data on unsuccessful projects as well, I took a look at the &lt;a href=&quot;http://www.kickstarter.com/discover/ending-soon?ref=sidebar&quot;&gt;Ending Soon&lt;/a&gt; section of projects whose deadlines are about to pass.&lt;/p&gt;
-
-&lt;p&gt;It looks like about 50% of all Kickstarter projects get successfully funded by the deadline:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png&quot; alt=&quot;Successful projects as deadline approaches&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Interestingly, most of the final funding seems to happen in the final few days: with just 5 days left, only about 20% of all projects have been funded. (In other words, with just 5 days left, 60% of the projects that will eventually be successful are still unfunded.) So the approaching deadline seems to really spur people to donate. I wonder if it&amp;#8217;s because of increased publicity in the final few days (the project owners begging everyone for help!) or if it&amp;#8217;s simply procrastination in action (perhaps people want to wait to see if their donation is really necessary)?&lt;/p&gt;
-
-&lt;p&gt;Lesson: if you&amp;#8217;re still not fully funded with only a couple days remaining, don&amp;#8217;t despair.&lt;/p&gt;
-
-&lt;h1&gt;Success vs. Failure&lt;/h1&gt;
-
-&lt;p&gt;What factors lead a project to succeed? Are there any quantitative differences between projects that eventually get funded and those that don&amp;#8217;t?&lt;/p&gt;
-
-&lt;p&gt;Two simple (if kind of obvious) things I noticed are that unsuccessful projects tend to require a larger amount of money:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png&quot; alt=&quot;Unsuccessful projects tend to ask for more money&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;and unsuccessful projects also tend to raise less money in absolute terms (i.e., it&amp;#8217;s not just that they ask for too much money to reach their goal &amp;#8211; they&amp;#8217;re simply not receiving enough money as well):&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png&quot; alt=&quot;Unsuccessful projects received less money&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Not terribly surprising, but it&amp;#8217;s good to confirm (and I&amp;#8217;m still working on finding other predictors).&lt;/p&gt;
-
-&lt;h1&gt;Pledge Rewards&lt;/h1&gt;
-
-&lt;p&gt;There&amp;#8217;s a lot of interesting work in behavioral economics on pricing and choice &amp;#8211; for example, the &lt;a href=&quot;http://youarenotsosmart.com/2010/07/27/anchoring-effect/&quot;&gt;anchoring effect&lt;/a&gt; suggests that when building a menu, you should &lt;a href=&quot;http://www.neurosciencemarketing.com/blog/articles/neuro-menus-and-restaurant-psychology.htm&quot;&gt;include an expensive item&lt;/a&gt; to make other menu items look reasonably priced in comparison, and the &lt;a href=&quot;http://en.wikipedia.org/wiki/The_Paradox_of_Choice:_Why_More_Is_Less&quot;&gt;paradox of choice &lt;/a&gt; suggests that too many choices lead to a decision freeze &amp;#8211; so one aspect of the Kickstarter data I was especially interested in was how pricing of rewards affects donations. For example, does pricing the lowest reward at 25 dollars lead to more money donated (people don&amp;#8217;t lowball at 5 dollars instead) or less money donated (25 dollars is more money than most people are willing to give)? And what happens if a new reward at 5 dollars is added &amp;#8211; again, does it lead to more money (now people can donate something they can afford) or less money (the people that would have paid 25 dollars switch to a 5 dollar donation)?&lt;/p&gt;
-
-&lt;p&gt;First, here&amp;#8217;s a look at the total number of pledges at each price. (More accurately, it&amp;#8217;s the number of claimed rewards at each price.) [Update: the original version of this graph was wrong, but I&amp;#8217;ve since fixed it.]&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png&quot; alt=&quot;Pledge Amounts&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Surprisingly, 5 dollar and 1 dollar donations are actually not the most common contribution.&lt;/p&gt;
-
-&lt;p&gt;To investigate pricing effects, I started by looking at all (successful) projects that had a reward priced at 1 dollar, and compared the number of donations at 1 dollar with the number of donations at the next lowest reward.&lt;/p&gt;
-
-&lt;p&gt;Up to about 15-20 dollars, there&amp;#8217;s a steady increase in the proportion of people who choose the second reward over the first reward, but after that, the proportion decreases.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png&quot; alt=&quot;Anchoring&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png&quot; alt=&quot;Anchoring with Regression Lines&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;So this perhaps suggests that if you&amp;#8217;re going to price your lowest reward at 1 dollar, your next reward should cost roughly 20 dollars (or slightly more, to maximize your total revenue). Pricing above 20 dollars is a little too expensive for the folks who want to support you, but aren&amp;#8217;t rich enough to throw gads of money; maybe rewards below 20 dollars aren&amp;#8217;t good enough to merit the higher donation.&lt;/p&gt;
-
-&lt;p&gt;Next, I&amp;#8217;m planning on digging a little deeper into pricing effects and what makes a project successful, so I&amp;#8217;ll hopefully have some more Kickstarter analysis in a future post. In the meantime, in case anyone else wants to take a look, I put the data onto &lt;a href=&quot;https://github.com/echen/kickstarter-data-analysis&quot;&gt;my Github account&lt;/a&gt;.&lt;/p&gt;
 </content>
   </entry>
   

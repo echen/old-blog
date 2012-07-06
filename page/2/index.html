@@ -9,7 +9,8 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="It always strikes me as curious that some posts get a lot of love on Twitter, while others get many more shares on Facebook: What accounts for this &hellip;">
+  <meta name="description" content="Introduction Suppose you have the following set of sentences: I like to eat broccoli and bananas.
+I ate a banana and spinach smoothie for breakfast. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +75,175 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-08-22T10:50:49-07:00" pubdate data-updated="true">Aug 22<span>nd</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Introduction</h1>
+
+<p>Suppose you have the following set of sentences:</p>
+
+<ul>
+<li>I like to eat broccoli and bananas.</li>
+<li>I ate a banana and spinach smoothie for breakfast.</li>
+<li>Chinchillas and kittens are cute.</li>
+<li>My sister adopted a kitten yesterday.</li>
+<li>Look at this cute hamster munching on a piece of broccoli.</li>
+</ul>
+
+
+<p>What is latent Dirichlet allocation? It&#8217;s a way of automatically discovering <strong>topics</strong> that these sentences contain. For example, given these sentences and asked for 2 topics, LDA might produce something like</p>
+
+<ul>
+<li><strong>Sentences 1 and 2</strong>: 100% Topic A</li>
+<li><strong>Sentences 3 and 4</strong>: 100% Topic B</li>
+<li><strong>Sentence 5</strong>: 60% Topic A, 40% Topic B</li>
+<li><strong>Topic A</strong>: 30% broccoli, 15% bananas, 10% breakfast, 10% munching, &#8230; (at which point, you could interpret topic A to be about food)</li>
+<li><strong>Topic B</strong>: 20% chinchillas, 20% kittens, 20% cute, 15% hamster, &#8230; (at which point, you could interpret topic B to be about cute animals)</li>
+</ul>
+
+
+<p>The question, of course, is: how does LDA perform this discovery?</p>
+
+<h1>LDA Model</h1>
+
+<p>In more detail, LDA represents documents as <strong>mixtures of topics</strong> that spit out words with certain probabilities. It assumes that documents are produced in the following fashion: when writing each document, you</p>
+
+<ul>
+<li>Decide on the number of words N the document will have (say, according to a Poisson distribution).</li>
+<li>Choose a topic mixture for the document (according to a Dirichlet distribution over a fixed set of K topics). For example, assuming that we have the two food and cute animal topics above, you might choose the document to consist of 1/3 food and 2/3 cute animals.</li>
+<li>Generate each word w_i in the document by:
+
+<ul>
+<li>First picking a topic (according to the multinomial distribution that you sampled above; for example, you might pick the food topic with 1/3 probability and the cute animals topic with 2/3 probability).</li>
+<li>Using the topic to generate the word itself (according to the topic&#8217;s multinomial distribution). For example, if we selected the food topic, we might generate the word &#8220;broccoli&#8221; with 30% probability, &#8220;bananas&#8221; with 15% probability, and so on.</li>
+</ul>
+</li>
+</ul>
+
+
+<p>Assuming this generative model for a collection of documents, LDA then tries to backtrack from the documents to find a set of topics that are likely to have generated the collection.</p>
+
+<h2>Example</h2>
+
+<p>Let&#8217;s make an example. According to the above process, when generating some particular document D, you might</p>
+
+<ul>
+<li>Pick 5 to be the number of words in D.</li>
+<li>Decide that D will be 1/2 about food and 1/2 about cute animals.</li>
+<li>Pick the first word to come from the food topic, which then gives you the word &#8220;broccoli&#8221;.</li>
+<li>Pick the second word to come from the cute animals topic, which gives you &#8220;panda&#8221;.</li>
+<li>Pick the third word to come from the cute animals topic, giving you &#8220;adorable&#8221;.</li>
+<li>Pick the fourth word to come from the food topic, giving you &#8220;cherries&#8221;.</li>
+<li>Pick the fifth word to come from the food topic, giving you &#8220;eating&#8221;.</li>
+</ul>
+
+
+<p>So the document generated under the LDA model will be &#8220;broccoli panda adorable cherries eating&#8221; (note that LDA is a bag-of-words model).</p>
+
+<h1>Learning</h1>
+
+<p>So now suppose you have a set of documents. You&#8217;ve chosen some fixed number of K topics to discover, and want to use LDA to learn the topic representation of each document and the words associated to each topic. How do you do this? One way (known as collapsed Gibbs sampling) is the following:</p>
+
+<ul>
+<li>Go through each document, and randomly assign each word in the document to one of the K topics.</li>
+<li>Notice that this random assignment already gives you both topic representations of all the documents and word distributions of all the topics (albeit not very good ones).</li>
+<li>So to improve on them, for each document d&#8230;
+
+<ul>
+<li>Go through each word w in d&#8230;
+
+<ul>
+<li>And for each topic t, compute two things: 1) p(topic t | document d) = the proportion of words in document d that are currently assigned to topic t, and 2) p(word w | topic t) = the proportion of assignments to topic t over all documents that come from this word w. Reassign w a new topic, where we choose topic t with probability p(topic t | document d) * p(word w | topic t) (according to our generative model, this is essentially the probability that topic t generated word w, so it makes sense that we resample the current word&#8217;s topic with this probability). (Also, I&#8217;m glossing over a couple of things here, in particular the use of priors/pseudocounts in these probabilities.)</li>
+<li>In other words, in this step, we&#8217;re assuming that all topic assignments except for the current word in question are correct, and then updating the assignment of the current word using our model of how documents are generated.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>After repeating the previous step a large number of times, you&#8217;ll eventually reach a roughly steady state where your assignments are pretty good. So use these assignments to estimate the topic mixtures of each document (by counting the proportion of words assigned to each topic within that document) and the words associated to each topic (by counting the proportion of words assigned to each topic overall).</li>
+</ul>
+
+
+<h1>Layman&#8217;s Explanation</h1>
+
+<p>In case the discussion above was a little eye-glazing, here&#8217;s another way to look at LDA in a different domain.</p>
+
+<p>Suppose you&#8217;ve just moved to a new city. You&#8217;re a hipster and an anime fan, so you want to know where the other hipsters and anime geeks tend to hang out. Of course, as a hipster, you know you can&#8217;t just <em>ask</em>, so what do you do?</p>
+
+<p>Here&#8217;s the scenario: you scope out a bunch of different establishments (<strong>documents</strong>) across town, making note of the people (<strong>words</strong>) hanging out in each of them (e.g., Alice hangs out at the mall and at the park, Bob hangs out at the movie theater and the park, and so on). Crucially, you don&#8217;t know the typical interest groups (<strong>topics</strong>) of each establishment, nor do you know the different interests of each person.</p>
+
+<p>So you pick some number K of categories to learn (i.e., you want to learn the K most important kinds of categories people fall into), and start by making a guess as to why you see people where you do. For example, you initially guess that Alice is at the mall because people with interests in X like to hang out there; when you see her at the park, you guess it&#8217;s because her friends with interests in Y like to hang out there; when you see Bob at the movie theater, you randomly guess it&#8217;s because the Z people in this city really like to watch movies; and so on.</p>
+
+<p>Of course, your random guesses are very likely to be incorrect (they&#8217;re random guesses, after all!), so you want to improve on them. One way of doing so is to:</p>
+
+<ul>
+<li>Pick a place and a person (e.g., Alice at the mall).</li>
+<li>Why is Alice likely to be at the mall? Probably because other people at the mall with the same interests sent her a message telling her to come.</li>
+<li>In other words, the more people with interests in X there are at the mall and the stronger Alice is associated with interest X (at all the other places she goes to), the more likely it is that Alice is at the mall because of interest X.</li>
+<li>So make a new guess as to why Alice is at the mall, choosing an interest with some probability according to how likely you think it is.</li>
+</ul>
+
+
+<p>Go through each place and person over and over again. Your guesses keep getting better and better (after all, if you notice that lots of geeks hang out at the bookstore, and you suspect that Alice is pretty geeky herself, then it&#8217;s a good bet that Alice is at the bookstore because her geek friends told her to go there; and now that you have a better idea of why Alice is probably at the bookstore, you can use this knowledge in turn to improve your guesses as to why everyone else is where they are), and eventually you can stop updating. Then take a snapshot (or multiple snapshots) of your guesses, and use it to get all the information you want:</p>
+
+<ul>
+<li>For each category, you can count the people assigned to that category to figure out what people have this particular interest. By looking at the people themselves, you can interpret the category as well (e.g., if category X contains lots of tall people wearing jerseys and carrying around basketballs, you might interpret X as the &#8220;basketball players&#8221; group).</li>
+<li>For each place P and interest category C, you can compute the proportions of people at P because of C (under the current set of assignments), and these give you a representation of P. For example, you might learn that the people who hang out at Barnes &amp; Noble consist of 10% hipsters, 50% anime fans, 10% jocks, and 30% college students.</li>
+</ul>
+
+
+<h1>Real-World Example</h1>
+
+<p>Finally, I applied LDA to a set of Sarah Palin&#8217;s emails a little while ago (see <a href="http://blog.echen.me/2011/06/27/topic-modeling-the-sarah-palin-emails/">here</a> for the blog post, or <a href="http://sarah-palin.heroku.com/">here</a> for an app that allows you to browse through the emails by the LDA-learned categories), so let&#8217;s give a brief recap. Here are some of the topics that the algorithm learned:</p>
+
+<ul>
+<li><strong>Trig/Family/Inspiration</strong>: family, web, mail, god, son, from, congratulations, children, life, child, down, trig, baby, birth, love, you, syndrome, very, special, bless, old, husband, years, thank, best, &#8230;</li>
+<li><strong>Wildlife/BP Corrosion</strong>: game, fish, moose, wildlife, hunting, bears, polar, bear, subsistence, management, area, board, hunt, wolves, control, department, year, use, wolf, habitat, hunters, caribou, program, denby, fishing, &#8230;</li>
+<li><strong>Energy/Fuel/Oil/Mining:</strong> energy, fuel, costs, oil, alaskans, prices, cost, nome, now, high, being, home, public, power, mine, crisis, price, resource, need, community, fairbanks, rebate, use, mining, villages, &#8230;</li>
+<li><strong>Gas</strong>: gas, oil, pipeline, agia, project, natural, north, producers, companies, tax, company, energy, development, slope, production, resources, line, gasline, transcanada, said, billion, plan, administration, million, industry, &#8230;</li>
+<li><strong>Education/Waste</strong>: school, waste, education, students, schools, million, read, email, market, policy, student, year, high, news, states, program, first, report, business, management, bulletin, information, reports, 2008, quarter, &#8230;</li>
+<li><strong>Presidential Campaign/Elections</strong>: mail, web, from, thank, you, box, mccain, sarah, very, good, great, john, hope, president, sincerely, wasilla, work, keep, make, add, family, republican, support, doing, p.o, &#8230;</li>
+</ul>
+
+
+<p>Here&#8217;s an example of an email which fell 99% into the Trig/Family/Inspiration category (particularly representative words are highlighted in blue):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/palin-browser/trig-email.png"><img src="http://dl.dropbox.com/u/10506/blog/palin-browser/trig-email.png" alt="Trig Email" /></a></p>
+
+<p>And here&#8217;s an excerpt from an email which fell 10% into the Presidential Campaign/Election category (in red) and 90% into the Wildlife/BP Corrosion category (in green):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/palin-browser/wildlife-presidency-email.png"><img src="http://dl.dropbox.com/u/10506/blog/palin-browser/wildlife-presidency-email.png" alt="Wildlife-Presidency Email" /></a></p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1159,102 +1329,6 @@ its so          0.8916207044791409
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/04/25/kickstarter-data-analysis-success-and-pricing/">Kickstarter Data Analysis: Success and Pricing</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-25T21:19:40-07:00" pubdate data-updated="true">Apr 25<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://www.kickstarter.com/">Kickstarter</a> is an online crowdfunding platform for launching creative projects. When starting a new project, project owners specify a deadline and the minimum amount of money they need to raise. They receive the money (less a transaction fee) only if they reach or exceed that minimum; otherwise, no money changes hands.</p>
-
-<p>What&#8217;s particularly fun about Kickstarter is that in contrast to <a href="http://www.kiva.org/">that other microfinance site</a>, Kickstarter projects don&#8217;t ask for loans; instead, patrons receive pre-specified rewards unique to each project. For example, someone donating money to help an artist record an album might receive a digital copy of the album if they donate 20 dollars, or a digital copy plus a signed physical cd if they donate 50 dollars.</p>
-
-<p>There are <a href="http://www.kickstarter.com/discover/hall-of-fame?ref=sidebar">a bunch</a> of <a href="http://www.kickstarter.com/projects/1104350651/tiktok-lunatik-multi-touch-watch-kits">neat</a> <a href="http://www.kickstarter.com/projects/2024077040/neil-gaimans-the-price">projects</a>, and I&#8217;m tempted to put one of my own on there soon, so I thought it would be fun to gather some data from the site and see what makes a project successful.</p>
-
-<h1>Categories</h1>
-
-<p>I started by scraping the categories section.</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png" alt="Successful projects by category" /></a></p>
-
-<p>In true indie fashion, the artsy categories tend to dominate. (I&#8217;m surprised/disappointed how little love the Technology category gets.)</p>
-
-<h1>Ending Soon</h1>
-
-<p>The categories section really only provides a history of <em>successful</em> projects, though, so to get some data on unsuccessful projects as well, I took a look at the <a href="http://www.kickstarter.com/discover/ending-soon?ref=sidebar">Ending Soon</a> section of projects whose deadlines are about to pass.</p>
-
-<p>It looks like about 50% of all Kickstarter projects get successfully funded by the deadline:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png" alt="Successful projects as deadline approaches" /></a></p>
-
-<p>Interestingly, most of the final funding seems to happen in the final few days: with just 5 days left, only about 20% of all projects have been funded. (In other words, with just 5 days left, 60% of the projects that will eventually be successful are still unfunded.) So the approaching deadline seems to really spur people to donate. I wonder if it&#8217;s because of increased publicity in the final few days (the project owners begging everyone for help!) or if it&#8217;s simply procrastination in action (perhaps people want to wait to see if their donation is really necessary)?</p>
-
-<p>Lesson: if you&#8217;re still not fully funded with only a couple days remaining, don&#8217;t despair.</p>
-
-<h1>Success vs. Failure</h1>
-
-<p>What factors lead a project to succeed? Are there any quantitative differences between projects that eventually get funded and those that don&#8217;t?</p>
-
-<p>Two simple (if kind of obvious) things I noticed are that unsuccessful projects tend to require a larger amount of money:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png" alt="Unsuccessful projects tend to ask for more money" /></a></p>
-
-<p>and unsuccessful projects also tend to raise less money in absolute terms (i.e., it&#8217;s not just that they ask for too much money to reach their goal &#8211; they&#8217;re simply not receiving enough money as well):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png" alt="Unsuccessful projects received less money" /></a></p>
-
-<p>Not terribly surprising, but it&#8217;s good to confirm (and I&#8217;m still working on finding other predictors).</p>
-
-<h1>Pledge Rewards</h1>
-
-<p>There&#8217;s a lot of interesting work in behavioral economics on pricing and choice &#8211; for example, the <a href="http://youarenotsosmart.com/2010/07/27/anchoring-effect/">anchoring effect</a> suggests that when building a menu, you should <a href="http://www.neurosciencemarketing.com/blog/articles/neuro-menus-and-restaurant-psychology.htm">include an expensive item</a> to make other menu items look reasonably priced in comparison, and the <a href="http://en.wikipedia.org/wiki/The_Paradox_of_Choice:_Why_More_Is_Less">paradox of choice </a> suggests that too many choices lead to a decision freeze &#8211; so one aspect of the Kickstarter data I was especially interested in was how pricing of rewards affects donations. For example, does pricing the lowest reward at 25 dollars lead to more money donated (people don&#8217;t lowball at 5 dollars instead) or less money donated (25 dollars is more money than most people are willing to give)? And what happens if a new reward at 5 dollars is added &#8211; again, does it lead to more money (now people can donate something they can afford) or less money (the people that would have paid 25 dollars switch to a 5 dollar donation)?</p>
-
-<p>First, here&#8217;s a look at the total number of pledges at each price. (More accurately, it&#8217;s the number of claimed rewards at each price.) [Update: the original version of this graph was wrong, but I&#8217;ve since fixed it.]</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png" alt="Pledge Amounts" /></a></p>
-
-<p>Surprisingly, 5 dollar and 1 dollar donations are actually not the most common contribution.</p>
-
-<p>To investigate pricing effects, I started by looking at all (successful) projects that had a reward priced at 1 dollar, and compared the number of donations at 1 dollar with the number of donations at the next lowest reward.</p>
-
-<p>Up to about 15-20 dollars, there&#8217;s a steady increase in the proportion of people who choose the second reward over the first reward, but after that, the proportion decreases.</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png" alt="Anchoring" /></a></p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png" alt="Anchoring with Regression Lines" /></a></p>
-
-<p>So this perhaps suggests that if you&#8217;re going to price your lowest reward at 1 dollar, your next reward should cost roughly 20 dollars (or slightly more, to maximize your total revenue). Pricing above 20 dollars is a little too expensive for the folks who want to support you, but aren&#8217;t rich enough to throw gads of money; maybe rewards below 20 dollars aren&#8217;t good enough to merit the higher donation.</p>
-
-<p>Next, I&#8217;m planning on digging a little deeper into pricing effects and what makes a project successful, so I&#8217;ll hopefully have some more Kickstarter analysis in a future post. In the meantime, in case anyone else wants to take a look, I put the data onto <a href="https://github.com/echen/kickstarter-data-analysis">my Github account</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/3/">&larr; Older</a>
@@ -1280,6 +1354,10 @@ its so          0.8916207044791409
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/07/06/soda-vs-pop-with-twitter/">Soda vs. Pop with Twitter</a>
+      </li>
     
       <li class="post">
         <a href="/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/">Making the Most of Mechanical Turk: Tips and Best Practices</a>
@@ -1315,10 +1393,6 @@ its so          0.8916207044791409
     
       <li class="post">
         <a href="/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/08/22/introduction-to-latent-dirichlet-allocation/">Introduction to Latent Dirichlet Allocation</a>
       </li>
     
   </ul>
