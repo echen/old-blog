@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-07-09T02:22:01-07:00</updated>
+  <updated>2012-07-09T04:18:47-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -53,9 +53,22 @@
 
 <p>We can see similar patterns, though interestingly, our map has less Coke in the Southeast and less pop in the Northwest.</p>
 
-<p>Finally, here&#8217;s a world map of the terms, bucketed again. Notice that &#8220;pop&#8221; seems to be prevalent only in parts of the United States and Canada (and perhaps a slice of Italy&#8230;?).</p>
+<p>Finally, here&#8217;s a world map of the terms, bucketed again. Notice that &#8220;pop&#8221; seems to be prevalent only in parts of the United States and Canada.</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png" alt="World" /></a></p>
+
+<p>As some astute readers noted, though, the seeming dominance of coke is probably due to the difficulty in distinguishing the generic use of coke for soft drinks in general from the particular use of coke for referring to the Coca-Cola brand. So let&#8217;s instead look at a world map of a couple other soft drink terms (&#8220;fizzy drink&#8221;, &#8220;mineral&#8221;, and &#8220;tonic&#8221;):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/fizzy-mineral-tonic.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/fizzy-mineral-tonic.png" alt="Fizzy Drink vs. Mineral vs. Tonic" /></a></p>
+
+<p>Notice that:</p>
+
+<ul>
+<li>&#8220;Fizzy drink&#8221; shows up for the UK, New Zealand, and Maine.</li>
+<li>&#8220;Tonic&#8221; appears in Massachusetts.</li>
+<li>While South Africa gets &#8220;fizzy drink&#8221;, Nigeria gets &#8220;mineral&#8221;.</li>
+</ul>
+
 
 <p>I&#8217;ve been getting a lot of questions lately about interesting things you can do with the Twitter API, so this was just one small project I&#8217;ve worked on to illustrate. <a href="http://www.cc.gatech.edu/~jeisenst/papers/emnlp2010.pdf">This paper</a> contains another awesome application of Twitter data to geographic language variation, and just for fun, here are two other cute mini-projects I did a while ago:</p>
 
