@@ -4,7 +4,7 @@
   <title><![CDATA[Category: twitter | Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/categories/twitter/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-07-09T02:18:54-07:00</updated>
+  <updated>2012-07-09T02:22:01-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -53,7 +53,7 @@
 
 <p>We can see similar patterns, though interestingly, our map has less Coke in the Southeast and less pop in the Northwest.</p>
 
-<p>Finally, here's a world map of the terms, bucketed again. Notice that "pop" seems to be prevalent only in parts of the United States and Canada.</p>
+<p>Finally, here's a world map of the terms, bucketed again. Notice that "pop" seems to be prevalent only in parts of the United States and Canada (and perhaps a slice of Italy...?).</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png" alt="World" /></a></p>
 
