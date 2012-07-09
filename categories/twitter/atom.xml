@@ -4,7 +4,7 @@
   <title><![CDATA[Category: twitter | Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/categories/twitter/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-07-09T04:18:47-07:00</updated>
+  <updated>2012-07-09T04:22:28-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -30,7 +30,7 @@
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/united-states.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/united-states.png" alt="United States" /></a></p>
 
-<p>To make this map, I sampled geo-tagged tweets containing the words "soda", "pop", or "coke", performed some state-of-the-art NLP technology to ensure the tweets were soft drink related (e.g., the tweets had to contain "drink soda" or "drink a pop"), and filtered out coke tweets that were specifically about the Coke brand (e.g., Coke Zero).</p>
+<p>To make this map, I sampled geo-tagged tweets containing the words "soda", "pop", or "coke", performed some state-of-the-art NLP technology to ensure the tweets were soft drink related (e.g., the tweets had to contain "drink soda" or "drink a pop"), and tried to filter out coke tweets that were specifically about the Coke brand (e.g., Coke Zero).</p>
 
 <p>It's a little cluttered, though, so let's clean it up by aggregating nearby tweets.</p>
 
@@ -57,7 +57,9 @@
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png" alt="World" /></a></p>
 
-<p>As some astute readers noted, though, the seeming dominance of coke is probably due to the difficulty in distinguishing the generic use of coke for soft drinks in general from the particular use of coke for referring to the Coca-Cola brand. So let's instead look at a world map of a couple other soft drink terms ("fizzy drink", "mineral", and "tonic"):</p>
+<p>As some astute readers noted, though, the seeming dominance of coke is probably due to the difficulty in distinguishing the generic use of coke for soft drinks in general from the particular use of coke for referring to the Coca-Cola brand.</p>
+
+<p>So let's instead look at a world map of a couple other soft drink terms ("fizzy drink", "mineral", and "tonic"):</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/fizzy-mineral-tonic.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/fizzy-mineral-tonic.png" alt="Fizzy Drink vs. Mineral vs. Tonic" /></a></p>
 
