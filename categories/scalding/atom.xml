@@ -4,7 +4,7 @@
   <title><![CDATA[Category: scalding | Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/categories/scalding/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-07-31T10:41:10-07:00</updated>
+  <updated>2012-07-31T11:03:56-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -521,6 +521,8 @@ rf = rf.fit(training_examples, truths)
 <p>To enable these kinds of comparisons, I made <a href="http://link-prediction.herokuapp.com/comparison">a small module</a> that allows you to select two models and then visualize their sliced performance.</p>
 
 <p><a href="http://link-prediction.herokuapp.com/comparison"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/pagerank_vs_is_followed_by_v2.png" alt="PageRank vs. Is Followed By" /></a></p>
+
+<p>(Go ahead, <a href="http://link-prediction.herokuapp.com/comparison">play around</a>.)</p>
 
 <p>Above, I bucketed all test nodes into buckets based on (the logarithm of) their number of followers, and compared the mean average precision of two algorithms: one that recommends nodes to follow using a personalized PageRank alone, and one that recommends nodes that are following the source user but are not followed back in return.</p>
 

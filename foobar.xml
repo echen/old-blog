@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-07-31T10:41:10-07:00</updated>
+  <updated>2012-07-31T11:03:56-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -681,6 +681,8 @@
 &lt;p&gt;To enable these kinds of comparisons, I made &lt;a href=&quot;http://link-prediction.herokuapp.com/comparison&quot;&gt;a small module&lt;/a&gt; that allows you to select two models and then visualize their sliced performance.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://link-prediction.herokuapp.com/comparison&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/kaggle-fb/pagerank_vs_is_followed_by_v2.png&quot; alt=&quot;PageRank vs. Is Followed By&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;(Go ahead, &lt;a href=&quot;http://link-prediction.herokuapp.com/comparison&quot;&gt;play around&lt;/a&gt;.)&lt;/p&gt;
 
 &lt;p&gt;Above, I bucketed all test nodes into buckets based on (the logarithm of) their number of followers, and compared the mean average precision of two algorithms: one that recommends nodes to follow using a personalized PageRank alone, and one that recommends nodes that are following the source user but are not followed back in return.&lt;/p&gt;
 
