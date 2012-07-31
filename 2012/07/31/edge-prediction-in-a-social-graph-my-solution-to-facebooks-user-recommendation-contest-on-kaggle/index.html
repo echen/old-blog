@@ -1,0 +1,1299 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Edge Prediction in a Social Graph: My Solution to Facebook's User Recommendation Contest on Kaggle - Edwin Chen's Blog</title>
+  <meta name="author" content="Edwin Chen">
+
+  
+  <meta name="description" content="A couple weeks ago, Facebook launched a link prediction contest on Kaggle, with the goal of recommending missing edges in a social graph. I love &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.echen.me/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/feed/" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29005692-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Edwin Chen's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/feed/" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.echen.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Edge Prediction in a Social Graph: My Solution to Facebook's User Recommendation Contest on Kaggle</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-31T10:17:00-07:00" pubdate data-updated="true">Jul 31<span>st</span>, 2012</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A couple weeks ago, Facebook launched a <a href="http://www.kaggle.com/c/FacebookRecruiting/">link prediction contest</a> on Kaggle, with the goal of recommending missing edges in a social graph. <a href="http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">I love investigating social networks</a>, so I dug around a little, and since I did well enough to score one of the coveted prizes, I&#8217;ll share my approach here.</p>
+
+<p>(For some background, the contest provided a training dataset of edges, a test set of nodes, and contestants were asked to predict missing outbound edges on the test set, using mean average precision as the evaluation metric.)</p>
+
+<h1>Exploration</h1>
+
+<p>What does the network look like? I wanted to play around with the data a bit first just to get a rough feel, so I made an <a href="http://link-prediction.herokuapp.com/network">app</a> to interact with the network around each node.</p>
+
+<p>Here&#8217;s a sample:</p>
+
+<p><a href="http://link-prediction.herokuapp.com/network"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_untrimmed.png" alt="1 Untrimmed Network" /></a></p>
+
+<p>(Go ahead, click on the picture to <a href="http://link-prediction.herokuapp.com/network">play with the app yourself</a>. It&#8217;s pretty fun.)</p>
+
+<p>The node in black is a selected node from the training set, and we perform a breadth-first walk of the graph out to a maximum distance of 3 to uncover the local network. Nodes are sized according to their distance from the center, and colored according to a chosen metric (a personalized PageRank in this case; more on this later).</p>
+
+<p>We can see that the central node is friends with three other users (in red), two of whom have fairly large, disjoint networks.</p>
+
+<p>There are quite a few dangling nodes (nodes at distance 3 with only one connection to the rest of the local network), though, so let&#8217;s remove these to reveal the core structure:</p>
+
+<p><a href="http://link-prediction.herokuapp.com/network"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_network.png" alt="1 Untrimmed Network" /></a></p>
+
+<p>And here&#8217;s an embedded version you can manipulate inline:</p>
+
+<iframe width="600px" height="500px" src="http://link-prediction.herokuapp.com/network?for_embed=true"></iframe>
+
+
+<p>Since the default view doesn&#8217;t encode the distinction between following and follower relationships, we can mouse over each node to see who it follows and who it&#8217;s followed by. Here, for example, is the following/follower network of one of the central node&#8217;s friends:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_friend1.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_friend1.png" alt="1 - Friend1" /></a></p>
+
+<p>The moused over node is highlighted in black, its friends (users who both follow the node and are followed back in turn) are colored in purple, its followees are teal, and its followers in orange. We can also see that the node shares a friend with the central user (<a href="http://en.wikipedia.org/wiki/Triadic_closure">triadic closure</a>, <em>holla!</em>).</p>
+
+<p>Here&#8217;s another network, this time of the friend at the bottom:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_friend2.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_friend2.png" alt="1 - Friend2" /></a></p>
+
+<p>Interestingly, while the first friend had several only-followers (in orange), the second friend has none. (which suggests, perhaps, a node-level feature that measures how follow-hungry a user is&#8230;)</p>
+
+<p>And here&#8217;s one more node, a little further out (maybe a celebrity, given it has nothing but followers?):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_celebrity.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_celebrity.png" alt="1 - Celebrity" /></a></p>
+
+<h2>The Quiet One</h2>
+
+<p>Let&#8217;s take a look at another graph, one whose local network is a little smaller:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/4_network.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/4_network.png" alt="4 Network" /></a></p>
+
+<h2>A Social Butterfly</h2>
+
+<p>And one more, one whose local network is a little larger:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_network.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_network.png" alt="2 Network" /></a></p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_friend.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_friend.png" alt="2 Network - Friend" /></a></p>
+
+<p>Again, I encourage everyone to play around with the app <a href="http://link-prediction.herokuapp.com/network">here</a>, and I&#8217;ll come back to the question of coloring each node later.</p>
+
+<h1>Distributions</h1>
+
+<p>Next, let&#8217;s take a more quantitative look at the graph.</p>
+
+<p>Here&#8217;s the distribution of the number of followers of each node in the training set (cut off at 50 followers for a better fit &#8211; the maximum number of followers is 552), as well as the number of users each node is following (again, cut off at 50 &#8211; the maximum here is 1566)</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/training_full_followers.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/training_full_followers.png" alt="Training Followers" /></a></p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/training_full_followees.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/training_full_followees.png" alt="Training Followees" /></a></p>
+
+<p>Nothing terribly surprising, but that alone is good to verify. (For people tempted to mutter about power laws, I&#8217;ll hold you off with the bitter coldness of <a href="http://cscs.umich.edu/~crshalizi/weblog/491.html">baby Gauss&#8217;s tears</a>.)</p>
+
+<p>Similarly, here are the same two graphs, but limited to the nodes in the test set alone:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/test_followers.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/test_followers.png" alt="Test Followers" /></a></p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/test_followees.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/test_followees.png" alt="Test Followees" /></a></p>
+
+<p>Notice that there are relatively more test set users with 0 followees than in the full training set, and relatively fewer test set users with 0 followers. This information could be used to better simulate a validation set for model selection, though I didn&#8217;t end up doing this myself.</p>
+
+<h1>Preliminary Probes</h1>
+
+<p>Finally, let&#8217;s move on to the models themselves.</p>
+
+<p>In order to quickly get up and running on a couple prediction algorithms, I started with some unsupervised approaches. For example, after building a new validation set* to test performance offline, I tried:</p>
+
+<ul>
+<li>Recommending users who follow you (but you don&#8217;t follow in return)</li>
+<li>Recommending users similar to you (when representing users as sets of their followers, and using cosine similarity and Jaccard similarity as the similarity metric)</li>
+<li>Recommending users based on a personalized PageRank score</li>
+<li>Recommending users that the people you follow also follow</li>
+</ul>
+
+
+<p>And so on, combining the votes of these algorithms in a fairly ad-hoc way (e.g., by taking the majority vote or by ordering by the number of followers).</p>
+
+<p>This worked quite well actually, but I&#8217;d been planning to move on to a more machine learned model-based approach from the beginning, so I did that next.</p>
+
+<p>*My validation set was formed by deleting random edges from the full training set. A slightly better approach, as mentioned above, might have been to more accurately simulate the distribution of the official test set, but I didn&#8217;t end up trying this out myself.</p>
+
+<h1>Candidate Selection</h1>
+
+<p>In order to run a machine learning algorithm to recommend edges (which would take two nodes, a source and a candidate destination, and generate a score measuring the likelihood that the source would follow the destination), it&#8217;s necessary to prune the set of candidates to run the algorithm on.</p>
+
+<p>I used two approaches for this filtering step, both based on random walks on the graph.</p>
+
+<h2>Personalized PageRank</h2>
+
+<p>The first approach was to calculate a personalized PageRank around each source node.</p>
+
+<p>Briefly, a personalized PageRank is like standard PageRank, except that when randomly teleporting to a new node, the surfer always teleports back to the given source node being personalized (rather than to a node chosen uniformly at random, as in the classic PageRank algorithm).</p>
+
+<p>That is, the random surfer in the personalized PageRank model works as follows:</p>
+
+<ul>
+<li>He starts at the source node $X$ that we want to calculate a personalized PageRank around.</li>
+<li>At step $i$: with probability $p$, the surfer moves to a neighboring node chosen uniformly at random; with probability $1-p$, the surfer instead teleports back to the original source node $X$.</li>
+<li>The limiting probability that the surfer is at node $N$ is then the personalized PageRank score of node $N$ around $X$.</li>
+</ul>
+
+
+<p>Here&#8217;s some Scala code that computes approximate personalized PageRank scores and takes the highest-scoring nodes as the candidates to feed into the machine learning model:</p>
+
+<figure class='code'><figcaption><span>Personalized PageRank</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Calculate a personalized PageRank around the given user, and return </span>
+</span><span class='line'><span class="cm"> * a list of the nodes with the highest personalized PageRank scores.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * @return A list of (node, probability of landing at this node after</span>
+</span><span class='line'><span class="cm"> *         running a personalized PageRank for K iterations) pairs.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">def</span> <span class="n">pageRank</span><span class="o">(</span><span class="n">user</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">List</span><span class="o">[(</span><span class="kt">Int</span>, <span class="kt">Double</span><span class="o">)]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">// This map holds the probability of landing at each node, up to the </span>
+</span><span class='line'>  <span class="c1">// current iteration.</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">probs</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Double</span><span class="o">]()</span>
+</span><span class='line'>  <span class="n">probs</span><span class="o">(</span><span class="n">user</span><span class="o">)</span> <span class="k">=</span> <span class="mi">1</span> <span class="c1">// We start at this user.</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">pageRankProbs</span> <span class="k">=</span> <span class="n">pageRankHelper</span><span class="o">(</span><span class="n">start</span><span class="o">,</span> <span class="n">probs</span><span class="o">,</span> <span class="nc">NumPagerankIterations</span><span class="o">)</span>
+</span><span class='line'>  <span class="n">pageRankProbs</span><span class="o">.</span><span class="n">toList</span>
+</span><span class='line'>               <span class="o">.</span><span class="n">sortBy</span> <span class="o">{</span> <span class="o">-</span><span class="k">_</span><span class="o">.</span><span class="n">_2</span> <span class="o">}</span>
+</span><span class='line'>               <span class="o">.</span><span class="n">filter</span> <span class="o">{</span> <span class="k">case</span> <span class="o">(</span><span class="n">node</span><span class="o">,</span> <span class="n">score</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>                  <span class="o">!</span><span class="n">getFollowings</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">contains</span><span class="o">(</span><span class="n">node</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">node</span> <span class="o">!=</span> <span class="n">user</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>                <span class="o">.</span><span class="n">take</span><span class="o">(</span><span class="nc">MaxNodesToKeep</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Simulates running a personalized PageRank for one iteration.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * Parameters:</span>
+</span><span class='line'><span class="cm"> * start - the start node to calculate the personalized PageRank around</span>
+</span><span class='line'><span class="cm"> * probs - a map from nodes to the probability of being at that node at </span>
+</span><span class='line'><span class="cm"> *         the start of the current iteration</span>
+</span><span class='line'><span class="cm"> * numIterations - the number of iterations remaining</span>
+</span><span class='line'><span class="cm"> * alpha - with probability alpha, we follow a neighbor; with probability</span>
+</span><span class='line'><span class="cm"> *         1 - alpha, we teleport back to the start node</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * @return A map of node -&gt; probability of landing at that node after the</span>
+</span><span class='line'><span class="cm"> *         specified number of iterations.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">def</span> <span class="n">pageRankHelper</span><span class="o">(</span><span class="n">start</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">probs</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Double</span><span class="o">],</span> <span class="n">numIterations</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span>
+</span><span class='line'>                   <span class="n">alpha</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">)</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Double</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">numIterations</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">probs</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Holds the updated set of probabilities, after this iteration.</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">probsPropagated</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Double</span><span class="o">]()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// With probability 1 - alpha, we teleport back to the start node.</span>
+</span><span class='line'>    <span class="n">probsPropagated</span><span class="o">(</span><span class="n">start</span><span class="o">)</span> <span class="k">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Propagate the previous probabilities...</span>
+</span><span class='line'>    <span class="n">probs</span><span class="o">.</span><span class="n">foreach</span> <span class="o">{</span> <span class="k">case</span> <span class="o">(</span><span class="n">node</span><span class="o">,</span> <span class="n">prob</span><span class="o">)</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">forwards</span> <span class="k">=</span> <span class="n">getFollowings</span><span class="o">(</span><span class="n">node</span><span class="o">)</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">backwards</span> <span class="k">=</span> <span class="n">getFollowers</span><span class="o">(</span><span class="n">node</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// With probability alpha, we move to a follower...</span>
+</span><span class='line'>      <span class="c1">// And each node distributes its current probability equally to </span>
+</span><span class='line'>      <span class="c1">// its neighbors.</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">probToPropagate</span> <span class="k">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">prob</span> <span class="o">/</span> <span class="o">(</span><span class="n">forwards</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">backwards</span><span class="o">.</span><span class="n">size</span><span class="o">)</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">forwards</span><span class="o">.</span><span class="n">toList</span> <span class="o">++</span> <span class="n">backwards</span><span class="o">.</span><span class="n">toList</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span> <span class="n">neighbor</span> <span class="k">=&gt;</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(!</span><span class="n">probsPropagated</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="n">neighbor</span><span class="o">))</span> <span class="o">{</span>
+</span><span class='line'>          <span class="n">probsPropagated</span><span class="o">(</span><span class="n">neighbor</span><span class="o">)</span> <span class="k">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>        <span class="n">probsPropagated</span><span class="o">(</span><span class="n">neighbor</span><span class="o">)</span> <span class="o">+=</span> <span class="n">probToPropagate</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">pageRankHelper</span><span class="o">(</span><span class="n">start</span><span class="o">,</span> <span class="n">probsPropagated</span><span class="o">,</span> <span class="n">numIterations</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="n">alpha</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Propagation Score</h2>
+
+<p>Another approach I used, based on <a href="http://www.kaggle.com/c/FacebookRecruiting/forums/t/2082/0-711-is-the-new-0">a proposal by another contestant on the Kaggle forums</a>, works as follows:</p>
+
+<ul>
+<li>Start at a specified user node and give it some score.</li>
+<li>In the first iteration, this user propagates its score equally to its neighbors.</li>
+<li>In the second iteration, each user duplicates and keeps half of its score S. It then propagates S equally to its neighbors.</li>
+<li>In subsequent iterations, the process is repeated, except that neighbors reached via a backwards link don&#8217;t duplicate and keep half of their score. (The idea is that we want the score to reach followees and not followers.)</li>
+</ul>
+
+
+<p>Here&#8217;s some Scala code to calculate these propagation scores:</p>
+
+<figure class='code'><figcaption><span>Propagation Score</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Calculate propagation scores around the current user.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * In the first propagation round, we</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * - Give the starting node N an initial score S.</span>
+</span><span class='line'><span class="cm"> * - Propagate the score equally to each of N&#39;s neighbors (followers </span>
+</span><span class='line'><span class="cm"> *   and followings).</span>
+</span><span class='line'><span class="cm"> * - Each first-level neighbor then duplicates and keeps half of its score</span>
+</span><span class='line'><span class="cm"> *   and then propagates the original again to its neighbors.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * In further rounds, neighbors then repeat the process, except that neighbors </span>
+</span><span class='line'><span class="cm"> * traveled to via a backwards/follower link don&#39;t keep half of their score.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * @return a sorted list of (node, propagation score) pairs.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">def</span> <span class="n">propagate</span><span class="o">(</span><span class="n">user</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">List</span><span class="o">[(</span><span class="kt">Int</span>, <span class="kt">Double</span><span class="o">)]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">scores</span> <span class="k">=</span> <span class="nc">Map</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Double</span><span class="o">]()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c1">// We propagate the score equally to all neighbors.</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">scoreToPropagate</span> <span class="k">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="o">(</span><span class="n">getFollowings</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">size</span> <span class="o">+</span> <span class="n">getFollowers</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">size</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">(</span><span class="n">getFollowings</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">toList</span> <span class="o">++</span> <span class="n">getFollowers</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">toList</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span> <span class="n">x</span> <span class="k">=&gt;</span>
+</span><span class='line'>    <span class="c1">// Propagate the score...</span>
+</span><span class='line'>    <span class="n">continuePropagation</span><span class="o">(</span><span class="n">scores</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">scoreToPropagate</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>    <span class="c1">// ...and make sure it keeps half of it for itself.</span>
+</span><span class='line'>    <span class="n">scores</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="k">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">getOrElse</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="mi">0</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="o">+</span> <span class="n">scoreToPropagate</span> <span class="o">/</span> <span class="mi">2</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">scores</span><span class="o">.</span><span class="n">toList</span><span class="o">.</span><span class="n">sortBy</span> <span class="o">{</span> <span class="o">-</span><span class="k">_</span><span class="o">.</span><span class="n">_2</span> <span class="o">}</span>
+</span><span class='line'>               <span class="o">.</span><span class="n">filter</span> <span class="o">{</span> <span class="n">nodeAndScore</span> <span class="k">=&gt;</span>
+</span><span class='line'>                 <span class="k">val</span> <span class="n">node</span> <span class="k">=</span> <span class="n">nodeAndScore</span><span class="o">.</span><span class="n">_1</span>
+</span><span class='line'>                 <span class="o">!</span><span class="n">getFollowings</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">contains</span><span class="o">(</span><span class="n">node</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">node</span> <span class="o">!=</span> <span class="n">user</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>                <span class="o">.</span><span class="n">take</span><span class="o">(</span><span class="nc">MaxNodesToKeep</span><span class="o">)</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * In further rounds, neighbors repeat the process above, except that neighbors</span>
+</span><span class='line'><span class="cm"> * traveled to via a backwards/follower link don&#39;t keep half of their score.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">def</span> <span class="n">continuePropagation</span><span class="o">(</span><span class="n">scores</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Double</span><span class="o">],</span> <span class="n">user</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">score</span><span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
+</span><span class='line'>                        <span class="n">currIteration</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">currIteration</span> <span class="o">&lt;</span> <span class="nc">NumIterations</span> <span class="o">&amp;&amp;</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">scoreToPropagate</span> <span class="k">=</span> <span class="n">score</span> <span class="o">/</span> <span class="o">(</span><span class="n">getFollowings</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">size</span> <span class="o">+</span> <span class="n">getFollowers</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">size</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">getFollowings</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span> <span class="n">x</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="c1">// Propagate the score...        </span>
+</span><span class='line'>      <span class="n">continuePropagation</span><span class="o">(</span><span class="n">scores</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">scoreToPropagate</span><span class="o">,</span> <span class="n">currIteration</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>      <span class="c1">// ...and make sure it keeps half of it for itself.        </span>
+</span><span class='line'>      <span class="n">scores</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="k">=</span> <span class="n">scores</span><span class="o">.</span><span class="n">getOrElse</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="mi">0</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span> <span class="o">+</span> <span class="n">scoreToPropagate</span> <span class="o">/</span> <span class="mi">2</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">getFollowers</span><span class="o">(</span><span class="n">user</span><span class="o">).</span><span class="n">foreach</span> <span class="o">{</span> <span class="n">x</span> <span class="k">=&gt;</span>
+</span><span class='line'>      <span class="c1">// Propagate the score...</span>
+</span><span class='line'>      <span class="n">continuePropagation</span><span class="o">(</span><span class="n">scores</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">scoreToPropagate</span><span class="o">,</span> <span class="n">currIteration</span> <span class="o">+</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>      <span class="c1">// ...but backward links (except for the starting node&#39;s immediate</span>
+</span><span class='line'>      <span class="c1">// neighbors) don&#39;t keep any score for themselves.</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I played around with tweaking some parameters in both approaches (e.g., weighting followers and followees differently), but the natural defaults (as used in the code above) ended up performing the best.</p>
+
+<h1>Features</h1>
+
+<p>After pruning the set of candidate destination nodes to a more feasible level, I fed pairs of (source, destination) nodes into a machine learning model. From each pair, I extracted around 30 features in total.</p>
+
+<p>As mentioned above, one feature that worked quite well on its own was whether the destination node already follows the source.</p>
+
+<p>I also used a wide set of similarity-based features, for example, the Jaccard similarity between the source and destination when both are represented as sets of their followers, when both are represented as sets of their followees, or when one is represented as a set of followers while the other is represented as a set of followees.</p>
+
+<figure class='code'><figcaption><span>Similarity Metrics</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">abstract</span> <span class="k">class</span> <span class="nc">SimilarityMetric</span><span class="o">[</span><span class="kt">T</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">set1</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">T</span><span class="o">],</span> <span class="n">set2</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">T</span><span class="o">])</span><span class="k">:</span> <span class="kt">Double</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">JaccardSimilarity</span> <span class="k">extends</span> <span class="nc">SimilarityMetric</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Returns the Jaccard similarity between two sets, 0 if both are empty.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">set1</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">Int</span><span class="o">],</span> <span class="n">set2</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">union</span> <span class="k">=</span> <span class="o">(</span><span class="n">set1</span><span class="o">.</span><span class="n">union</span><span class="o">(</span><span class="n">set2</span><span class="o">)).</span><span class="n">size</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">union</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="mi">0</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">set1</span> <span class="o">&amp;</span> <span class="n">set2</span><span class="o">).</span><span class="n">size</span><span class="o">.</span><span class="n">toFloat</span> <span class="o">/</span> <span class="n">union</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">CosineSimilarity</span> <span class="k">extends</span> <span class="nc">SimilarityMetric</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="o">{</span>
+</span><span class='line'>  <span class="cm">/**</span>
+</span><span class='line'><span class="cm">   * Returns the cosine similarity between two sets, 0 if both are empty.</span>
+</span><span class='line'><span class="cm">   */</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">apply</span><span class="o">(</span><span class="n">set1</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">Int</span><span class="o">],</span> <span class="n">set2</span><span class="k">:</span> <span class="kt">Set</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">set1</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">set2</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="mi">0</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="n">set1</span> <span class="o">&amp;</span> <span class="n">set2</span><span class="o">).</span><span class="n">size</span><span class="o">.</span><span class="n">toFloat</span> <span class="o">/</span> <span class="o">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="o">(</span><span class="n">set1</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="n">set2</span><span class="o">.</span><span class="n">size</span><span class="o">))</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ************</span>
+</span><span class='line'><span class="c1">// * FEATURES *</span>
+</span><span class='line'><span class="c1">// ************</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Returns the similarity between user1 and user2 when both are represented as</span>
+</span><span class='line'><span class="cm"> * sets of followers.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">def</span> <span class="n">similarityByFollowers</span><span class="o">(</span><span class="n">user1</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">user2</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+</span><span class='line'>                         <span class="o">(</span><span class="k">implicit</span> <span class="n">similarity</span><span class="k">:</span> <span class="kt">SimilarityMetric</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">similarity</span><span class="o">.</span><span class="n">apply</span><span class="o">(</span><span class="n">getFollowersWithout</span><span class="o">(</span><span class="n">user1</span><span class="o">,</span> <span class="n">user2</span><span class="o">),</span>
+</span><span class='line'>                   <span class="n">getFollowersWithout</span><span class="o">(</span><span class="n">user2</span><span class="o">,</span> <span class="n">user1</span><span class="o">))</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// etc.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Along the same lines, I also computed a similarity score between the destination node and the source node&#8217;s followees, and several variations thereof.</p>
+
+<figure class='code'><figcaption><span>Extended Similarity Scores</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Iterate over each of user1&#39;s followings, compute their similarity with</span>
+</span><span class='line'><span class="cm"> * user2 when both are represented as sets of followers, and return the </span>
+</span><span class='line'><span class="cm"> * sum of these similarities.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">def</span> <span class="n">followerBasedSimilarityToFollowing</span><span class="o">(</span><span class="n">user1</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">user2</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">(</span><span class="k">implicit</span> <span class="n">similarity</span><span class="k">:</span> <span class="kt">SimilarityMetric</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">getFollowingsWithout</span><span class="o">(</span><span class="n">user1</span><span class="o">,</span> <span class="n">user2</span><span class="o">)</span>
+</span><span class='line'>                        <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">similarityByFollowers</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">user2</span><span class="o">)(</span><span class="n">similarity</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>                        <span class="o">.</span><span class="n">sum</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Other features included the number of followers and followees of each node, the ratio of these, the personalized PageRank and propagation scores themselves, the number of followers in common, and triangle/closure-type features (e.g., whether the source node is friends with a node X who in turn is a friend of the destination node).</p>
+
+<p>If I had had more time, I would probably have tried weighted and more regularized versions of some of these features as well (e.g., downweighting nodes with large numbers of followers when computing cosine similarity scores based on followees, or shrinking the scores of nodes we have little information about).</p>
+
+<h1>Feature Understanding</h1>
+
+<p>But what are these features actually <em>doing</em>? As much as I enjoy black-box models, I&#8217;m more of a hands-on insights guy, so I&#8217;m especially interested in what my models are doing and <em>why</em>. So let&#8217;s use the same app I built before to take a look.</p>
+
+<p>Here&#8217;s the local network of node 317 (different from the node above), where each node is colored by its personalized PageRank (higher scores are in darker red):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_propagation.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_propagation.png" alt="317 - Personalized PageRank" /></a></p>
+
+<p>If we look at the following vs. follower relationships of the central node (recall that purple is friends, teal is followings, orange is followers):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_following_followers.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_following_followers.png" alt="317 - Personalized PageRank" /></a></p>
+
+<p>&#8230;we can see that, as expected (because edges that represented both following and follower were double-weighted in my PageRank calculation), the darkest red nodes are those that are friends with the central node, while those in a following-only or follower-only relationship have a lower score.</p>
+
+<p>How does the propagation score compare to personalized PageRank? Here, I colored each node according to the log ratio of its propagation score and personalized PageRank:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_log_ratio.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_log_ratio.png" alt="317 - Log Ratio" /></a></p>
+
+<p>Comparing this coloring with the local follow/follower network:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_propagation_local.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_propagation_local.png" alt="317 - Local Network of Node" /></a></p>
+
+<p>&#8230;we can see that followed nodes (in teal) receive a higher propagation weight than friend nodes (in purple), while follower nodes (in orange) receive almost no propagation score at all.</p>
+
+<p>Going back to node 1, let&#8217;s look at a different metric. Here, each node is colored according to its Jaccard similarity with the source, when nodes are represented by the set of their followers:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_sim_by_followers.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_sim_by_followers.png" alt="1 - Similarity by Followers" /></a></p>
+
+<p>We can see that, while the PageRank and propagation metrics tended to favor nodes <em>close</em> to the central node, the Jaccard similarity feature helps us explore nodes that are further out.</p>
+
+<p>However, if we look the high-scoring nodes more closely, we see that they often have only a single connection to the rest of the network:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_single_connection.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_single_connection.png" alt="1 - Single Connection" /></a></p>
+
+<p>In other words, their high Jaccard similarity is due to the fact that they don&#8217;t have many connections to begin with. This suggests that some regularization or shrinking is in order.</p>
+
+<p>So here&#8217;s a regularized version of Jaccard similarity, where we downweight nodes with few connections:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1-regularized.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1-regularized.png" alt="1 - Regularized" /></a></p>
+
+<p>We can see that the outlier nodes are much more muted this time around.</p>
+
+<p>For a starker difference, compare the following two graphs of the Jaccard similarity metric around node 317 (the first graph is an unregularized version, the second is regularized):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_unregularized.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_unregularized.png" alt="317 - Unregularized" /></a></p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_regularized.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_regularized.png" alt="317 - Regularized" /></a></p>
+
+<p>Notice, in particular, how the popular node in the top left and the popular nodes at the bottom have a much higher score when we regularize.</p>
+
+<p>And again, there are other networks and features I haven&#8217;t mentioned here, so play around and discover them on the <a href="http://link-prediction.herokuapp.com/">app</a> itself.</p>
+
+<h1>Models</h1>
+
+<p>For the machine learning algorithms on top of my features, I experimented with two types of models: logistic regression (using both L1 and L2 regularization) and random forests. (If I had more time, I would probably have done some more parameter tuning and maybe tried gradient boosted trees as well.)</p>
+
+<p>So what is a random forest? I wrote an <a href="http://www.quora.com/Random-Forests/How-do-random-forests-work-in-laymans-terms/answer/Edwin-Chen-1">old (layman&#8217;s) post</a> on it <a href="http://www.quora.com/Random-Forests/How-do-random-forests-work-in-laymans-terms/answer/Edwin-Chen-1">here</a>, but since nobody ever clicks on these links, let&#8217;s copy it over:</p>
+
+<blockquote><p>Suppose you&#8217;re very indecisive, so whenever you want to watch a movie, you ask your friend Willow if she thinks you&#8217;ll like it. In order to answer, Willow first needs to figure out what movies you like, so you give her a bunch of movies and tell her whether you liked each one or not (i.e., you give her a labeled training set). Then, when you ask her if she thinks you&#8217;ll like movie X or not, she plays a 20 questions-like game with IMDB, asking questions like &#8220;Is X a romantic movie?&#8221;, &#8220;Does Johnny Depp star in X?&#8221;, and so on. She asks more informative questions first (i.e., she maximizes the information gain of each question), and gives you a yes/no answer at the end.</p><p>    Thus, Willow is a decision tree for your movie preferences.</p><p>    But Willow is only human, so she doesn&#8217;t always generalize your preferences very well (i.e., she overfits). In order to get more accurate recommendations, you&#8217;d like to ask a bunch of your friends, and watch movie X if most of them say they think you&#8217;ll like it. That is, instead of asking only Willow, you want to ask Woody, Apple, and Cartman as well, and they vote on whether you&#8217;ll like a movie (i.e., you build an ensemble classifier, aka a forest in this case).</p><p>    Now you don&#8217;t want each of your friends to do the same thing and give you the same answer, so you first give each of them slightly different data. After all, you&#8217;re not absolutely sure of your preferences yourself &#8211; you told Willow you loved Titanic, but maybe you were just happy that day because it was your birthday, so maybe some of your friends shouldn&#8217;t use the fact that you liked Titanic in making their recommendations. Or maybe you told her you loved Cinderella, but actually you *really really* loved it, so some of your friends should give Cinderella more weight. So instead of giving your friends the same data you gave Willow, you give them slightly perturbed versions. You don&#8217;t change your love/hate decisions, you just say you love/hate some movies a little more or less (you give each of your friends a bootstrapped version of your original training data). For example, whereas you told Willow that you liked Black Swan and Harry Potter and disliked Avatar, you tell Woody that you liked Black Swan so much you watched it twice, you disliked Avatar, and don&#8217;t mention Harry Potter at all.</p><p>    By using this ensemble, you hope that while each of your friends gives somewhat idiosyncratic recommendations (Willow thinks you like vampire movies more than you do, Woody thinks you like Pixar movies, and Cartman thinks you just hate everything), the errors get canceled out in the majority. Thus, your friends now form a bagged (bootstrap aggregated) forest of your movie preferences.</p><p>    There&#8217;s still one problem with your data, however. While you loved both Titanic and Inception, it wasn&#8217;t because you like movies that star Leonardio DiCaprio. Maybe you liked both movies for other reasons. Thus, you don&#8217;t want your friends to all base their recommendations on whether Leo is in a movie or not. So when each friend asks IMDB a question, only a random subset of the possible questions is allowed (i.e., when you&#8217;re building a decision tree, at each node you use some randomness in selecting the attribute to split on, say by randomly selecting an attribute or by selecting an attribute from a random subset). This means your friends aren&#8217;t allowed to ask whether Leonardo DiCaprio is in the movie whenever they want. So whereas previously you injected randomness at the data level, by perturbing your movie preferences slightly, now you&#8217;re injecting randomness at the model level, by making your friends ask different questions at different times.</p><p>    And so your friends now form a random forest.</p></blockquote>
+
+
+<p>Moving on, I essentially trained <a href="http://scikit-learn.org/stable/">scikit-learn</a>&#8217;s classifiers on an equal split of true and false edges (sampled from the output of my pruning step, in order to match the distribution I&#8217;d get when applying my algorithm to the official test set), and compared performance on the validation set I made, with a small amount of parameter tuning:</p>
+
+<figure class='code'><figcaption><span>Random Forest</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c">########################################</span>
+</span><span class='line'><span class="c"># STEP 1: Read in the training examples.</span>
+</span><span class='line'><span class="c">########################################</span>
+</span><span class='line'><span class="n">truths</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># A truth is 1 (for a known true edge) or 0 (for a false edge).</span>
+</span><span class='line'><span class="n">training_examples</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># Each training example is an array of features.</span>
+</span><span class='line'><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">TRAINING_SET_WITH_FEATURES_FILENAME</span><span class="p">):</span>
+</span><span class='line'>  <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&quot;,&quot;</span><span class="p">)]</span>
+</span><span class='line'>  <span class="n">truth</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>  <span class="n">training_example_features</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">truths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">truth</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">training_examples</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">training_example_features</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">#############################</span>
+</span><span class='line'><span class="c"># STEP 2: Train a classifier.</span>
+</span><span class='line'><span class="c">#############################</span>
+</span><span class='line'><span class="n">rf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_estimators</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span> <span class="n">compute_importances</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">oob_score</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</span><span class='line'><span class="n">rf</span> <span class="o">=</span> <span class="n">rf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">training_examples</span><span class="p">,</span> <span class="n">truths</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So let&#8217;s look at the variable importance scores as determined by one of my random forest models, which (unsurprisingly) consistently outperformed logistic regression.</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/rf-importance-scores.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/rf-importance-scores.png" alt="Random Forest Importance Scores" /></a></p>
+
+<p>The random forest classifier here is one of my earlier models (using a slightly smaller subset of my full suite of features), where the targeting step consisted of taking the top 25 nodes with the highest propagation scores.</p>
+
+<p>We can see that the most important variables are:</p>
+
+<ul>
+<li>Personalized PageRank scores. (I put in both normalized and unnormalized versions, where the normalized versions consisted of taking all the candidates for a particular source node, and scaling them so that the maximum personalized PageRank score was 1.)</li>
+<li>Whether the destination node already follows the source.</li>
+<li>How similar the source node is to the people the destination node is following, when each node is represented as a set of followers. (Note that this is more or less measuring how likely the destination is to follow the source, which we already saw is a good predictor of whether the source is likely to follow the destination.) Plus several variations on this theme (e.g., how similar the destination node is to the source node&#8217;s followers, when each node is represented as a set of followees).</li>
+</ul>
+
+
+<h1>Model Comparison</h1>
+
+<p>How do all of these models compare to each other? Is the random forest model universally better than the logistic regression model, or are there some sets of users for which the logistic regression model actually performs better?</p>
+
+<p>To enable these kinds of comparisons, I made <a href="http://link-prediction.herokuapp.com/comparison">a small module</a> that allows you to select two models and then visualize their sliced performance.</p>
+
+<p><a href="http://link-prediction.herokuapp.com/comparison"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/pagerank_vs_is_followed_by_v2.png" alt="PageRank vs. Is Followed By" /></a></p>
+
+<p>Above, I bucketed all test nodes into buckets based on (the logarithm of) their number of followers, and compared the mean average precision of two algorithms: one that recommends nodes to follow using a personalized PageRank alone, and one that recommends nodes that are following the source user but are not followed back in return.</p>
+
+<p>We see that except for the case of 0 followers (where the &#8220;is followed by&#8221; algorithm can do nothing), the personalized PageRank algorithm gets increasingly better in comparison: at first, the two algorithms have roughly equal performance, but as the source node gets more followers, the personalized PageRank algorithm dominates.</p>
+
+<p>And here&#8217;s an embedded version you can interact with directly:</p>
+
+<iframe width="600px" height="500px" src="http://link-prediction.herokuapp.com/comparison?for_embed=true"></iframe>
+
+
+<p>Admittedly, building a slicer like this is probably overkill for a Kaggle competition, where the set of variables is fairly limited. But imagine having something similar for a real world model, where new algorithms are tried out every week and we can slice the performance by almost any dimension we can imagine (by geography, to make sure we don&#8217;t improve Australia at the expense of the UK; by user interests, to see where we could improve the performance of topic inference; by number of user logins, to make sure we don&#8217;t sacrifice the performance on new users for the gain of the core).</p>
+
+<h1>Mathematicians do it with Matrices</h1>
+
+<p>Let&#8217;s switch directions slightly and think about how we could rewrite our computations in a different, matrix-oriented style. (I didn&#8217;t do this in the competition &#8211; this is more a preview of another post I&#8217;m writing.)</p>
+
+<h2>Personalized PageRank in Scalding</h2>
+
+<p>Personalized PageRank, for example, is an obvious fit for a matrix rewrite. Here&#8217;s how it would look in <a href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Scalding</a>&#8217;s new Matrix library:</p>
+
+<p>(For those who don&#8217;t know, Scalding is a Hadoop framework that Twitter released at the beginning of the year; see <a href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">my post on building a big data recommendation engine in Scalding</a> for an introduction.)</p>
+
+<figure class='code'><figcaption><span>Personalized PageRank, Matrix Style</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">// ***********************************************</span>
+</span><span class='line'><span class="c1">// STEP 1. Load the adjacency graph into a matrix.</span>
+</span><span class='line'><span class="c1">// ***********************************************</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">following</span> <span class="k">=</span> <span class="nc">Tsv</span><span class="o">(</span><span class="nc">GraphFilename</span><span class="o">,</span> <span class="o">(</span><span class="-Symbol">&#39;user1</span><span class="o">,</span> <span class="-Symbol">&#39;user2</span><span class="o">,</span> <span class="-Symbol">&#39;weight</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Binary matrix where cell (u1, u2) means that u1 follows u2.</span>
+</span><span class='line'><span class="k">val</span> <span class="n">followingMatrix</span> <span class="k">=</span>
+</span><span class='line'>  <span class="n">following</span><span class="o">.</span><span class="n">toMatrix</span><span class="o">[</span><span class="kt">Int</span>,<span class="kt">Int</span>,<span class="kt">Double</span><span class="o">](</span><span class="-Symbol">&#39;user1</span><span class="o">,</span> <span class="-Symbol">&#39;user2</span><span class="o">,</span> <span class="-Symbol">&#39;weight</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Binary matrix where cell (u1, u2) means that u1 is followed by u2.  </span>
+</span><span class='line'><span class="k">val</span> <span class="n">followerMatrix</span> <span class="k">=</span> <span class="n">followingMatrix</span><span class="o">.</span><span class="n">transpose</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Note: we could also form this adjacency matrix differently, by placing</span>
+</span><span class='line'><span class="c1">// different weights on the following vs. follower edges.</span>
+</span><span class='line'><span class="k">val</span> <span class="n">undirectedAdjacencyMatrix</span> <span class="k">=</span>
+</span><span class='line'>  <span class="o">(</span><span class="n">followingMatrix</span> <span class="o">+</span> <span class="n">followerMatrix</span><span class="o">).</span><span class="n">rowL1Normalize</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Create a diagonal users matrix (to be used in the &quot;teleportation back</span>
+</span><span class='line'><span class="c1">// home&quot; step).</span>
+</span><span class='line'><span class="k">val</span> <span class="n">usersMatrix</span> <span class="k">=</span>
+</span><span class='line'>  <span class="n">following</span><span class="o">.</span><span class="n">unique</span><span class="o">(</span><span class="-Symbol">&#39;user1</span><span class="o">)</span>
+</span><span class='line'>           <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="-Symbol">&#39;user1</span> <span class="o">-&gt;</span> <span class="o">(</span><span class="-Symbol">&#39;user2</span><span class="o">,</span> <span class="-Symbol">&#39;weight</span><span class="o">))</span> <span class="o">{</span> <span class="n">user1</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="o">(</span><span class="n">user1</span><span class="o">,</span> <span class="mi">1</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>           <span class="o">.</span><span class="n">toMatrix</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Int</span>, <span class="kt">Double</span><span class="o">](</span><span class="-Symbol">&#39;user1</span><span class="o">,</span> <span class="-Symbol">&#39;user2</span><span class="o">,</span> <span class="-Symbol">&#39;weight</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// ***************************************************</span>
+</span><span class='line'><span class="c1">// STEP 2. Compute the personalized PageRank scores.</span>
+</span><span class='line'><span class="c1">// See http://nlp.stanford.edu/projects/pagerank.shtml</span>
+</span><span class='line'><span class="c1">// for more information on personalized PageRank.</span>
+</span><span class='line'><span class="c1">// ***************************************************</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Compute personalized PageRank by running for three iterations,</span>
+</span><span class='line'><span class="c1">// and output the top candidates.</span>
+</span><span class='line'><span class="k">val</span> <span class="n">pprScores</span> <span class="k">=</span> <span class="n">personalizedPageRank</span><span class="o">(</span><span class="n">usersMatrix</span><span class="o">,</span> <span class="n">undirectedAdjacencyMatrix</span><span class="o">,</span> <span class="n">usersMatrix</span><span class="o">,</span> <span class="mf">0.5</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+</span><span class='line'><span class="n">pprScores</span><span class="o">.</span><span class="n">topRowElems</span><span class="o">(</span><span class="n">numCandidates</span><span class="o">).</span><span class="n">write</span><span class="o">(</span><span class="nc">Tsv</span><span class="o">(</span><span class="nc">OutputFilename</span><span class="o">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Performs a personalized PageRank iteration. The ith row contains the</span>
+</span><span class='line'><span class="cm"> * personalized PageRank probabilities around node i.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * Note the interpretation: </span>
+</span><span class='line'><span class="cm"> *   - with probability 1 - alpha, we go back to where we started.</span>
+</span><span class='line'><span class="cm"> *   - with probability alpha, we go to a neighbor.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * Parameters:</span>
+</span><span class='line'><span class="cm"> *   </span>
+</span><span class='line'><span class="cm"> *   startMatrix - a (usually diagonal) matrix, where the ith row specifies</span>
+</span><span class='line'><span class="cm"> *                 where the ith node teleports back to.</span>
+</span><span class='line'><span class="cm"> *   adjacencyMatrix</span>
+</span><span class='line'><span class="cm"> *   prevMatrix - a matrix whose ith row contains the personalized PageRank</span>
+</span><span class='line'><span class="cm"> *                probabilities around the ith node.</span>
+</span><span class='line'><span class="cm"> *   alpha - the probability of moving to a neighbor (as opposed to</span>
+</span><span class='line'><span class="cm"> *           teleporting back to the start).</span>
+</span><span class='line'><span class="cm"> *   numIterations - the number of personalized PageRank iterations to run. </span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">def</span> <span class="n">personalizedPageRank</span><span class="o">(</span><span class="n">startMatrix</span><span class="k">:</span> <span class="kt">Matrix</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Int</span>, <span class="kt">Double</span><span class="o">],</span>
+</span><span class='line'>                         <span class="n">adjacencyMatrix</span><span class="k">:</span> <span class="kt">Matrix</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Int</span>, <span class="kt">Double</span><span class="o">],</span>
+</span><span class='line'>                         <span class="n">prevMatrix</span><span class="k">:</span> <span class="kt">Matrix</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Int</span>, <span class="kt">Double</span><span class="o">],</span>
+</span><span class='line'>                         <span class="n">alpha</span><span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
+</span><span class='line'>                         <span class="n">numIterations</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Matrix</span><span class="o">[</span><span class="kt">Int</span>, <span class="kt">Int</span>, <span class="kt">Double</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">numIterations</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">prevMatrix</span>
+</span><span class='line'>    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">val</span> <span class="n">updatedMatrix</span> <span class="k">=</span> <span class="n">startMatrix</span> <span class="o">*</span> <span class="o">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">alpha</span><span class="o">)</span> <span class="o">+</span>
+</span><span class='line'>                          <span class="o">(</span><span class="n">prevMatrix</span> <span class="o">*</span> <span class="n">adjacencyMatrix</span><span class="o">)</span> <span class="o">*</span> <span class="n">alpha</span>
+</span><span class='line'>      <span class="n">personalizedPageRank</span><span class="o">(</span><span class="n">startMatrix</span><span class="o">,</span> <span class="n">adjacencyMatrix</span><span class="o">,</span> <span class="n">updatedMatrix</span><span class="o">,</span> <span class="n">alpha</span><span class="o">,</span> <span class="n">numIterations</span> <span class="o">-</span> <span class="mi">1</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not only is this matrix formulation a more natural way of expressing the algorithm, but since Scalding (by way of Cascading) supports both local and distributed modes, this code runs just as easily on a Hadoop cluster of thousands of machines (assuming our social network is orders of magnitude larger than the one in the contest) as on a sample of data in a laptop. Big data, big matrix style, BOOM.</p>
+
+<h2>Cosine Similarity as L2-Normalized Multiplication</h2>
+
+<p>Here&#8217;s another example. Calculating cosine similarity between all users is a natural fit for a matrix formulation since, after all, the cosine similarity between two vectors is just their L2-normalized dot product:</p>
+
+<figure class='code'><figcaption><span>Cosine Similarity, Matrix Style</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">// A matrix where the cell (i, j) is 1 iff user i is followed by user j.</span>
+</span><span class='line'><span class="k">val</span> <span class="n">followerMatrix</span> <span class="k">=</span> <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// A matrix where cell (i, j) holds the cosine similarity between</span>
+</span><span class='line'><span class="c1">// user i and user j, when both are represented as sets of their followers.</span>
+</span><span class='line'><span class="k">val</span> <span class="n">followerBasedSimilarityMatrix</span> <span class="k">=</span>
+</span><span class='line'>  <span class="n">followerMatrix</span><span class="o">.</span><span class="n">rowL2Normalize</span> <span class="o">*</span> <span class="n">followerMatrix</span><span class="o">.</span><span class="n">rowL2Normalize</span><span class="o">.</span><span class="n">transpose</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>A Similarity Extension</h2>
+
+<p>But let&#8217;s go one step further.</p>
+
+<p>To change examples for ease of exposition: suppose you&#8217;ve bought a bunch of books on Amazon, and Amazon wants to recommend a new book you&#8217;ll like. Since Amazon knows similarities between all pairs of books, one natural way to generate this recommendation is to:</p>
+
+<ol>
+<li>Take every book B.</li>
+<li>Calculate the similarity between B and each book you bought.</li>
+<li>Sum up all these similarities to get your recommendation score for B.</li>
+</ol>
+
+
+<p>In other words, the recommendation score for book B on user U is:</p>
+
+<p>DidUserBuy(U, Book 1) * SimilarityBetween(Book B, Book 1) + DidUserBuy(U, Book 2) * SimilarityBetween(Book B, Book2) + &#8230; + DidUserBuy(U, Book n) * SimilarityBetween(Book B, Book n)</p>
+
+<p>This, too, is a dot product! So it can also be rewritten as a matrix multiplication:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="c1">// A matrix where cell (i, j) holds the similarity between books i and j.</span>
+</span><span class='line'><span class="k">val</span> <span class="n">bookSimilarityMatrix</span> <span class="k">=</span> <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// A matrix where cell (i, j) is 1 if user i has bought book j, </span>
+</span><span class='line'><span class="c1">// and 0 otherwise.</span>
+</span><span class='line'><span class="k">val</span> <span class="n">userPurchaseMatrix</span> <span class="k">=</span> <span class="o">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// A matrix where cell (i, j) holds the recommendation score of</span>
+</span><span class='line'><span class="c1">// book j to user i.</span>
+</span><span class='line'><span class="k">val</span> <span class="n">recommendationMatrix</span> <span class="k">=</span> <span class="n">userPurchaseMatrix</span> <span class="o">*</span> <span class="n">bookSimilarityMatrix</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course, there&#8217;s a natural analogy between this score and the feature I described a while back above, where I compute a similarity score between a destination node and a source node&#8217;s followees (when all nodes are represented as sets of followers):</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Iterate over each of user1&#39;s followings, compute their similarity</span>
+</span><span class='line'><span class="cm"> * with user2 when both are represented as sets of followers, and return</span>
+</span><span class='line'><span class="cm"> * the sum of these similarities.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">def</span> <span class="n">followerBasedSimilarityToFollowings</span><span class="o">(</span><span class="n">user1</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">user2</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+</span><span class='line'>    <span class="o">(</span><span class="k">implicit</span> <span class="n">similarity</span><span class="k">:</span> <span class="kt">SimilarityMetric</span><span class="o">[</span><span class="kt">Int</span><span class="o">])</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">getFollowingsWithout</span><span class="o">(</span><span class="n">user1</span><span class="o">,</span> <span class="n">user2</span><span class="o">)</span>
+</span><span class='line'>                      <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">similarityByFollowers</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">user2</span><span class="o">)(</span><span class="n">similarity</span><span class="o">)</span> <span class="o">}</span>
+</span><span class='line'>                      <span class="o">.</span><span class="n">sum</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * The matrix version of the above function.</span>
+</span><span class='line'><span class="cm"> *</span>
+</span><span class='line'><span class="cm"> * Why are these the same? Note that the above function simply computes:</span>
+</span><span class='line'><span class="cm"> *   DoesUserFollow(User A, User 1) * Similarity(User 1, User B) + </span>
+</span><span class='line'><span class="cm"> *     DoesUserFollow(User A, User 2) * Similarity(User 2, User B) + ... + </span>
+</span><span class='line'><span class="cm"> *     DoesUserFollow(User A, User n) * Similarity(User n, User B)</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="k">val</span> <span class="n">followingMatrix</span> <span class="k">=</span> <span class="o">...</span>
+</span><span class='line'><span class="k">val</span> <span class="n">followerBasedSimilarityMatrix</span> <span class="k">=</span>
+</span><span class='line'>  <span class="n">followerMatrix</span><span class="o">.</span><span class="n">rowL2Normalize</span> <span class="o">*</span> <span class="n">followerMatrix</span><span class="o">.</span><span class="n">rowL2Normalize</span><span class="o">.</span><span class="n">transpose</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">val</span> <span class="n">followerBasedSimilarityToFollowingsMatrix</span> <span class="k">=</span>
+</span><span class='line'>  <span class="n">followingMatrix</span> <span class="o">*</span> <span class="n">followerBasedSimilarityMatrix</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For people comfortable expressing their computations in a vector manner, writing your computations as matrix manipulations often makes experimenting with different algorithms much more fluid. Imagine, for example, that you want to switch from L1 normalization to L2 normalization, or that you want to express your objects as binary sets rather than weighted vectors. Both of these become simple one-line changes when you have vectors and matrices as first-class objects, but are much more tedious (<em>especially in a MapReduce land where this matrix library was designed to be applied!</em>) when you don&#8217;t.</p>
+
+<h1>Finish Line</h1>
+
+<p>By now, I think I&#8217;ve spent more time writing this post than on the contest itself, so let&#8217;s wrap up.</p>
+
+<p>I often get asked what kinds of tools I like to use, so for this competition my kit consisted of:</p>
+
+<ul>
+<li>Scala, for code that needed to be fast (e.g., extracting features) or that I was going to run repeatedly (e.g., scoring my validation set).</li>
+<li>Python, for my machine learning models, because <a href="http://scikit-learn.org/stable/">scikit-learn</a> is awesome.</li>
+<li>Ruby, for quick one-off scripts.</li>
+<li>R, for some data analysis and simple plotting.</li>
+<li>Coffeescript and d3, for the interactive visualizations.</li>
+</ul>
+
+
+<p>Finally, I put up a <a href="https://github.com/echen/link-prediction">Github repository</a> containing some code, and here are a couple other posts I&#8217;ve written that people who like this entry might also enjoy:</p>
+
+<ul>
+<li><a href="http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information transmission in a social network</a>, a case study in how information propagates through a social graph.</li>
+<li><a href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations in Scalding</a>, Twitter&#8217;s Scala-based Hadoop framework built on top of Cascading.</li>
+<li><a href="http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/">A summary of the algorithms behind the Netflix Prize</a>, another crowdsourced recommendation contest for predicting movie ratings.</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Edwin Chen</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-31T10:17:00-07:00" pubdate data-updated="true">Jul 31<span>st</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/categories/d3/'>d3</a>, <a class='category' href='/categories/facebook/'>facebook</a>, <a class='category' href='/categories/r/'>r</a>, <a class='category' href='/categories/recommendations/'>recommendations</a>, <a class='category' href='/categories/scalding/'>scalding</a>, <a class='category' href='/categories/social-graph/'>social-graph</a>, <a class='category' href='/categories/social-network/'>social-network</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.echen.me/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/" data-via="echen" data-counturl="http://blog.echen.me/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2012/07/06/soda-vs-pop-with-twitter/" title="Previous Post: Soda vs. Pop with Twitter">&laquo; Soda vs. Pop with Twitter</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Edwin Chen</h1>
+  
+  <p>Data scientist at Twitter. Previously math and linguistics at MIT, quantitative trading at Clarium Capital.</p>
+  
+  <p>I like math, statistics, machine learning, and linguistics.</p>
+
+  <p>Email: hello[at]echen.me<br/>
+  Twitter: <a href="https://twitter.com/#!/echen">@echen</a><br/>
+  Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/">Edge Prediction in a Social Graph: My Solution to Facebook's User Recommendation Contest on Kaggle</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/07/06/soda-vs-pop-with-twitter/">Soda vs. Pop with Twitter</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/">Making the Most of Mechanical Turk: Tips and Best Practices</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/">Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/03/05/instant-interactive-visualization-with-d3-and-ggplot2/">Instant interactive visualization with d3 + ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("echen", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/echen" class="twitter-follow-button" data-show-count="true">Follow @echen</a>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Edwin Chen -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'edwinchen';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.echen.me/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/';
+        var disqus_url = 'http://blog.echen.me/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>

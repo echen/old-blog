@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="Kickstarter is an online crowdfunding platform for launching creative projects. When starting a new project, project owners specify a deadline and &hellip;">
+  <meta name="description" content="How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,64 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/04/27/choosing-a-machine-learning-classifier/">Choosing a Machine Learning Classifier</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-04-27T18:43:15-07:00" pubdate data-updated="true">Apr 27<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best bet is to test out a couple different ones (making sure to try different parameters within each algorithm as well), and select the best one by cross-validation. But if you&#8217;re simply looking for a &#8220;good enough&#8221; algorithm for your problem, or a place to start, here are some general guidelines I&#8217;ve found to work well over the years.</p>
+
+<h1>How large is your training set?</h1>
+
+<p>If your training set is small, high bias/low variance classifiers (e.g., Naive Bayes) have an advantage over low bias/high variance classifiers (e.g., kNN), since the latter will overfit. But low bias/high variance classifiers start to win out as your training set grows (they have lower asymptotic error), since high bias classifiers aren&#8217;t powerful enough to provide accurate models.</p>
+
+<p>You can also think of this as a generative model vs. discriminative model distinction.</p>
+
+<h1>Advantages of some particular algorithms</h1>
+
+<p><strong>Advantages of Naive Bayes:</strong> Super simple, you&#8217;re just doing a bunch of counts. If the NB conditional independence assumption actually holds, a Naive Bayes classifier will converge quicker than discriminative models like logistic regression, so you need less training data. And even if the NB assumption doesn&#8217;t hold, a NB classifier still often does a great job in practice. A good bet if  want something fast and easy that performs pretty well. Its main disadvantage is that it can&#8217;t learn interactions between features (e.g., it can&#8217;t learn that although you love movies with Brad Pitt and Tom Cruise, you hate movies where they&#8217;re together).</p>
+
+<p><strong>Advantages of Logistic Regression:</strong> Lots of ways to regularize your model, and you don&#8217;t have to worry as much about your features being correlated, like you do in Naive Bayes. You also have a nice probabilistic interpretation, unlike decision trees or SVMs, and you can easily update your model to take in new data (using an online gradient descent method), again unlike decision trees or SVMs. Use it if you want a probabilistic framework (e.g., to easily adjust classification thresholds, to say when you&#8217;re unsure, or to get confidence intervals) or if you expect to receive more training data in the future that you want to be able to quickly incorporate into your model.</p>
+
+<p><strong>Advantages of Decision Trees:</strong> Easy to interpret and explain (for some people &#8211; I&#8217;m not sure I fall into this camp). They easily handle feature interactions and they&#8217;re non-parametric, so you don&#8217;t have to worry about outliers or whether the data is linearly separable (e.g., decision trees easily take care of cases where you have class A at the low end of some feature x, class B in the mid-range of feature x, and A again at the high end). One disadvantage is that they don&#8217;t support online learning, so you have to rebuild your tree when new examples come on. Another disadvantage is that they easily overfit, but that&#8217;s where ensemble methods like random forests (or boosted trees) come in. Plus, random forests are often the winner for lots of problems in classification (usually slightly ahead of SVMs, I believe), they&#8217;re fast and scalable, and you don&#8217;t have to worry about tuning a bunch of parameters like you do with SVMs, so they seem to be quite popular these days.</p>
+
+<p><strong>Advantages of SVMs:</strong> High accuracy, nice theoretical guarantees regarding overfitting, and with an appropriate kernel they can work well even if you&#8217;re data isn&#8217;t linearly separable in the base feature space. Especially popular in text classification problems where very high-dimensional spaces are the norm. Memory-intensive, hard to interpret, and kind of annoying to run and tune, though, so I think random forests are starting to steal the crown.</p>
+
+<h1>But&#8230;</h1>
+
+<p>Recall, though, that better data often beats better algorithms, and designing good features goes a long way. And if you have a huge dataset, then whichever classification algorithm you use might not matter so much in terms of classification performance (so choose your algorithm based on speed or ease of use instead).</p>
+
+<p>And to reiterate what I said above, if you really care about accuracy, you should definitely try a bunch of different classifiers and select the best one by cross-validation. Or, to take a lesson from the Netflix Prize (and Middle Earth), just use an ensemble method to choose them all.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1115,54 +1173,6 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/03/14/piiikaaachuuuuuu-vs-khaaaaan/">Piiikaaachuuuuuu vs. KHAAAAAN!</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-14T04:26:14-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>This is a fun image:</p>
-
-<p><a href="(http://www.flickr.com/photos/squidnews/3200285750/"><img src="http://farm4.static.flickr.com/3134/3200285750_d2bd0a62fd.jpg" alt="KH(Ax)N" /></a></p>
-
-<p>But I&#8217;ve never actually watched any of the Star Trek movies, so I decided to recreate the graph with Pikachu instead:</p>
-
-<p><a href="https://img.skitch.com/20110224-1x8ptj7bbajk6an2xj462w7jb.jpg"><img src="https://img.skitch.com/20110224-1x8ptj7bbajk6an2xj462w7jb.jpg" alt="pikachu-graph1" /></a></p>
-
-<p>Here&#8217;s a smoothed version to better compare the counts between different letters:</p>
-
-<p><a href="https://img.skitch.com/20110224-1w8xnbfi3s3tmgexupmw1s2kxu.jpg"><img src="https://img.skitch.com/20110224-1w8xnbfi3s3tmgexupmw1s2kxu.jpg" alt="pikachu-graph2" /></a></p>
-
-<p>Unsurprisingly, people like to elongate the &#8220;u&#8221; in &#8220;pikachu&#8221; a lot better than they like to elongate the &#8220;a&#8221; and &#8220;i&#8221;, though I&#8217;m surprised just how many &#8220;pikachuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu&#8221;s are out there.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -1188,6 +1198,10 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/">Edge Prediction in a Social Graph: My Solution to Facebook&#8217;s User Recommendation Contest on Kaggle</a>
+      </li>
     
       <li class="post">
         <a href="/2012/07/06/soda-vs-pop-with-twitter/">Soda vs. Pop with Twitter</a>
@@ -1223,10 +1237,6 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
     
       <li class="post">
         <a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information Transmission in a Social Network: Dissecting the Spread of a Quora Post</a>
       </li>
     
   </ul>

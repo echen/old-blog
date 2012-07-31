@@ -1,0 +1,735 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: recommendations | Edwin Chen's Blog]]></title>
+  <link href="http://blog.echen.me/categories/recommendations/atom.xml" rel="self"/>
+  <link href="http://blog.echen.me/"/>
+  <updated>2012-07-31T10:41:10-07:00</updated>
+  <id>http://blog.echen.me/</id>
+  <author>
+    <name><![CDATA[Edwin Chen]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Edge Prediction in a Social Graph: My Solution to Facebook's User Recommendation Contest on Kaggle]]></title>
+    <link href="http://blog.echen.me/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/"/>
+    <updated>2012-07-31T10:17:00-07:00</updated>
+    <id>http://blog.echen.me/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle</id>
+    <content type="html"><![CDATA[<p>A couple weeks ago, Facebook launched a <a href="http://www.kaggle.com/c/FacebookRecruiting/">link prediction contest</a> on Kaggle, with the goal of recommending missing edges in a social graph. <a href="http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">I love investigating social networks</a>, so I dug around a little, and since I did well enough to score one of the coveted prizes, I'll share my approach here.</p>
+
+<p>(For some background, the contest provided a training dataset of edges, a test set of nodes, and contestants were asked to predict missing outbound edges on the test set, using mean average precision as the evaluation metric.)</p>
+
+<h1>Exploration</h1>
+
+<p>What does the network look like? I wanted to play around with the data a bit first just to get a rough feel, so I made an <a href="http://link-prediction.herokuapp.com/network">app</a> to interact with the network around each node.</p>
+
+<p>Here's a sample:</p>
+
+<p><a href="http://link-prediction.herokuapp.com/network"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_untrimmed.png" alt="1 Untrimmed Network" /></a></p>
+
+<p>(Go ahead, click on the picture to <a href="http://link-prediction.herokuapp.com/network">play with the app yourself</a>. It's pretty fun.)</p>
+
+<p>The node in black is a selected node from the training set, and we perform a breadth-first walk of the graph out to a maximum distance of 3 to uncover the local network. Nodes are sized according to their distance from the center, and colored according to a chosen metric (a personalized PageRank in this case; more on this later).</p>
+
+<p>We can see that the central node is friends with three other users (in red), two of whom have fairly large, disjoint networks.</p>
+
+<p>There are quite a few dangling nodes (nodes at distance 3 with only one connection to the rest of the local network), though, so let's remove these to reveal the core structure:</p>
+
+<p><a href="http://link-prediction.herokuapp.com/network"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_network.png" alt="1 Untrimmed Network" /></a></p>
+
+<p>And here's an embedded version you can manipulate inline:</p>
+
+<iframe width="600px" height="500px" src="http://link-prediction.herokuapp.com/network?for_embed=true"></iframe>
+
+
+<p>Since the default view doesn't encode the distinction between following and follower relationships, we can mouse over each node to see who it follows and who it's followed by. Here, for example, is the following/follower network of one of the central node's friends:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_friend1.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_friend1.png" alt="1 - Friend1" /></a></p>
+
+<p>The moused over node is highlighted in black, its friends (users who both follow the node and are followed back in turn) are colored in purple, its followees are teal, and its followers in orange. We can also see that the node shares a friend with the central user (<a href="http://en.wikipedia.org/wiki/Triadic_closure">triadic closure</a>, <em>holla!</em>).</p>
+
+<p>Here's another network, this time of the friend at the bottom:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_friend2.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_friend2.png" alt="1 - Friend2" /></a></p>
+
+<p>Interestingly, while the first friend had several only-followers (in orange), the second friend has none. (which suggests, perhaps, a node-level feature that measures how follow-hungry a user is...)</p>
+
+<p>And here's one more node, a little further out (maybe a celebrity, given it has nothing but followers?):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_celebrity.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_celebrity.png" alt="1 - Celebrity" /></a></p>
+
+<h2>The Quiet One</h2>
+
+<p>Let's take a look at another graph, one whose local network is a little smaller:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/4_network.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/4_network.png" alt="4 Network" /></a></p>
+
+<h2>A Social Butterfly</h2>
+
+<p>And one more, one whose local network is a little larger:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_network.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_network.png" alt="2 Network" /></a></p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_friend.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_friend.png" alt="2 Network - Friend" /></a></p>
+
+<p>Again, I encourage everyone to play around with the app <a href="http://link-prediction.herokuapp.com/network">here</a>, and I'll come back to the question of coloring each node later.</p>
+
+<h1>Distributions</h1>
+
+<p>Next, let's take a more quantitative look at the graph.</p>
+
+<p>Here's the distribution of the number of followers of each node in the training set (cut off at 50 followers for a better fit -- the maximum number of followers is 552), as well as the number of users each node is following (again, cut off at 50 -- the maximum here is 1566)</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/training_full_followers.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/training_full_followers.png" alt="Training Followers" /></a></p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/training_full_followees.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/training_full_followees.png" alt="Training Followees" /></a></p>
+
+<p>Nothing terribly surprising, but that alone is good to verify. (For people tempted to mutter about power laws, I'll hold you off with the bitter coldness of <a href="http://cscs.umich.edu/~crshalizi/weblog/491.html">baby Gauss's tears</a>.)</p>
+
+<p>Similarly, here are the same two graphs, but limited to the nodes in the test set alone:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/test_followers.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/test_followers.png" alt="Test Followers" /></a></p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/test_followees.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/test_followees.png" alt="Test Followees" /></a></p>
+
+<p>Notice that there are relatively more test set users with 0 followees than in the full training set, and relatively fewer test set users with 0 followers. This information could be used to better simulate a validation set for model selection, though I didn't end up doing this myself.</p>
+
+<h1>Preliminary Probes</h1>
+
+<p>Finally, let's move on to the models themselves.</p>
+
+<p>In order to quickly get up and running on a couple prediction algorithms, I started with some unsupervised approaches. For example, after building a new validation set* to test performance offline, I tried:</p>
+
+<ul>
+<li>Recommending users who follow you (but you don't follow in return)</li>
+<li>Recommending users similar to you (when representing users as sets of their followers, and using cosine similarity and Jaccard similarity as the similarity metric)</li>
+<li>Recommending users based on a personalized PageRank score</li>
+<li>Recommending users that the people you follow also follow</li>
+</ul>
+
+
+<p>And so on, combining the votes of these algorithms in a fairly ad-hoc way (e.g., by taking the majority vote or by ordering by the number of followers).</p>
+
+<p>This worked quite well actually, but I'd been planning to move on to a more machine learned model-based approach from the beginning, so I did that next.</p>
+
+<p>*My validation set was formed by deleting random edges from the full training set. A slightly better approach, as mentioned above, might have been to more accurately simulate the distribution of the official test set, but I didn't end up trying this out myself.</p>
+
+<h1>Candidate Selection</h1>
+
+<p>In order to run a machine learning algorithm to recommend edges (which would take two nodes, a source and a candidate destination, and generate a score measuring the likelihood that the source would follow the destination), it's necessary to prune the set of candidates to run the algorithm on.</p>
+
+<p>I used two approaches for this filtering step, both based on random walks on the graph.</p>
+
+<h2>Personalized PageRank</h2>
+
+<p>The first approach was to calculate a personalized PageRank around each source node.</p>
+
+<p>Briefly, a personalized PageRank is like standard PageRank, except that when randomly teleporting to a new node, the surfer always teleports back to the given source node being personalized (rather than to a node chosen uniformly at random, as in the classic PageRank algorithm).</p>
+
+<p>That is, the random surfer in the personalized PageRank model works as follows:</p>
+
+<ul>
+<li>He starts at the source node $X$ that we want to calculate a personalized PageRank around.</li>
+<li>At step $i$: with probability $p$, the surfer moves to a neighboring node chosen uniformly at random; with probability $1-p$, the surfer instead teleports back to the original source node $X$.</li>
+<li>The limiting probability that the surfer is at node $N$ is then the personalized PageRank score of node $N$ around $X$.</li>
+</ul>
+
+
+<p>Here's some Scala code that computes approximate personalized PageRank scores and takes the highest-scoring nodes as the candidates to feed into the machine learning model:</p>
+
+<p>``` scala Personalized PageRank
+/<em>*
+ * Calculate a personalized PageRank around the given user, and return
+ * a list of the nodes with the highest personalized PageRank scores.
+ *
+ * @return A list of (node, probability of landing at this node after
+ *         running a personalized PageRank for K iterations) pairs.
+ </em>/
+def pageRank(user: Int): List[(Int, Double)] = {
+  // This map holds the probability of landing at each node, up to the
+  // current iteration.
+  val probs = Map<a href="">Int, Double</a>  <br/>
+  probs(user) = 1 // We start at this user.</p>
+
+<p>  val pageRankProbs = pageRankHelper(start, probs, NumPagerankIterations)
+  pageRankProbs.toList</p>
+
+<pre><code>           .sortBy { -_._2 }
+           .filter { case (node, score) =&gt;
+              !getFollowings(user).contains(node) &amp;&amp; node != user
+            }
+            .take(MaxNodesToKeep)
+</code></pre>
+
+<p>}</p>
+
+<p>/<em>*
+ * Simulates running a personalized PageRank for one iteration.
+ *
+ * Parameters:
+ * start - the start node to calculate the personalized PageRank around
+ * probs - a map from nodes to the probability of being at that node at
+ *         the start of the current iteration
+ * numIterations - the number of iterations remaining
+ * alpha - with probability alpha, we follow a neighbor; with probability
+ *         1 - alpha, we teleport back to the start node
+ *
+ * @return A map of node -> probability of landing at that node after the
+ *         specified number of iterations.
+ </em>/
+def pageRankHelper(start: Int, probs: Map[Int, Double], numIterations: Int,</p>
+
+<pre><code>               alpha: Double = 0.5): Map[Int, Double] = {
+</code></pre>
+
+<p>  if (numIterations &lt;= 0) {</p>
+
+<pre><code>probs
+</code></pre>
+
+<p>  } else {</p>
+
+<pre><code>// Holds the updated set of probabilities, after this iteration.
+val probsPropagated = Map[Int, Double]()
+
+// With probability 1 - alpha, we teleport back to the start node.
+probsPropagated(start) = 1 - alpha
+
+// Propagate the previous probabilities...
+probs.foreach { case (node, prob) =&gt;      
+  val forwards = getFollowings(node)
+  val backwards = getFollowers(node)
+
+  // With probability alpha, we move to a follower...
+  // And each node distributes its current probability equally to 
+  // its neighbors.
+  val probToPropagate = alpha * prob / (forwards.size + backwards.size)        
+  (forwards.toList ++ backwards.toList).foreach { neighbor =&gt;
+    if (!probsPropagated.contains(neighbor)) {
+      probsPropagated(neighbor) = 0
+    }
+    probsPropagated(neighbor) += probToPropagate
+  }
+}
+
+pageRankHelper(start, probsPropagated, numIterations - 1, alpha)
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<h2>Propagation Score</h2>
+
+<p>Another approach I used, based on <a href="http://www.kaggle.com/c/FacebookRecruiting/forums/t/2082/0-711-is-the-new-0">a proposal by another contestant on the Kaggle forums</a>, works as follows:</p>
+
+<ul>
+<li>Start at a specified user node and give it some score.</li>
+<li>In the first iteration, this user propagates its score equally to its neighbors.</li>
+<li>In the second iteration, each user duplicates and keeps half of its score S. It then propagates S equally to its neighbors.</li>
+<li>In subsequent iterations, the process is repeated, except that neighbors reached via a backwards link don't duplicate and keep half of their score. (The idea is that we want the score to reach followees and not followers.)</li>
+</ul>
+
+
+<p>Here's some Scala code to calculate these propagation scores:</p>
+
+<p>``` scala Propagation Score
+/<em>*
+ * Calculate propagation scores around the current user.
+ *
+ * In the first propagation round, we
+ *
+ * - Give the starting node N an initial score S.
+ * - Propagate the score equally to each of N's neighbors (followers
+ *   and followings).
+ * - Each first-level neighbor then duplicates and keeps half of its score
+ *   and then propagates the original again to its neighbors.
+ *
+ * In further rounds, neighbors then repeat the process, except that neighbors
+ * traveled to via a backwards/follower link don't keep half of their score.
+ *
+ * @return a sorted list of (node, propagation score) pairs.
+ </em>/
+def propagate(user: Int): List[(Int, Double)] = {
+  val scores = Map<a href="">Int, Double</a></p>
+
+<p>  // We propagate the score equally to all neighbors.
+  val scoreToPropagate = 1.0 / (getFollowings(user).size + getFollowers(user).size)</p>
+
+<p>  (getFollowings(user).toList ++ getFollowers(user).toList).foreach { x =></p>
+
+<pre><code>// Propagate the score...
+continuePropagation(scores, x, scoreToPropagate, 1)
+// ...and make sure it keeps half of it for itself.
+scores(x) = scores.getOrElse(x, 0: Double) + scoreToPropagate / 2      
+</code></pre>
+
+<p>  }</p>
+
+<p>  scores.toList.sortBy { -<em>.</em>2 }</p>
+
+<pre><code>           .filter { nodeAndScore =&gt;
+             val node = nodeAndScore._1
+             !getFollowings(user).contains(node) &amp;&amp; node != user
+            }
+            .take(MaxNodesToKeep)
+</code></pre>
+
+<p>}</p>
+
+<p>/<em>*
+ * In further rounds, neighbors repeat the process above, except that neighbors
+ * traveled to via a backwards/follower link don't keep half of their score.
+ </em>/
+def continuePropagation(scores: Map[Int, Double], user: Int, score: Double,</p>
+
+<pre><code>                    currIteration: Int): Unit = {
+</code></pre>
+
+<p>  if (currIteration &lt; NumIterations &amp;&amp; score > 0) {</p>
+
+<pre><code>val scoreToPropagate = score / (getFollowings(user).size + getFollowers(user).size)
+
+getFollowings(user).foreach { x =&gt;
+  // Propagate the score...        
+  continuePropagation(scores, x, scoreToPropagate, currIteration + 1)        
+  // ...and make sure it keeps half of it for itself.        
+  scores(x) = scores.getOrElse(x, 0: Double) + scoreToPropagate / 2
+}
+
+getFollowers(user).foreach { x =&gt;
+  // Propagate the score...
+  continuePropagation(scores, x, scoreToPropagate, currIteration + 1)
+  // ...but backward links (except for the starting node's immediate
+  // neighbors) don't keep any score for themselves.
+}
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>I played around with tweaking some parameters in both approaches (e.g., weighting followers and followees differently), but the natural defaults (as used in the code above) ended up performing the best.</p>
+
+<h1>Features</h1>
+
+<p>After pruning the set of candidate destination nodes to a more feasible level, I fed pairs of (source, destination) nodes into a machine learning model. From each pair, I extracted around 30 features in total.</p>
+
+<p>As mentioned above, one feature that worked quite well on its own was whether the destination node already follows the source.</p>
+
+<p>I also used a wide set of similarity-based features, for example, the Jaccard similarity between the source and destination when both are represented as sets of their followers, when both are represented as sets of their followees, or when one is represented as a set of followers while the other is represented as a set of followees.</p>
+
+<p>``` scala Similarity Metrics
+abstract class SimilarityMetric[T] {
+  def apply(set1: Set[T], set2: Set[T]): Double;
+}</p>
+
+<p>object JaccardSimilarity extends SimilarityMetric[Int] {<br/>
+  /<em>*
+   * Returns the Jaccard similarity between two sets, 0 if both are empty.
+   </em>/
+  def apply(set1: Set[Int], set2: Set[Int]): Double = {</p>
+
+<pre><code>val union = (set1.union(set2)).size
+
+if (union == 0) {
+  0
+} else {
+  (set1 &amp; set2).size.toFloat / union
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>}</p>
+
+<p>object CosineSimilarity extends SimilarityMetric[Int] {      <br/>
+  /<em>*
+   * Returns the cosine similarity between two sets, 0 if both are empty.
+   </em>/
+  def apply(set1: Set[Int], set2: Set[Int]): Double = {</p>
+
+<pre><code>if (set1.size == 0 &amp;&amp; set2.size == 0) {
+  0
+} else {
+  (set1 &amp; set2).size.toFloat / (math.sqrt(set1.size * set2.size))
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>}</p>
+
+<p>// <strong><strong><strong><strong><strong><strong>
+// * FEATURES *
+// </strong></strong></strong></strong></strong></strong></p>
+
+<p>/<em>*
+ * Returns the similarity between user1 and user2 when both are represented as
+ * sets of followers.
+ </em>/
+def similarityByFollowers(user1: Int, user2: Int)</p>
+
+<pre><code>                     (implicit similarity: SimilarityMetric[Int]): Double = {
+</code></pre>
+
+<p>  similarity.apply(getFollowersWithout(user1, user2),</p>
+
+<pre><code>               getFollowersWithout(user2, user1))
+</code></pre>
+
+<p>}</p>
+
+<p>// etc.
+```</p>
+
+<p>Along the same lines, I also computed a similarity score between the destination node and the source node's followees, and several variations thereof.</p>
+
+<p>``` scala Extended Similarity Scores
+/<em>*
+ * Iterate over each of user1's followings, compute their similarity with
+ * user2 when both are represented as sets of followers, and return the
+ * sum of these similarities.
+ </em>/
+def followerBasedSimilarityToFollowing(user1: Int, user2: Int)
+  (implicit similarity: SimilarityMetric[Int]): Double = {</p>
+
+<pre><code>getFollowingsWithout(user1, user2)
+                    .map { similarityByFollowers(_, user2)(similarity) }
+                    .sum
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Other features included the number of followers and followees of each node, the ratio of these, the personalized PageRank and propagation scores themselves, the number of followers in common, and triangle/closure-type features (e.g., whether the source node is friends with a node X who in turn is a friend of the destination node).</p>
+
+<p>If I had had more time, I would probably have tried weighted and more regularized versions of some of these features as well (e.g., downweighting nodes with large numbers of followers when computing cosine similarity scores based on followees, or shrinking the scores of nodes we have little information about).</p>
+
+<h1>Feature Understanding</h1>
+
+<p>But what are these features actually <em>doing</em>? As much as I enjoy black-box models, I'm more of a hands-on insights guy, so I'm especially interested in what my models are doing and <em>why</em>. So let's use the same app I built before to take a look.</p>
+
+<p>Here's the local network of node 317 (different from the node above), where each node is colored by its personalized PageRank (higher scores are in darker red):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_propagation.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_propagation.png" alt="317 - Personalized PageRank" /></a></p>
+
+<p>If we look at the following vs. follower relationships of the central node (recall that purple is friends, teal is followings, orange is followers):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_following_followers.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_following_followers.png" alt="317 - Personalized PageRank" /></a></p>
+
+<p>...we can see that, as expected (because edges that represented both following and follower were double-weighted in my PageRank calculation), the darkest red nodes are those that are friends with the central node, while those in a following-only or follower-only relationship have a lower score.</p>
+
+<p>How does the propagation score compare to personalized PageRank? Here, I colored each node according to the log ratio of its propagation score and personalized PageRank:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_log_ratio.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_log_ratio.png" alt="317 - Log Ratio" /></a></p>
+
+<p>Comparing this coloring with the local follow/follower network:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_propagation_local.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_propagation_local.png" alt="317 - Local Network of Node" /></a></p>
+
+<p>...we can see that followed nodes (in teal) receive a higher propagation weight than friend nodes (in purple), while follower nodes (in orange) receive almost no propagation score at all.</p>
+
+<p>Going back to node 1, let's look at a different metric. Here, each node is colored according to its Jaccard similarity with the source, when nodes are represented by the set of their followers:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_sim_by_followers.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_sim_by_followers.png" alt="1 - Similarity by Followers" /></a></p>
+
+<p>We can see that, while the PageRank and propagation metrics tended to favor nodes <em>close</em> to the central node, the Jaccard similarity feature helps us explore nodes that are further out.</p>
+
+<p>However, if we look the high-scoring nodes more closely, we see that they often have only a single connection to the rest of the network:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_single_connection.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1_single_connection.png" alt="1 - Single Connection" /></a></p>
+
+<p>In other words, their high Jaccard similarity is due to the fact that they don't have many connections to begin with. This suggests that some regularization or shrinking is in order.</p>
+
+<p>So here's a regularized version of Jaccard similarity, where we downweight nodes with few connections:</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1-regularized.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/1-regularized.png" alt="1 - Regularized" /></a></p>
+
+<p>We can see that the outlier nodes are much more muted this time around.</p>
+
+<p>For a starker difference, compare the following two graphs of the Jaccard similarity metric around node 317 (the first graph is an unregularized version, the second is regularized):</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_unregularized.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_unregularized.png" alt="317 - Unregularized" /></a></p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_regularized.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/317_regularized.png" alt="317 - Regularized" /></a></p>
+
+<p>Notice, in particular, how the popular node in the top left and the popular nodes at the bottom have a much higher score when we regularize.</p>
+
+<p>And again, there are other networks and features I haven't mentioned here, so play around and discover them on the <a href="http://link-prediction.herokuapp.com/">app</a> itself.</p>
+
+<h1>Models</h1>
+
+<p>For the machine learning algorithms on top of my features, I experimented with two types of models: logistic regression (using both L1 and L2 regularization) and random forests. (If I had more time, I would probably have done some more parameter tuning and maybe tried gradient boosted trees as well.)</p>
+
+<p>So what is a random forest? I wrote an <a href="http://www.quora.com/Random-Forests/How-do-random-forests-work-in-laymans-terms/answer/Edwin-Chen-1">old (layman's) post</a> on it <a href="http://www.quora.com/Random-Forests/How-do-random-forests-work-in-laymans-terms/answer/Edwin-Chen-1">here</a>, but since nobody ever clicks on these links, let's copy it over:</p>
+
+<p><blockquote><p></p></p><p><pre><code>Suppose you're very indecisive, so whenever you want to watch a movie, you ask your friend Willow if she thinks you'll like it. In order to answer, Willow first needs to figure out what movies you like, so you give her a bunch of movies and tell her whether you liked each one or not (i.e., you give her a labeled training set). Then, when you ask her if she thinks you'll like movie X or not, she plays a 20 questions-like game with IMDB, asking questions like "Is X a romantic movie?", "Does Johnny Depp star in X?", and so on. She asks more informative questions first (i.e., she maximizes the information gain of each question), and gives you a yes/no answer at the end.</p><p>Thus, Willow is a decision tree for your movie preferences.</p><p>But Willow is only human, so she doesn't always generalize your preferences very well (i.e., she overfits). In order to get more accurate recommendations, you'd like to ask a bunch of your friends, and watch movie X if most of them say they think you'll like it. That is, instead of asking only Willow, you want to ask Woody, Apple, and Cartman as well, and they vote on whether you'll like a movie (i.e., you build an ensemble classifier, aka a forest in this case).</p><p>Now you don't want each of your friends to do the same thing and give you the same answer, so you first give each of them slightly different data. After all, you're not absolutely sure of your preferences yourself -- you told Willow you loved Titanic, but maybe you were just happy that day because it was your birthday, so maybe some of your friends shouldn't use the fact that you liked Titanic in making their recommendations. Or maybe you told her you loved Cinderella, but actually you *really really* loved it, so some of your friends should give Cinderella more weight. So instead of giving your friends the same data you gave Willow, you give them slightly perturbed versions. You don't change your love/hate decisions, you just say you love/hate some movies a little more or less (you give each of your friends a bootstrapped version of your original training data). For example, whereas you told Willow that you liked Black Swan and Harry Potter and disliked Avatar, you tell Woody that you liked Black Swan so much you watched it twice, you disliked Avatar, and don't mention Harry Potter at all.</p><p>By using this ensemble, you hope that while each of your friends gives somewhat idiosyncratic recommendations (Willow thinks you like vampire movies more than you do, Woody thinks you like Pixar movies, and Cartman thinks you just hate everything), the errors get canceled out in the majority. Thus, your friends now form a bagged (bootstrap aggregated) forest of your movie preferences.</p><p>There's still one problem with your data, however. While you loved both Titanic and Inception, it wasn't because you like movies that star Leonardio DiCaprio. Maybe you liked both movies for other reasons. Thus, you don't want your friends to all base their recommendations on whether Leo is in a movie or not. So when each friend asks IMDB a question, only a random subset of the possible questions is allowed (i.e., when you're building a decision tree, at each node you use some randomness in selecting the attribute to split on, say by randomly selecting an attribute or by selecting an attribute from a random subset). This means your friends aren't allowed to ask whether Leonardo DiCaprio is in the movie whenever they want. So whereas previously you injected randomness at the data level, by perturbing your movie preferences slightly, now you're injecting randomness at the model level, by making your friends ask different questions at different times.</p><p>And so your friends now form a random forest.<br/></code></pre></p><p><p></p></blockquote></p>
+
+<p>Moving on, I essentially trained <a href="http://scikit-learn.org/stable/">scikit-learn</a>'s classifiers on an equal split of true and false edges (sampled from the output of my pruning step, in order to match the distribution I'd get when applying my algorithm to the official test set), and compared performance on the validation set I made, with a small amount of parameter tuning:</p>
+
+<p>``` python Random Forest</p>
+
+<h6>#</h6>
+
+<h1>STEP 1: Read in the training examples.</h1>
+
+<h6>#</h6>
+
+<p>truths = [] # A truth is 1 (for a known true edge) or 0 (for a false edge).
+training_examples = [] # Each training example is an array of features.
+for line in open(TRAINING_SET_WITH_FEATURES_FILENAME):
+  values = [float(x) for x in line.split(",")]
+  truth = values[0]
+  training_example_features = values[1:]</p>
+
+<p>  truths.append(truth)
+  training_examples.append(training_example_features)</p>
+
+<h6>#</h6>
+
+<h1>STEP 2: Train a classifier.</h1>
+
+<h6>#</h6>
+
+<p>rf = RandomForestClassifier(n_estimators = 500, compute_importances = True, oob_score = True)
+rf = rf.fit(training_examples, truths)
+```</p>
+
+<p>So let's look at the variable importance scores as determined by one of my random forest models, which (unsurprisingly) consistently outperformed logistic regression.</p>
+
+<p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/rf-importance-scores.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/rf-importance-scores.png" alt="Random Forest Importance Scores" /></a></p>
+
+<p>The random forest classifier here is one of my earlier models (using a slightly smaller subset of my full suite of features), where the targeting step consisted of taking the top 25 nodes with the highest propagation scores.</p>
+
+<p>We can see that the most important variables are:</p>
+
+<ul>
+<li>Personalized PageRank scores. (I put in both normalized and unnormalized versions, where the normalized versions consisted of taking all the candidates for a particular source node, and scaling them so that the maximum personalized PageRank score was 1.)</li>
+<li>Whether the destination node already follows the source.</li>
+<li>How similar the source node is to the people the destination node is following, when each node is represented as a set of followers. (Note that this is more or less measuring how likely the destination is to follow the source, which we already saw is a good predictor of whether the source is likely to follow the destination.) Plus several variations on this theme (e.g., how similar the destination node is to the source node's followers, when each node is represented as a set of followees).</li>
+</ul>
+
+
+<h1>Model Comparison</h1>
+
+<p>How do all of these models compare to each other? Is the random forest model universally better than the logistic regression model, or are there some sets of users for which the logistic regression model actually performs better?</p>
+
+<p>To enable these kinds of comparisons, I made <a href="http://link-prediction.herokuapp.com/comparison">a small module</a> that allows you to select two models and then visualize their sliced performance.</p>
+
+<p><a href="http://link-prediction.herokuapp.com/comparison"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/pagerank_vs_is_followed_by_v2.png" alt="PageRank vs. Is Followed By" /></a></p>
+
+<p>Above, I bucketed all test nodes into buckets based on (the logarithm of) their number of followers, and compared the mean average precision of two algorithms: one that recommends nodes to follow using a personalized PageRank alone, and one that recommends nodes that are following the source user but are not followed back in return.</p>
+
+<p>We see that except for the case of 0 followers (where the "is followed by" algorithm can do nothing), the personalized PageRank algorithm gets increasingly better in comparison: at first, the two algorithms have roughly equal performance, but as the source node gets more followers, the personalized PageRank algorithm dominates.</p>
+
+<p>And here's an embedded version you can interact with directly:</p>
+
+<iframe width="600px" height="500px" src="http://link-prediction.herokuapp.com/comparison?for_embed=true"></iframe>
+
+
+<p>Admittedly, building a slicer like this is probably overkill for a Kaggle competition, where the set of variables is fairly limited. But imagine having something similar for a real world model, where new algorithms are tried out every week and we can slice the performance by almost any dimension we can imagine (by geography, to make sure we don't improve Australia at the expense of the UK; by user interests, to see where we could improve the performance of topic inference; by number of user logins, to make sure we don't sacrifice the performance on new users for the gain of the core).</p>
+
+<h1>Mathematicians do it with Matrices</h1>
+
+<p>Let's switch directions slightly and think about how we could rewrite our computations in a different, matrix-oriented style. (I didn't do this in the competition -- this is more a preview of another post I'm writing.)</p>
+
+<h2>Personalized PageRank in Scalding</h2>
+
+<p>Personalized PageRank, for example, is an obvious fit for a matrix rewrite. Here's how it would look in <a href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Scalding</a>'s new Matrix library:</p>
+
+<p>(For those who don't know, Scalding is a Hadoop framework that Twitter released at the beginning of the year; see <a href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">my post on building a big data recommendation engine in Scalding</a> for an introduction.)</p>
+
+<p>``` scala Personalized PageRank, Matrix Style
+// <strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>
+// STEP 1. Load the adjacency graph into a matrix.
+// </em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></p>
+
+<p>val following = Tsv(GraphFilename, ('user1, 'user2, 'weight))</p>
+
+<p>// Binary matrix where cell (u1, u2) means that u1 follows u2.
+val followingMatrix =
+  following.toMatrix<a href="'user1,%20'user2,%20'weight">Int,Int,Double</a></p>
+
+<p>// Binary matrix where cell (u1, u2) means that u1 is followed by u2.<br/>
+val followerMatrix = followingMatrix.transpose</p>
+
+<p>// Note: we could also form this adjacency matrix differently, by placing
+// different weights on the following vs. follower edges.
+val undirectedAdjacencyMatrix =
+  (followingMatrix + followerMatrix).rowL1Normalize</p>
+
+<p>// Create a diagonal users matrix (to be used in the "teleportation back
+// home" step).
+val usersMatrix =
+  following.unique('user1)</p>
+
+<pre><code>       .map('user1 -&gt; ('user2, 'weight)) { user1: Int =&gt; (user1, 1) }
+       .toMatrix[Int, Int, Double]('user1, 'user2, 'weight)
+</code></pre>
+
+<p>// <strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><strong><em>
+// STEP 2. Compute the personalized PageRank scores.
+// See <a href="http://nlp.stanford.edu/projects/pagerank.shtml">http://nlp.stanford.edu/projects/pagerank.shtml</a>
+// for more information on personalized PageRank.
+// </em></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></strong></p>
+
+<p>// Compute personalized PageRank by running for three iterations,
+// and output the top candidates.
+val pprScores = personalizedPageRank(usersMatrix, undirectedAdjacencyMatrix, usersMatrix, 0.5, 3)
+pprScores.topRowElems(numCandidates).write(Tsv(OutputFilename))</p>
+
+<p>/<em>*
+ * Performs a personalized PageRank iteration. The ith row contains the
+ * personalized PageRank probabilities around node i.
+ *
+ * Note the interpretation:
+ *   - with probability 1 - alpha, we go back to where we started.
+ *   - with probability alpha, we go to a neighbor.
+ *
+ * Parameters:
+ * <br/>
+ *   startMatrix - a (usually diagonal) matrix, where the ith row specifies
+ *                 where the ith node teleports back to.
+ *   adjacencyMatrix
+ *   prevMatrix - a matrix whose ith row contains the personalized PageRank
+ *                probabilities around the ith node.
+ *   alpha - the probability of moving to a neighbor (as opposed to
+ *           teleporting back to the start).
+ *   numIterations - the number of personalized PageRank iterations to run.
+ </em>/
+def personalizedPageRank(startMatrix: Matrix[Int, Int, Double],</p>
+
+<pre><code>                     adjacencyMatrix: Matrix[Int, Int, Double],
+                     prevMatrix: Matrix[Int, Int, Double],
+                     alpha: Double,              
+                     numIterations: Int): Matrix[Int, Int, Double] = {                
+if (numIterations &lt;= 0) {
+  prevMatrix
+} else {
+  val updatedMatrix = startMatrix * (1 - alpha) + 
+                      (prevMatrix * adjacencyMatrix) * alpha
+  personalizedPageRank(startMatrix, adjacencyMatrix, updatedMatrix, alpha, numIterations - 1)
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Not only is this matrix formulation a more natural way of expressing the algorithm, but since Scalding (by way of Cascading) supports both local and distributed modes, this code runs just as easily on a Hadoop cluster of thousands of machines (assuming our social network is orders of magnitude larger than the one in the contest) as on a sample of data in a laptop. Big data, big matrix style, BOOM.</p>
+
+<h2>Cosine Similarity as L2-Normalized Multiplication</h2>
+
+<p>Here's another example. Calculating cosine similarity between all users is a natural fit for a matrix formulation since, after all, the cosine similarity between two vectors is just their L2-normalized dot product:</p>
+
+<p>``` scala Cosine Similarity, Matrix Style
+// A matrix where the cell (i, j) is 1 iff user i is followed by user j.
+val followerMatrix = ...</p>
+
+<p>// A matrix where cell (i, j) holds the cosine similarity between
+// user i and user j, when both are represented as sets of their followers.
+val followerBasedSimilarityMatrix =
+  followerMatrix.rowL2Normalize * followerMatrix.rowL2Normalize.transpose
+```</p>
+
+<h2>A Similarity Extension</h2>
+
+<p>But let's go one step further.</p>
+
+<p>To change examples for ease of exposition: suppose you've bought a bunch of books on Amazon, and Amazon wants to recommend a new book you'll like. Since Amazon knows similarities between all pairs of books, one natural way to generate this recommendation is to:</p>
+
+<ol>
+<li>Take every book B.</li>
+<li>Calculate the similarity between B and each book you bought.</li>
+<li>Sum up all these similarities to get your recommendation score for B.</li>
+</ol>
+
+
+<p>In other words, the recommendation score for book B on user U is:</p>
+
+<p>DidUserBuy(U, Book 1) * SimilarityBetween(Book B, Book 1) + DidUserBuy(U, Book 2) * SimilarityBetween(Book B, Book2) + ... + DidUserBuy(U, Book n) * SimilarityBetween(Book B, Book n)</p>
+
+<p>This, too, is a dot product! So it can also be rewritten as a matrix multiplication:</p>
+
+<p>``` scala
+// A matrix where cell (i, j) holds the similarity between books i and j.
+val bookSimilarityMatrix = ...</p>
+
+<p>// A matrix where cell (i, j) is 1 if user i has bought book j,
+// and 0 otherwise.
+val userPurchaseMatrix = ...</p>
+
+<p>// A matrix where cell (i, j) holds the recommendation score of
+// book j to user i.
+val recommendationMatrix = userPurchaseMatrix * bookSimilarityMatrix
+```</p>
+
+<p>Of course, there's a natural analogy between this score and the feature I described a while back above, where I compute a similarity score between a destination node and a source node's followees (when all nodes are represented as sets of followers):</p>
+
+<p>``` scala
+/<em>*
+ * Iterate over each of user1's followings, compute their similarity
+ * with user2 when both are represented as sets of followers, and return
+ * the sum of these similarities.
+ </em>/
+def followerBasedSimilarityToFollowings(user1: Int, user2: Int)</p>
+
+<pre><code>(implicit similarity: SimilarityMetric[Int]): Double = {
+</code></pre>
+
+<p>  getFollowingsWithout(user1, user2)</p>
+
+<pre><code>                  .map { similarityByFollowers(_, user2)(similarity) }
+                  .sum
+</code></pre>
+
+<p>}</p>
+
+<p>/<em>*
+ * The matrix version of the above function.
+ *
+ * Why are these the same? Note that the above function simply computes:
+ *   DoesUserFollow(User A, User 1) * Similarity(User 1, User B) +
+ *     DoesUserFollow(User A, User 2) * Similarity(User 2, User B) + ... +
+ *     DoesUserFollow(User A, User n) * Similarity(User n, User B)
+ </em>/
+val followingMatrix = ...
+val followerBasedSimilarityMatrix =
+  followerMatrix.rowL2Normalize * followerMatrix.rowL2Normalize.transpose</p>
+
+<p>val followerBasedSimilarityToFollowingsMatrix =
+  followingMatrix * followerBasedSimilarityMatrix
+```</p>
+
+<p>For people comfortable expressing their computations in a vector manner, writing your computations as matrix manipulations often makes experimenting with different algorithms much more fluid. Imagine, for example, that you want to switch from L1 normalization to L2 normalization, or that you want to express your objects as binary sets rather than weighted vectors. Both of these become simple one-line changes when you have vectors and matrices as first-class objects, but are much more tedious (<em>especially in a MapReduce land where this matrix library was designed to be applied!</em>) when you don't.</p>
+
+<h1>Finish Line</h1>
+
+<p>By now, I think I've spent more time writing this post than on the contest itself, so let's wrap up.</p>
+
+<p>I often get asked what kinds of tools I like to use, so for this competition my kit consisted of:</p>
+
+<ul>
+<li>Scala, for code that needed to be fast (e.g., extracting features) or that I was going to run repeatedly (e.g., scoring my validation set).</li>
+<li>Python, for my machine learning models, because <a href="http://scikit-learn.org/stable/">scikit-learn</a> is awesome.</li>
+<li>Ruby, for quick one-off scripts.</li>
+<li>R, for some data analysis and simple plotting.</li>
+<li>Coffeescript and d3, for the interactive visualizations.</li>
+</ul>
+
+
+<p>Finally, I put up a <a href="https://github.com/echen/link-prediction">Github repository</a> containing some code, and here are a couple other posts I've written that people who like this entry might also enjoy:</p>
+
+<ul>
+<li><a href="http://blog.echen.me/2011/09/07/information-transmission-in-a-social-network-dissecting-the-spread-of-a-quora-post/">Information transmission in a social network</a>, a case study in how information propagates through a social graph.</li>
+<li><a href="http://blog.echen.me/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations in Scalding</a>, Twitter's Scala-based Hadoop framework built on top of Cascading.</li>
+<li><a href="http://blog.echen.me/2011/10/24/winning-the-netflix-prize-a-summary/">A summary of the algorithms behind the Netflix Prize</a>, another crowdsourced recommendation contest for predicting movie ratings.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
