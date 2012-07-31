@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: language | Edwin Chen's Blog]]></title>
-  <link href="http://blog.echen.me/categories/language/atom.xml" rel="self"/>
+  <title><![CDATA[Edwin Chen's Blog - R]]></title>
+  <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
   <updated>2012-07-31T01:19:39-07:00</updated>
   <id>http://blog.echen.me/</id>
@@ -18,21 +18,21 @@
     <link href="http://blog.echen.me/2012/07/06/soda-vs-pop-with-twitter/"/>
     <updated>2012-07-06T10:51:00-07:00</updated>
     <id>http://blog.echen.me/2012/07/06/soda-vs-pop-with-twitter</id>
-    <content type="html"><![CDATA[<p>One of the great things about Twitter is that it's a global conversation anyone can join anytime. Eavesdropping on the world, what what!</p>
+    <content type="html"><![CDATA[<p>One of the great things about Twitter is that it&#8217;s a global conversation anyone can join anytime. Eavesdropping on the world, what what!</p>
 
 <p>Of course, it gets even better when you can <em>mine</em> all this chatter to study the way humans live and interact.</p>
 
-<p>For example, <a href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/">how do people in New York City differ from those in Silicon Valley?</a> We tend to think they're more financially driven and restless with the world -- is this true, and if so, <a href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/">how much more</a>?</p>
+<p>For example, <a href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/">how do people in New York City differ from those in Silicon Valley?</a> We tend to think they&#8217;re more financially driven and restless with the world &#8211; is this true, and if so, <a href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/">how much more</a>?</p>
 
-<p>Or how does language change as you travel to different regions? Recall the classic soda vs. pop. vs. coke question: some people use the word "soda" to describe their soft drinks, others use "pop", and still others use "coke". Who says what where?</p>
+<p>Or how does language change as you travel to different regions? Recall the classic soda vs. pop. vs. coke question: some people use the word &#8220;soda&#8221; to describe their soft drinks, others use &#8220;pop&#8221;, and still others use &#8220;coke&#8221;. Who says what where?</p>
 
-<p>Let's take a look.</p>
+<p>Let&#8217;s take a look.</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/united-states.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/united-states.png" alt="United States" /></a></p>
 
-<p>To make this map, I sampled geo-tagged tweets containing the words "soda", "pop", or "coke", performed some state-of-the-art NLP technology to ensure the tweets were soft drink related (e.g., the tweets had to contain "drink soda" or "drink a pop"), and tried to filter out coke tweets that were specifically about the Coke brand (e.g., Coke Zero).</p>
+<p>To make this map, I sampled geo-tagged tweets containing the words &#8220;soda&#8221;, &#8220;pop&#8221;, or &#8220;coke&#8221;, performed some state-of-the-art NLP technology to ensure the tweets were soft drink related (e.g., the tweets had to contain &#8220;drink soda&#8221; or &#8220;drink a pop&#8221;), and tried to filter out coke tweets that were specifically about the Coke brand (e.g., Coke Zero).</p>
 
-<p>It's a little cluttered, though, so let's clean it up by aggregating nearby tweets.</p>
+<p>It&#8217;s a little cluttered, though, so let&#8217;s clean it up by aggregating nearby tweets.</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/united_states_binned.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/united_states_binned.png" alt="United States Binned" /></a></p>
 
@@ -47,32 +47,32 @@
 </ul>
 
 
-<p>For comparison, here's another map based on a survey at <a href="http://www.popvssoda.com/">popvssoda.com</a>.</p>
+<p>For comparison, here&#8217;s another map based on a survey at <a href="http://www.popvssoda.com/">popvssoda.com</a>.</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/popvssoda.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/popvssoda.png" alt="Pop vs. Soda Map" /></a></p>
 
 <p>We can see similar patterns, though interestingly, our map has less Coke in the Southeast and less pop in the Northwest.</p>
 
-<p>Finally, here's a world map of the terms, bucketed again. Notice that "pop" seems to be prevalent only in parts of the United States and Canada.</p>
+<p>Finally, here&#8217;s a world map of the terms, bucketed again. Notice that &#8220;pop&#8221; seems to be prevalent only in parts of the United States and Canada.</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/world-map.png" alt="World" /></a></p>
 
 <p>As some astute readers noted, though, the seeming dominance of coke is probably due to the difficulty in distinguishing the generic use of coke for soft drinks in general from the particular use of coke for referring to the Coca-Cola brand.</p>
 
-<p>So let's instead look at a world map of a couple other soft drink terms ("fizzy drink", "mineral", and "tonic"):</p>
+<p>So let&#8217;s instead look at a world map of a couple other soft drink terms (&#8220;fizzy drink&#8221;, &#8220;mineral&#8221;, and &#8220;tonic&#8221;):</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/sodapop/fizzy-mineral-tonic.png"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/fizzy-mineral-tonic.png" alt="Fizzy Drink vs. Mineral vs. Tonic" /></a></p>
 
 <p>Notice that:</p>
 
 <ul>
-<li>"Fizzy drink" shows up for the UK, New Zealand, and Maine.</li>
-<li>"Tonic" appears in Massachusetts.</li>
-<li>While South Africa gets "fizzy drink", Nigeria gets "mineral".</li>
+<li>&#8220;Fizzy drink&#8221; shows up for the UK, New Zealand, and Maine.</li>
+<li>&#8220;Tonic&#8221; appears in Massachusetts.</li>
+<li>While South Africa gets &#8220;fizzy drink&#8221;, Nigeria gets &#8220;mineral&#8221;.</li>
 </ul>
 
 
-<p>I've been getting a lot of questions lately about interesting things you can do with the Twitter API, so this was just one small project I've worked on to illustrate. <a href="http://www.cc.gatech.edu/~jeisenst/papers/emnlp2010.pdf">This paper</a> contains another awesome application of Twitter data to geographic language variation, and just for fun, here are two other cute mini-projects I did a while ago:</p>
+<p>I&#8217;ve been getting a lot of questions lately about interesting things you can do with the Twitter API, so this was just one small project I&#8217;ve worked on to illustrate. <a href="http://www.cc.gatech.edu/~jeisenst/papers/emnlp2010.pdf">This paper</a> contains another awesome application of Twitter data to geographic language variation, and just for fun, here are two other cute mini-projects I did a while ago:</p>
 
 <p>What do people eat during the Super Bowl? (wings and beer, apparently)</p>
 

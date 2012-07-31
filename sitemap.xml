@@ -190,4 +190,8 @@
         <loc>http://blog.echen.me/</loc>
         <lastmod>2012-07-09T04:22:21-07:00</lastmod>
     </url>
+    <url>
+        <loc>http://blog.echen.me/r.xml</loc>
+        <lastmod>2012-07-31T01:13:20-07:00</lastmod>
+    </url>
 </urlset>
