@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-08-01T00:08:13-07:00</updated>
+  <updated>2012-08-01T01:01:53-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -3825,7 +3825,6 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;Berkeley&lt;/strong&gt;                                  0.978&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;UC Riverside&lt;/strong&gt;                              0.92&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;California Golden Bears&lt;/strong&gt;                   0.91&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Internships&lt;/strong&gt;                               0.717&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Web Marketing&lt;/strong&gt;                             0.484&lt;/li&gt;
