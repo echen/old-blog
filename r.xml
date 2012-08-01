@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog - R]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-07-31T11:03:56-07:00</updated>
+  <updated>2012-08-01T00:08:13-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -69,7 +69,7 @@
 
 <h2>A Social Butterfly</h2>
 
-<p>And one more, one whose local network is a little larger:</p>
+<p>And one more, whose local network is a little larger:</p>
 
 <p><a href="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_network.png"><img src="https://dl.dropbox.com/u/10506/blog/kaggle-fb/2_network.png" alt="2 Network" /></a></p>
 
@@ -560,7 +560,7 @@
 
 <h1>Feature Understanding</h1>
 
-<p>But what are these features actually <em>doing</em>? As much as I enjoy black-box models, I&#8217;m more of a hands-on insights guy, so I&#8217;m especially interested in what my models are doing and <em>why</em>. So let&#8217;s use the same app I built before to take a look.</p>
+<p>But what are these features actually <em>doing</em>? As much as I enjoy black-box models, I&#8217;m ain insights guy, so I&#8217;m even more interested in what my models are doing and <em>why</em>. So let&#8217;s use the same app I built before to take a look.</p>
 
 <p>Here&#8217;s the local network of node 317 (different from the node above), where each node is colored by its personalized PageRank (higher scores are in darker red):</p>
 
