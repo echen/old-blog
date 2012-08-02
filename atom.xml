@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-08-01T01:01:53-07:00</updated>
+  <updated>2012-08-02T01:15:27-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -560,7 +560,7 @@
 
 <h1>Feature Understanding</h1>
 
-<p>But what are these features actually <em>doing</em>? As much as I enjoy black-box models, I&#8217;m ain insights guy, so I&#8217;m even more interested in what my models are doing and <em>why</em>. So let&#8217;s use the same app I built before to take a look.</p>
+<p>But what are these features actually <em>doing</em>? As much as I enjoy black-box models, I&#8217;m an insights guy, so I&#8217;m even more interested in what my models are doing and <em>why</em>. So let&#8217;s use the same app I built before to take a look.</p>
 
 <p>Here&#8217;s the local network of node 317 (different from the node above), where each node is colored by its personalized PageRank (higher scores are in darker red):</p>
 

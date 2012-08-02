@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-08-01T01:01:53-07:00</updated>
+  <updated>2012-08-02T01:15:27-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -559,7 +559,7 @@
 
 &lt;h1&gt;Feature Understanding&lt;/h1&gt;
 
-&lt;p&gt;But what are these features actually &lt;em&gt;doing&lt;/em&gt;? As much as I enjoy black-box models, I&amp;#8217;m ain insights guy, so I&amp;#8217;m even more interested in what my models are doing and &lt;em&gt;why&lt;/em&gt;. So let&amp;#8217;s use the same app I built before to take a look.&lt;/p&gt;
+&lt;p&gt;But what are these features actually &lt;em&gt;doing&lt;/em&gt;? As much as I enjoy black-box models, I&amp;#8217;m an insights guy, so I&amp;#8217;m even more interested in what my models are doing and &lt;em&gt;why&lt;/em&gt;. So let&amp;#8217;s use the same app I built before to take a look.&lt;/p&gt;
 
 &lt;p&gt;Here&amp;#8217;s the local network of node 317 (different from the node above), where each node is colored by its personalized PageRank (higher scores are in darker red):&lt;/p&gt;
 
