@@ -4,7 +4,7 @@
   <title><![CDATA[Category: facebook | Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/categories/facebook/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-08-02T01:15:27-07:00</updated>
+  <updated>2012-08-15T23:12:40-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -411,7 +411,7 @@ def followerBasedSimilarityToFollowing(user1: Int, user2: Int)
 
 <h1>Feature Understanding</h1>
 
-<p>But what are these features actually <em>doing</em>? As much as I enjoy black-box models, I'm an insights guy, so I'm even more interested in what my models are doing and <em>why</em>. So let's use the same app I built before to take a look.</p>
+<p>But what are these features actually <em>doing</em>? Let's use the same app I built before to take a look.</p>
 
 <p>Here's the local network of node 317 (different from the node above), where each node is colored by its personalized PageRank (higher scores are in darker red):</p>
 
