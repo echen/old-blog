@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-09-16T21:43:58-07:00</updated>
+  <updated>2012-10-04T10:49:39-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -1071,7 +1071,9 @@
     <link href="http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/"/>
     <updated>2012-04-25T13:50:00-07:00</updated>
     <id>http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices</id>
-    <content type="html"><![CDATA[<p>Big data&#8217;s all the rage, but sometimes a couple thousand <em>human</em>-generated labels can be pretty effective as well. And since I&#8217;ve been using Amazon&#8217;s Mechanical Turk system a lot recently, I figured I&#8217;d share some of the things I&#8217;ve learned.</p>
+    <content type="html"><![CDATA[<p>(Update: we recently open-sourced <a href="https://github.com/twitter/clockworkraven">Clockwork Raven</a>, one of the human evaluation tools on top of Mechanical Turk that we built at Twitter.)</p>
+
+<p>Big data&#8217;s all the rage, but sometimes a couple thousand <em>human</em>-generated labels can be pretty effective as well. And since I&#8217;ve been using Amazon&#8217;s Mechanical Turk system a lot recently, I figured I&#8217;d share some of the things I&#8217;ve learned.</p>
 
 <h1>What is MTurk?</h1>
 
