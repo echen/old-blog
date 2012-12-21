@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="A simpler eigenvector calculation Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each &hellip;">
+  <meta name="description" content="A simpler eigenvector calculation Suppose we want to perform PCA on an $m &#92;times n$ observation matrix $A$, where each row is an observation and &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -102,38 +102,80 @@
 
 <div class="entry-content"><h1>A simpler eigenvector calculation</h1>
 
-<p>Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
 
-<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A^T A$.</p>
 
-<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A^T A$ is computationally difficult. How can we make this problem more tractable?</p>
 
-<p>It turns out that the eigenvectors of $A^T A$ have a simple relationship with the eigenvectors of $A A^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A^T$, then $A^Tv$ is an eigenvector of $A^T A$ with the same eigenvalue</strong>.</p>
+<p>Suppose we want to perform PCA on an $m &#92;times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
+
+
+
+
+<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n &#92;times n$ covariance matrix $A\^T A$.</p>
+
+
+
+
+<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n &#92;times n$ matrix $A\^T A$ is computationally difficult. How can we make this problem more tractable?</p>
+
+
+
+
+<p>It turns out that the eigenvectors of $A\^T A$ have a simple relationship with the eigenvectors of $A A\^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m &#92;times m$ matrix $A A\^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A\^T$, then $A\^Tv$ is an eigenvector of $A\^T A$ with the same eigenvalue</strong>.</p>
+
+
+
 
 <h1>Proof</h1>
 
-<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A^T$ with eigenvalue $\lambda$. Then</p>
 
-<p>$(A A^T) v = \lambda v$</p>
 
-<p>$A^T(A A^T v) = A^T(\lambda v)$</p>
 
-<p>$(A^T A)(A^T v) = \lambda (A^T v)$</p>
+<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A\^T$ with eigenvalue $&#92;lambda$. Then</p>
 
-<p>so $A^Tv$ is an eigenvector of $A^T A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A^T A$ directly, we can instead find the eigenvectors of $A A^T$ and multiply these on the left by $A^T$.</p>
+
+
+
+<p>$(A A\^T) v = &#92;lambda v$</p>
+
+
+
+
+<p>$A\^T(A A\^T v) = A\^T(&#92;lambda v)$</p>
+
+
+
+
+<p>$(A\^T A)(A\^T v) = &#92;lambda (A\^T v)$</p>
+
+
+
+
+<p>so $A\^Tv$ is an eigenvector of $A\^T A$, with eigenvalue $&#92;lambda$. Thus, instead of finding the eigenvectors of $A\^T A$ directly, we can instead find the eigenvectors of $A A\^T$ and multiply these on the left by $A\^T$.</p>
+
+
+
 
 <h1>Pseudocode</h1>
 
+
+
+
 <p>To summarize, here&#8217;s how to perform a PCA using this trick:</p>
 
+
+
+
 <ul>
-<li>Let $A$ be an $m \times n$ matrix with observations in rows and dimensions in the columns.</li>
+<li>Let $A$ be an $m &#92;times n$ matrix with observations in rows and dimensions in the columns.</li>
 <li>From each column of $A$, subtract the column&#8217;s mean, so that each column now has zero mean.</li>
-<li>We now need to find the eigenvectors of the covariance matrix $A^T A$. If $A A^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A^T$. Then $A^T v$ are the eigenvectors of $A^T A$.</li>
+<li>We now need to find the eigenvectors of the covariance matrix $A\^T A$. If $A A\^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A\^T$. Then $A\^T v$ are the eigenvectors of $A\^T A$.</li>
 </ul>
 
 
+
+
 <p>I&#8217;ve put a simple PCA implementation of this transpose trick on <a href="https://github.com/echen/pca-transpose-trick">my Github account</a>.</p>
+
 </div>
 
 
@@ -212,8 +254,6 @@
   <p>Email: hello[at]echen.me<br/>
   Twitter: <a href="https://twitter.com/#!/echen">@echen</a><br/>
   Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
-  
-  <p>Media: <a href="http://www.technologyreview.com/view/427305/twitter-data-scientist-takes-on-mcdonalds-entire/">Technology Review</a>, <a href="http://www.businessinsider.com/soda-vs-pop-map-2012-7">Business Insider</a>, <a href="http://www.theverge.com/2012/7/9/3146403/twitter-pop-vs-soda-map-edwin-chen">The Verge</a>, <a href="http://mashable.com/2012/02/10/twitter-employees-to-follow/#476495-Edwin-Chen">Mashable</a>, <a href="http://gizmodo.com//5924371/soda-versus-pop-visualized">Gizmodo</a>, <a href="http://flowingdata.com/2012/08/23/twitter-vs-facebook-what-people-share/">Flowing</a> <a href="Data">Data</a></p>
 
 </section><section>
   <h1>Recent Posts</h1>

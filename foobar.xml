@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-10-04T10:49:39-07:00</updated>
+  <updated>2012-12-20T23:28:07-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -1053,15 +1053,31 @@
 &lt;/ul&gt;
 
 
-&lt;p&gt;I&amp;#8217;ve been getting a lot of questions lately about interesting things you can do with the Twitter API, so this was just one small project I&amp;#8217;ve worked on to illustrate. &lt;a href=&quot;http://www.cc.gatech.edu/~jeisenst/papers/emnlp2010.pdf&quot;&gt;This paper&lt;/a&gt; contains another awesome application of Twitter data to geographic language variation, and just for fun, here are two other cute mini-projects I did a while ago:&lt;/p&gt;
+&lt;p&gt;I&amp;#8217;ve been getting a lot of questions lately about interesting things you can do with the Twitter API, so this was just one small project I&amp;#8217;ve worked on to illustrate. &lt;a href=&quot;http://www.cc.gatech.edu/~jeisenst/papers/emnlp2010.pdf&quot;&gt;This paper&lt;/a&gt; contains another awesome application of Twitter data to geographic language variation, and just for fun, here are a few other cute mini-projects:&lt;/p&gt;
 
 &lt;p&gt;What do people eat during the Super Bowl? (wings and beer, apparently)&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/superbowl-snacks.png&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/superbowl-snacks.png&quot; alt=&quot;Superbowl Snacks&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://twitter.com/echen/status/166343879547822080&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/superbowl-snacks.png&quot; alt=&quot;Superbowl Snacks&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;What do people want for Christmas, compared to what they actually get? (people are more satisfied than I thought!)&lt;/p&gt;
+&lt;p&gt;What do people want for Christmas, compared to what they actually get? (people are more satisfied than I thought)&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/xmas.png&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/xmas.png&quot; alt=&quot;Christmas&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://twitter.com/echen/status/153683967315419136&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/blog/sodapop/xmas.png&quot; alt=&quot;Christmas&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;What do guys and girls &lt;em&gt;really&lt;/em&gt; say?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://twitter.com/echen/status/261667822793551873/photo/1&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/twitter/shitguysandgirlssay.png&quot; alt=&quot;Shit Guys and Girls Say&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;When were people losing and gaining power during Hurricane Sandy?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://blog.echen.me/hurricane-sandy-outages/&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/twitter/sandy-outages.png&quot; alt=&quot;Sandy Power Outages&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;How were people spreading Sandy-related information?&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://hurricanesandy.herokuapp.com/&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/twitter/sandy-spread.png&quot; alt=&quot;Hurricane Sandy Retweets&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Can we use Twitter to measure presidential votes? (yes!)&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://twitter.com/echen/status/265894918382305284/photo/1&quot;&gt;&lt;img src=&quot;https://dl.dropbox.com/u/10506/twitter/electoral-map.png&quot; alt=&quot;Electoral Map&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
 </content>
   </entry>
   
@@ -3152,182 +3168,352 @@
     <link href="http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields/"/>
     <updated>2012-01-03T16:02:25-08:00</updated>
     <id>http://blog.echen.me/2012/01/03/introduction-to-conditional-random-fields</id>
-    <content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
+    <content type="html">&lt;p&gt;Imagine you have a sequence of snapshots from a day in Justin Bieber&amp;#8217;s life, and you want to label each image with the activity it represents (eating, sleeping, driving, etc.). How can you do this?&lt;/p&gt;
 
-&lt;p&gt;Imagine you have a sequence of snapshots from a day in Justin Bieber&amp;#8217;s life, and you want to label each image with the activity it represents (eating, sleeping, driving, etc.). How can you do this?&lt;/p&gt;
+
+
 
 &lt;p&gt;One way is to ignore the sequential nature of the snapshots, and build a &lt;em&gt;per-image&lt;/em&gt; classifier. For example, given a month&amp;#8217;s worth of labeled snapshots, you might learn that dark images taken at 6am tend to be about sleeping, images with lots of bright colors tend to be about dancing, images of cars are about driving, and so on.&lt;/p&gt;
 
+
+
+
 &lt;p&gt;By ignoring this sequential aspect, however, you lose a lot of information. For example, what happens if you see a close-up picture of a mouth &amp;#8211; is it about singing or eating? If you know that the &lt;em&gt;previous&lt;/em&gt; image is a picture of Justin Bieber eating or cooking, then it&amp;#8217;s more likely this picture is about eating; if, however, the previous image contains Justin Bieber singing or dancing, then this one probably shows him singing as well.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;Thus, to increase the accuracy of our labeler, we should incorporate the labels of nearby photos, and this is precisely what a &lt;strong&gt;conditional random field&lt;/strong&gt; does.&lt;/p&gt;
 
+
+
+
 &lt;h1&gt;Part-of-Speech Tagging&lt;/h1&gt;
+
+
+
 
 &lt;p&gt;Let&amp;#8217;s go into some more detail, using the more common example of &lt;strong&gt;part-of-speech tagging&lt;/strong&gt;.&lt;/p&gt;
 
+
+
+
 &lt;p&gt;In POS tagging, the goal is to label a sentence (a sequence of words or tokens) with tags like ADJECTIVE, NOUN, PREPOSITION, VERB, ADVERB, ARTICLE.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;For example, given the sentence &amp;#8220;Bob drank coffee at Starbucks&amp;#8221;, the labeling might be &amp;#8220;Bob (NOUN) drank (VERB) coffee (NOUN) at (PREPOSITION) Starbucks (NOUN)&amp;#8221;.&lt;/p&gt;
 
-&lt;p&gt;So let&amp;#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&amp;#8217;ll first need to decide on a set of feature functions $f_i$.&lt;/p&gt;
+
+
+
+&lt;p&gt;So let&amp;#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&amp;#8217;ll first need to decide on a set of feature functions $f\_i$.&lt;/p&gt;
+
+
+
 
 &lt;h2&gt;Feature Functions in a CRF&lt;/h2&gt;
 
+
+
+
 &lt;p&gt;In a CRF, each &lt;strong&gt;feature function&lt;/strong&gt; is a function that takes in as input:&lt;/p&gt;
+
+
+
 
 &lt;ul&gt;
 &lt;li&gt;a sentence s&lt;/li&gt;
 &lt;li&gt;the position i of a word in the sentence&lt;/li&gt;
-&lt;li&gt;the label $l_i$ of the current word&lt;/li&gt;
-&lt;li&gt;the label $l_{i-1}$ of the previous word&lt;/li&gt;
+&lt;li&gt;the label $l\_i$ of the current word&lt;/li&gt;
+&lt;li&gt;the label $l\_{i-1}$ of the previous word&lt;/li&gt;
 &lt;/ul&gt;
+
+
 
 
 &lt;p&gt;and outputs a real-valued number (though the numbers are often just either 0 or 1).&lt;/p&gt;
 
+
+
+
 &lt;p&gt;(Note: by restricting our features to depend on only the &lt;em&gt;current&lt;/em&gt; and &lt;em&gt;previous&lt;/em&gt; labels, rather than arbitrary labels throughout the sentence, I&amp;#8217;m actually building the special case of a &lt;strong&gt;linear-chain CRF&lt;/strong&gt;. For simplicity, I&amp;#8217;m going to ignore general CRFs in this post.)&lt;/p&gt;
+
+
+
 
 &lt;p&gt;For example, one possible feature function could measure how much we suspect that the current word should be labeled as an adjective given that the previous word is &amp;#8220;very&amp;#8221;.&lt;/p&gt;
 
+
+
+
 &lt;h2&gt;Features to Probabilities&lt;/h2&gt;
 
-&lt;p&gt;Next, assign each feature function $f_j$ a &lt;strong&gt;weight&lt;/strong&gt; $\lambda_j$ (I&amp;#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:&lt;/p&gt;
 
-&lt;p&gt;$score(l | s) = \sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})$&lt;/p&gt;
+
+
+&lt;p&gt;Next, assign each feature function $f\_j$ a &lt;strong&gt;weight&lt;/strong&gt; $&amp;#92;lambda\_j$ (I&amp;#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:&lt;/p&gt;
+
+
+
+
+&lt;p&gt;$score(l | s) = &amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n &amp;#92;lambda\_j f\_j(s, i, l\_i, l\_{i-1})$&lt;/p&gt;
+
+
+
 
 &lt;p&gt;(The first sum runs over each feature function $j$, and the inner sum runs over each position $i$ of the sentence.)&lt;/p&gt;
 
+
+
+
 &lt;p&gt;Finally, we can transform these scores into probabilities $p(l | s)$ between 0 and 1 by exponentiating and normalizing:&lt;/p&gt;
 
-&lt;p&gt;$p(l | s) = \frac{exp[score(l|s)]}{\sum_{l&amp;#8217;} exp[score(l&amp;#8217;|s)]} = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})]}{\sum_{l&amp;#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l&amp;#8217;_i, l&amp;#8217;_{i-1})]}$&lt;/p&gt;
+
+
+
+&lt;p&gt;$p(l | s) = &amp;#92;frac{exp\[score(l|s)]}{&amp;#92;sum\_{l&amp;#8217;} exp\[score(l&amp;#8217;|s)]} = &amp;#92;frac{exp\[&amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n &amp;#92;lambda\_j f\_j(s, i, l\_i, l\_{i-1})]}{&amp;#92;sum\_{l&amp;#8217;} exp\[&amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n &amp;#92;lambda\_j f\_j(s, i, l&amp;#8217;\_i, l&amp;#8217;\_{i-1})]}$&lt;/p&gt;
+
+
+
 
 &lt;h2&gt;Example Feature Functions&lt;/h2&gt;
 
+
+
+
 &lt;p&gt;So what do these feature functions look like? Examples of POS tagging features could include:&lt;/p&gt;
 
-&lt;ul&gt;
-&lt;li&gt;$f_1(s, i, l_i, l_{i-1}) = 1$ if $l_i =$ ADVERB and the ith word ends in &amp;#8220;-ly&amp;#8221;; 0 otherwise.
+
+
 
 &lt;ul&gt;
-&lt;li&gt;If the weight $\lambda_1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;$f_2(s, i, l_i, l_{i-1}) = 1$ if $i = 1$, $l_i =$ VERB, and the sentence ends in a question mark; 0 otherwise.
+&lt;li&gt;$f\_1(s, i, l\_i, l\_{i-1}) = 1$ if $l\_i =$ ADVERB and the ith word ends in &amp;#8220;-ly&amp;#8221;; 0 otherwise.
 
 &lt;ul&gt;
-&lt;li&gt;Again, if the weight $\lambda_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &amp;#8220;Is this a sentence beginning with a verb?&amp;#8221;) are preferred.&lt;/li&gt;
+&lt;li&gt;If the weight $&amp;#92;lambda\_1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;$f_3(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
+&lt;li&gt;$f\_2(s, i, l\_i, l\_{i-1}) = 1$ if $i = 1$, $l\_i =$ VERB, and the sentence ends in a question mark; 0 otherwise.
+
+&lt;ul&gt;
+&lt;li&gt;Again, if the weight $&amp;#92;lambda\_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &amp;#8220;Is this a sentence beginning with a verb?&amp;#8221;) are preferred.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;$f\_3(s, i, l\_i, l\_{i-1}) = 1$ if $l\_{i-1} =$ ADJECTIVE and $l\_i =$ NOUN; 0 otherwise.
 
 &lt;ul&gt;
 &lt;li&gt;Again, a positive weight for this feature means that adjectives tend to be followed by nouns.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;$f_4(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
+&lt;li&gt;$f\_4(s, i, l\_i, l\_{i-1}) = 1$ if $l\_{i-1} =$ PREPOSITION and $l\_i =$ PREPOSITION.
 
 &lt;ul&gt;
-&lt;li&gt;A &lt;em&gt;negative&lt;/em&gt; weight $\lambda_4$ for this function would mean that prepositions don&amp;#8217;t tend to follow prepositions, so we should avoid labelings where this happens.&lt;/li&gt;
+&lt;li&gt;A &lt;em&gt;negative&lt;/em&gt; weight $&amp;#92;lambda\_4$ for this function would mean that prepositions don&amp;#8217;t tend to follow prepositions, so we should avoid labelings where this happens.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 
 
+
+
 &lt;p&gt;And that&amp;#8217;s it! To sum up: to build a conditional random field, you just define a bunch of feature functions (which can depend on the entire sentence, a current position, and nearby labels), assign them weights, and add them all together, transforming at the end to a probability if necessary.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;Now let&amp;#8217;s step back and compare CRFs to some other common machine learning techniques.&lt;/p&gt;
 
+
+
+
 &lt;h1&gt;Smells like Logistic Regression&amp;#8230;&lt;/h1&gt;
 
+
+
+
 &lt;p&gt;The form of the CRF probabilities
-$p(l | s) = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l_i, l_{i-1})]}{\sum_{l&amp;#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l&amp;#8217;_i, l&amp;#8217;_{i-1})]}$
+$p(l | s) = &amp;#92;frac{exp\[&amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n f\_j(s, i, l\_i, l\_{i-1})]}{&amp;#92;sum\_{l&amp;#8217;} exp\[&amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n f\_j(s, i, l&amp;#8217;\_i, l&amp;#8217;\_{i-1})]}$
 might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quot;&gt;familiar&lt;/a&gt;.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;That&amp;#8217;s because CRFs are indeed basically the sequential version of &lt;strong&gt;logistic regression&lt;/strong&gt;: whereas logistic regression is a log-linear model for &lt;em&gt;classification&lt;/em&gt;, CRFs are a log-linear model for &lt;em&gt;sequential labels&lt;/em&gt;.&lt;/p&gt;
 
+
+
+
 &lt;h1&gt;Looks like HMMs&amp;#8230;&lt;/h1&gt;
+
+
+
 
 &lt;p&gt;Recall that &lt;strong&gt;&lt;a href=&quot;http://en.wikipedia.org/wiki/Hidden_Markov_model&quot;&gt;Hidden Markov Models&lt;/a&gt;&lt;/strong&gt; are another model for part-of-speech tagging (and sequential labeling in general). Whereas CRFs throw any bunch of functions together to get a label score, HMMs take a &lt;em&gt;generative&lt;/em&gt; approach to labeling, defining&lt;/p&gt;
 
-&lt;p&gt;$p(l,s) = p(l_1) \prod_i p(l_i | l_{i-1}) p(w_i | l_i)$&lt;/p&gt;
+
+
+
+&lt;p&gt;$p(l,s) = p(l\_1) &amp;#92;prod\_i p(l\_i | l\_{i-1}) p(w\_i | l\_i)$&lt;/p&gt;
+
+
+
 
 &lt;p&gt;where&lt;/p&gt;
 
+
+
+
 &lt;ul&gt;
-&lt;li&gt;$p(l_i | l_{i-1})$ are &lt;strong&gt;transition&lt;/strong&gt; probabilities (e.g., the probability that a preposition is followed by a noun);&lt;/li&gt;
-&lt;li&gt;$p(w_i | l_i)$ are &lt;strong&gt;emission&lt;/strong&gt; probabilities (e.g., the probability that a noun emits the word &amp;#8220;dad&amp;#8221;).&lt;/li&gt;
+&lt;li&gt;$p(l\_i | l\_{i-1})$ are &lt;strong&gt;transition&lt;/strong&gt; probabilities (e.g., the probability that a preposition is followed by a noun);&lt;/li&gt;
+&lt;li&gt;$p(w\_i | l\_i)$ are &lt;strong&gt;emission&lt;/strong&gt; probabilities (e.g., the probability that a noun emits the word &amp;#8220;dad&amp;#8221;).&lt;/li&gt;
 &lt;/ul&gt;
+
+
 
 
 &lt;p&gt;So how do HMMs compare to CRFs? CRFs are more powerful &amp;#8211; they can model everything HMMs can and more. One way of seeing this is as follows.&lt;/p&gt;
 
-&lt;p&gt;Note that the log of the HMM probability is $\log p(l,s) = \log p(l_0) + \sum_i \log p(l_i | l_{i-1}) + \sum_i \log p(w_i | l_i)$. This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features.&lt;/p&gt;
+
+
+
+&lt;p&gt;Note that the log of the HMM probability is $&amp;#92;log p(l,s) = &amp;#92;log p(l\_0) + &amp;#92;sum\_i &amp;#92;log p(l\_i | l\_{i-1}) + &amp;#92;sum\_i &amp;#92;log p(w\_i | l\_i)$. This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;That is, we can build a CRF equivalent to any HMM by&amp;#8230;&lt;/p&gt;
 
+
+
+
 &lt;ul&gt;
-&lt;li&gt;For each HMM &lt;em&gt;transition&lt;/em&gt; probability $ p(l_i = y | l_{i-1} = x) $, define a set of CRF transition features of the form $f_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $l_i = y$ and $l_{i-1} = x$. Give each feature a weight of $w_{x,y} = \log p(l_i = y | l_{i-1} = x)$.&lt;/li&gt;
-&lt;li&gt;Similarly, for each HMM &lt;em&gt;emission&lt;/em&gt; probability $p(w_i = z | l_{i} = x)$, define a set of CRF emission features of the form $g_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w_{x,z} = \log p(w_i = z | l_i = x)$.&lt;/li&gt;
+&lt;li&gt;For each HMM &lt;em&gt;transition&lt;/em&gt; probability $ p(l\_i = y | l\_{i-1} = x) $, define a set of CRF transition features of the form $f\_{x,y}(s, i, l\_i, l\_{i-1}) = 1$ if $l\_i = y$ and $l\_{i-1} = x$. Give each feature a weight of $w\_{x,y} = &amp;#92;log p(l\_i = y | l\_{i-1} = x)$.&lt;/li&gt;
+&lt;li&gt;Similarly, for each HMM &lt;em&gt;emission&lt;/em&gt; probability $p(w\_i = z | l\_{i} = x)$, define a set of CRF emission features of the form $g\_{x,y}(s, i, l\_i, l\_{i-1}) = 1$ if $w\_i = z$ and $l\_i = x$. Give each feature a weight of $w\_{x,z} = &amp;#92;log p(w\_i = z | l\_i = x)$.&lt;/li&gt;
 &lt;/ul&gt;
+
+
 
 
 &lt;p&gt;Thus, the score $p(l|s)$ computed by a CRF using these feature functions is precisely proportional to the score computed by the associated HMM, and so every HMM is equivalent to some CRF.&lt;/p&gt;
 
+
+
+
 &lt;p&gt;However, CRFs can model a much richer set of label distributions as well, for two main reasons:&lt;/p&gt;
+
+
+
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;CRFs can define a much larger set of features.&lt;/strong&gt; Whereas HMMs are necessarily &lt;em&gt;local&lt;/em&gt; in nature (because they&amp;#8217;re constrained to binary transition and emission feature functions, which force each word to depend only on the current label and each label to depend only on the previous label), CRFs can use more &lt;em&gt;global&lt;/em&gt; features. For example, one of the features in our POS tagger above increased the probability of labelings that tagged the &lt;em&gt;first&lt;/em&gt; word of a sentence as a VERB if the &lt;em&gt;end&lt;/em&gt; of the sentence contained a question mark.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;CRFs can have arbitrary weights.&lt;/strong&gt; Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $0 &amp;lt;= p(w_i | l_i) &amp;lt;= 1, \sum_w p(w_i = w | l_1) = 1)$, the weights of a CRF are unrestricted (e.g., $\log p(w_i | l_i)$ can be anything it wants).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CRFs can have arbitrary weights.&lt;/strong&gt; Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $0 &amp;lt;= p(w\_i | l\_i) &amp;lt;= 1, &amp;#92;sum\_w p(w\_i = w | l\_1) = 1)$, the weights of a CRF are unrestricted (e.g., $&amp;#92;log p(w\_i | l\_i)$ can be anything it wants).&lt;/li&gt;
 &lt;/ul&gt;
+
+
 
 
 &lt;h1&gt;Learning Weights&lt;/h1&gt;
 
+
+
+
 &lt;p&gt;Let&amp;#8217;s go back to the question of how to learn the feature weights in a CRF. One way is (surprise) to use &lt;strong&gt;gradient ascent&lt;/strong&gt;.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;Assume we have a bunch of training examples (sentences and associated part-of-speech labels). Randomly initialize the weights of our CRF model.
 To shift these randomly initialized weights to the correct ones, for each training example&amp;#8230;&lt;/p&gt;
 
+
+
+
 &lt;ul&gt;
-&lt;li&gt;Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&amp;#8217;} p(l&amp;#8217; | s) \sum_{j = 1}^m f_i(s, j, l&amp;#8217;_j, l&amp;#8217;_{j-1})$&lt;/li&gt;
-&lt;li&gt;Note that the first term in the gradient is the contribution of feature $f_i$ under the &lt;em&gt;true&lt;/em&gt; label, and the second term in the gradient is the &lt;em&gt;expected&lt;/em&gt; contribution of feature $f_i$ under the current model. This is exactly the form you&amp;#8217;d expect gradient ascent to take.&lt;/li&gt;
-&lt;li&gt;Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&amp;#8217;} p(l&amp;#8217; | s) \sum_{j = 1}^m f_i(s, j, l&amp;#8217;_j, l&amp;#8217;_{j-1})]$ where $\alpha$ is some learning rate.&lt;/li&gt;
+&lt;li&gt;Go through each feature function $f\_i$, and calculate the gradient of the log probability of the training example with respect to $&amp;#92;lambda\_i$: $&amp;#92;frac{&amp;#92;partial}{&amp;#92;partial w\_j} &amp;#92;log p(l | s) = &amp;#92;sum\_{j = 1}\^m f\_i(s, j, l\_j, l\_{j-1}) - &amp;#92;sum\_{l&amp;#8217;} p(l&amp;#8217; | s) &amp;#92;sum\_{j = 1}\^m f\_i(s, j, l&amp;#8217;\_j, l&amp;#8217;\_{j-1})$&lt;/li&gt;
+&lt;li&gt;Note that the first term in the gradient is the contribution of feature $f\_i$ under the &lt;em&gt;true&lt;/em&gt; label, and the second term in the gradient is the &lt;em&gt;expected&lt;/em&gt; contribution of feature $f\_i$ under the current model. This is exactly the form you&amp;#8217;d expect gradient ascent to take.&lt;/li&gt;
+&lt;li&gt;Move $&amp;#92;lambda\_i$ in the direction of the gradient: $&amp;#92;lambda\_i = &amp;#92;lambda\_i + &amp;#92;alpha \[&amp;#92;sum\_{j = 1}\^m f\_i(s, j, l\_j, l\_{j-1}) - &amp;#92;sum\_{l&amp;#8217;} p(l&amp;#8217; | s) &amp;#92;sum\_{j = 1}\^m f\_i(s, j, l&amp;#8217;\_j, l&amp;#8217;\_{j-1})]$ where $&amp;#92;alpha$ is some learning rate.&lt;/li&gt;
 &lt;li&gt;Repeat the previous steps until some stopping condition is reached (e.g., the updates fall below some threshold).&lt;/li&gt;
 &lt;/ul&gt;
 
 
-&lt;p&gt;In other words, every step takes the difference between what we want the model to learn and the model&amp;#8217;s current state, and moves $\lambda_i$ in the direction of this difference.&lt;/p&gt;
+
+
+&lt;p&gt;In other words, every step takes the difference between what we want the model to learn and the model&amp;#8217;s current state, and moves $&amp;#92;lambda\_i$ in the direction of this difference.&lt;/p&gt;
+
+
+
 
 &lt;h1&gt;Finding the Optimal Labeling&lt;/h1&gt;
 
+
+
+
 &lt;p&gt;Suppose we&amp;#8217;ve trained our CRF model, and now a new sentence comes in. How do we do label it?&lt;/p&gt;
 
-&lt;p&gt;The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.&lt;/p&gt;
+
+
+
+&lt;p&gt;The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k\^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;A better way is to realize that (linear-chain) CRFs satisfy an &lt;a href=&quot;http://en.wikipedia.org/wiki/Optimal_substructure&quot;&gt;optimal substructure&lt;/a&gt; property that allows us to use a (polynomial-time) dynamic programming algorithm to find the optimal label, similar to the &lt;a href=&quot;http://en.wikipedia.org/wiki/Viterbi_algorithm&quot;&gt;Viterbi algorithm&lt;/a&gt; for HMMs.&lt;/p&gt;
 
+
+
+
 &lt;h1&gt;A More Interesting Application&lt;/h1&gt;
+
+
+
 
 &lt;p&gt;Okay, so part-of-speech tagging is kind of boring, and there are plenty of existing POS taggers out there. When might you use a CRF in real life?&lt;/p&gt;
 
+
+
+
 &lt;p&gt;Suppose you want to mine Twitter for the types of presents people received for Christmas:&lt;/p&gt;
 
+
+
+
 &lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p&gt;What people on Twitter wanted for Christmas, and what they got: &lt;a href=&quot;http://t.co/EGeKTBgF&quot; title=&quot;http://twitter.com/edchedch/status/153683967315419136/photo/1&quot;&gt;twitter.com/edchedch/statu…&lt;/a&gt;&lt;/p&gt;— Edwin Chen (@edchedch) &lt;a href=&quot;https://twitter.com/edchedch/status/153683967315419136&quot; data-datetime=&quot;2012-01-02T03:48:10+00:00&quot;&gt;January 2, 2012&lt;/a&gt;&lt;/blockquote&gt;
+
+
 
 
 &lt;script src=&quot;http://blog.echen.me//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
 
 
+
+
 &lt;p&gt;(Yes, I just embedded a tweet. BOOM.)&lt;/p&gt;
+
+
+
 
 &lt;p&gt;How can you figure out which words refer to gifts?&lt;/p&gt;
 
+
+
+
 &lt;p&gt;To gather data for the graphs above, I simply looked for phrases of the form &amp;#8220;I want XXX for Christmas&amp;#8221; and &amp;#8220;I got XXX for Christmas&amp;#8221;. However, a more sophisticated CRF variant could use a GIFT part-of-speech-like tag (even adding other tags like GIFT-GIVER and GIFT-RECEIVER, to get even more information on who got what from whom) and treat this like a POS tagging problem. Features could be based around things like &amp;#8220;this word is a GIFT if the previous word was a GIFT-RECEIVER and the word before that was &amp;#8216;gave&amp;#8217;&amp;#8221; or &amp;#8220;this word is a GIFT if the next two words are &amp;#8216;for Christmas&amp;#8217;&amp;#8221;.&lt;/p&gt;
+
+
+
 
 &lt;h1&gt;Fin&lt;/h1&gt;
 
+
+
+
 &lt;p&gt;I&amp;#8217;ll end with some more random thoughts:&lt;/p&gt;
+
+
+
 
 &lt;ul&gt;
 &lt;li&gt;I explicitly skipped over the graphical models framework that conditional random fields sit in, because I don&amp;#8217;t think they add much to an initial understanding of CRFs. But if you&amp;#8217;re interested in learning more, Daphne Koller is teaching a free, online course on &lt;a href=&quot;http://www.pgm-class.org/&quot;&gt;graphical models&lt;/a&gt; starting in January.&lt;/li&gt;
@@ -3336,7 +3522,10 @@ To shift these randomly initialized weights to the correct ones, for each traini
 &lt;/ul&gt;
 
 
+
+
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/crfs/crf-diagram.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/crfs/crf-diagram.png&quot; alt=&quot;CRF Diagram&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
 </content>
   </entry>
   
@@ -4549,13 +4738,20 @@ To shift these randomly initialized weights to the correct ones, for each traini
     <link href="http://blog.echen.me/2011/07/18/introduction-to-restricted-boltzmann-machines/"/>
     <updated>2011-07-18T09:32:52-07:00</updated>
     <id>http://blog.echen.me/2011/07/18/introduction-to-restricted-boltzmann-machines</id>
-    <content type="html">&lt;h1&gt;Introduction&lt;/h1&gt;
+    <content type="html">&lt;p&gt;Suppose you ask a bunch of users to rate a set of movies on a 0-100 scale. In classical &lt;a href=&quot;http://en.wikipedia.org/wiki/Factor_analysis&quot;&gt;factor analysis&lt;/a&gt;, you could then try to explain each movie and user in terms of a set of latent &lt;em&gt;factors&lt;/em&gt;. For example, movies like Star Wars and Lord of the Rings might have strong associations with a latent science fiction and fantasy factor, and users who like Wall-E and Toy Story might have strong associations with a latent Pixar factor.&lt;/p&gt;
 
-&lt;p&gt;Suppose you ask a bunch of users to rate a set of movies on a 0-100 scale. In classical &lt;a href=&quot;http://en.wikipedia.org/wiki/Factor_analysis&quot;&gt;factor analysis&lt;/a&gt;, you could then try to explain each movie and user in terms of a set of latent &lt;em&gt;factors&lt;/em&gt;. For example, movies like Star Wars and Lord of the Rings might have strong associations with a latent science fiction and fantasy factor, and users who like Wall-E and Toy Story might have strong associations with a latent Pixar factor.&lt;/p&gt;
+
+
 
 &lt;p&gt;Restricted Boltzmann Machines essentially perform a &lt;em&gt;binary&lt;/em&gt; version of factor analysis. (This is one way of thinking about RBMs; there are, of course, others, and lots of different ways to use RBMs, but I&amp;#8217;ll adopt this approach for this post.) Instead of users rating a set of movies on a continuous scale, they simply tell you whether they like a movie or not, and the RBM will try to discover latent factors that can explain the activation of these movie choices.&lt;/p&gt;
 
+
+
+
 &lt;p&gt;More technically, a Restricted Boltzmann Machine is a &lt;strong&gt;stochastic neural network&lt;/strong&gt; (&lt;em&gt;neural network&lt;/em&gt; meaning we have neuron-like units whose binary activations depend on the neighbors they&amp;#8217;re connected to; &lt;em&gt;stochastic&lt;/em&gt; meaning these activations have a probabilistic element) consisting of:&lt;/p&gt;
+
+
+
 
 &lt;ul&gt;
 &lt;li&gt;One layer of &lt;strong&gt;visible units&lt;/strong&gt; (users&amp;#8217; movie preferences whose states we know and set);&lt;/li&gt;
@@ -4564,27 +4760,52 @@ To shift these randomly initialized weights to the correct ones, for each traini
 &lt;/ul&gt;
 
 
+
+
 &lt;p&gt;Furthermore, each visible unit is connected to all the hidden units (this connection is undirected, so each hidden unit is also connected to all the visible units), and the bias unit is connected to all the visible units and all the hidden units. To make learning easier, we restrict the network so that no visible unit is connected to any other visible unit and no hidden unit is connected to any other hidden unit.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;For example, suppose we have a set of six movies (Harry Potter, Avatar, LOTR 3, Gladiator, Titanic, and Glitter) and we ask users to tell us which ones they want to watch. If we want to learn two latent units underlying movie preferences &amp;#8211; for example, two natural groups in our set of six movies appear to be SF/fantasy (containing Harry Potter, Avatar, and LOTR 3) and Oscar winners (containing LOTR 3, Gladiator, and Titanic), so we might hope that our latent units will correspond to these categories &amp;#8211; then our RBM would look like the following:&lt;/p&gt;
 
+
+
+
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/rbms/rbm-example.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/rbms/rbm-example.png&quot; alt=&quot;RBM Example&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+
+
 
 &lt;p&gt;(Note the resemblance to a factor analysis graphical model.)&lt;/p&gt;
 
+
+
+
 &lt;h1&gt;State Activation&lt;/h1&gt;
+
+
+
 
 &lt;p&gt;Restricted Boltzmann Machines, and neural networks in general, work by updating the states of some neurons given the states of others, so let&amp;#8217;s talk about how the states of individual units change. Assuming we know the connection weights in our RBM (we&amp;#8217;ll explain how to learn these below), to update the state of unit $i$:&lt;/p&gt;
 
+
+
+
 &lt;ul&gt;
-&lt;li&gt;Compute the &lt;strong&gt;activation energy&lt;/strong&gt; $a_i = \sum_j w_{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w_{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&amp;#8217;s neighbors send it a message, and we compute the sum of all these messages.&lt;/li&gt;
-&lt;li&gt;Let $p_i = \sigma(a_i)$, where $\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p_i$ is close to 1 for large positive activation energies, and $p_i$ is close to 0 for negative activation energies.&lt;/li&gt;
-&lt;li&gt;We then turn unit $i$ on with probability $p_i$, and turn it off with probability $1 - p_i$.&lt;/li&gt;
+&lt;li&gt;Compute the &lt;strong&gt;activation energy&lt;/strong&gt; $a\_i = &amp;#92;sum\_j w\_{ij} x\_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w\_{ij}$ is the weight of the connection between $i$ and $j$, and $x\_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&amp;#8217;s neighbors send it a message, and we compute the sum of all these messages.&lt;/li&gt;
+&lt;li&gt;Let $p\_i = &amp;#92;sigma(a\_i)$, where $&amp;#92;sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p\_i$ is close to 1 for large positive activation energies, and $p\_i$ is close to 0 for negative activation energies.&lt;/li&gt;
+&lt;li&gt;We then turn unit $i$ on with probability $p\_i$, and turn it off with probability $1 - p\_i$.&lt;/li&gt;
 &lt;li&gt;(In layman&amp;#8217;s terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)&lt;/li&gt;
 &lt;/ul&gt;
 
 
+
+
 &lt;p&gt;For example, let&amp;#8217;s suppose our two hidden units really do correspond to SF/fantasy and Oscar winners.&lt;/p&gt;
+
+
+
 
 &lt;ul&gt;
 &lt;li&gt;If Alice has told us her six binary preferences on our set of movies, we could then ask our RBM which of the hidden units her preferences activate (i.e., ask the RBM to explain her preferences in terms of latent factors). So the six movies send messages to the hidden units, telling them to update themselves. (Note that even if Alice has declared she wants to watch Harry Potter, Avatar, and LOTR 3, this doesn&amp;#8217;t guarantee that the SF/fantasy hidden unit will turn on, but only that it will turn on with high &lt;em&gt;probability&lt;/em&gt;. This makes a bit of sense: in the real world, Alice wanting to watch all three of those movies makes us highly suspect she likes SF/fantasy in general, but there&amp;#8217;s a small chance she wants to watch them for other reasons. Thus, the RBM allows us to &lt;em&gt;generate&lt;/em&gt; models of people in the messy, real world.)&lt;/li&gt;
@@ -4592,38 +4813,71 @@ To shift these randomly initialized weights to the correct ones, for each traini
 &lt;/ul&gt;
 
 
+
+
 &lt;h1&gt;Learning Weights&lt;/h1&gt;
+
+
+
 
 &lt;p&gt;So how do we learn the connection weights in our network? Suppose we have a bunch of training examples, where each training example is a binary vector with six elements corresponding to a user&amp;#8217;s movie preferences. Then for each epoch, do the following:&lt;/p&gt;
 
+
+
+
 &lt;ul&gt;
 &lt;li&gt;Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.&lt;/li&gt;
-&lt;li&gt;Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w_{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e_{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they&amp;#8217;re both on).&lt;/li&gt;
-&lt;li&gt;Now &lt;strong&gt;reconstruct&lt;/strong&gt; the visible units in a similar manner: for each visible unit, compute its activation energy $a_i$, and update its state. (Note that this &lt;em&gt;reconstruction&lt;/em&gt; may not match the original preferences.) Then update the hidden units again, and compute $Negative(e_{ij}) = x_i * x_j$ for each edge.&lt;/li&gt;
-&lt;li&gt;Update the weight of each edge $e_{ij}$ by setting $w_{ij} = w_{ij} + L * (Positive(e_{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.&lt;/li&gt;
+&lt;li&gt;Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a\_j = &amp;#92;sum\_i w\_{ij} x\_i$, and set $x\_j$ to 1 with probability $&amp;#92;sigma(a\_j)$ and to 0 with probability $1 - &amp;#92;sigma(a\_j)$. Then for each edge $e\_{ij}$, compute $Positive(e\_{ij}) = x\_i \* x\_j$ (i.e., for each pair of units, measure whether they&amp;#8217;re both on).&lt;/li&gt;
+&lt;li&gt;Now &lt;strong&gt;reconstruct&lt;/strong&gt; the visible units in a similar manner: for each visible unit, compute its activation energy $a\_i$, and update its state. (Note that this &lt;em&gt;reconstruction&lt;/em&gt; may not match the original preferences.) Then update the hidden units again, and compute $Negative(e\_{ij}) = x\_i \* x\_j$ for each edge.&lt;/li&gt;
+&lt;li&gt;Update the weight of each edge $e\_{ij}$ by setting $w\_{ij} = w\_{ij} + L \* (Positive(e\_{ij}) - Negative(e\_{ij}))$, where $L$ is a learning rate.&lt;/li&gt;
 &lt;li&gt;Repeat over all training examples.&lt;/li&gt;
 &lt;/ul&gt;
 
 
+
+
 &lt;p&gt;Continue until the network converges (i.e., the error between the training examples and their reconstructions falls below some threshold) or we reach some maximum number of epochs.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;Why does this update rule make sense? Note that&lt;/p&gt;
 
+
+
+
 &lt;ul&gt;
-&lt;li&gt;In the first phase, $Positive(e_{ij})$ measures the association between the $i$th and $j$th unit that we &lt;em&gt;want&lt;/em&gt; the network to learn from our training examples;&lt;/li&gt;
-&lt;li&gt;In the &amp;#8220;reconstruction&amp;#8221; phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $Negative(e_{ij})$ measures the association that the network &lt;em&gt;itself&lt;/em&gt; generates (or &amp;#8220;daydreams&amp;#8221; about) when no units are fixed to training data.&lt;/li&gt;
+&lt;li&gt;In the first phase, $Positive(e\_{ij})$ measures the association between the $i$th and $j$th unit that we &lt;em&gt;want&lt;/em&gt; the network to learn from our training examples;&lt;/li&gt;
+&lt;li&gt;In the &amp;#8220;reconstruction&amp;#8221; phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $Negative(e\_{ij})$ measures the association that the network &lt;em&gt;itself&lt;/em&gt; generates (or &amp;#8220;daydreams&amp;#8221; about) when no units are fixed to training data.&lt;/li&gt;
 &lt;/ul&gt;
 
 
-&lt;p&gt;So by adding $Positive(e_{ij}) - Negative(e_{ij})$ to each edge weight, we&amp;#8217;re helping the network&amp;#8217;s daydreams better match the reality of our training examples.&lt;/p&gt;
+
+
+&lt;p&gt;So by adding $Positive(e\_{ij}) - Negative(e\_{ij})$ to each edge weight, we&amp;#8217;re helping the network&amp;#8217;s daydreams better match the reality of our training examples.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;(You may hear this update rule called &lt;strong&gt;contrastive divergence&lt;/strong&gt;, which is basically a funky term for &amp;#8220;approximate gradient descent&amp;#8221;.)&lt;/p&gt;
 
+
+
+
 &lt;h1&gt;Examples&lt;/h1&gt;
+
+
+
 
 &lt;p&gt;I wrote &lt;a href=&quot;https://github.com/echen/restricted-boltzmann-machines&quot;&gt;a simple RBM implementation&lt;/a&gt; in Python (the code is heavily commented, so take a look if you&amp;#8217;re still a little fuzzy on how everything works), so let&amp;#8217;s use it to walk through some examples.&lt;/p&gt;
 
+
+
+
 &lt;p&gt;First, I trained the RBM using some fake data.&lt;/p&gt;
+
+
+
 
 &lt;ul&gt;
 &lt;li&gt;Alice: (Harry Potter = 1, Avatar = 1, LOTR 3 = 1, Gladiator = 0, Titanic = 0, Glitter = 0). Big SF/fantasy fan.&lt;/li&gt;
@@ -4635,40 +4889,71 @@ To shift these randomly initialized weights to the correct ones, for each traini
 &lt;/ul&gt;
 
 
+
+
 &lt;p&gt;The network learned the following weights:&lt;/p&gt;
 
+
+
+
 &lt;pre&gt;&lt;code&gt;                 Bias Unit       Hidden 1        Hidden 2
-Bias Unit       -0.08257658     -0.19041546      1.57007782 
-Harry Potter    -0.82602559     -7.08986885      4.96606654 
-Avatar          -1.84023877     -5.18354129      2.27197472 
-LOTR 3           3.92321075      2.51720193      4.11061383 
-Gladiator        0.10316995      6.74833901     -4.00505343 
-Titanic         -0.97646029      3.25474524     -5.59606865 
+Bias Unit       -0.08257658     -0.19041546      1.57007782
+Harry Potter    -0.82602559     -7.08986885      4.96606654
+Avatar          -1.84023877     -5.18354129      2.27197472
+LOTR 3           3.92321075      2.51720193      4.11061383
+Gladiator        0.10316995      6.74833901     -4.00505343
+Titanic         -0.97646029      3.25474524     -5.59606865
 Glitter         -4.44685751     -2.81563804     -2.91540988
 &lt;/code&gt;&lt;/pre&gt;
 
+
+
+
 &lt;p&gt;Note that the first hidden unit seems to correspond to the Oscar winners, and the second hidden unit seems to correspond to the SF/fantasy movies, just as we were hoping.&lt;/p&gt;
+
+
+
 
 &lt;p&gt;What happens if we give the RBM a new user, George, who has (Harry Potter = 0, Avatar = 0, LOTR 3 = 0, Gladiator = 1, Titanic = 1, Glitter = 0) as his preferences? It turns the Oscar winners unit on (but not the SF/fantasy unit), correctly guessing that George probably likes movies that are Oscar winners.&lt;/p&gt;
 
+
+
+
 &lt;p&gt;What happens if we activate only the SF/fantasy unit, and run the RBM a bunch of different times? In my trials, it turned on Harry Potter, Avatar, and LOTR 3 three times; it turned on Avatar and LOTR 3, but not Harry Potter, once; and it turned on Harry Potter and LOTR 3, but not Avatar, twice. Note that, based on our training examples, these generated preferences do indeed match what we might expect real SF/fantasy fans want to watch.&lt;/p&gt;
+
+
+
 
 &lt;h1&gt;Modifications&lt;/h1&gt;
 
+
+
+
 &lt;p&gt;I tried to keep the connection-learning algorithm I described above pretty simple, so here are some modifications that often appear in practice:&lt;/p&gt;
 
+
+
+
 &lt;ul&gt;
-&lt;li&gt;Above, $Negative(e_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units &lt;em&gt;once&lt;/em&gt; and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&amp;#8217;s daydreams more accurately.&lt;/li&gt;
-&lt;li&gt;Instead of using $Positive(e_{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 &lt;em&gt;states&lt;/em&gt;, we could also let $x_i$ and/or $x_j$ be activation &lt;em&gt;probabilities&lt;/em&gt;. Similarly for $Negative(e_{ij})$.&lt;/li&gt;
+&lt;li&gt;Above, $Negative(e\_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units &lt;em&gt;once&lt;/em&gt; and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&amp;#8217;s daydreams more accurately.&lt;/li&gt;
+&lt;li&gt;Instead of using $Positive(e\_{ij})=x\_i \* x\_j$, where $x\_i$ and $x\_j$ are binary 0 or 1 &lt;em&gt;states&lt;/em&gt;, we could also let $x\_i$ and/or $x\_j$ be activation &lt;em&gt;probabilities&lt;/em&gt;. Similarly for $Negative(e\_{ij})$.&lt;/li&gt;
 &lt;li&gt;We could penalize larger edge weights, in order to get a sparser or more regularized model.&lt;/li&gt;
-&lt;li&gt;When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e_{ij}) - Negative(e_{ij})$) and the step previously taken.&lt;/li&gt;
+&lt;li&gt;When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L \* (Positive(e\_{ij}) - Negative(e\_{ij})$) and the step previously taken.&lt;/li&gt;
 &lt;li&gt;Instead of using only one training example in each epoch, we could use &lt;em&gt;batches&lt;/em&gt; of examples in each epoch, and only update the network&amp;#8217;s weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.&lt;/li&gt;
 &lt;/ul&gt;
 
 
+
+
 &lt;h1&gt;Further&lt;/h1&gt;
 
+
+
+
 &lt;p&gt;If you&amp;#8217;re interested in learning more about Restricted Boltzmann Machines, here are some good links.&lt;/p&gt;
+
+
+
 
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;http://www.cs.toronto.edu/~hinton/absps/guideTR.pdf&quot;&gt;A Practical guide to training restricted Boltzmann machines&lt;/a&gt;, by Geoffrey Hinton.&lt;/li&gt;
