@@ -1877,7 +1877,7 @@
 </span><span class='line'><span class="c1">#</span>
 </span><span class='line'><span class="c1"># Recall that the kth weight is</span>
 </span><span class='line'><span class="c1">#   \beta_k = (1 - \beta_1) * (1 - \beta_2) * ... * (1 - \beta_{k-1}) * beta_k</span>
-</span><span class='line'><span class="c1"># where each $\beta_i$ is drawn from a Beta distribution</span>
+</span><span class='line'><span class="c1"># where each $\\beta\_i$ is drawn from a Beta distribution</span>
 </span><span class='line'><span class="c1">#   \beta_i ~ Beta(1, \alpha)</span>
 </span><span class='line'>stick_breaking_process <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>num_weights<span class="p">,</span> alpha<span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>  betas <span class="o">=</span> rbeta<span class="p">(</span>num_weights<span class="p">,</span> <span class="m">1</span><span class="p">,</span> alpha<span class="p">)</span>
@@ -2501,7 +2501,7 @@
 
 <p>But recall that we can also write correlation in the following form:</p>
 
-<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x<sup>2</sup> - (\sum x)<sup>2}</sup> \sqrt{n \sum y<sup>2</sup> - (\sum y)<sup>2}}$</sup></p>
+<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x^2 - (\sum x)^2} \sqrt{n \sum y^2 - (\sum y)^2}}$</p>
 
 <p>(See the <a href="http://en.wikipedia.org/wiki/Correlation_and_dependence">Wikipedia page</a> on correlation.)</p>
 
@@ -3108,7 +3108,7 @@
 </pre></td><td class='code'><pre><code class='r'><span class='line'>books<span class="p">$</span>num_bought_today <span class="o">=</span> c<span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">8</span><span class="p">)</span>
 </span><span class='line'>books<span class="p">$</span>num_bought_yesterday <span class="o">=</span> c<span class="p">(</span><span class="m">18</span><span class="p">,</span> <span class="m">13</span><span class="p">,</span> <span class="m">20</span><span class="p">)</span>
 </span><span class='line'>  
-</span><span class='line'>books<span class="p">$</span>total_num_bought <span class="o">=</span> books<span class="p">$</span>num_bought_today <span class="o">+</span> books<span class="p">$</span>num_bought_yesterday
+</span><span class='line'>books<span class="p">$</span>total\_num\_bought <span class="o">=</span> books<span class="p">$</span>num_bought_today <span class="o">+</span> books<span class="p">$</span>num_bought_yesterday
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -3445,58 +3445,25 @@
 
   <div class="entry-content"><p>Imagine you have a sequence of snapshots from a day in Justin Bieber&#8217;s life, and you want to label each image with the activity it represents (eating, sleeping, driving, etc.). How can you do this?</p>
 
-
-
-
 <p>One way is to ignore the sequential nature of the snapshots, and build a <em>per-image</em> classifier. For example, given a month&#8217;s worth of labeled snapshots, you might learn that dark images taken at 6am tend to be about sleeping, images with lots of bright colors tend to be about dancing, images of cars are about driving, and so on.</p>
-
-
-
 
 <p>By ignoring this sequential aspect, however, you lose a lot of information. For example, what happens if you see a close-up picture of a mouth &#8211; is it about singing or eating? If you know that the <em>previous</em> image is a picture of Justin Bieber eating or cooking, then it&#8217;s more likely this picture is about eating; if, however, the previous image contains Justin Bieber singing or dancing, then this one probably shows him singing as well.</p>
 
-
-
-
 <p>Thus, to increase the accuracy of our labeler, we should incorporate the labels of nearby photos, and this is precisely what a <strong>conditional random field</strong> does.</p>
-
-
-
 
 <h1>Part-of-Speech Tagging</h1>
 
-
-
-
 <p>Let&#8217;s go into some more detail, using the more common example of <strong>part-of-speech tagging</strong>.</p>
-
-
-
 
 <p>In POS tagging, the goal is to label a sentence (a sequence of words or tokens) with tags like ADJECTIVE, NOUN, PREPOSITION, VERB, ADVERB, ARTICLE.</p>
 
-
-
-
 <p>For example, given the sentence &#8220;Bob drank coffee at Starbucks&#8221;, the labeling might be &#8220;Bob (NOUN) drank (VERB) coffee (NOUN) at (PREPOSITION) Starbucks (NOUN)&#8221;.</p>
-
-
-
 
 <p>So let&#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&#8217;ll first need to decide on a set of feature functions $f_i$.</p>
 
-
-
-
 <h2>Feature Functions in a CRF</h2>
 
-
-
-
 <p>In a CRF, each <strong>feature function</strong> is a function that takes in as input:</p>
-
-
-
 
 <ul>
 <li>a sentence s</li>
@@ -3506,62 +3473,27 @@
 </ul>
 
 
-
-
 <p>and outputs a real-valued number (though the numbers are often just either 0 or 1).</p>
-
-
-
 
 <p>(Note: by restricting our features to depend on only the <em>current</em> and <em>previous</em> labels, rather than arbitrary labels throughout the sentence, I&#8217;m actually building the special case of a <strong>linear-chain CRF</strong>. For simplicity, I&#8217;m going to ignore general CRFs in this post.)</p>
 
-
-
-
 <p>For example, one possible feature function could measure how much we suspect that the current word should be labeled as an adjective given that the previous word is &#8220;very&#8221;.</p>
-
-
-
 
 <h2>Features to Probabilities</h2>
 
-
-
-
 <p>Next, assign each feature function $f_j$ a <strong>weight</strong> $\lambda_j$ (I&#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:</p>
-
-
-
 
 <p>$score(l | s) = \sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})$</p>
 
-
-
-
 <p>(The first sum runs over each feature function $j$, and the inner sum runs over each position $i$ of the sentence.)</p>
-
-
-
 
 <p>Finally, we can transform these scores into probabilities $p(l | s)$ between 0 and 1 by exponentiating and normalizing:</p>
 
-
-
-
 <p>$p(l | s) = \frac{exp[score(l|s)]}{\sum_{l&#8217;} exp[score(l&#8217;|s)]} = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})]}{\sum_{l&#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l&#8217;_i, l&#8217;_{i-1})]}$</p>
-
-
-
 
 <h2>Example Feature Functions</h2>
 
-
-
-
 <p>So what do these feature functions look like? Examples of POS tagging features could include:</p>
-
-
-
 
 <ul>
 <li>$f_1(s, i, l_i, l_{i-1}) = 1$ if $l_i =$ ADVERB and the ith word ends in &#8220;-ly&#8221;; 0 otherwise.
@@ -3591,54 +3523,25 @@
 </ul>
 
 
-
-
 <p>And that&#8217;s it! To sum up: to build a conditional random field, you just define a bunch of feature functions (which can depend on the entire sentence, a current position, and nearby labels), assign them weights, and add them all together, transforming at the end to a probability if necessary.</p>
-
-
-
 
 <p>Now let&#8217;s step back and compare CRFs to some other common machine learning techniques.</p>
 
-
-
-
 <h1>Smells like Logistic Regression&#8230;</h1>
-
-
-
 
 <p>The form of the CRF probabilities
 $p(l | s) = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l_i, l_{i-1})]}{\sum_{l&#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l&#8217;_i, l&#8217;_{i-1})]}$
 might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</a>.</p>
 
-
-
-
 <p>That&#8217;s because CRFs are indeed basically the sequential version of <strong>logistic regression</strong>: whereas logistic regression is a log-linear model for <em>classification</em>, CRFs are a log-linear model for <em>sequential labels</em>.</p>
-
-
-
 
 <h1>Looks like HMMs&#8230;</h1>
 
-
-
-
 <p>Recall that <strong><a href="http://en.wikipedia.org/wiki/Hidden_Markov_model">Hidden Markov Models</a></strong> are another model for part-of-speech tagging (and sequential labeling in general). Whereas CRFs throw any bunch of functions together to get a label score, HMMs take a <em>generative</em> approach to labeling, defining</p>
-
-
-
 
 <p>$p(l,s) = p(l_1) \prod_i p(l_i | l_{i-1}) p(w_i | l_i)$</p>
 
-
-
-
 <p>where</p>
-
-
-
 
 <ul>
 <li>$p(l_i | l_{i-1})$ are <strong>transition</strong> probabilities (e.g., the probability that a preposition is followed by a noun);</li>
@@ -3646,22 +3549,11 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 </ul>
 
 
-
-
 <p>So how do HMMs compare to CRFs? CRFs are more powerful &#8211; they can model everything HMMs can and more. One way of seeing this is as follows.</p>
-
-
-
 
 <p>Note that the log of the HMM probability is $\log p(l,s) = \log p(l_0) + \sum_i \log p(l_i | l_{i-1}) + \sum_i \log p(w_i | l_i)$. This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features.</p>
 
-
-
-
 <p>That is, we can build a CRF equivalent to any HMM by&#8230;</p>
-
-
-
 
 <ul>
 <li>For each HMM <em>transition</em> probability $ p(l_i = y | l_{i-1} = x) $, define a set of CRF transition features of the form $f_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $l_i = y$ and $l_{i-1} = x$. Give each feature a weight of $w_{x,y} = \log p(l_i = y | l_{i-1} = x)$.</li>
@@ -3669,17 +3561,9 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 </ul>
 
 
-
-
 <p>Thus, the score $p(l|s)$ computed by a CRF using these feature functions is precisely proportional to the score computed by the associated HMM, and so every HMM is equivalent to some CRF.</p>
 
-
-
-
 <p>However, CRFs can model a much richer set of label distributions as well, for two main reasons:</p>
-
-
-
 
 <ul>
 <li><strong>CRFs can define a much larger set of features.</strong> Whereas HMMs are necessarily <em>local</em> in nature (because they&#8217;re constrained to binary transition and emission feature functions, which force each word to depend only on the current label and each label to depend only on the previous label), CRFs can use more <em>global</em> features. For example, one of the features in our POS tagger above increased the probability of labelings that tagged the <em>first</em> word of a sentence as a VERB if the <em>end</em> of the sentence contained a question mark.</li>
@@ -3687,23 +3571,12 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 </ul>
 
 
-
-
 <h1>Learning Weights</h1>
-
-
-
 
 <p>Let&#8217;s go back to the question of how to learn the feature weights in a CRF. One way is (surprise) to use <strong>gradient ascent</strong>.</p>
 
-
-
-
 <p>Assume we have a bunch of training examples (sentences and associated part-of-speech labels). Randomly initialize the weights of our CRF model.
 To shift these randomly initialized weights to the correct ones, for each training example&#8230;</p>
-
-
-
 
 <ul>
 <li>Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&#8217;} p(l&#8217; | s) \sum_{j = 1}^m f_i(s, j, l&#8217;_j, l&#8217;_{j-1})$</li>
@@ -3713,82 +3586,37 @@ To shift these randomly initialized weights to the correct ones, for each traini
 </ul>
 
 
-
-
 <p>In other words, every step takes the difference between what we want the model to learn and the model&#8217;s current state, and moves $\lambda_i$ in the direction of this difference.</p>
-
-
-
 
 <h1>Finding the Optimal Labeling</h1>
 
-
-
-
 <p>Suppose we&#8217;ve trained our CRF model, and now a new sentence comes in. How do we do label it?</p>
-
-
-
 
 <p>The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.</p>
 
-
-
-
 <p>A better way is to realize that (linear-chain) CRFs satisfy an <a href="http://en.wikipedia.org/wiki/Optimal_substructure">optimal substructure</a> property that allows us to use a (polynomial-time) dynamic programming algorithm to find the optimal label, similar to the <a href="http://en.wikipedia.org/wiki/Viterbi_algorithm">Viterbi algorithm</a> for HMMs.</p>
-
-
-
 
 <h1>A More Interesting Application</h1>
 
-
-
-
 <p>Okay, so part-of-speech tagging is kind of boring, and there are plenty of existing POS taggers out there. When might you use a CRF in real life?</p>
-
-
-
 
 <p>Suppose you want to mine Twitter for the types of presents people received for Christmas:</p>
 
-
-
-
 <blockquote class="twitter-tweet"><p>What people on Twitter wanted for Christmas, and what they got: <a href="http://t.co/EGeKTBgF" title="http://twitter.com/edchedch/status/153683967315419136/photo/1">twitter.com/edchedch/statu…</a></p>— Edwin Chen (@edchedch) <a href="https://twitter.com/edchedch/status/153683967315419136" data-datetime="2012-01-02T03:48:10+00:00">January 2, 2012</a></blockquote>
-
-
 
 
 <script src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 
-
-
 <p>(Yes, I just embedded a tweet. BOOM.)</p>
-
-
-
 
 <p>How can you figure out which words refer to gifts?</p>
 
-
-
-
 <p>To gather data for the graphs above, I simply looked for phrases of the form &#8220;I want XXX for Christmas&#8221; and &#8220;I got XXX for Christmas&#8221;. However, a more sophisticated CRF variant could use a GIFT part-of-speech-like tag (even adding other tags like GIFT-GIVER and GIFT-RECEIVER, to get even more information on who got what from whom) and treat this like a POS tagging problem. Features could be based around things like &#8220;this word is a GIFT if the previous word was a GIFT-RECEIVER and the word before that was &#8216;gave&#8217;&#8221; or &#8220;this word is a GIFT if the next two words are &#8216;for Christmas&#8217;&#8221;.</p>
-
-
-
 
 <h1>Fin</h1>
 
-
-
-
 <p>I&#8217;ll end with some more random thoughts:</p>
-
-
-
 
 <ul>
 <li>I explicitly skipped over the graphical models framework that conditional random fields sit in, because I don&#8217;t think they add much to an initial understanding of CRFs. But if you&#8217;re interested in learning more, Daphne Koller is teaching a free, online course on <a href="http://www.pgm-class.org/">graphical models</a> starting in January.</li>
@@ -3797,11 +3625,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 </ul>
 
 
-
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/crfs/crf-diagram.png"><img src="http://dl.dropbox.com/u/10506/blog/crfs/crf-diagram.png" alt="CRF Diagram" /></a></p>
-
-</div>
+<p><a href="http://dl.dropbox.com/u/10506/blog/crfs/crf-diagram.png"><img src="http://dl.dropbox.com/u/10506/blog/crfs/crf-diagram.png" alt="CRF Diagram" /></a></p></div>
   
   
 
