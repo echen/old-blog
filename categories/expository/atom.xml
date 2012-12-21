@@ -4,7 +4,7 @@
   <title><![CDATA[Category: expository | Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/categories/expository/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-12-20T23:28:07-08:00</updated>
+  <updated>2012-12-20T23:54:00-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -73,9 +73,9 @@
 
 
 <ul>
-<li>Compute the <strong>activation energy</strong> $a\_i = \\sum\_j w\_{ij} x\_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w\_{ij}$ is the weight of the connection between $i$ and $j$, and $x\_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&#8217;s neighbors send it a message, and we compute the sum of all these messages.</li>
-<li>Let $p\_i = \\sigma(a\_i)$, where $\\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p\_i$ is close to 1 for large positive activation energies, and $p\_i$ is close to 0 for negative activation energies.</li>
-<li>We then turn unit $i$ on with probability $p\_i$, and turn it off with probability $1 - p\_i$.</li>
+<li>Compute the <strong>activation energy</strong> $a_i = \sum_j w_{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w_{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&#8217;s neighbors send it a message, and we compute the sum of all these messages.</li>
+<li>Let $p_i = \sigma(a_i)$, where $\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p_i$ is close to 1 for large positive activation energies, and $p_i$ is close to 0 for negative activation energies.</li>
+<li>We then turn unit $i$ on with probability $p_i$, and turn it off with probability $1 - p_i$.</li>
 <li>(In layman&#8217;s terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)</li>
 </ul>
 
@@ -107,9 +107,9 @@
 
 <ul>
 <li>Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.</li>
-<li>Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a\_j = \\sum\_i w\_{ij} x\_i$, and set $x\_j$ to 1 with probability $\\sigma(a\_j)$ and to 0 with probability $1 - \\sigma(a\_j)$. Then for each edge $e\_{ij}$, compute $Positive(e\_{ij}) = x\_i \* x\_j$ (i.e., for each pair of units, measure whether they&#8217;re both on).</li>
-<li>Now <strong>reconstruct</strong> the visible units in a similar manner: for each visible unit, compute its activation energy $a\_i$, and update its state. (Note that this <em>reconstruction</em> may not match the original preferences.) Then update the hidden units again, and compute $Negative(e\_{ij}) = x\_i \* x\_j$ for each edge.</li>
-<li>Update the weight of each edge $e\_{ij}$ by setting $w\_{ij} = w\_{ij} + L \* (Positive(e\_{ij}) - Negative(e\_{ij}))$, where $L$ is a learning rate.</li>
+<li>Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w_{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e_{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they&#8217;re both on).</li>
+<li>Now <strong>reconstruct</strong> the visible units in a similar manner: for each visible unit, compute its activation energy $a_i$, and update its state. (Note that this <em>reconstruction</em> may not match the original preferences.) Then update the hidden units again, and compute $Negative(e_{ij}) = x_i * x_j$ for each edge.</li>
+<li>Update the weight of each edge $e_{ij}$ by setting $w_{ij} = w_{ij} + L * (Positive(e_{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.</li>
 <li>Repeat over all training examples.</li>
 </ul>
 
@@ -127,14 +127,14 @@
 
 
 <ul>
-<li>In the first phase, $Positive(e\_{ij})$ measures the association between the $i$th and $j$th unit that we <em>want</em> the network to learn from our training examples;</li>
-<li>In the &#8220;reconstruction&#8221; phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $Negative(e\_{ij})$ measures the association that the network <em>itself</em> generates (or &#8220;daydreams&#8221; about) when no units are fixed to training data.</li>
+<li>In the first phase, $Positive(e_{ij})$ measures the association between the $i$th and $j$th unit that we <em>want</em> the network to learn from our training examples;</li>
+<li>In the &#8220;reconstruction&#8221; phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $Negative(e_{ij})$ measures the association that the network <em>itself</em> generates (or &#8220;daydreams&#8221; about) when no units are fixed to training data.</li>
 </ul>
 
 
 
 
-<p>So by adding $Positive(e\_{ij}) - Negative(e\_{ij})$ to each edge weight, we&#8217;re helping the network&#8217;s daydreams better match the reality of our training examples.</p>
+<p>So by adding $Positive(e_{ij}) - Negative(e_{ij})$ to each edge weight, we&#8217;re helping the network&#8217;s daydreams better match the reality of our training examples.</p>
 
 
 
@@ -215,10 +215,10 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
 
 <ul>
-<li>Above, $Negative(e\_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units <em>once</em> and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&#8217;s daydreams more accurately.</li>
-<li>Instead of using $Positive(e\_{ij})=x\_i \* x\_j$, where $x\_i$ and $x\_j$ are binary 0 or 1 <em>states</em>, we could also let $x\_i$ and/or $x\_j$ be activation <em>probabilities</em>. Similarly for $Negative(e\_{ij})$.</li>
+<li>Above, $Negative(e_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units <em>once</em> and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&#8217;s daydreams more accurately.</li>
+<li>Instead of using $Positive(e_{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 <em>states</em>, we could also let $x_i$ and/or $x_j$ be activation <em>probabilities</em>. Similarly for $Negative(e_{ij})$.</li>
 <li>We could penalize larger edge weights, in order to get a sparser or more regularized model.</li>
-<li>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L \* (Positive(e\_{ij}) - Negative(e\_{ij})$) and the step previously taken.</li>
+<li>When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e_{ij}) - Negative(e_{ij})$) and the step previously taken.</li>
 <li>Instead of using only one training example in each epoch, we could use <em>batches</em> of examples in each epoch, and only update the network&#8217;s weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.</li>
 </ul>
 
@@ -372,15 +372,15 @@ At $ \hat{\mu_1} $, the residual now makes equal angles with $ x_1, x_2 $, and s
 
 <p>Something else that should perhaps be mentioned is the relationship between cointegration and error-correction mechanisms: suppose we have two cointegrated series $ X_t, Y_t $, with autoregressive representations</p>
 
-<p>$ X_t = a X_{t-1} + b Y_{t-1} + u_t $
-$ Y_t = c X_{t-1} + d Y_{t-1} + v_t $</p>
+<p>$ X_t = a X<em>{t-1} + b Y</em>{t-1} + u_t $
+$ Y_t = c X<em>{t-1} + d Y</em>{t-1} + v_t $</p>
 
 <p>By the Granger representation theorem (which is actually a bit more general than this), we then have</p>
 
-<p>$ \Delta X_t = \alpha_1 (Y_{t-1} - \beta X_{t-1}) + u_t $
-$ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
+<p>$ \Delta X_t = \alpha_1 (Y<em>{t-1} - \beta X</em>{t-1}) + u_t $
+$ \Delta Y_t = \alpha_2 (Y<em>{t-1} - \beta X</em>{t-1}) + v_t $</p>
 
-<p>where $ Y_{t-1} - \beta X_{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y_{t-1} - \beta X_{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
+<p>where $ Y<em>{t-1} - \beta X</em>{t-1} \sim I(0) $ is the cointegrating relationship. Regarding $ Y<em>{t-1} - \beta X</em>{t-1} $ as the extent of disequilibrium from the long-run relationship, and the $ \alpha_i $ as the speed (and direction) at which the time series correct themselves from this disequilibrium, we can see that this formalizes the way cointegrated variables adjust to match their long-run equilbrium.</p>
 
 <h1>Summary</h1>
 

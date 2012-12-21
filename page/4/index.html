@@ -285,11 +285,11 @@
 <p>The lesson is that when using existing ratings, we should normalize out these types of effects, so that ratings are as comparable as possible.</p>
 
 <p>Another way of thinking about this is that we are simply building a regression model. That is, for each user u, we have a model
-$r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are common explanatory variables and we want to estimate $\theta_u$; and similarly for each item i. Once we&#8217;ve estimated the $\theta_u$, we can use the fancier neighborhood models on the specific ratings.</p>
+$r<em>{ui} = (\sum \theta_u x</em>{ui}) + SpecificRating$, where the $x_{ui}$ are common explanatory variables and we want to estimate $\theta_u$; and similarly for each item i. Once we&#8217;ve estimated the $\theta_u$, we can use the fancier neighborhood models on the specific ratings.</p>
 
 <p>For example, suppose we want to predict Bob&#8217;s rating of Titanic. We&#8217;ve built a regression model with two explanatory variables, whether the movie was Oscar-nominated (1 if so, -1 if not) and whether the movie contains Kate Winslet (1 if so, -1 if not), and we&#8217;ve determined that Bob&#8217;s weights on these two variables are -2 (Bob tends to hate Oscar movies) and +1.5 (Bob likes Kate Winslet). Similarly, his friend John has weights +1 and -0.5 for these two variables (John likes Oscars, but dislikes Kate Winslet). So if we know that John rated Titanic a 4, then we have 4 = 1(1) + -0.5(1) + (John&#8217;s specific rating), so John&#8217;s specific rating of Titanic is 3.5. If we use John&#8217;s rating alone to estimate Bob&#8217;s, we might guess that Bob would rate Titanic -2(1) + 1.5(1) + (John&#8217;s specific rating) = 3.0.</p>
 
-<p>To estimate the $\theta_u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $\hat{\theta_u} = \frac{\sum r_{ui} x_{ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $\theta_u \sim N(\mu, \sigma^2)$, and $\hat{\theta_u} | \theta_u \sim N(\theta_u, \sigma_u^2)$, leading to $E(\theta_u | \hat{\theta_u}) = \frac{\sigma^2 \hat{\theta_u} + \sigma_u^2 \mu}{\sigma^2 + \sigma_u^2}$.</p>
+<p>To estimate the $\theta_u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $\hat{\theta_u} = \frac{\sum r<em>{ui} x</em>{ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $\theta_u \sim N(\mu, \sigma<sup>2)$,</sup> and $\hat{\theta_u} | \theta_u \sim N(\theta_u, \sigma_u<sup>2)$,</sup> leading to $E(\theta_u | \hat{\theta_u}) = \frac{\sigma<sup>2</sup> \hat{\theta_u} + \sigma_u<sup>2</sup> \mu}{\sigma<sup>2</sup> + \sigma_u<sup>2}$.</sup></p>
 
 <p>In practice, the explanatory variables Bell and Koren found to work well included the overall mean of all ratings, each movie&#8217;s specific mean, each user&#8217;s specific mean, time since movie release, time since user join, and number of ratings for each movie.</p>
 
@@ -305,13 +305,13 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <p>We&#8217;ll see how using an optimization method to derive weights (as opposed to deriving weights via a similarity function) overcomes these two limitations.</p>
 
-<p>Recall our problem: we want to predict $r_{ui}$, user u&#8217;s rating of item i, and what we have is a set $N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $w_{ij}$ such that $r_{ui} = \sum_{j \in N(i; u) w_{ij} r_{uj}}$. A natural approach, then, is simply to choose our weights to minimize $\min_w \sum_{v \neq u} \left( r_{vi} - \sum_{j \in N(i; u)} w_{ij} r_{vj}\right)^2$.</p>
+<p>Recall our problem: we want to predict $r<em>{ui}$, user u&#8217;s rating of item i, and what we have is a set $N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $w</em>{ij}$ such that $r<em>{ui} = \sum</em>{j \in N(i; u) w<em>{ij} r</em>{uj}}$. A natural approach, then, is simply to choose our weights to minimize $\min_w \sum<em>{v \neq u} \left( r</em>{vi} - \sum<em>{j \in N(i; u)} w</em>{ij} r_{vj}\right)<sup>2$.</sup></p>
 
 <p>Notice how this optimization solves our two problems above: it&#8217;s not only a more principled approach (we choose our weights by minimizing squared error), but by deriving weights simultaneously, we overcome interaction effects.</p>
 
-<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $Aw = b$, where A is a $K \times K$ matrix defined by $A_{jk} = \sum_{v \neq u} r_{vj} r_{vk}$ and $b$ is a vector defined by $b_j = \sum_{v \neq u} r_{vj} r_{vi}$.</p>
+<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $Aw = b$, where A is a $K \times K$ matrix defined by $A<em>{jk} = \sum</em>{v \neq u} r<em>{vj} r</em>{vk}$ and $b$ is a vector defined by $b_j = \sum<em>{v \neq u} r</em>{vj} r_{vi}$.</p>
 
-<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $\bar{A}_{jk} = \frac{\sum_{v \in U(j,k)} r_{vj} r_{vk}}{|U(j, k)|}$, where $U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $\hat{A}_{jk} = \frac{|U(J,K)|\bar{A}_{jk} + \beta A_{\mu}}{|U(j,k)| + \beta}$, where $\beta$ is a shrinkage parameter and $A_{\mu}$ is the mean over all $\bar{A}$, and similarly for b.</p>
+<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $\bar{A}<em>{jk} = \frac{\sum</em>{v \in U(j,k)} r<em>{vj} r</em>{vk}}{|U(j, k)|}$, where $U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $\hat{A}<em>{jk} = \frac{|U(J,K)|\bar{A}</em>{jk} + \beta A<em>{\mu}}{|U(j,k)| + \beta}$, where $\beta$ is a shrinkage parameter and $A</em>{\mu}$ is the mean over all $\bar{A}$, and similarly for b.</p>
 
 <p>Note that another benefit of our optimization-derived weights is that the weights of neighbors are no longer constrained to sum to 1. Thus, if an item simply has no strong neighbors, the neighbors&#8217; prediction will have only a small effect.</p>
 
@@ -331,7 +331,7 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <p>To get around the first limitation, we can project users into a lower-dimensional space (say, by using a singular value decomposition), where we can use a space-partitioning data structure (e.g., a kd-tree) or a nearest-neighbor algorithm (e.g., locality sensitive hashing) to find neighboring users.</p>
 
-<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $\min_w \sum_{j \neq i} s_{ij} \left( r_{uj} - \sum_{v \in N(u, i)} w_{uv} r_{vj} \right)^2,$ where the $s_{ij}$ are item-item similarities.</p>
+<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $\min_w \sum<em>{j \neq i} s</em>{ij} \left( r<em>{uj} - \sum</em>{v \in N(u, i)} w<em>{uv} r</em>{vj} \right)<sup>2,$</sup> where the $s_{ij}$ are item-item similarities.</p>
 
 <h2>Appendix: Shrinkage</h2>
 
@@ -407,13 +407,13 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <p>Recall the previous paper, where we modeled each rating $r_{ui}$ as</p>
 
-<p>$$r_{ui} = b_{ui}+ \sum_{N \in N(i; u)} (r_{uj} - b_{uj}) w_{ij},$$</p>
+<p>$$r<em>{ui} = b</em>{ui}+ \sum<em>{N \in N(i; u)} (r</em>{uj} - b<em>{uj}) w</em>{ij},$$</p>
 
 <p>where $N(i; u)$ is the k items most similar to i among the items user u rated, and the $w_{ij}$ are parameters to be learned by solving a regularized least squares problem.</p>
 
-<p>This paper makes several enhancements to that model. First, we replace $N(i; u)$ with $R^k(i; u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $N^k(i; u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
+<p>This paper makes several enhancements to that model. First, we replace $N(i; u)$ with $R<sup>k(i;</sup> u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $N<sup>k(i;</sup> u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
 
-<p>$$r_{ui} = b_{ui} + \sum_{j \in R^k(i; u)} (r_{uj} - b_{uj}) w_{ij} + \sum_{j \in N^k(i; u)} c_{ij},$$</p>
+<p>$$r<em>{ui} = b</em>{ui} + \sum<em>{j \in R<sup>k(i;</sup> u)} (r</em>{uj} - b<em>{uj}) w</em>{ij} + \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij},$$</p>
 
 <p>where the $c_{ij}$ are another set of parameters to learn.</p>
 
@@ -423,7 +423,7 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <p>Nonetheless, this dichotomy between power users and newbie users is perhaps overemphasized by our current model, so we moderate the dichotomy by modifying our model to be</p>
 
-<p>$$r_{ui} = b_{ui} + |R^k(i; u)|^{-0.5} \sum_{j \in R^k(i; u)} (r_{uj} - b_{uj}) w_{ij} + |N^k(i; u)|^{-0.5} \sum_{j \in N^k(i; u)} c_{ij}.$$</p>
+<p>$$r<em>{ui} = b</em>{ui} + |R<sup>k(i;</sup> u)|<sup>{-0.5}</sup> \sum<em>{j \in R<sup>k(i;</sup> u)} (r</em>{uj} - b<em>{uj}) w</em>{ij} + |N<sup>k(i;</sup> u)|<sup>{-0.5}</sup> \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij}.$$</p>
 
 <p>Parameters are determined by solving a regularized least squares problem.</p>
 
@@ -431,7 +431,7 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <p>Typical SVD approaches are based on the following rule:</p>
 
-<p>$$r_{ui} = b_{ui} + p_u^T q_i,$$</p>
+<p>$$r<em>{ui} = b</em>{ui} + p_u<sup>T</sup> q_i,$$</p>
 
 <p>where $p_u$ is a user-factors vector and $q_i$ is an item-factors vector. We describe two enhancements.</p>
 
@@ -439,7 +439,7 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <p>One suggestion is to replace $p_u$ with</p>
 
-<p>$$|R(u)|^{-0.5} + \sum_{j \in R(u)} (r_{uj} - b_{uj}) x_j + |N(u)|^{-0.5} \sum_{j \in N(u)} y_j,$$</p>
+<p>$$|R(u)|<sup>{-0.5}</sup> + \sum<em>{j \in R(u)} (r</em>{uj} - b<em>{uj}) x_j + |N(u)|<sup>{-0.5}</sup> \sum</em>{j \in N(u)} y_j,$$</p>
 
 <p>where $R(u)$ is the set of items user u has rated, and $N(u)$ is the set of items user u has provided implicit feedback for. In other words, this model represents users through the items they prefer, rather than expressing users in a latent feature space. This model has several advantages:</p>
 
@@ -453,13 +453,13 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
 <h2>SVD++</h2>
 
-<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $p_u$ with $p_u + |N(u)|^{-0.5} \sum_{j \in N(u)} y_j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
+<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $p_u$ with $p_u + |N(u)|<sup>{-0.5}</sup> \sum_{j \in N(u)} y_j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
 
 <h1>An Integrated Model</h1>
 
 <p>An integrated model incorporating baseline estimates, the neighborhood approach, and the latent factor approach is as follows:</p>
 
-<p>$$r_{ui} = \left[\mu + b_u + b_i\right] +\left[q_i^T \big(p_u + \sqrt{|N(u)|}\sum_{j \in N(u)} y_j \big)\right] + \left[\sqrt{|R^k(i;u)} \sum_{j \in R^k(i; u)}(r_{uj} - b_{uj})w_{ij}+\sqrt{|N^k(i;u)|} \sum_{j \in N^k(i; u)} c_{ij}\right].$$</p>
+<p>$$r<em>{ui} = \left[\mu + b_u + b_i\right] +\left[q_i<sup>T</sup> \big(p_u + \sqrt{|N(u)|}\sum</em>{j \in N(u)} y_j \big)\right] + \left[\sqrt{|R<sup>k(i;u)}</sup> \sum<em>{j \in R<sup>k(i;</sup> u)}(r</em>{uj} - b<em>{uj})w</em>{ij}+\sqrt{|N<sup>k(i;u)|}</sup> \sum<em>{j \in N<sup>k(i;</sup> u)} c</em>{ij}\right].$$</p>
 
 <p>Note that we have used $(\mu + b_u + b_i)$ as our baseline estimate. We also used the SVD++ model, but we could use the Asymmetric-SVD model instead.</p>
 
@@ -510,81 +510,38 @@ $r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are commo
 
   <div class="entry-content"><h1>A simpler eigenvector calculation</h1>
 
+<p>Suppose we want to perform PCA on an $m \times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
 
+<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n \times n$ covariance matrix $A^T A$.</p>
 
+<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n \times n$ matrix $A^T A$ is computationally difficult. How can we make this problem more tractable?</p>
 
-<p>Suppose we want to perform PCA on an $m &#92;times n$ observation matrix $A$, where each row is an observation and each column is a dimension of the observation. For example, in the context of <a href="http://en.wikipedia.org/wiki/Eigenface">eigenfaces</a>, each row may be an image and each column a pixel.</p>
-
-
-
-
-<p>Let&#8217;s suppose we have already normalized the columns of $A$ to have zero mean, so that to find the PCA of $A$, we need to compute the eigenvectors of the $n &#92;times n$ covariance matrix $A\^T A$.</p>
-
-
-
-
-<p>It&#8217;s often the case that $n >> m$ (i.e., we have many more dimensions than datapoints), so finding the eigenvectors of the large $n &#92;times n$ matrix $A\^T A$ is computationally difficult. How can we make this problem more tractable?</p>
-
-
-
-
-<p>It turns out that the eigenvectors of $A\^T A$ have a simple relationship with the eigenvectors of $A A\^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m &#92;times m$ matrix $A A\^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A\^T$, then $A\^Tv$ is an eigenvector of $A\^T A$ with the same eigenvalue</strong>.</p>
-
-
-
+<p>It turns out that the eigenvectors of $A^T A$ have a simple relationship with the eigenvectors of $A A^T$, so we can solve the simpler problem of finding the eigenvectors of the smaller $m \times m$ matrix $A A^T$ instead. More precisely, <strong>if $v$ is an eigenvector of $A A^T$, then $A^Tv$ is an eigenvector of $A^T A$ with the same eigenvalue</strong>.</p>
 
 <h1>Proof</h1>
 
+<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A^T$ with eigenvalue $\lambda$. Then</p>
 
+<p>$(A A^T) v = \lambda v$</p>
 
+<p>$A^T(A A^T v) = A^T(\lambda v)$</p>
 
-<p>Here&#8217;s a proof of the above fact. Let $v$ be an eigenvector of $A A\^T$ with eigenvalue $&#92;lambda$. Then</p>
+<p>$(A^T A)(A^T v) = \lambda (A^T v)$</p>
 
-
-
-
-<p>$(A A\^T) v = &#92;lambda v$</p>
-
-
-
-
-<p>$A\^T(A A\^T v) = A\^T(&#92;lambda v)$</p>
-
-
-
-
-<p>$(A\^T A)(A\^T v) = &#92;lambda (A\^T v)$</p>
-
-
-
-
-<p>so $A\^Tv$ is an eigenvector of $A\^T A$, with eigenvalue $&#92;lambda$. Thus, instead of finding the eigenvectors of $A\^T A$ directly, we can instead find the eigenvectors of $A A\^T$ and multiply these on the left by $A\^T$.</p>
-
-
-
+<p>so $A^Tv$ is an eigenvector of $A^T A$, with eigenvalue $\lambda$. Thus, instead of finding the eigenvectors of $A^T A$ directly, we can instead find the eigenvectors of $A A^T$ and multiply these on the left by $A^T$.</p>
 
 <h1>Pseudocode</h1>
 
-
-
-
 <p>To summarize, here&#8217;s how to perform a PCA using this trick:</p>
 
-
-
-
 <ul>
-<li>Let $A$ be an $m &#92;times n$ matrix with observations in rows and dimensions in the columns.</li>
+<li>Let $A$ be an $m \times n$ matrix with observations in rows and dimensions in the columns.</li>
 <li>From each column of $A$, subtract the column&#8217;s mean, so that each column now has zero mean.</li>
-<li>We now need to find the eigenvectors of the covariance matrix $A\^T A$. If $A A\^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A\^T$. Then $A\^T v$ are the eigenvectors of $A\^T A$.</li>
+<li>We now need to find the eigenvectors of the covariance matrix $A^T A$. If $A A^T$ is a smaller matrix, it will be easier to find the eigenvectors $v$ of $A A^T$. Then $A^T v$ are the eigenvectors of $A^T A$.</li>
 </ul>
 
 
-
-
-<p>I&#8217;ve put a simple PCA implementation of this transpose trick on <a href="https://github.com/echen/pca-transpose-trick">my Github account</a>.</p>
-
-</div>
+<p>I&#8217;ve put a simple PCA implementation of this transpose trick on <a href="https://github.com/echen/pca-transpose-trick">my Github account</a>.</p></div>
   
   
 

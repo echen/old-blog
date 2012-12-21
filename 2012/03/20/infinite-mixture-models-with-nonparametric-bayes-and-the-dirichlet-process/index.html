@@ -469,7 +469,7 @@
 </span><span class='line'><span class="c1">#</span>
 </span><span class='line'><span class="c1"># Recall that the kth weight is</span>
 </span><span class='line'><span class="c1">#   \beta_k = (1 - \beta_1) * (1 - \beta_2) * ... * (1 - \beta_{k-1}) * beta_k</span>
-</span><span class='line'><span class="c1"># where each $\\beta\_i$ is drawn from a Beta distribution</span>
+</span><span class='line'><span class="c1"># where each $\beta_i$ is drawn from a Beta distribution</span>
 </span><span class='line'><span class="c1">#   \beta_i ~ Beta(1, \alpha)</span>
 </span><span class='line'>stick_breaking_process <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>num_weights<span class="p">,</span> alpha<span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>  betas <span class="o">=</span> rbeta<span class="p">(</span>num_weights<span class="p">,</span> <span class="m">1</span><span class="p">,</span> alpha<span class="p">)</span>

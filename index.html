@@ -1877,7 +1877,7 @@
 </span><span class='line'><span class="c1">#</span>
 </span><span class='line'><span class="c1"># Recall that the kth weight is</span>
 </span><span class='line'><span class="c1">#   \beta_k = (1 - \beta_1) * (1 - \beta_2) * ... * (1 - \beta_{k-1}) * beta_k</span>
-</span><span class='line'><span class="c1"># where each $\\beta\_i$ is drawn from a Beta distribution</span>
+</span><span class='line'><span class="c1"># where each $\beta_i$ is drawn from a Beta distribution</span>
 </span><span class='line'><span class="c1">#   \beta_i ~ Beta(1, \alpha)</span>
 </span><span class='line'>stick_breaking_process <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>num_weights<span class="p">,</span> alpha<span class="p">)</span> <span class="p">{</span>
 </span><span class='line'>  betas <span class="o">=</span> rbeta<span class="p">(</span>num_weights<span class="p">,</span> <span class="m">1</span><span class="p">,</span> alpha<span class="p">)</span>
@@ -2501,7 +2501,7 @@
 
 <p>But recall that we can also write correlation in the following form:</p>
 
-<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x^2 - (\sum x)^2} \sqrt{n \sum y^2 - (\sum y)^2}}$</p>
+<p>$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x<sup>2</sup> - (\sum x)<sup>2}</sup> \sqrt{n \sum y<sup>2</sup> - (\sum y)<sup>2}}$</sup></p>
 
 <p>(See the <a href="http://en.wikipedia.org/wiki/Correlation_and_dependence">Wikipedia page</a> on correlation.)</p>
 
@@ -3108,7 +3108,7 @@
 </pre></td><td class='code'><pre><code class='r'><span class='line'>books<span class="p">$</span>num_bought_today <span class="o">=</span> c<span class="p">(</span><span class="m">10</span><span class="p">,</span> <span class="m">5</span><span class="p">,</span> <span class="m">8</span><span class="p">)</span>
 </span><span class='line'>books<span class="p">$</span>num_bought_yesterday <span class="o">=</span> c<span class="p">(</span><span class="m">18</span><span class="p">,</span> <span class="m">13</span><span class="p">,</span> <span class="m">20</span><span class="p">)</span>
 </span><span class='line'>  
-</span><span class='line'>books<span class="p">$</span>total\_num\_bought <span class="o">=</span> books<span class="p">$</span>num_bought_today <span class="o">+</span> books<span class="p">$</span>num_bought_yesterday
+</span><span class='line'>books<span class="p">$</span>total_num_bought <span class="o">=</span> books<span class="p">$</span>num_bought_today <span class="o">+</span> books<span class="p">$</span>num_bought_yesterday
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -3483,7 +3483,7 @@
 
 
 
-<p>So let&#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&#8217;ll first need to decide on a set of feature functions $f\_i$.</p>
+<p>So let&#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&#8217;ll first need to decide on a set of feature functions $f_i$.</p>
 
 
 
@@ -3501,8 +3501,8 @@
 <ul>
 <li>a sentence s</li>
 <li>the position i of a word in the sentence</li>
-<li>the label $l\_i$ of the current word</li>
-<li>the label $l\_{i-1}$ of the previous word</li>
+<li>the label $l_i$ of the current word</li>
+<li>the label $l_{i-1}$ of the previous word</li>
 </ul>
 
 
@@ -3528,12 +3528,12 @@
 
 
 
-<p>Next, assign each feature function $f\_j$ a <strong>weight</strong> $&#92;lambda\_j$ (I&#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:</p>
+<p>Next, assign each feature function $f_j$ a <strong>weight</strong> $\lambda_j$ (I&#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:</p>
 
 
 
 
-<p>$score(l | s) = &#92;sum\_{j = 1}\^m &#92;sum\_{i = 1}\^n &#92;lambda\_j f\_j(s, i, l\_i, l\_{i-1})$</p>
+<p>$score(l | s) = \sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})$</p>
 
 
 
@@ -3548,7 +3548,7 @@
 
 
 
-<p>$p(l | s) = &#92;frac{exp\[score(l|s)]}{&#92;sum\_{l&#8217;} exp\[score(l&#8217;|s)]} = &#92;frac{exp\[&#92;sum\_{j = 1}\^m &#92;sum\_{i = 1}\^n &#92;lambda\_j f\_j(s, i, l\_i, l\_{i-1})]}{&#92;sum\_{l&#8217;} exp\[&#92;sum\_{j = 1}\^m &#92;sum\_{i = 1}\^n &#92;lambda\_j f\_j(s, i, l&#8217;\_i, l&#8217;\_{i-1})]}$</p>
+<p>$p(l | s) = \frac{exp[score(l|s)]}{\sum_{l&#8217;} exp[score(l&#8217;|s)]} = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})]}{\sum_{l&#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l&#8217;_i, l&#8217;_{i-1})]}$</p>
 
 
 
@@ -3564,28 +3564,28 @@
 
 
 <ul>
-<li>$f\_1(s, i, l\_i, l\_{i-1}) = 1$ if $l\_i =$ ADVERB and the ith word ends in &#8220;-ly&#8221;; 0 otherwise.
+<li>$f_1(s, i, l_i, l_{i-1}) = 1$ if $l_i =$ ADVERB and the ith word ends in &#8220;-ly&#8221;; 0 otherwise.
 
 <ul>
-<li>If the weight $&#92;lambda\_1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.</li>
+<li>If the weight $\lambda_1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.</li>
 </ul>
 </li>
-<li>$f\_2(s, i, l\_i, l\_{i-1}) = 1$ if $i = 1$, $l\_i =$ VERB, and the sentence ends in a question mark; 0 otherwise.
+<li>$f_2(s, i, l_i, l_{i-1}) = 1$ if $i = 1$, $l_i =$ VERB, and the sentence ends in a question mark; 0 otherwise.
 
 <ul>
-<li>Again, if the weight $&#92;lambda\_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &#8220;Is this a sentence beginning with a verb?&#8221;) are preferred.</li>
+<li>Again, if the weight $\lambda_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &#8220;Is this a sentence beginning with a verb?&#8221;) are preferred.</li>
 </ul>
 </li>
-<li>$f\_3(s, i, l\_i, l\_{i-1}) = 1$ if $l\_{i-1} =$ ADJECTIVE and $l\_i =$ NOUN; 0 otherwise.
+<li>$f_3(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
 
 <ul>
 <li>Again, a positive weight for this feature means that adjectives tend to be followed by nouns.</li>
 </ul>
 </li>
-<li>$f\_4(s, i, l\_i, l\_{i-1}) = 1$ if $l\_{i-1} =$ PREPOSITION and $l\_i =$ PREPOSITION.
+<li>$f_4(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
 
 <ul>
-<li>A <em>negative</em> weight $&#92;lambda\_4$ for this function would mean that prepositions don&#8217;t tend to follow prepositions, so we should avoid labelings where this happens.</li>
+<li>A <em>negative</em> weight $\lambda_4$ for this function would mean that prepositions don&#8217;t tend to follow prepositions, so we should avoid labelings where this happens.</li>
 </ul>
 </li>
 </ul>
@@ -3609,7 +3609,7 @@
 
 
 <p>The form of the CRF probabilities
-$p(l | s) = &#92;frac{exp\[&#92;sum\_{j = 1}\^m &#92;sum\_{i = 1}\^n f\_j(s, i, l\_i, l\_{i-1})]}{&#92;sum\_{l&#8217;} exp\[&#92;sum\_{j = 1}\^m &#92;sum\_{i = 1}\^n f\_j(s, i, l&#8217;\_i, l&#8217;\_{i-1})]}$
+$p(l | s) = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l_i, l_{i-1})]}{\sum_{l&#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l&#8217;_i, l&#8217;_{i-1})]}$
 might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</a>.</p>
 
 
@@ -3630,7 +3630,7 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 
 
 
-<p>$p(l,s) = p(l\_1) &#92;prod\_i p(l\_i | l\_{i-1}) p(w\_i | l\_i)$</p>
+<p>$p(l,s) = p(l_1) \prod_i p(l_i | l_{i-1}) p(w_i | l_i)$</p>
 
 
 
@@ -3641,8 +3641,8 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 
 
 <ul>
-<li>$p(l\_i | l\_{i-1})$ are <strong>transition</strong> probabilities (e.g., the probability that a preposition is followed by a noun);</li>
-<li>$p(w\_i | l\_i)$ are <strong>emission</strong> probabilities (e.g., the probability that a noun emits the word &#8220;dad&#8221;).</li>
+<li>$p(l_i | l_{i-1})$ are <strong>transition</strong> probabilities (e.g., the probability that a preposition is followed by a noun);</li>
+<li>$p(w_i | l_i)$ are <strong>emission</strong> probabilities (e.g., the probability that a noun emits the word &#8220;dad&#8221;).</li>
 </ul>
 
 
@@ -3653,7 +3653,7 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 
 
 
-<p>Note that the log of the HMM probability is $&#92;log p(l,s) = &#92;log p(l\_0) + &#92;sum\_i &#92;log p(l\_i | l\_{i-1}) + &#92;sum\_i &#92;log p(w\_i | l\_i)$. This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features.</p>
+<p>Note that the log of the HMM probability is $\log p(l,s) = \log p(l_0) + \sum_i \log p(l_i | l_{i-1}) + \sum_i \log p(w_i | l_i)$. This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features.</p>
 
 
 
@@ -3664,8 +3664,8 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 
 
 <ul>
-<li>For each HMM <em>transition</em> probability $ p(l\_i = y | l\_{i-1} = x) $, define a set of CRF transition features of the form $f\_{x,y}(s, i, l\_i, l\_{i-1}) = 1$ if $l\_i = y$ and $l\_{i-1} = x$. Give each feature a weight of $w\_{x,y} = &#92;log p(l\_i = y | l\_{i-1} = x)$.</li>
-<li>Similarly, for each HMM <em>emission</em> probability $p(w\_i = z | l\_{i} = x)$, define a set of CRF emission features of the form $g\_{x,y}(s, i, l\_i, l\_{i-1}) = 1$ if $w\_i = z$ and $l\_i = x$. Give each feature a weight of $w\_{x,z} = &#92;log p(w\_i = z | l\_i = x)$.</li>
+<li>For each HMM <em>transition</em> probability $ p(l_i = y | l_{i-1} = x) $, define a set of CRF transition features of the form $f_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $l_i = y$ and $l_{i-1} = x$. Give each feature a weight of $w_{x,y} = \log p(l_i = y | l_{i-1} = x)$.</li>
+<li>Similarly, for each HMM <em>emission</em> probability $p(w_i = z | l_{i} = x)$, define a set of CRF emission features of the form $g_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w_{x,z} = \log p(w_i = z | l_i = x)$.</li>
 </ul>
 
 
@@ -3683,7 +3683,7 @@ might look <a href="http://en.wikipedia.org/wiki/Logistic_regression">familiar</
 
 <ul>
 <li><strong>CRFs can define a much larger set of features.</strong> Whereas HMMs are necessarily <em>local</em> in nature (because they&#8217;re constrained to binary transition and emission feature functions, which force each word to depend only on the current label and each label to depend only on the previous label), CRFs can use more <em>global</em> features. For example, one of the features in our POS tagger above increased the probability of labelings that tagged the <em>first</em> word of a sentence as a VERB if the <em>end</em> of the sentence contained a question mark.</li>
-<li><strong>CRFs can have arbitrary weights.</strong> Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $0 &lt;= p(w\_i | l\_i) &lt;= 1, &#92;sum\_w p(w\_i = w | l\_1) = 1)$, the weights of a CRF are unrestricted (e.g., $&#92;log p(w\_i | l\_i)$ can be anything it wants).</li>
+<li><strong>CRFs can have arbitrary weights.</strong> Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $0 &lt;= p(w_i | l_i) &lt;= 1, \sum_w p(w_i = w | l_1) = 1)$, the weights of a CRF are unrestricted (e.g., $\log p(w_i | l_i)$ can be anything it wants).</li>
 </ul>
 
 
@@ -3706,16 +3706,16 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 
 <ul>
-<li>Go through each feature function $f\_i$, and calculate the gradient of the log probability of the training example with respect to $&#92;lambda\_i$: $&#92;frac{&#92;partial}{&#92;partial w\_j} &#92;log p(l | s) = &#92;sum\_{j = 1}\^m f\_i(s, j, l\_j, l\_{j-1}) - &#92;sum\_{l&#8217;} p(l&#8217; | s) &#92;sum\_{j = 1}\^m f\_i(s, j, l&#8217;\_j, l&#8217;\_{j-1})$</li>
-<li>Note that the first term in the gradient is the contribution of feature $f\_i$ under the <em>true</em> label, and the second term in the gradient is the <em>expected</em> contribution of feature $f\_i$ under the current model. This is exactly the form you&#8217;d expect gradient ascent to take.</li>
-<li>Move $&#92;lambda\_i$ in the direction of the gradient: $&#92;lambda\_i = &#92;lambda\_i + &#92;alpha \[&#92;sum\_{j = 1}\^m f\_i(s, j, l\_j, l\_{j-1}) - &#92;sum\_{l&#8217;} p(l&#8217; | s) &#92;sum\_{j = 1}\^m f\_i(s, j, l&#8217;\_j, l&#8217;\_{j-1})]$ where $&#92;alpha$ is some learning rate.</li>
+<li>Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&#8217;} p(l&#8217; | s) \sum_{j = 1}^m f_i(s, j, l&#8217;_j, l&#8217;_{j-1})$</li>
+<li>Note that the first term in the gradient is the contribution of feature $f_i$ under the <em>true</em> label, and the second term in the gradient is the <em>expected</em> contribution of feature $f_i$ under the current model. This is exactly the form you&#8217;d expect gradient ascent to take.</li>
+<li>Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&#8217;} p(l&#8217; | s) \sum_{j = 1}^m f_i(s, j, l&#8217;_j, l&#8217;_{j-1})]$ where $\alpha$ is some learning rate.</li>
 <li>Repeat the previous steps until some stopping condition is reached (e.g., the updates fall below some threshold).</li>
 </ul>
 
 
 
 
-<p>In other words, every step takes the difference between what we want the model to learn and the model&#8217;s current state, and moves $&#92;lambda\_i$ in the direction of this difference.</p>
+<p>In other words, every step takes the difference between what we want the model to learn and the model&#8217;s current state, and moves $\lambda_i$ in the direction of this difference.</p>
 
 
 
@@ -3730,7 +3730,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 
 
-<p>The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k\^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.</p>
+<p>The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.</p>
 
 
 

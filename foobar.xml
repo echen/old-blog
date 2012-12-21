@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-12-20T23:28:07-08:00</updated>
+  <updated>2012-12-20T23:54:00-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -1710,7 +1710,7 @@
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# Recall that the kth weight is&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;#   \beta_k = (1 - \beta_1) * (1 - \beta_2) * &#8230; * (1 - \beta_{k-1}) * beta_k&lt;/span&gt;
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# where each $&#92;beta\_i$ is drawn from a Beta distribution&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;# where each $\beta_i$ is drawn from a Beta distribution&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;&lt;span class=&quot;c1&quot;&gt;#   \beta_i ~ Beta(1, \alpha)&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;stick_breaking_process &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;num_weights&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; alpha&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  betas &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; rbeta&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;num_weights&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; alpha&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
@@ -2280,7 +2280,7 @@
 
 &lt;p&gt;But recall that we can also write correlation in the following form:&lt;/p&gt;
 
-&lt;p&gt;$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x^2 - (\sum x)^2} \sqrt{n \sum y^2 - (\sum y)^2}}$&lt;/p&gt;
+&lt;p&gt;$Corr(X, Y) = \frac{n \sum xy - \sum x \sum y}{\sqrt{n \sum x&lt;sup&gt;2&lt;/sup&gt; - (\sum x)&lt;sup&gt;2}&lt;/sup&gt; \sqrt{n \sum y&lt;sup&gt;2&lt;/sup&gt; - (\sum y)&lt;sup&gt;2}}$&lt;/sup&gt;&lt;/p&gt;
 
 &lt;p&gt;(See the &lt;a href=&quot;http://en.wikipedia.org/wiki/Correlation_and_dependence&quot;&gt;Wikipedia page&lt;/a&gt; on correlation.)&lt;/p&gt;
 
@@ -2860,7 +2860,7 @@
 &lt;/pre&gt;&lt;/td&gt;&lt;td class=&#8217;code&#8217;&gt;&lt;pre&gt;&lt;code class=&#8217;r&#8217;&gt;&lt;span class=&#8217;line&#8217;&gt;books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_today &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; c&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_yesterday &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; c&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;  
-&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;total\_num\_bought &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_today &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_yesterday
+&lt;/span&gt;&lt;span class=&#8217;line&#8217;&gt;books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;total_num_bought &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_today &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; books&lt;span class=&quot;p&quot;&gt;$&lt;/span&gt;num_bought_yesterday
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/div&gt;&lt;/figure&gt;
 
 
@@ -3208,7 +3208,7 @@
 
 
 
-&lt;p&gt;So let&amp;#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&amp;#8217;ll first need to decide on a set of feature functions $f\_i$.&lt;/p&gt;
+&lt;p&gt;So let&amp;#8217;s build a conditional random field to label sentences with their parts of speech. Just like any classifier, we&amp;#8217;ll first need to decide on a set of feature functions $f_i$.&lt;/p&gt;
 
 
 
@@ -3226,8 +3226,8 @@
 &lt;ul&gt;
 &lt;li&gt;a sentence s&lt;/li&gt;
 &lt;li&gt;the position i of a word in the sentence&lt;/li&gt;
-&lt;li&gt;the label $l\_i$ of the current word&lt;/li&gt;
-&lt;li&gt;the label $l\_{i-1}$ of the previous word&lt;/li&gt;
+&lt;li&gt;the label $l_i$ of the current word&lt;/li&gt;
+&lt;li&gt;the label $l_{i-1}$ of the previous word&lt;/li&gt;
 &lt;/ul&gt;
 
 
@@ -3253,12 +3253,12 @@
 
 
 
-&lt;p&gt;Next, assign each feature function $f\_j$ a &lt;strong&gt;weight&lt;/strong&gt; $&amp;#92;lambda\_j$ (I&amp;#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:&lt;/p&gt;
+&lt;p&gt;Next, assign each feature function $f_j$ a &lt;strong&gt;weight&lt;/strong&gt; $\lambda_j$ (I&amp;#8217;ll talk below about how to learn these weights from the data). Given a sentence s, we can now score a labeling l of s by adding up the weighted features over all words in the sentence:&lt;/p&gt;
 
 
 
 
-&lt;p&gt;$score(l | s) = &amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n &amp;#92;lambda\_j f\_j(s, i, l\_i, l\_{i-1})$&lt;/p&gt;
+&lt;p&gt;$score(l | s) = \sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})$&lt;/p&gt;
 
 
 
@@ -3273,7 +3273,7 @@
 
 
 
-&lt;p&gt;$p(l | s) = &amp;#92;frac{exp\[score(l|s)]}{&amp;#92;sum\_{l&amp;#8217;} exp\[score(l&amp;#8217;|s)]} = &amp;#92;frac{exp\[&amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n &amp;#92;lambda\_j f\_j(s, i, l\_i, l\_{i-1})]}{&amp;#92;sum\_{l&amp;#8217;} exp\[&amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n &amp;#92;lambda\_j f\_j(s, i, l&amp;#8217;\_i, l&amp;#8217;\_{i-1})]}$&lt;/p&gt;
+&lt;p&gt;$p(l | s) = \frac{exp[score(l|s)]}{\sum_{l&amp;#8217;} exp[score(l&amp;#8217;|s)]} = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l_i, l_{i-1})]}{\sum_{l&amp;#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n \lambda_j f_j(s, i, l&amp;#8217;_i, l&amp;#8217;_{i-1})]}$&lt;/p&gt;
 
 
 
@@ -3289,28 +3289,28 @@
 
 
 &lt;ul&gt;
-&lt;li&gt;$f\_1(s, i, l\_i, l\_{i-1}) = 1$ if $l\_i =$ ADVERB and the ith word ends in &amp;#8220;-ly&amp;#8221;; 0 otherwise.
+&lt;li&gt;$f_1(s, i, l_i, l_{i-1}) = 1$ if $l_i =$ ADVERB and the ith word ends in &amp;#8220;-ly&amp;#8221;; 0 otherwise.
 
 &lt;ul&gt;
-&lt;li&gt;If the weight $&amp;#92;lambda\_1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.&lt;/li&gt;
+&lt;li&gt;If the weight $\lambda_1$ associated with this feature is large and positive, then this feature is essentially saying that we prefer labelings where words ending in -ly get labeled as ADVERB.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;$f\_2(s, i, l\_i, l\_{i-1}) = 1$ if $i = 1$, $l\_i =$ VERB, and the sentence ends in a question mark; 0 otherwise.
+&lt;li&gt;$f_2(s, i, l_i, l_{i-1}) = 1$ if $i = 1$, $l_i =$ VERB, and the sentence ends in a question mark; 0 otherwise.
 
 &lt;ul&gt;
-&lt;li&gt;Again, if the weight $&amp;#92;lambda\_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &amp;#8220;Is this a sentence beginning with a verb?&amp;#8221;) are preferred.&lt;/li&gt;
+&lt;li&gt;Again, if the weight $\lambda_2$ associated with this feature is large and positive, then labelings that assign VERB to the first word in a question (e.g., &amp;#8220;Is this a sentence beginning with a verb?&amp;#8221;) are preferred.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;$f\_3(s, i, l\_i, l\_{i-1}) = 1$ if $l\_{i-1} =$ ADJECTIVE and $l\_i =$ NOUN; 0 otherwise.
+&lt;li&gt;$f_3(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ ADJECTIVE and $l_i =$ NOUN; 0 otherwise.
 
 &lt;ul&gt;
 &lt;li&gt;Again, a positive weight for this feature means that adjectives tend to be followed by nouns.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;$f\_4(s, i, l\_i, l\_{i-1}) = 1$ if $l\_{i-1} =$ PREPOSITION and $l\_i =$ PREPOSITION.
+&lt;li&gt;$f_4(s, i, l_i, l_{i-1}) = 1$ if $l_{i-1} =$ PREPOSITION and $l_i =$ PREPOSITION.
 
 &lt;ul&gt;
-&lt;li&gt;A &lt;em&gt;negative&lt;/em&gt; weight $&amp;#92;lambda\_4$ for this function would mean that prepositions don&amp;#8217;t tend to follow prepositions, so we should avoid labelings where this happens.&lt;/li&gt;
+&lt;li&gt;A &lt;em&gt;negative&lt;/em&gt; weight $\lambda_4$ for this function would mean that prepositions don&amp;#8217;t tend to follow prepositions, so we should avoid labelings where this happens.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -3334,7 +3334,7 @@
 
 
 &lt;p&gt;The form of the CRF probabilities
-$p(l | s) = &amp;#92;frac{exp\[&amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n f\_j(s, i, l\_i, l\_{i-1})]}{&amp;#92;sum\_{l&amp;#8217;} exp\[&amp;#92;sum\_{j = 1}\^m &amp;#92;sum\_{i = 1}\^n f\_j(s, i, l&amp;#8217;\_i, l&amp;#8217;\_{i-1})]}$
+$p(l | s) = \frac{exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l_i, l_{i-1})]}{\sum_{l&amp;#8217;} exp[\sum_{j = 1}^m \sum_{i = 1}^n f_j(s, i, l&amp;#8217;_i, l&amp;#8217;_{i-1})]}$
 might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quot;&gt;familiar&lt;/a&gt;.&lt;/p&gt;
 
 
@@ -3355,7 +3355,7 @@ might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quo
 
 
 
-&lt;p&gt;$p(l,s) = p(l\_1) &amp;#92;prod\_i p(l\_i | l\_{i-1}) p(w\_i | l\_i)$&lt;/p&gt;
+&lt;p&gt;$p(l,s) = p(l_1) \prod_i p(l_i | l_{i-1}) p(w_i | l_i)$&lt;/p&gt;
 
 
 
@@ -3366,8 +3366,8 @@ might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quo
 
 
 &lt;ul&gt;
-&lt;li&gt;$p(l\_i | l\_{i-1})$ are &lt;strong&gt;transition&lt;/strong&gt; probabilities (e.g., the probability that a preposition is followed by a noun);&lt;/li&gt;
-&lt;li&gt;$p(w\_i | l\_i)$ are &lt;strong&gt;emission&lt;/strong&gt; probabilities (e.g., the probability that a noun emits the word &amp;#8220;dad&amp;#8221;).&lt;/li&gt;
+&lt;li&gt;$p(l_i | l_{i-1})$ are &lt;strong&gt;transition&lt;/strong&gt; probabilities (e.g., the probability that a preposition is followed by a noun);&lt;/li&gt;
+&lt;li&gt;$p(w_i | l_i)$ are &lt;strong&gt;emission&lt;/strong&gt; probabilities (e.g., the probability that a noun emits the word &amp;#8220;dad&amp;#8221;).&lt;/li&gt;
 &lt;/ul&gt;
 
 
@@ -3378,7 +3378,7 @@ might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quo
 
 
 
-&lt;p&gt;Note that the log of the HMM probability is $&amp;#92;log p(l,s) = &amp;#92;log p(l\_0) + &amp;#92;sum\_i &amp;#92;log p(l\_i | l\_{i-1}) + &amp;#92;sum\_i &amp;#92;log p(w\_i | l\_i)$. This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features.&lt;/p&gt;
+&lt;p&gt;Note that the log of the HMM probability is $\log p(l,s) = \log p(l_0) + \sum_i \log p(l_i | l_{i-1}) + \sum_i \log p(w_i | l_i)$. This has exactly the log-linear form of a CRF if we consider these log-probabilities to be the weights associated to binary transition and emission indicator features.&lt;/p&gt;
 
 
 
@@ -3389,8 +3389,8 @@ might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quo
 
 
 &lt;ul&gt;
-&lt;li&gt;For each HMM &lt;em&gt;transition&lt;/em&gt; probability $ p(l\_i = y | l\_{i-1} = x) $, define a set of CRF transition features of the form $f\_{x,y}(s, i, l\_i, l\_{i-1}) = 1$ if $l\_i = y$ and $l\_{i-1} = x$. Give each feature a weight of $w\_{x,y} = &amp;#92;log p(l\_i = y | l\_{i-1} = x)$.&lt;/li&gt;
-&lt;li&gt;Similarly, for each HMM &lt;em&gt;emission&lt;/em&gt; probability $p(w\_i = z | l\_{i} = x)$, define a set of CRF emission features of the form $g\_{x,y}(s, i, l\_i, l\_{i-1}) = 1$ if $w\_i = z$ and $l\_i = x$. Give each feature a weight of $w\_{x,z} = &amp;#92;log p(w\_i = z | l\_i = x)$.&lt;/li&gt;
+&lt;li&gt;For each HMM &lt;em&gt;transition&lt;/em&gt; probability $ p(l_i = y | l_{i-1} = x) $, define a set of CRF transition features of the form $f_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $l_i = y$ and $l_{i-1} = x$. Give each feature a weight of $w_{x,y} = \log p(l_i = y | l_{i-1} = x)$.&lt;/li&gt;
+&lt;li&gt;Similarly, for each HMM &lt;em&gt;emission&lt;/em&gt; probability $p(w_i = z | l_{i} = x)$, define a set of CRF emission features of the form $g_{x,y}(s, i, l_i, l_{i-1}) = 1$ if $w_i = z$ and $l_i = x$. Give each feature a weight of $w_{x,z} = \log p(w_i = z | l_i = x)$.&lt;/li&gt;
 &lt;/ul&gt;
 
 
@@ -3408,7 +3408,7 @@ might look &lt;a href=&quot;http://en.wikipedia.org/wiki/Logistic_regression&quo
 
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;CRFs can define a much larger set of features.&lt;/strong&gt; Whereas HMMs are necessarily &lt;em&gt;local&lt;/em&gt; in nature (because they&amp;#8217;re constrained to binary transition and emission feature functions, which force each word to depend only on the current label and each label to depend only on the previous label), CRFs can use more &lt;em&gt;global&lt;/em&gt; features. For example, one of the features in our POS tagger above increased the probability of labelings that tagged the &lt;em&gt;first&lt;/em&gt; word of a sentence as a VERB if the &lt;em&gt;end&lt;/em&gt; of the sentence contained a question mark.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;CRFs can have arbitrary weights.&lt;/strong&gt; Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $0 &amp;lt;= p(w\_i | l\_i) &amp;lt;= 1, &amp;#92;sum\_w p(w\_i = w | l\_1) = 1)$, the weights of a CRF are unrestricted (e.g., $&amp;#92;log p(w\_i | l\_i)$ can be anything it wants).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;CRFs can have arbitrary weights.&lt;/strong&gt; Whereas the probabilities of an HMM must satisfy certain constraints (e.g., $0 &amp;lt;= p(w_i | l_i) &amp;lt;= 1, \sum_w p(w_i = w | l_1) = 1)$, the weights of a CRF are unrestricted (e.g., $\log p(w_i | l_i)$ can be anything it wants).&lt;/li&gt;
 &lt;/ul&gt;
 
 
@@ -3431,16 +3431,16 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 
 &lt;ul&gt;
-&lt;li&gt;Go through each feature function $f\_i$, and calculate the gradient of the log probability of the training example with respect to $&amp;#92;lambda\_i$: $&amp;#92;frac{&amp;#92;partial}{&amp;#92;partial w\_j} &amp;#92;log p(l | s) = &amp;#92;sum\_{j = 1}\^m f\_i(s, j, l\_j, l\_{j-1}) - &amp;#92;sum\_{l&amp;#8217;} p(l&amp;#8217; | s) &amp;#92;sum\_{j = 1}\^m f\_i(s, j, l&amp;#8217;\_j, l&amp;#8217;\_{j-1})$&lt;/li&gt;
-&lt;li&gt;Note that the first term in the gradient is the contribution of feature $f\_i$ under the &lt;em&gt;true&lt;/em&gt; label, and the second term in the gradient is the &lt;em&gt;expected&lt;/em&gt; contribution of feature $f\_i$ under the current model. This is exactly the form you&amp;#8217;d expect gradient ascent to take.&lt;/li&gt;
-&lt;li&gt;Move $&amp;#92;lambda\_i$ in the direction of the gradient: $&amp;#92;lambda\_i = &amp;#92;lambda\_i + &amp;#92;alpha \[&amp;#92;sum\_{j = 1}\^m f\_i(s, j, l\_j, l\_{j-1}) - &amp;#92;sum\_{l&amp;#8217;} p(l&amp;#8217; | s) &amp;#92;sum\_{j = 1}\^m f\_i(s, j, l&amp;#8217;\_j, l&amp;#8217;\_{j-1})]$ where $&amp;#92;alpha$ is some learning rate.&lt;/li&gt;
+&lt;li&gt;Go through each feature function $f_i$, and calculate the gradient of the log probability of the training example with respect to $\lambda_i$: $\frac{\partial}{\partial w_j} \log p(l | s) = \sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&amp;#8217;} p(l&amp;#8217; | s) \sum_{j = 1}^m f_i(s, j, l&amp;#8217;_j, l&amp;#8217;_{j-1})$&lt;/li&gt;
+&lt;li&gt;Note that the first term in the gradient is the contribution of feature $f_i$ under the &lt;em&gt;true&lt;/em&gt; label, and the second term in the gradient is the &lt;em&gt;expected&lt;/em&gt; contribution of feature $f_i$ under the current model. This is exactly the form you&amp;#8217;d expect gradient ascent to take.&lt;/li&gt;
+&lt;li&gt;Move $\lambda_i$ in the direction of the gradient: $\lambda_i = \lambda_i + \alpha [\sum_{j = 1}^m f_i(s, j, l_j, l_{j-1}) - \sum_{l&amp;#8217;} p(l&amp;#8217; | s) \sum_{j = 1}^m f_i(s, j, l&amp;#8217;_j, l&amp;#8217;_{j-1})]$ where $\alpha$ is some learning rate.&lt;/li&gt;
 &lt;li&gt;Repeat the previous steps until some stopping condition is reached (e.g., the updates fall below some threshold).&lt;/li&gt;
 &lt;/ul&gt;
 
 
 
 
-&lt;p&gt;In other words, every step takes the difference between what we want the model to learn and the model&amp;#8217;s current state, and moves $&amp;#92;lambda\_i$ in the direction of this difference.&lt;/p&gt;
+&lt;p&gt;In other words, every step takes the difference between what we want the model to learn and the model&amp;#8217;s current state, and moves $\lambda_i$ in the direction of this difference.&lt;/p&gt;
 
 
 
@@ -3455,7 +3455,7 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 
 
-&lt;p&gt;The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k\^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.&lt;/p&gt;
+&lt;p&gt;The naive way is to calculate $p(l | s)$ for every possible labeling l, and then choose the label that maximizes this probability. However, since there are $k^m$ possible labels for a tag set of size k and a sentence of length m, this approach would have to check an exponential number of labels.&lt;/p&gt;
 
 
 
@@ -4793,9 +4793,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 
 &lt;ul&gt;
-&lt;li&gt;Compute the &lt;strong&gt;activation energy&lt;/strong&gt; $a\_i = &amp;#92;sum\_j w\_{ij} x\_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w\_{ij}$ is the weight of the connection between $i$ and $j$, and $x\_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&amp;#8217;s neighbors send it a message, and we compute the sum of all these messages.&lt;/li&gt;
-&lt;li&gt;Let $p\_i = &amp;#92;sigma(a\_i)$, where $&amp;#92;sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p\_i$ is close to 1 for large positive activation energies, and $p\_i$ is close to 0 for negative activation energies.&lt;/li&gt;
-&lt;li&gt;We then turn unit $i$ on with probability $p\_i$, and turn it off with probability $1 - p\_i$.&lt;/li&gt;
+&lt;li&gt;Compute the &lt;strong&gt;activation energy&lt;/strong&gt; $a_i = \sum_j w_{ij} x_j$ of unit $i$, where the sum runs over all units $j$ that unit $i$ is connected to, $w_{ij}$ is the weight of the connection between $i$ and $j$, and $x_j$ is the 0 or 1 state of unit $j$. In other words, all of unit $i$&amp;#8217;s neighbors send it a message, and we compute the sum of all these messages.&lt;/li&gt;
+&lt;li&gt;Let $p_i = \sigma(a_i)$, where $\sigma(x) = 1/(1 + exp(-x))$ is the logistic function. Note that $p_i$ is close to 1 for large positive activation energies, and $p_i$ is close to 0 for negative activation energies.&lt;/li&gt;
+&lt;li&gt;We then turn unit $i$ on with probability $p_i$, and turn it off with probability $1 - p_i$.&lt;/li&gt;
 &lt;li&gt;(In layman&amp;#8217;s terms, units that are positively connected to each other try to get each other to share the same state (i.e., be both on or off), while units that are negatively connected to each other are enemies that prefer to be in different states.)&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -4827,9 +4827,9 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 &lt;ul&gt;
 &lt;li&gt;Take a training example (a set of six movie preferences). Set the states of the visible units to these preferences.&lt;/li&gt;
-&lt;li&gt;Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a\_j = &amp;#92;sum\_i w\_{ij} x\_i$, and set $x\_j$ to 1 with probability $&amp;#92;sigma(a\_j)$ and to 0 with probability $1 - &amp;#92;sigma(a\_j)$. Then for each edge $e\_{ij}$, compute $Positive(e\_{ij}) = x\_i \* x\_j$ (i.e., for each pair of units, measure whether they&amp;#8217;re both on).&lt;/li&gt;
-&lt;li&gt;Now &lt;strong&gt;reconstruct&lt;/strong&gt; the visible units in a similar manner: for each visible unit, compute its activation energy $a\_i$, and update its state. (Note that this &lt;em&gt;reconstruction&lt;/em&gt; may not match the original preferences.) Then update the hidden units again, and compute $Negative(e\_{ij}) = x\_i \* x\_j$ for each edge.&lt;/li&gt;
-&lt;li&gt;Update the weight of each edge $e\_{ij}$ by setting $w\_{ij} = w\_{ij} + L \* (Positive(e\_{ij}) - Negative(e\_{ij}))$, where $L$ is a learning rate.&lt;/li&gt;
+&lt;li&gt;Next, update the states of the hidden units using the logistic activation rule described above: for the $j$th hidden unit, compute its activation energy $a_j = \sum_i w_{ij} x_i$, and set $x_j$ to 1 with probability $\sigma(a_j)$ and to 0 with probability $1 - \sigma(a_j)$. Then for each edge $e_{ij}$, compute $Positive(e_{ij}) = x_i * x_j$ (i.e., for each pair of units, measure whether they&amp;#8217;re both on).&lt;/li&gt;
+&lt;li&gt;Now &lt;strong&gt;reconstruct&lt;/strong&gt; the visible units in a similar manner: for each visible unit, compute its activation energy $a_i$, and update its state. (Note that this &lt;em&gt;reconstruction&lt;/em&gt; may not match the original preferences.) Then update the hidden units again, and compute $Negative(e_{ij}) = x_i * x_j$ for each edge.&lt;/li&gt;
+&lt;li&gt;Update the weight of each edge $e_{ij}$ by setting $w_{ij} = w_{ij} + L * (Positive(e_{ij}) - Negative(e_{ij}))$, where $L$ is a learning rate.&lt;/li&gt;
 &lt;li&gt;Repeat over all training examples.&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -4847,14 +4847,14 @@ To shift these randomly initialized weights to the correct ones, for each traini
 
 
 &lt;ul&gt;
-&lt;li&gt;In the first phase, $Positive(e\_{ij})$ measures the association between the $i$th and $j$th unit that we &lt;em&gt;want&lt;/em&gt; the network to learn from our training examples;&lt;/li&gt;
-&lt;li&gt;In the &amp;#8220;reconstruction&amp;#8221; phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $Negative(e\_{ij})$ measures the association that the network &lt;em&gt;itself&lt;/em&gt; generates (or &amp;#8220;daydreams&amp;#8221; about) when no units are fixed to training data.&lt;/li&gt;
+&lt;li&gt;In the first phase, $Positive(e_{ij})$ measures the association between the $i$th and $j$th unit that we &lt;em&gt;want&lt;/em&gt; the network to learn from our training examples;&lt;/li&gt;
+&lt;li&gt;In the &amp;#8220;reconstruction&amp;#8221; phase, where the RBM generates the states of visible units based on its hypotheses about the hidden units alone, $Negative(e_{ij})$ measures the association that the network &lt;em&gt;itself&lt;/em&gt; generates (or &amp;#8220;daydreams&amp;#8221; about) when no units are fixed to training data.&lt;/li&gt;
 &lt;/ul&gt;
 
 
 
 
-&lt;p&gt;So by adding $Positive(e\_{ij}) - Negative(e\_{ij})$ to each edge weight, we&amp;#8217;re helping the network&amp;#8217;s daydreams better match the reality of our training examples.&lt;/p&gt;
+&lt;p&gt;So by adding $Positive(e_{ij}) - Negative(e_{ij})$ to each edge weight, we&amp;#8217;re helping the network&amp;#8217;s daydreams better match the reality of our training examples.&lt;/p&gt;
 
 
 
@@ -4935,10 +4935,10 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 
 
 &lt;ul&gt;
-&lt;li&gt;Above, $Negative(e\_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units &lt;em&gt;once&lt;/em&gt; and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&amp;#8217;s daydreams more accurately.&lt;/li&gt;
-&lt;li&gt;Instead of using $Positive(e\_{ij})=x\_i \* x\_j$, where $x\_i$ and $x\_j$ are binary 0 or 1 &lt;em&gt;states&lt;/em&gt;, we could also let $x\_i$ and/or $x\_j$ be activation &lt;em&gt;probabilities&lt;/em&gt;. Similarly for $Negative(e\_{ij})$.&lt;/li&gt;
+&lt;li&gt;Above, $Negative(e_{ij})$ was determined by taking the product of the $i$th and $j$th units after reconstructing the visible units &lt;em&gt;once&lt;/em&gt; and then updating the hidden units again. We could also take the product after some larger number of reconstructions (i.e., repeat updating the visible units, then the hidden units, then the visible units again, and so on); this is slower, but describes the network&amp;#8217;s daydreams more accurately.&lt;/li&gt;
+&lt;li&gt;Instead of using $Positive(e_{ij})=x_i * x_j$, where $x_i$ and $x_j$ are binary 0 or 1 &lt;em&gt;states&lt;/em&gt;, we could also let $x_i$ and/or $x_j$ be activation &lt;em&gt;probabilities&lt;/em&gt;. Similarly for $Negative(e_{ij})$.&lt;/li&gt;
 &lt;li&gt;We could penalize larger edge weights, in order to get a sparser or more regularized model.&lt;/li&gt;
-&lt;li&gt;When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L \* (Positive(e\_{ij}) - Negative(e\_{ij})$) and the step previously taken.&lt;/li&gt;
+&lt;li&gt;When updating edge weights, we could use a momentum factor: we would add to each edge a weighted sum of the current step as described above (i.e., $L * (Positive(e_{ij}) - Negative(e_{ij})$) and the step previously taken.&lt;/li&gt;
 &lt;li&gt;Instead of using only one training example in each epoch, we could use &lt;em&gt;batches&lt;/em&gt; of examples in each epoch, and only update the network&amp;#8217;s weights after passing through all the examples in the batch. This can speed up the learning by taking advantage of fast matrix-multiplication algorithms.&lt;/li&gt;
 &lt;/ul&gt;
 
