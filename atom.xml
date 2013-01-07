@@ -4,7 +4,7 @@
   <title><![CDATA[Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2012-12-21T00:03:18-08:00</updated>
+  <updated>2013-01-07T00:59:13-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -1060,7 +1060,7 @@
 
 <p><a href="https://twitter.com/echen/status/166343879547822080"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/superbowl-snacks.png" alt="Superbowl Snacks" /></a></p>
 
-<p>What do people want for Christmas, compared to what they actually get? (people are more satisfied than I thought)</p>
+<p>What do people want for Christmas, compared to what they actually get?</p>
 
 <p><a href="https://twitter.com/echen/status/153683967315419136"><img src="https://dl.dropbox.com/u/10506/blog/sodapop/xmas.png" alt="Christmas" /></a></p>
 
@@ -1068,11 +1068,11 @@
 
 <p><a href="https://twitter.com/echen/status/261667822793551873/photo/1"><img src="https://dl.dropbox.com/u/10506/twitter/shitguysandgirlssay.png" alt="Shit Guys and Girls Say" /></a></p>
 
-<p>When were people losing and gaining power during Hurricane Sandy?</p>
+<p>When were people losing and gaining power during Hurricane Sandy? (<a href="http://blog.echen.me/hurricane-sandy-outages/">click</a> the image to interact)</p>
 
 <p><a href="http://blog.echen.me/hurricane-sandy-outages/"><img src="https://dl.dropbox.com/u/10506/twitter/sandy-outages.png" alt="Sandy Power Outages" /></a></p>
 
-<p>How were people spreading Sandy-related information?</p>
+<p>How does information of a <em>geographic</em>-specific nature spread? (<a href="http://hurricanesandy.herokuapp.com/">click</a> the image to see a dynamic visualization of when and where tweets related to surviving Hurricane Sandy were shared)</p>
 
 <p><a href="http://hurricanesandy.herokuapp.com/"><img src="https://dl.dropbox.com/u/10506/twitter/sandy-spread.png" alt="Hurricane Sandy Retweets" /></a></p>
 
