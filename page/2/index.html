@@ -9,7 +9,8 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="tl;dr See this movie visualization for a case study on how a post propagates through Quora. How does information spread through a network? Much of &hellip;">
+  <meta name="description" content="What types of students go to which schools? There are, of course, the classic stereotypes: MIT has the hacker engineers.
+Stanford has the laid-back, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +75,515 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-09-29T10:48:09-07:00" pubdate data-updated="true">Sep 29<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>What types of students go to which schools? There are, of course, the classic stereotypes:</p>
+
+<ul>
+<li><strong>MIT</strong> has the hacker engineers.</li>
+<li><strong>Stanford</strong> has the laid-back, social folks.</li>
+<li><strong>Harvard</strong> has the prestigious leaders of the world.</li>
+<li><strong>Berkeley</strong> has the activist hippies.</li>
+<li><strong>Caltech</strong> has the hardcore science nerds.</li>
+</ul>
+
+
+<p>But how well do these perceptions match reality? What are students at Stanford, Harvard, MIT, Caltech, and Berkeley <em>really</em> interested in? Following the path of my previous data-driven post on <a href="http://blog.echen.me/2011/04/18/twifferences-between-californians-and-new-yorkers/">differences between Silicon Valley and NYC</a>, I scraped the Quora profiles of a couple hundred followers of each school to find out.</p>
+
+<h1>Topics</h1>
+
+<p>So let&#8217;s look at what kinds of topics followers of each school are interested in*. (Skip past the lists for a discussion.)</p>
+
+<h2>MIT</h2>
+
+<p>Topics are followed by p(school = MIT|topic).</p>
+
+<ul>
+<li><strong>MIT Media Lab</strong>                             0.893</li>
+<li><strong>Ksplice</strong>                                   0.69</li>
+<li><strong>Lisp (programming language)</strong>               0.677</li>
+<li><strong>Nokia</strong>                                     0.659</li>
+<li><strong>Public Speaking</strong>                           0.65</li>
+<li><strong>Data Storage</strong>                              0.65</li>
+<li><strong>Google Voice</strong>                              0.609</li>
+<li><strong>Hacking</strong>                                   0.602</li>
+<li><strong>Startups in Europe</strong>                        0.597</li>
+<li><strong>Startup Names</strong>                             0.572</li>
+<li><strong>Mechanical Engineering</strong>                    0.563</li>
+<li><strong>Engineering</strong>                               0.563</li>
+<li><strong>Distributed Databases</strong>                     0.544</li>
+<li><strong>StackOverflow</strong>                             0.536</li>
+<li><strong>Boston</strong>                                    0.513</li>
+<li><strong>Learning</strong>                                  0.507</li>
+<li><strong>Open Source</strong>                               0.498</li>
+<li><strong>Cambridge</strong>                                 0.496</li>
+<li><strong>Public Relations</strong>                          0.493</li>
+<li><strong>Visualization</strong>                             0.492</li>
+<li><strong>Semantic Web</strong>                              0.486</li>
+<li><strong>Andreessen-Horowitz</strong>                       0.483</li>
+<li><strong>Nature</strong>                                    0.475</li>
+<li><strong>Cryptography</strong>                              0.474</li>
+<li><strong>Startups in Boston</strong>                        0.452</li>
+<li><strong>Adobe Photoshop</strong>                           0.451</li>
+<li><strong>Computer Security</strong>                         0.447</li>
+<li><strong>Sachin Tendulkar</strong>                          0.443</li>
+<li><strong>Hacker News</strong>                               0.442</li>
+<li><strong>Games</strong>                                     0.429</li>
+<li><strong>Android Applications</strong>                      0.428</li>
+<li><strong>Best Engineers and Programmers</strong>            0.427</li>
+<li><strong>College Admissions &amp; Getting Into College</strong> 0.422</li>
+<li><strong>Co-Founders</strong>                               0.419</li>
+<li><strong>Big Data</strong>                                  0.41</li>
+<li><strong>System Administration</strong>                     0.4</li>
+<li><strong>Biotechnology</strong>                             0.398</li>
+<li><strong>Higher Education</strong>                          0.394</li>
+<li><strong>NoSQL</strong>                                     0.387</li>
+<li><strong>User Experience</strong>                           0.386</li>
+<li><strong>Career Advice</strong>                             0.377</li>
+<li><strong>Artificial Intelligence</strong>                   0.375</li>
+<li><strong>Scalability</strong>                               0.37</li>
+<li><strong>Taylor Swift</strong>                              0.368</li>
+<li><strong>Google Search</strong>                             0.368</li>
+<li><strong>Functional Programming</strong>                    0.365</li>
+<li><strong>Bing</strong>                                      0.363</li>
+<li><strong>Bioinformatics</strong>                            0.361</li>
+<li><strong>How I Met Your Mother (TV series)</strong>         0.361</li>
+<li><strong>Operating Systems</strong>                         0.356</li>
+<li><strong>Compilers</strong>                                 0.355</li>
+<li><strong>Google Chrome</strong>                             0.354</li>
+<li><strong>Management &amp; Organizational Leadership</strong>    0.35</li>
+<li><strong>Literary Fiction</strong>                          0.35</li>
+<li><strong>Intelligence</strong>                              0.348</li>
+<li><strong>Fight Club (1999 movie)</strong>                   0.344</li>
+<li><strong>Hip Hop Music</strong>                             0.34</li>
+<li><strong>UX Design</strong>                                 0.337</li>
+<li><strong>Web Application Frameworks</strong>                0.336</li>
+<li><strong>Startups in New York City</strong>                 0.333</li>
+<li><strong>Book Recommendations</strong>                      0.33</li>
+<li><strong>Engineering Recruiting</strong>                    0.33</li>
+<li><strong>Search Engines</strong>                            0.329</li>
+<li><strong>Social Search</strong>                             0.329</li>
+<li><strong>Data Science</strong>                              0.328</li>
+<li><strong>History</strong>                                   0.328</li>
+<li><strong>Interaction Design</strong>                        0.326</li>
+<li><strong>Classification (machine learning)</strong>         0.322</li>
+<li><strong>Startup Incubators and Seed Programs</strong>      0.321</li>
+<li><strong>Graphic Design</strong>                            0.321</li>
+<li><strong>Product Design (software)</strong>                 0.319</li>
+<li><strong>The College Experience</strong>                    0.319</li>
+<li><strong>Writing</strong>                                   0.319</li>
+<li><strong>MapReduce</strong>                                 0.318</li>
+<li><strong>Database Systems</strong>                          0.315</li>
+<li><strong>User Interfaces</strong>                           0.314</li>
+<li><strong>Literature</strong>                                0.314</li>
+<li><strong>C (programming language)</strong>                  0.314</li>
+<li><strong>Television</strong>                                0.314</li>
+<li><strong>Reading</strong>                                   0.313</li>
+<li><strong>Usability</strong>                                 0.312</li>
+<li><strong>Books</strong>                                     0.312</li>
+<li><strong>Computers</strong>                                 0.311</li>
+<li><strong>Stealth Startups</strong>                          0.311</li>
+<li><strong>Daft Punk</strong>                                 0.31</li>
+<li><strong>Healthy Eating</strong>                            0.309</li>
+<li><strong>Innovation</strong>                                0.309</li>
+<li><strong>Skiing</strong>                                    0.305</li>
+<li><strong>JavaScript</strong>                                0.304</li>
+<li><strong>Rock Music</strong>                                0.304</li>
+<li><strong>Mozilla Firefox</strong>                           0.304</li>
+<li><strong>Self-Improvement</strong>                          0.303</li>
+<li><strong>McKinsey &amp; Company</strong>                        0.302</li>
+<li><strong>AngelList</strong>                                 0.301</li>
+<li><strong>Data Visualization</strong>                        0.301</li>
+<li><strong>Cassandra (database)</strong>                      0.301</li>
+</ul>
+
+
+<h2>Stanford</h2>
+
+<p>Topics are followed by p(school = Stanford|topic).</p>
+
+<ul>
+<li><strong>Stanford Computer Science</strong>                 0.951</li>
+<li><strong>Stanford Graduate School of Business</strong>      0.939</li>
+<li><strong>Stanford</strong>                                  0.896</li>
+<li><strong>Stanford Football</strong>                         0.896</li>
+<li><strong>Stanford Cardinal</strong>                         0.896</li>
+<li><strong>Social Dance</strong>                              0.847</li>
+<li><strong>Stanford University Courses</strong>               0.847</li>
+<li><strong>Romance</strong>                                   0.769</li>
+<li><strong>Instagram</strong>                                 0.745</li>
+<li><strong>College Football</strong>                          0.665</li>
+<li><strong>Mobile Location Applications</strong>              0.634</li>
+<li><strong>Online Communities</strong>                        0.621</li>
+<li><strong>Interpersonal Relationships</strong>               0.585</li>
+<li><strong>Food &amp; Restaurants in Palo Alto</strong>           0.572</li>
+<li><strong>Your 20s</strong>                                  0.566</li>
+<li><strong>Men&#8217;s Fashion</strong>                             0.548</li>
+<li><strong>Flipboard</strong>                                 0.537</li>
+<li><strong>Inception (2010 movie)</strong>                    0.535</li>
+<li><strong>Tumblr</strong>                                    0.531</li>
+<li><strong>People Skills</strong>                             0.522</li>
+<li><strong>Exercise</strong>                                  0.52</li>
+<li><strong>Joel Spolsky</strong>                              0.516</li>
+<li><strong>Valuations</strong>                                0.515</li>
+<li><strong>The Social Network (2010 movie)</strong>           0.513</li>
+<li><strong>LeBron James</strong>                              0.506</li>
+<li><strong>Northern California</strong>                       0.506</li>
+<li><strong>Evernote</strong>                                  0.5</li>
+<li><strong>Quora Community</strong>                           0.5</li>
+<li><strong>Blogging</strong>                                  0.49</li>
+<li><strong>Downtown Palo Alto</strong>                        0.487</li>
+<li><strong>The College Experience</strong>                    0.485</li>
+<li><strong>Consumer Internet</strong>                         0.477</li>
+<li><strong>Restaurants in San Francisco</strong>              0.477</li>
+<li><strong>Chad Hurley</strong>                               0.47</li>
+<li><strong>Meditation</strong>                                0.468</li>
+<li><strong>Yishan Wong</strong>                               0.466</li>
+<li><strong>Arrested Development (TV series)</strong>          0.463</li>
+<li><strong>fbFund</strong>                                    0.457</li>
+<li><strong>Best Engineers at X Company</strong>               0.451</li>
+<li><strong>Language</strong>                                  0.45</li>
+<li><strong>Words</strong>                                     0.448</li>
+<li><strong>Happiness</strong>                                 0.447</li>
+<li><strong>Path (company)</strong>                            0.446</li>
+<li><strong>Color Labs (startup)</strong>                      0.446</li>
+<li><strong>Palo Alto</strong>                                 0.445</li>
+<li><strong>Woot.com</strong>                                  0.442</li>
+<li><strong>Beer</strong>                                      0.442</li>
+<li><strong>PayPal</strong>                                    0.441</li>
+<li><strong>Women in Startups</strong>                         0.438</li>
+<li><strong>Techmeme</strong>                                  0.433</li>
+<li><strong>Women in Engineering</strong>                      0.428</li>
+<li><strong>The Mission (San Francisco neighborhood)</strong>  0.427</li>
+<li><strong>iPhone Applications</strong>                       0.416</li>
+<li><strong>Asana</strong>                                     0.413</li>
+<li><strong>Monetization</strong>                              0.412</li>
+<li><strong>Repetitive Strain Injury (RSI)</strong>            0.4</li>
+<li><strong>IDEO</strong>                                      0.398</li>
+<li><strong>Spotify</strong>                                   0.397</li>
+<li><strong>San Francisco Giants</strong>                      0.396</li>
+<li><strong>Fortune Magazine</strong>                          0.389</li>
+<li><strong>Love</strong>                                      0.387</li>
+<li><strong>Human-Computer Interaction</strong>                0.382</li>
+<li><strong>Hip Hop Music</strong>                             0.378</li>
+<li><strong>Self-Improvement</strong>                          0.378</li>
+<li><strong>Food in San Francisco</strong>                     0.375</li>
+<li><strong>Quora (company)</strong>                           0.374</li>
+<li><strong>Quora Infrastructure</strong>                      0.373</li>
+<li><strong>iPhone</strong>                                    0.371</li>
+<li><strong>Square (company)</strong>                          0.369</li>
+<li><strong>Social Psychology</strong>                         0.369</li>
+<li><strong>Network Effects</strong>                           0.366</li>
+<li><strong>Chris Sacca</strong>                               0.365</li>
+<li><strong>Walt Mossberg</strong>                             0.364</li>
+<li><strong>Salesforce.com</strong>                            0.362</li>
+<li><strong>Sex</strong>                                       0.361</li>
+<li><strong>Etiquette</strong>                                 0.361</li>
+<li><strong>David Pogue</strong>                               0.361</li>
+<li><strong>Gowalla</strong>                                   0.36</li>
+<li><strong>iOS Development</strong>                           0.354</li>
+<li><strong>Palantir Technologies</strong>                     0.353</li>
+<li><strong>Mobile Computing</strong>                          0.347</li>
+<li><strong>Sports</strong>                                    0.346</li>
+<li><strong>Video Games</strong>                               0.345</li>
+<li><strong>Burning Man</strong>                               0.345</li>
+<li><strong>Engineering Management</strong>                    0.343</li>
+<li><strong>Cognitive Science</strong>                         0.342</li>
+<li><strong>Dating &amp; Relationships</strong>                    0.341</li>
+<li><strong>Fred Wilson (venture investor)</strong>            0.337</li>
+<li><strong>Taiwan</strong>                                    0.333</li>
+<li><strong>Natural Language Processing</strong>               0.33</li>
+<li><strong>Eric Schmidt</strong>                              0.329</li>
+<li><strong>Social Advice</strong>                             0.329</li>
+<li><strong>Engineering Recruiting</strong>                    0.328</li>
+<li><strong>Job Interviews</strong>                            0.325</li>
+<li><strong>Mobile Phones</strong>                             0.324</li>
+<li><strong>Twitter Inc. (company)</strong>                    0.321</li>
+<li><strong>Engineering in Silicon Valley</strong>             0.321</li>
+<li><strong>San Francisco Bay Area</strong>                    0.321</li>
+<li><strong>Google Analytics</strong>                          0.32</li>
+<li><strong>Fashion</strong>                                   0.315</li>
+<li><strong>Interaction Design</strong>                        0.314</li>
+<li><strong>Open Graph</strong>                                0.313</li>
+<li><strong>Drugs &amp; Pharmaceuticals</strong>                   0.312</li>
+<li><strong>Electronic Music</strong>                          0.312</li>
+<li><strong>Facebook Inc. (company)</strong>                   0.309</li>
+<li><strong>Fitness</strong>                                   0.309</li>
+<li><strong>YouTube</strong>                                   0.308</li>
+<li><strong>TED Talks</strong>                                 0.308</li>
+<li><strong>Freakonomics (2005 Book)</strong>                  0.307</li>
+<li><strong>Jack Dorsey</strong>                               0.306</li>
+<li><strong>Nutrition</strong>                                 0.305</li>
+<li><strong>Puzzles</strong>                                   0.305</li>
+<li><strong>Silicon Valley Mergers &amp; Acquisitions</strong>     0.304</li>
+<li><strong>Viral Growth &amp; Analytics</strong>                  0.304</li>
+<li><strong>Amazon Web Services</strong>                       0.304</li>
+<li><strong>StumbleUpon</strong>                               0.303</li>
+<li><strong>Exceptional Comment Threads</strong>               0.303</li>
+</ul>
+
+
+<h2>Harvard</h2>
+
+<ul>
+<li><strong>Harvard Business School</strong>                   0.968</li>
+<li><strong>Harvard Business Review</strong>                   0.922</li>
+<li><strong>Harvard Square</strong>                            0.912</li>
+<li><strong>Harvard Law School</strong>                        0.912</li>
+<li><strong>Jimmy Fallon</strong>                              0.899</li>
+<li><strong>Boston Red Sox</strong>                            0.658</li>
+<li><strong>Klout</strong>                                     0.644</li>
+<li><strong>Oprah Winfrey</strong>                             0.596</li>
+<li><strong>Ivanka Trump</strong>                              0.587</li>
+<li><strong>Dalai Lama</strong>                                0.569</li>
+<li><strong>Food in New York City</strong>                     0.565</li>
+<li><strong>U2</strong>                                        0.562</li>
+<li><strong>TwitPic</strong>                                   0.534</li>
+<li><strong>37signals</strong>                                 0.522</li>
+<li><strong>David Lynch (director)</strong>                    0.512</li>
+<li><strong>Al Gore</strong>                                   0.508</li>
+<li><strong>TechStars</strong>                                 0.49</li>
+<li><strong>Baseball</strong>                                  0.487</li>
+<li><strong>Private Equity</strong>                            0.471</li>
+<li><strong>Classical Music</strong>                           0.46</li>
+<li><strong>Startups in New York City</strong>                 0.458</li>
+<li><strong>HootSuite</strong>                                 0.449</li>
+<li><strong>Kiva</strong>                                      0.442</li>
+<li><strong>Ultimate Frisbee</strong>                          0.441</li>
+<li><strong>Huffington Post</strong>                           0.436</li>
+<li><strong>New York City</strong>                             0.433</li>
+<li><strong>Charlie Cheever</strong>                           0.433</li>
+<li><strong>The New York Times</strong>                        0.431</li>
+<li><strong>Technology Journalism</strong>                     0.431</li>
+<li><strong>McKinsey &amp; Company</strong>                        0.427</li>
+<li><strong>TweetDeck</strong>                                 0.422</li>
+<li><strong>How Does X Work?</strong>                          0.417</li>
+<li><strong>Ashton Kutcher</strong>                            0.414</li>
+<li><strong>Coldplay</strong>                                  0.402</li>
+<li><strong>Conan O&#8217;Brien</strong>                             0.397</li>
+<li><strong>Fast Company</strong>                              0.397</li>
+<li><strong>WikiLeaks</strong>                                 0.394</li>
+<li><strong>Michael Jackson</strong>                           0.389</li>
+<li><strong>Guy Kawasaki</strong>                              0.389</li>
+<li><strong>Journalism</strong>                                0.384</li>
+<li><strong>Wall Street Journal</strong>                       0.384</li>
+<li><strong>Cambridge</strong>                                 0.371</li>
+<li><strong>Seattle</strong>                                   0.37</li>
+<li><strong>Cities &amp; Metro Areas</strong>                      0.357</li>
+<li><strong>Boston</strong>                                    0.353</li>
+<li><strong>Tim Ferriss (author)</strong>                      0.35</li>
+<li><strong>The New Yorker</strong>                            0.343</li>
+<li><strong>Law</strong>                                       0.34</li>
+<li><strong>Mashable</strong>                                  0.338</li>
+<li><strong>Politics</strong>                                  0.335</li>
+<li><strong>The Economist</strong>                             0.334</li>
+<li><strong>Barack Obama</strong>                              0.333</li>
+<li><strong>Skiing</strong>                                    0.329</li>
+<li><strong>McKinsey Quarterly</strong>                        0.325</li>
+<li><strong>Wired (magazine)</strong>                          0.316</li>
+<li><strong>Bill Gates</strong>                                0.31</li>
+<li><strong>Mad Men (TV series)</strong>                       0.308</li>
+<li><strong>India</strong>                                     0.306</li>
+<li><strong>TED Talks</strong>                                 0.306</li>
+<li><strong>Netflix</strong>                                   0.304</li>
+<li><strong>Wine</strong>                                      0.303</li>
+<li><strong>Angel Investors</strong>                           0.302</li>
+<li><strong>Facebook Ads</strong>                              0.301</li>
+</ul>
+
+
+<h2>UC Berkeley</h2>
+
+<ul>
+<li><strong>Berkeley</strong>                                  0.978</li>
+<li><strong>California Golden Bears</strong>                   0.91</li>
+<li><strong>Internships</strong>                               0.717</li>
+<li><strong>Web Marketing</strong>                             0.484</li>
+<li><strong>Google Social Strategy</strong>                    0.453</li>
+<li><strong>Southwest Airlines</strong>                        0.451</li>
+<li><strong>WordPress</strong>                                 0.429</li>
+<li><strong>Stock Market</strong>                              0.429</li>
+<li><strong>BMW (automobile)</strong>                          0.428</li>
+<li><strong>Web Applications</strong>                          0.423</li>
+<li><strong>Flickr</strong>                                    0.422</li>
+<li><strong>Snowboarding</strong>                              0.42</li>
+<li><strong>Electronic Music</strong>                          0.404</li>
+<li><strong>MySQL</strong>                                     0.401</li>
+<li><strong>Internet Advertising</strong>                      0.399</li>
+<li><strong>Search Engine Optimization (SEO)</strong>          0.398</li>
+<li><strong>Yelp</strong>                                      0.396</li>
+<li><strong>Groupon</strong>                                   0.393</li>
+<li><strong>In-N-Out Burger</strong>                           0.391</li>
+<li><strong>The Matrix (1999 movie)</strong>                   0.389</li>
+<li><strong>Trading (finance)</strong>                         0.385</li>
+<li><strong>jQuery</strong>                                    0.381</li>
+<li><strong>Hedge Funds</strong>                               0.378</li>
+<li><strong>Social Media Marketing</strong>                    0.377</li>
+<li><strong>San Francisco</strong>                             0.376</li>
+<li><strong>Stealth Startups</strong>                          0.362</li>
+<li><strong>Yahoo!</strong>                                    0.36</li>
+<li><strong>Cascading Style Sheets</strong>                    0.359</li>
+<li><strong>Angel Investors</strong>                           0.355</li>
+<li><strong>UX Design</strong>                                 0.35</li>
+<li><strong>StarCraft</strong>                                 0.348</li>
+<li><strong>Los Angeles Lakers</strong>                        0.347</li>
+<li><strong>Mountain View</strong>                             0.345</li>
+<li><strong>How I Met Your Mother (TV series)</strong>         0.338</li>
+<li><strong>Google+</strong>                                   0.337</li>
+<li><strong>Ruby on Rails</strong>                             0.333</li>
+<li><strong>Reading</strong>                                   0.333</li>
+<li><strong>Social Media</strong>                              0.326</li>
+<li><strong>China</strong>                                     0.322</li>
+<li><strong>Palantir Technologies</strong>                     0.319</li>
+<li><strong>Facebook Platform</strong>                         0.315</li>
+<li><strong>Basketball</strong>                                0.315</li>
+<li><strong>Education</strong>                                 0.314</li>
+<li><strong>Business Development</strong>                      0.312</li>
+<li><strong>Online &amp; Mobile Payments</strong>                  0.305</li>
+<li><strong>Restaurants in San Francisco</strong>              0.302</li>
+<li><strong>Technology Companies</strong>                      0.302</li>
+<li><strong>Seth Godin</strong>                                0.3</li>
+</ul>
+
+
+<h2>Caltech</h2>
+
+<ul>
+<li><strong>Pasadena</strong>                                  0.969</li>
+<li><strong>Chess</strong>                                     0.748</li>
+<li><strong>Table Tennis</strong>                              0.671</li>
+<li><strong>UCLA</strong>                                      0.67</li>
+<li><strong>MacBook Pro</strong>                               0.618</li>
+<li><strong>Physics</strong>                                   0.618</li>
+<li><strong>Haskell</strong>                                   0.582</li>
+<li><strong>Los Angeles</strong>                               0.58</li>
+<li><strong>Electrical Engineering</strong>                    0.567</li>
+<li><strong>Star Trek (movie</strong>                          0.561</li>
+<li><strong>Disruptive Technology</strong>                     0.545</li>
+<li><strong>Science</strong>                                   0.53</li>
+<li><strong>Biology</strong>                                   0.526</li>
+<li><strong>Quantum Mechanics</strong>                         0.521</li>
+<li><strong>LaTeX</strong>                                     0.514</li>
+<li><strong>Mathematics</strong>                               0.488</li>
+<li><strong>xkcd</strong>                                      0.488</li>
+<li><strong>Genetics &amp; Heredity</strong>                       0.487</li>
+<li><strong>Chemistry</strong>                                 0.47</li>
+<li><strong>Medicine &amp; Healthcare</strong>                     0.448</li>
+<li><strong>Poker</strong>                                     0.445</li>
+<li><strong>C++ (programming language)</strong>                0.442</li>
+<li><strong>Data Structures</strong>                           0.434</li>
+<li><strong>Emacs</strong>                                     0.428</li>
+<li><strong>MongoDB</strong>                                   0.423</li>
+<li><strong>Neuroscience</strong>                              0.404</li>
+<li><strong>Science Fiction</strong>                           0.4</li>
+<li><strong>Mac OS X</strong>                                  0.394</li>
+<li><strong>Board Games</strong>                               0.387</li>
+<li><strong>Computers</strong>                                 0.386</li>
+<li><strong>Research</strong>                                  0.385</li>
+<li><strong>Finance</strong>                                   0.385</li>
+<li><strong>The Future</strong>                                0.379</li>
+<li><strong>Linux</strong>                                     0.378</li>
+<li><strong>The Colbert Report</strong>                        0.376</li>
+<li><strong>The Beatles</strong>                               0.374</li>
+<li><strong>The Onion</strong>                                 0.365</li>
+<li><strong>Ruby</strong>                                      0.363</li>
+<li><strong>Cars &amp; Automobiles</strong>                        0.361</li>
+<li><strong>Quantitative Finance</strong>                      0.359</li>
+<li><strong>Academia</strong>                                  0.359</li>
+<li><strong>Law</strong>                                       0.355</li>
+<li><strong>Cooking</strong>                                   0.354</li>
+<li><strong>Psychology</strong>                                0.349</li>
+<li><strong>Eminem</strong>                                    0.347</li>
+<li><strong>Football (Soccer)</strong>                         0.346</li>
+<li><strong>Computer Programming</strong>                      0.343</li>
+<li><strong>Algorithms</strong>                                0.343</li>
+<li><strong>Evolutionary Biology</strong>                      0.337</li>
+<li><strong>Behavioral Economics</strong>                      0.335</li>
+<li><strong>California</strong>                                0.329</li>
+<li><strong>Machine Learning</strong>                          0.326</li>
+<li><strong>Futurama</strong>                                  0.324</li>
+<li><strong>Social Advice</strong>                             0.324</li>
+<li><strong>StarCraft II</strong>                              0.319</li>
+<li><strong>Job Interview Questions</strong>                   0.318</li>
+<li><strong>Game Theory</strong>                               0.316</li>
+<li><strong>This American Life</strong>                        0.315</li>
+<li><strong>Economics</strong>                                 0.314</li>
+<li><strong>Vim</strong>                                       0.31</li>
+<li><strong>Graduate School</strong>                           0.309</li>
+<li><strong>Git (revision control)</strong>                    0.306</li>
+<li><strong>Computer Science</strong>                          0.303</li>
+</ul>
+
+
+<p>What do we see?</p>
+
+<ul>
+<li>First, in a nice validation of this approach, we find that each school is interested in exactly the <strong>locations</strong> we&#8217;d expect: Caltech is interested in <em>Pasadena</em> and <em>Los Angeles</em>; MIT and Harvard are both interested in <em>Boston</em> and <em>Cambridge</em> (Harvard is interested in <em>New York City</em> as well); Stanford is interested in <em>Palo Alto</em>, <em>Northern California</em>, and <em>San Francisco Bay Area</em>; and Berkeley is interested in <em>Berkeley</em>, <em>San Francisco</em>, and <em>Mountain View</em>.</li>
+<li>More interestingly, let&#8217;s look at where each school likes to <strong>eat</strong>. Stereotypically, we expect Harvard, Stanford, and Berkeley students to be more outgoing and social, and MIT and Caltech students to be more introverted. This is indeed what we find:
+
+<ul>
+<li>Harvard follows <em>Food in New York City</em>; Stanford follows <em>Food &amp; Restaurants in Palo Alto</em>, <em>Restaurants in San Francisco</em>, and <em>Food in San Francisco</em>; and Berkeley follows <em>Restaurants in San Francisco</em> and <em>In-N-Out Burger</em>. In other words, Harvard, Stanford, and Berkeley love eating out.</li>
+<li>Caltech, on the other hand, loves <em>Cooking</em>, and MIT loves <em>Healthy Eating</em> &#8211; both signs, perhaps, of a preference for eating in.</li>
+</ul>
+</li>
+<li>And what does each university use to quench their <strong>thirst</strong>? Harvard students like to drink <em>wine</em> (classy!), while Stanford students prefer <em>beer</em> (the social drink of choice).</li>
+<li>What about <strong>sports teams</strong>? MIT and Caltech couldn&#8217;t care less, though Harvard follows the <em>Boston Red Sox</em>, Stanford follows the <em>San Francisco Giants</em> (as well as their own <em>Stanford Football</em> and <em>Stanford Cardinal</em>), and Berkeley follows the <em>Los Angeles Lakers</em> (and the <em>California Golden Bears</em>).</li>
+<li>For <strong>sports</strong> themselves, MIT students like <em>skiing</em>; Stanford students like <em>general exercise</em>, <em>fitness</em>, and <em>sports</em>; Harvard students like <em>baseball</em>, <em>ultimate frisbee</em>, and <em>skiing</em>; and Berkeley students like <em>snowboarding</em>. Caltech, in a league of its own, enjoys <em>table tennis</em> and <em>chess</em>.</li>
+<li>What does each school think of <strong>social</strong>? Caltech students look for Social <em>Advice</em>. Berkeley students are interested in Social <em>Media</em> and Social Media Marketing. MIT, on the more technical side, wants Social <em>Search</em>. Stanford students, predictably, love the whole spectrum of social offerings, from Social <em>Dance</em> and <em>The Social Network</em>, to Social <em>Psychology</em> and Social <em>Advice</em>. (Interestingly, Caltech and Stanford are both interested in Social Advice, though I wonder if it&#8217;s for slightly different reasons.)</li>
+<li>What&#8217;s each school&#8217;s relationship with <strong>computers</strong>? Caltech students are interested in Computer <em>Science</em>, MIT hackers are interested in Computer <em>Security</em>, and Stanford students are interested in Human-Computer <em>Interaction</em>.</li>
+<li>Digging into the <strong>MIT vs. Caltech</strong> divide a little, we see that Caltech students really are more interested in the pure sciences (<em>Physics, Science, Biology, Quantum Mechanics, Mathematics, Chemistry</em>, etc.), while MIT students are more on the applied and engineering sides (<em>Mechanical Engineering, Engineering, Distributed Databases, Cryptography, Computer Security, Biotechnology, Operating Systems, Compilers</em>, etc.).</li>
+<li>Regarding <strong>programming languages</strong>, Caltech students love <em>Haskell</em> (hardcore purity!), while MIT students love <em>Lisp</em>.</li>
+<li>What does each school like to <strong>read</strong>, both offline and online? Caltech loves <em>science fiction</em>, <em>xkcd</em>, and <em>The Onion</em>; MIT likes <em>Hacker News</em>; Harvard loves journals, newspapers, and magazines (<em>Huffington Post</em>, the <em><a href="http://stuffwhitepeoplelike.com/2008/01/31/45-the-sunday-new-york-times/">New York Times</a></em>, <em>Fortune, Wall Street Journal, the New Yorker, the Economist</em>, and so on); and Stanford likes <em>TechMeme</em>.</li>
+<li>What <strong>movies and television shows</strong> does each school like to watch? Caltech likes <em>Star Trek</em>, the <em>Colbert Report</em>, and <em>Futurama</em>. MIT likes <em>Fight Club</em> (I don&#8217;t know what this has to do with MIT, though I will note that on my first day as a freshman in a new dorm, Fight Club was precisely the movie we all went to a lecture hall to see). Stanford likes <em>The Social Network</em> and <em>Inception</em>. Harvard, rather fittingly, likes <em><a href="http://stuffwhitepeoplelike.com/2009/03/11/123-mad-men/">Mad Men</a></em> and <em><a href="http://stuffwhitepeoplelike.com/2010/09/08/134-the-ted-conference/">Ted Talks</a></em>.</li>
+<li>Let&#8217;s look at the <strong>startups</strong> each school follows. MIT, of course, likes <em>Ksplice</em>. Berkeley likes <em>Yelp</em> and <em>Groupon</em>. Stanford likes just about every startup under the sun (<em>Instagram, Flipboard, Tumblr, Path, Color Labs</em>, etc.). And Harvard, that bastion of hard-won influence and prestige? To the surprise of precisely no one, Harvard enjoys <em>Klout</em>.</li>
+</ul>
+
+
+<p>Let&#8217;s end with a summarized view of each school:</p>
+
+<ul>
+<li><strong>Caltech</strong> is very much into the sciences (<em>Physics, Biology, Quantum Mechanics, Mathematics</em>, etc.), as well as many pretty nerdy topics (<em>Star Trek, Science Fiction, xkcd, Futurama, Starcraft II</em>, etc.).</li>
+<li><strong>MIT</strong> is dominated by everything engineering and tech.</li>
+<li><strong>Stanford</strong> loves relationships (<em>interpersonal relationships, people skills, love, network effects, sex, etiquette, dating and relationships, romance</em>), health and appearance (<em>fashion, fitness, nutrition, happiness</em>), and startups (<em>Instagram, Flipboard, Path, Color Labs</em>, etc.).</li>
+<li><strong>Berkeley</strong>, sadly, is perhaps too large and diverse for an overall characterization.</li>
+<li><strong>Harvard</strong> students are fascinated by famous figures (<em>Jimmy Fallon, Oprah Winfrey, Invaka Trump, Dalai Lama, David Lynch, Al Gore, Bill Gates, Barack Obama</em>), and by prestigious newspapers, journals, and magazines (<em>Fortune, the New York Times, the Wall Street Journal, the Economist</em>, and so on). Other very fitting interests include <em><a href="http://stuffwhitepeoplelike.com/2008/01/21/12-non-profit-organizations/">Kiva</a>, <a href="http://stuffwhitepeoplelike.com/2008/09/01/108-appearing-to-enjoy-classical-music/">classical music</a></em>, and <em><a href="http://www.vanityfair.com/online/daily/2008/06/coldplay">Coldplay</a></em>.</li>
+</ul>
+
+
+<p>*I pulled about 400 followers from each school, and added a couple filters, to try to ensure that followers were actual attendees of the schools rather than general people simply interested in them. Topics are sorted using a naive Bayes score and filtered to have at least 5 counts. Also, a word of warning: my dataset was fairly small and users on Quora are almost certainly not representative of their schools as a whole (though I tried to be rigorous with what I had).</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1462,62 +1972,6 @@ its so          0.8916207044791409
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/05/01/eigensheep/">Eigensheep</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-05-01T15:23:31-07:00" pubdate data-updated="true">May 1<span>st</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Aaron Koblin&#8217;s <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were <em>ordered</em>, so I decided to try projecting the sheep onto two dimensions.</p>
-
-<h1>Principal Sheep Components</h1>
-
-<p>After screenshotting the first 50 sheep from the market and normalizing their size and color, here&#8217;s what a PCA projection looks like (<a href="http://dl.dropbox.com/u/10506/eigensheep.png">click</a> for a larger view):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/eigensheep.png"><img src="http://dl.dropbox.com/u/10506/eigensheep.png" alt="Projected Sheep" /></a></p>
-
-<p>Notice how the stroke widths get thicker as we move to the right (i.e., <strong>the first principal component seems to measure the blackness of the sheep</strong>), and the amount of wool on the sheep&#8217;s body increases as we move up (i.e., <strong>the second principal component seems to measure the wooliness of the sheep</strong>).</p>
-
-<p>It&#8217;s also pretty neat how all the sheep with black heads and black legs (sheep 35, 16, 32, 31, and 19) get clumped together:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png"><img src="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png" alt="Projected Sheep, Black Heads/Legs Circled" /></a></p>
-
-<p>And I think the sheep on the left (next to and inside the dense cluster) seem much more poorly drawn &#8211; they look more like camels, dogs, unicorns, or bugs than actual sheep.</p>
-
-<h1>Code</h1>
-
-<p>In a bit more detail, I used the poor man&#8217;s Mechanical Turk (myself) to screenshot the first 50 sheep from the market, trying to hug the sheep as closely as possible to ensure proper alignment. Next, I used the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> to resize the images to 150x150px, convert them to grayscale, and flatten them into the rows of a matrix.</p>
-
-<p>In case anyone else wants to play with the sheep images, I put the <a href="https://github.com/echen/eigensheep">code</a> on my <a href="https://github.com/echen/eigensheep">Github</a> account.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/3/">&larr; Older</a>
@@ -1544,6 +1998,10 @@ its so          0.8916207044791409
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/01/08/improving-twitter-search-with-real-time-human-computation/">Improving Twitter search with real-time human computation</a>
+      </li>
     
       <li class="post">
         <a href="/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/">Edge Prediction in a Social Graph: My Solution to Facebook&#8217;s User Recommendation Contest on Kaggle</a>
@@ -1579,10 +2037,6 @@ its so          0.8916207044791409
     
       <li class="post">
         <a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
       </li>
     
   </ul>

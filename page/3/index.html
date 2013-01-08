@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best &hellip;">
+  <meta name="description" content="Aaron Koblin&#8217;s Sheep Market visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were ordered, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,6 +74,62 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/05/01/eigensheep/">Eigensheep</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-05-01T15:23:31-07:00" pubdate data-updated="true">May 1<span>st</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Aaron Koblin&#8217;s <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were <em>ordered</em>, so I decided to try projecting the sheep onto two dimensions.</p>
+
+<h1>Principal Sheep Components</h1>
+
+<p>After screenshotting the first 50 sheep from the market and normalizing their size and color, here&#8217;s what a PCA projection looks like (<a href="http://dl.dropbox.com/u/10506/eigensheep.png">click</a> for a larger view):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/eigensheep.png"><img src="http://dl.dropbox.com/u/10506/eigensheep.png" alt="Projected Sheep" /></a></p>
+
+<p>Notice how the stroke widths get thicker as we move to the right (i.e., <strong>the first principal component seems to measure the blackness of the sheep</strong>), and the amount of wool on the sheep&#8217;s body increases as we move up (i.e., <strong>the second principal component seems to measure the wooliness of the sheep</strong>).</p>
+
+<p>It&#8217;s also pretty neat how all the sheep with black heads and black legs (sheep 35, 16, 32, 31, and 19) get clumped together:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png"><img src="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png" alt="Projected Sheep, Black Heads/Legs Circled" /></a></p>
+
+<p>And I think the sheep on the left (next to and inside the dense cluster) seem much more poorly drawn &#8211; they look more like camels, dogs, unicorns, or bugs than actual sheep.</p>
+
+<h1>Code</h1>
+
+<p>In a bit more detail, I used the poor man&#8217;s Mechanical Turk (myself) to screenshot the first 50 sheep from the market, trying to hug the sheep as closely as possible to ensure proper alignment. Next, I used the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> to resize the images to 150x150px, convert them to grayscale, and flatten them into the rows of a matrix.</p>
+
+<p>In case anyone else wants to play with the sheep images, I put the <a href="https://github.com/echen/eigensheep">code</a> on my <a href="https://github.com/echen/eigensheep">Github</a> account.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1158,83 +1214,6 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/03/14/least-angle-regression-for-the-hungry-layman/">A Layman&#8217;s Explanation of Least Angle Regression</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-14T04:27:10-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>(I wrote up a more mathematical explanation of least angle regression <a href="http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression/">here</a>.)</p>
-
-<p>Suppose you&#8217;re at a buffet. You don&#8217;t want to just grab everything and overeat (overfit), so how do you decide which dishes to take? Here are some possibilities.</p>
-
-<h1>Forward Selection</h1>
-
-<p>On your first trip to the buffet, take a plateful of your favorite dish, bring it back, and eat it. On your second trip, take a plateful of the dish that <em>now</em> looks most appetizing, bring it back, and eat it. And so on.</p>
-
-<p>The problem with this method is the following: suppose your favorite food is spaghetti, followed closely by macaroni. Ideally, you&#8217;d like to take half a plate of spaghetti and slightly less than half a plate of macaroni, but under this method, you have to first take and eat a plateful of spaghetti, and now you&#8217;re sick of pasta and don&#8217;t want macaroni anymore.</p>
-
-<h1>Forward Stagewise</h1>
-
-<p>To remedy the greediness of the above method, another option is to take smaller morsels at a time. On your first trip to the buffet, you take a thimbleful of your favorite dish; on your next trip to the buffet, you take a thimbleful of the currently most appetizing dish; and so on again.</p>
-
-<p>Now, after getting your thimbleful of spaghetti, pasta still looks delicious to you, so you can get your thimbleful of macaroni as well.</p>
-
-<p>The problem with this method is that because you&#8217;re only eating a thimbleful at a time, you have to make many trips to the buffet and so dinner takes forever.</p>
-
-<h1>Least Angle Regression</h1>
-
-<p>A much more efficient method works as follows. Suppose your favorite dishes are, in order, spaghetti, macaroni, salad, and chili. On your first trip, you grab a bunch of spaghetti. You know that as you eat spaghetti, you start to get slightly sick of it, so it becomes less and less appetizing, until eventually it becomes just as appetizing as macaroni (but still more appetizing than salad and chili). So only grab an amount X of spaghetti, so that after eating X, spaghetti and macaroni are equally appetizing.</p>
-
-<p>On your second trip, spaghetti and macaroni are equally appetizing. Grab both spaghetti and macaroni, in proportions such that spaghetti and macaroni stay equally appetizing while you eat. Again, you know exactly how much spaghetti and macaroni you can eat until salad becomes just as appetizing, so only grab this amount.</p>
-
-<p>On your third trip, spaghetti, macaroni, and salad look equally delicious. Again, grab the three foods in proportions that stay equally appetizing while you eat, and only grab enough to make chili look just as tasty.</p>
-
-<p>And so on.</p>
-
-<p>Note that:</p>
-
-<ul>
-<li><p>This method works better than forward selection, because we get to eat both spaghetti and macaroni.</p></li>
-<li><p>This method works much faster than forward stagewise, because we make much fewer trips. (If we want to eat $latex n$ dishes, we only need to make $latex n$ trips.)</p></li>
-<li><p>We&#8217;re always eating whatever looks most appetizing to us.</p></li>
-</ul>
-
-
-<h1>Reversing the Analogy</h1>
-
-<p>Replace buffet with linear regression and dishes with variables, and you now have three tasty model selection methods to choose from.</p>
-
-<p>For a more mathematical explanation of least angle regression, see <a href="http://edchedch.wordpress.com/2011/04/21/a-mathematical-introduction-to-least-angle-regression/">here</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/page/4/">&larr; Older</a>
@@ -1261,6 +1240,10 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
 </section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/01/08/improving-twitter-search-with-real-time-human-computation/">Improving Twitter search with real-time human computation</a>
+      </li>
     
       <li class="post">
         <a href="/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/">Edge Prediction in a Social Graph: My Solution to Facebook&#8217;s User Recommendation Contest on Kaggle</a>
@@ -1296,10 +1279,6 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
     
       <li class="post">
         <a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
-      </li>
-    
-      <li class="post">
-        <a href="/2011/09/29/stuff-harvard-people-like/">Stuff Harvard People Like</a>
       </li>
     
   </ul>

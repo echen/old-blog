@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Improving Twitter search with real-time human computation - Edwin Chen's Blog</title>
+  <meta name="author" content="Edwin Chen">
+
+  
+  <meta name="description" content="(This is a repost of an entry that Alpa Jain and I wrote for the Twitter Engineering Blog.) One of the magical things about Twitter is that it opens &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/feed/" rel="alternate" title="Edwin Chen's Blog" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-29005692-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Edwin Chen's Blog</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/feed/" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.echen.me" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Improving Twitter search with real-time human computation</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-08T13:08:00-08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>(This is a repost of an entry that <a href="https://twitter.com/alpa">Alpa Jain</a> and I wrote for the <a href="http://engineering.twitter.com/2013/01/improving-twitter-search-with-real-time.html">Twitter Engineering Blog</a>.)</em></p>
+
+<p>One of the magical things about Twitter is that it opens a window to the world &#8211; in <strong>real-time</strong>. An event happens, and just seconds later, it&#8217;s shared for people across the planet to see.</p>
+
+<p>Consider, for example, what happened when Flight 1549 crashed in the Hudson.</p>
+
+<blockquote class="twitter-tweet"><p><a href="http://twitpic.com/135xa">http://twitpic.com/135xa</a> - There&#8217;s a plane in the Hudson. I&#8217;m on the ferry going to pick up the people. Crazy.</p>&mdash; Janis Krums (@jkrums) <a href="https://twitter.com/jkrums/status/1121915133" data-datetime="2009-01-15T20:36:04+00:00">January 15, 2009</a></blockquote>
+
+
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+
+
+<br />
+
+
+<p>When Osama bin Laden was killed.</p>
+
+<blockquote class="twitter-tweet"><p>Helicopter hovering above Abbottabad at 1AM (is a rare event).</p>&mdash; Sohaib Athar (@ReallyVirtual) <a href="https://twitter.com/ReallyVirtual/status/64780730286358528" data-datetime="2011-05-01T19:58:24+00:00">May 1, 2011</a></blockquote>
+
+
+
+
+<br />
+
+
+<p>Or when Mitt Romney mentioned binders during the presidential debates.</p>
+
+<blockquote class="twitter-tweet"><p>Boy, I&#8217;m full of women! <a href="https://twitter.com/search/%23debates">#debates</a></p>&mdash; Romney&#8217;s Binder (@RomneysBinder) <a href="https://twitter.com/RomneysBinder/status/258383626918588417" data-datetime="2012-10-17T01:47:11+00:00">October 17, 2012</a></blockquote>
+
+
+
+
+<br />
+
+
+<p>When each of these events happened, people <em>instantly</em> came to Twitter &#8211; and, in particular, Twitter search &#8211; to discover what was happening.</p>
+
+<p>From a search and advertising perspective, however, these sudden events pose several challenges:</p>
+
+<ol>
+<li>The queries people perform have never before been seen, so it&#8217;s impossible to know beforehand what they mean. How would you know that #bindersfullofwomen refers to politics, and not office accessories, or that people searching for &#8220;Horses and Bayonets&#8221; are interested in the debates?</li>
+<li>Since these spikes in search queries are so <a href="http://arxiv.org/abs/1205.6855">short-lived</a>, there’s only a short window of opportunity to learn what they mean.</li>
+</ol>
+
+
+<p>So an event happens, people instantly come to Twitter to search for the event, and we need to teach our systems what these queries mean as quickly as we can &#8211; because in just a few hours, those searches will be gone.</p>
+
+<p>How do we do this? We&#8217;ll describe a novel real-time human computation engine we built that allows us to find search queries as soon as they&#8217;re trending, send these queries to real humans to be judged, and finally incorporate these human annotations into our backend models.</p>
+
+<h2>Overview</h2>
+
+<p>Before we delve into the details, here&#8217;s an overview of how the system works.</p>
+
+<p>(1) First, we monitor for which search queries are currently popular.</p>
+
+
+<p>Behind the scenes: we run a Storm topology that tracks statistics on search queries.</p>
+
+
+<p>For example: the query &#8220;Big Bird&#8221; may be averaging zero searches a day, but at 6pm on October 3, we suddenly see a spike in searches from the US.</p>
+
+
+
+
+<p>(2) Next, as soon as we discover a new popular search query, we send it to our human evaluation systems, where judges are asked a variety of questions about the query.</p>
+
+
+<p>Behind the scenes: when the Storm topology detects that a query has reached sufficient popularity, it connects to a Thrift API that dispatches the query to Amazon&#8217;s Mechanical Turk service, and then polls Mechanical Turk for a response.</p>
+
+
+<p>For example: as soon as we notice &#8220;Big Bird&#8221; spiking, we may ask judges on Mechanical Turk to categorize the query, or provide other information (e.g., whether there are likely to be interesting pictures of the query, or whether the query is about a person or an event) that helps us serve relevant tweets and ads.</p>
+
+
+<p>Finally, after a response from a judge is received, we push the information to our backend systems, so that the next time a user searches for a query, our machine learning models will make use of the additional information. For example, suppose our human judges tell us that &#8220;Big Bird&#8221; is related to politics; the next time someone performs this search, we know to surface ads by @barackobama or @mittromney, not ads about Dora the Explorer.</p>
+
+<p>Let’s now explore the first two sections above in more detail.</p>
+
+<h2>Monitoring for popular queries</h2>
+
+<p><a href="https://github.com/nathanmarz/storm">Storm</a> is a distributed system for real-time computation. In contrast to <em>batch</em> systems like Hadoop, which often introduce delays of hours or more, Storm allows us to run online data processing algorithms to discover search spikes as soon as they happen.</p>
+
+<p>In brief, running a job on Storm involves creating a Storm topology that describes the processing steps that must occur, and deploying this topology to a Storm cluster. A topology itself consists of three things:</p>
+
+<ul>
+<li><strong>Tuple streams</strong> of data. In our case, these may be tuples of (search query, timestamp).</li>
+<li><strong>Spouts</strong> that produce these tuple streams. In our case, we attach spouts to our search logs, which get written to every time a search occurs.</li>
+<li><strong>Bolts</strong> that process tuple streams. In our case, we use bolts for operations like updating total query counts, filtering out non-English queries, and checking whether an ad is currently being served up for the query.</li>
+</ul>
+
+
+<p>Here’s a step-by-step walkthrough of how our popular query topology works:</p>
+
+<ol>
+<li>Whenever you perform a search on Twitter, the search request gets logged to a <a href="http://kafka.apache.org/">Kafka queue</a>.</li>
+<li>The Storm topology attaches a spout to this Kafka queue, and the spout emits a tuple containing the query and other metadata (e.g., the time the query was issued and its location) to a bolt for processing.</li>
+<li>This bolt updates the count of the number of times we&#8217;ve seen this query, checks whether the query is &#8220;currently popular&#8221; (using various statistics like time-decayed counts, the geographic distribution of the query, and the last time this query was sent for annotations), and dispatches it to our human computation pipeline if so.</li>
+</ol>
+
+
+<p>One interesting feature of our popularity algorithm is that we often rejudge queries that have been annotated before, since the intent of a search can change. For example, perhaps people normally search for &#8220;Clint Eastwood&#8221; because they&#8217;re interested in his movies, but during the Republican National Convention users may have wanted to see tweets that were more political in nature.</p>
+
+<h2>Human evaluation of popular search queries</h2>
+
+<p>At Twitter, we use <a href="http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/">human computation</a> for a variety of tasks. (See also <a href="https://github.com/twitter/clockworkraven">Clockwork Raven</a>, an open-source project we built that makes launching tasks easier.) For example, we often run experiments to measure ad relevance and search quality, we use it to gather data to train and evaluate our machine learning models, and in this section we&#8217;ll describe how we use it to boost our understanding of popular search queries.</p>
+
+<p>So suppose that our Storm topology has detected that the query &#8220;Big Bird&#8221; is suddenly spiking. Since the query may remain popular for only a few hours, we send it off to live humans, who can help us quickly understand what it means; this dispatch is performed via a Thrift service that allows us to design our tasks in a <a href="http://engineering.twitter.com/2012/08/crowdsourced-data-analysis-with.html">web frontend</a>, and later programmatically submit them to Mechanical Turk using any of the different languages we use across Twitter.</p>
+
+<p>On Mechanical Turk, judges are asked several questions about the query that help us serve better ads. Without going into the exact questions, here are flavors of a few possibilities:</p>
+
+<ul>
+<li>What category does the query belong to? For example, &#8220;Stanford&#8221; may typically be an education-related query, but perhaps there&#8217;s a football game between Stanford and Berkeley at the moment, in which case the current search intent would be sports.</li>
+<li>Does the query refer to a person? If so, who, and what is their Twitter handle if they have one? For example, the query &#8220;Happy Birthday Harry&#8221; may be trending, but it&#8217;s hard to know beforehand which of the numerous celebrities named Harry it&#8217;s referring to. Is it <a href="https://twitter.com/onedirection">One Direction</a>&#8217;s <a href="https://twitter.com/Harry_Styles">Harry Styles</a>, in which case the searcher is likely to be interested in teen pop? Harry Potter, in which case the searcher is likely to be interested in fantasy novels? Or someone else entirely?</li>
+</ul>
+
+
+<h3>Turkers in the machine</h3>
+
+<p>Since humans are core to this system, let&#8217;s describe how our workforce was designed to give us fast, reliable results.</p>
+
+<p>For completing all our tasks, we use a small <em>custom</em> pool of Mechanical Turk judges to ensure high quality. Other typical possibilities in the crowdsourcing world are to use a static set of in-house judges, to use the standard worker filters that Amazon provides, or to go through an outside company like <a href="http://crowdflower.com/">Crowdflower</a>. We&#8217;ve experimented with these other solutions, and while they have their own benefits, we found that a custom pool fit our needs best for a few reasons:</p>
+
+<ul>
+<li>In-house judges can provide high-quality work as well, but they usually work standard hours (for example, 9 to 5 if they work onsite, or a relatively fixed and limited set of hours if they work from home), it can be difficult to communicate with them and schedule them for work, and it&#8217;s hard to scale the hiring of more judges.</li>
+<li>Using Crowdflower or Amazon&#8217;s standard filters makes it easy to scale the workforce, but their trust algorithms aren&#8217;t perfect, so an endless problem is that spammy workers get through and many of the judgments will be very poor quality. Two methods of combatting low quality are to seed gold standard examples for which you know the true response throughout your task, or to use statistical analysis to determine which workers are the good ones, but these can be time-consuming and expensive to create, and we often run tasks of a free-response researchy nature for which these solutions don&#8217;t work. Another problem is that using these filters gives you a <em>fluid</em>, constantly changing set of workers, which makes them hard to train.</li>
+</ul>
+
+
+<p>In contrast:</p>
+
+<ul>
+<li>Our custom pool of judges work virtually all day. For many of them, this is a full-time job, and they&#8217;re geographically distributed, so our tasks complete quickly at all hours; we can easily ask for thousands of judgments before lunch, and have them finished by the time we get back, which makes iterating on our experiments much easier.</li>
+<li>We have several forums, mailing lists, and even live chatrooms set up, all of which makes it easy for judges to ask us questions and to respond to feedback. Our judges will even give <em>us</em> suggestions on how to improve our tasks; for example, when we run categorization tasks, they&#8217;ll often report helpful categories that we should add.</li>
+<li>Since we only launch tasks on demand, and Amazon provides a ready source of workers if we ever need more, our judges are never idly twiddling their thumbs waiting for tasks or completing busywork, and our jobs are rarely backlogged.</li>
+<li>Because our judges are culled from the best of Mechanical Turk, they&#8217;re experts at the kinds of tasks we send, and can often provide higher quality at a faster rate than what even in-house judges provide. For example, they&#8217;ll often use the forums and chatrooms to collaborate amongst themselves to give us the best judgments, and they&#8217;re already familiar with the Firefox and Chrome scripts that help them be the most efficient at their work.</li>
+</ul>
+
+
+<p>All the benefits described above are especially valuable in this real-time search annotation case:</p>
+
+<ul>
+<li>Having highly trusted workers means we don&#8217;t need to wait for multiple annotations on a single search query to confirm  validity, so we can send responses to our backend as soon as a single judge responds. This entire pipeline is design for <em>real-time</em>, after all, so the lower the latency on the human evaluation part, the better.</li>
+<li>The static nature of our custom pool means that the judges are already familiar with our questions, and don&#8217;t need to be trained again.</li>
+<li>Because our workers aren&#8217;t limited to a fixed schedule or location, they can work anywhere, anytime &#8211; which is a requirement for this system, since global event spikes on Twitter are not beholden to a 9-to-5.</li>
+<li>And with the multiple easy avenues of communication we have set up, it&#8217;s easy for us to answer questions that might arise when we add new questions or modify existing ones.</li>
+</ul>
+
+
+<h2>Singing telegram summary</h2>
+
+<p>Let&#8217;s end with an example of the kind of top quality our workers provide, a crowdsourced singing summary we used to celebrate the project&#8217;s launch.</p>
+
+<iframe width="640" height="510" src="http://www.youtube.com/embed/EIK8iVnU5EU " frameborder="0" allowfullscreen></iframe>
+
+
+<p></p>
+
+<p>This video was created entirely by our workers, from the crowdsourced lyrics, to the crowdsourced graphics, and even the piano playing and singing. Special thank you in particular to our amazing Turker, workasaurusrex, the musician and silky smooth crooner who brought the masterpiece together.</p>
+
+<h2>Thanks</h2>
+
+<p>We&#8217;ve described a new search annotation framework that allows us to discover search trends as soon as they happen, and hand off these searches for human feedback in real-time. From search spike to search augmentation, the entire process takes a few minutes or less, and thanks to everyone on the Revenue and Storm teams, as well as our Turkers, for helping us launch this project.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Edwin Chen</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-08T13:08:00-08:00" pubdate data-updated="true">Jan 8<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation/" data-via="echen" data-counturl="http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/" title="Previous Post: Edge Prediction in a Social Graph: My Solution to Facebook's User Recommendation Contest on Kaggle">&laquo; Edge Prediction in a Social Graph: My Solution to Facebook's User Recommendation Contest on Kaggle</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Edwin Chen</h1>
+  
+  <p>Data scientist at Twitter. Previously math and linguistics at MIT, quantitative trading at Clarium Capital, research in theoretical computer science, NLP at Microsoft Research, fieldwork in Iceland, recommendation systems at Meta Interfaces, search at Bing.</p>
+  
+  <p>I like machine learning, crowdsourcing, visualization, large-scale data analysis.</p>  
+  
+  <p>Email: hello[at]echen.me<br/>
+  Twitter: <a href="https://twitter.com/#!/echen">@echen</a><br/>
+  Other: <a href="https://github.com/echen">Github</a>, <a href="https://plus.google.com/113804726252165471503/">Google+</a>, <a href="http://www.linkedin.com/in/edwinchen1">LinkedIn</a>, <a href="http://quora.com/edwin-chen-1">Quora</a></p>
+
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/2013/01/08/improving-twitter-search-with-real-time-human-computation/">Improving Twitter search with real-time human computation</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/07/31/edge-prediction-in-a-social-graph-my-solution-to-facebooks-user-recommendation-contest-on-kaggle/">Edge Prediction in a Social Graph: My Solution to Facebook's User Recommendation Contest on Kaggle</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/07/06/soda-vs-pop-with-twitter/">Soda vs. Pop with Twitter</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/">Making the Most of Mechanical Turk: Tips and Best Practices</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/03/20/infinite-mixture-models-with-nonparametric-bayes-and-the-dirichlet-process/">Infinite Mixture Models with Nonparametric Bayes and the Dirichlet Process</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/03/05/instant-interactive-visualization-with-d3-and-ggplot2/">Instant interactive visualization with d3 + ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/02/09/movie-recommendations-and-more-via-mapreduce-and-scalding/">Movie recommendations and more via MapReduce and Scalding</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/17/quick-introduction-to-ggplot2/">Quick Introduction to ggplot2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2012/01/03/introduction-to-conditional-random-fields/">Introduction to Conditional Random Fields</a>
+      </li>
+    
+      <li class="post">
+        <a href="/2011/10/24/winning-the-netflix-prize-a-summary/">Winning the Netflix Prize: A Summary</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("echen", 5, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/echen" class="twitter-follow-button" data-show-count="true">Follow @echen</a>
+  
+</section>
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Edwin Chen -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'edwinchen';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation/';
+        var disqus_url = 'http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
+
+<!-- mathjax config similar to math.stackexchange -->
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  jax: ["input/TeX", "output/HTML-CSS"],
+  tex2jax: {
+    inlineMath: [ ['$', '$'] ],
+    displayMath: [ ['$$', '$$']],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  messageStyle: "none",
+  "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+});
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>

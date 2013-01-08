@@ -4,13 +4,184 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2013-01-07T00:59:13-08:00</updated>
+  <updated>2013-01-08T13:24:52-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
     
   </author>
 
+  
+  <entry>
+    <title>Improving Twitter search with real-time human computation</title>
+    <link href="http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation/"/>
+    <updated>2013-01-08T13:08:00-08:00</updated>
+    <id>http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation</id>
+    <content type="html">&lt;p&gt;&lt;em&gt;(This is a repost of an entry that &lt;a href=&quot;https://twitter.com/alpa&quot;&gt;Alpa Jain&lt;/a&gt; and I wrote for the &lt;a href=&quot;http://engineering.twitter.com/2013/01/improving-twitter-search-with-real-time.html&quot;&gt;Twitter Engineering Blog&lt;/a&gt;.)&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;One of the magical things about Twitter is that it opens a window to the world &amp;#8211; in &lt;strong&gt;real-time&lt;/strong&gt;. An event happens, and just seconds later, it&amp;#8217;s shared for people across the planet to see.&lt;/p&gt;
+
+&lt;p&gt;Consider, for example, what happened when Flight 1549 crashed in the Hudson.&lt;/p&gt;
+
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p&gt;&lt;a href=&quot;http://twitpic.com/135xa&quot;&gt;http://twitpic.com/135xa&lt;/a&gt; - There&amp;#8217;s a plane in the Hudson. I&amp;#8217;m on the ferry going to pick up the people. Crazy.&lt;/p&gt;&amp;mdash; Janis Krums (@jkrums) &lt;a href=&quot;https://twitter.com/jkrums/status/1121915133&quot; data-datetime=&quot;2009-01-15T20:36:04+00:00&quot;&gt;January 15, 2009&lt;/a&gt;&lt;/blockquote&gt;
+
+
+&lt;script async src=&quot;http://blog.echen.me//platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+
+
+
+
+&lt;br /&gt;
+
+
+&lt;p&gt;When Osama bin Laden was killed.&lt;/p&gt;
+
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p&gt;Helicopter hovering above Abbottabad at 1AM (is a rare event).&lt;/p&gt;&amp;mdash; Sohaib Athar (@ReallyVirtual) &lt;a href=&quot;https://twitter.com/ReallyVirtual/status/64780730286358528&quot; data-datetime=&quot;2011-05-01T19:58:24+00:00&quot;&gt;May 1, 2011&lt;/a&gt;&lt;/blockquote&gt;
+
+
+
+
+&lt;br /&gt;
+
+
+&lt;p&gt;Or when Mitt Romney mentioned binders during the presidential debates.&lt;/p&gt;
+
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p&gt;Boy, I&amp;#8217;m full of women! &lt;a href=&quot;https://twitter.com/search/%23debates&quot;&gt;#debates&lt;/a&gt;&lt;/p&gt;&amp;mdash; Romney&amp;#8217;s Binder (@RomneysBinder) &lt;a href=&quot;https://twitter.com/RomneysBinder/status/258383626918588417&quot; data-datetime=&quot;2012-10-17T01:47:11+00:00&quot;&gt;October 17, 2012&lt;/a&gt;&lt;/blockquote&gt;
+
+
+
+
+&lt;br /&gt;
+
+
+&lt;p&gt;When each of these events happened, people &lt;em&gt;instantly&lt;/em&gt; came to Twitter &amp;#8211; and, in particular, Twitter search &amp;#8211; to discover what was happening.&lt;/p&gt;
+
+&lt;p&gt;From a search and advertising perspective, however, these sudden events pose several challenges:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;The queries people perform have never before been seen, so it&amp;#8217;s impossible to know beforehand what they mean. How would you know that #bindersfullofwomen refers to politics, and not office accessories, or that people searching for &amp;#8220;Horses and Bayonets&amp;#8221; are interested in the debates?&lt;/li&gt;
+&lt;li&gt;Since these spikes in search queries are so &lt;a href=&quot;http://arxiv.org/abs/1205.6855&quot;&gt;short-lived&lt;/a&gt;, there’s only a short window of opportunity to learn what they mean.&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;So an event happens, people instantly come to Twitter to search for the event, and we need to teach our systems what these queries mean as quickly as we can &amp;#8211; because in just a few hours, those searches will be gone.&lt;/p&gt;
+
+&lt;p&gt;How do we do this? We&amp;#8217;ll describe a novel real-time human computation engine we built that allows us to find search queries as soon as they&amp;#8217;re trending, send these queries to real humans to be judged, and finally incorporate these human annotations into our backend models.&lt;/p&gt;
+
+&lt;h2&gt;Overview&lt;/h2&gt;
+
+&lt;p&gt;Before we delve into the details, here&amp;#8217;s an overview of how the system works.&lt;/p&gt;
+
+&lt;p&gt;(1) First, we monitor for which search queries are currently popular.&lt;/p&gt;
+
+
+&lt;p&gt;Behind the scenes: we run a Storm topology that tracks statistics on search queries.&lt;/p&gt;
+
+
+&lt;p&gt;For example: the query &amp;#8220;Big Bird&amp;#8221; may be averaging zero searches a day, but at 6pm on October 3, we suddenly see a spike in searches from the US.&lt;/p&gt;
+
+
+
+
+&lt;p&gt;(2) Next, as soon as we discover a new popular search query, we send it to our human evaluation systems, where judges are asked a variety of questions about the query.&lt;/p&gt;
+
+
+&lt;p&gt;Behind the scenes: when the Storm topology detects that a query has reached sufficient popularity, it connects to a Thrift API that dispatches the query to Amazon&amp;#8217;s Mechanical Turk service, and then polls Mechanical Turk for a response.&lt;/p&gt;
+
+
+&lt;p&gt;For example: as soon as we notice &amp;#8220;Big Bird&amp;#8221; spiking, we may ask judges on Mechanical Turk to categorize the query, or provide other information (e.g., whether there are likely to be interesting pictures of the query, or whether the query is about a person or an event) that helps us serve relevant tweets and ads.&lt;/p&gt;
+
+
+&lt;p&gt;Finally, after a response from a judge is received, we push the information to our backend systems, so that the next time a user searches for a query, our machine learning models will make use of the additional information. For example, suppose our human judges tell us that &amp;#8220;Big Bird&amp;#8221; is related to politics; the next time someone performs this search, we know to surface ads by @barackobama or @mittromney, not ads about Dora the Explorer.&lt;/p&gt;
+
+&lt;p&gt;Let’s now explore the first two sections above in more detail.&lt;/p&gt;
+
+&lt;h2&gt;Monitoring for popular queries&lt;/h2&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/nathanmarz/storm&quot;&gt;Storm&lt;/a&gt; is a distributed system for real-time computation. In contrast to &lt;em&gt;batch&lt;/em&gt; systems like Hadoop, which often introduce delays of hours or more, Storm allows us to run online data processing algorithms to discover search spikes as soon as they happen.&lt;/p&gt;
+
+&lt;p&gt;In brief, running a job on Storm involves creating a Storm topology that describes the processing steps that must occur, and deploying this topology to a Storm cluster. A topology itself consists of three things:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Tuple streams&lt;/strong&gt; of data. In our case, these may be tuples of (search query, timestamp).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Spouts&lt;/strong&gt; that produce these tuple streams. In our case, we attach spouts to our search logs, which get written to every time a search occurs.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Bolts&lt;/strong&gt; that process tuple streams. In our case, we use bolts for operations like updating total query counts, filtering out non-English queries, and checking whether an ad is currently being served up for the query.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;Here’s a step-by-step walkthrough of how our popular query topology works:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Whenever you perform a search on Twitter, the search request gets logged to a &lt;a href=&quot;http://kafka.apache.org/&quot;&gt;Kafka queue&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;The Storm topology attaches a spout to this Kafka queue, and the spout emits a tuple containing the query and other metadata (e.g., the time the query was issued and its location) to a bolt for processing.&lt;/li&gt;
+&lt;li&gt;This bolt updates the count of the number of times we&amp;#8217;ve seen this query, checks whether the query is &amp;#8220;currently popular&amp;#8221; (using various statistics like time-decayed counts, the geographic distribution of the query, and the last time this query was sent for annotations), and dispatches it to our human computation pipeline if so.&lt;/li&gt;
+&lt;/ol&gt;
+
+
+&lt;p&gt;One interesting feature of our popularity algorithm is that we often rejudge queries that have been annotated before, since the intent of a search can change. For example, perhaps people normally search for &amp;#8220;Clint Eastwood&amp;#8221; because they&amp;#8217;re interested in his movies, but during the Republican National Convention users may have wanted to see tweets that were more political in nature.&lt;/p&gt;
+
+&lt;h2&gt;Human evaluation of popular search queries&lt;/h2&gt;
+
+&lt;p&gt;At Twitter, we use &lt;a href=&quot;http://blog.echen.me/2012/04/25/making-the-most-of-mechanical-turk-tips-and-best-practices/&quot;&gt;human computation&lt;/a&gt; for a variety of tasks. (See also &lt;a href=&quot;https://github.com/twitter/clockworkraven&quot;&gt;Clockwork Raven&lt;/a&gt;, an open-source project we built that makes launching tasks easier.) For example, we often run experiments to measure ad relevance and search quality, we use it to gather data to train and evaluate our machine learning models, and in this section we&amp;#8217;ll describe how we use it to boost our understanding of popular search queries.&lt;/p&gt;
+
+&lt;p&gt;So suppose that our Storm topology has detected that the query &amp;#8220;Big Bird&amp;#8221; is suddenly spiking. Since the query may remain popular for only a few hours, we send it off to live humans, who can help us quickly understand what it means; this dispatch is performed via a Thrift service that allows us to design our tasks in a &lt;a href=&quot;http://engineering.twitter.com/2012/08/crowdsourced-data-analysis-with.html&quot;&gt;web frontend&lt;/a&gt;, and later programmatically submit them to Mechanical Turk using any of the different languages we use across Twitter.&lt;/p&gt;
+
+&lt;p&gt;On Mechanical Turk, judges are asked several questions about the query that help us serve better ads. Without going into the exact questions, here are flavors of a few possibilities:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;What category does the query belong to? For example, &amp;#8220;Stanford&amp;#8221; may typically be an education-related query, but perhaps there&amp;#8217;s a football game between Stanford and Berkeley at the moment, in which case the current search intent would be sports.&lt;/li&gt;
+&lt;li&gt;Does the query refer to a person? If so, who, and what is their Twitter handle if they have one? For example, the query &amp;#8220;Happy Birthday Harry&amp;#8221; may be trending, but it&amp;#8217;s hard to know beforehand which of the numerous celebrities named Harry it&amp;#8217;s referring to. Is it &lt;a href=&quot;https://twitter.com/onedirection&quot;&gt;One Direction&lt;/a&gt;&amp;#8217;s &lt;a href=&quot;https://twitter.com/Harry_Styles&quot;&gt;Harry Styles&lt;/a&gt;, in which case the searcher is likely to be interested in teen pop? Harry Potter, in which case the searcher is likely to be interested in fantasy novels? Or someone else entirely?&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;Turkers in the machine&lt;/h3&gt;
+
+&lt;p&gt;Since humans are core to this system, let&amp;#8217;s describe how our workforce was designed to give us fast, reliable results.&lt;/p&gt;
+
+&lt;p&gt;For completing all our tasks, we use a small &lt;em&gt;custom&lt;/em&gt; pool of Mechanical Turk judges to ensure high quality. Other typical possibilities in the crowdsourcing world are to use a static set of in-house judges, to use the standard worker filters that Amazon provides, or to go through an outside company like &lt;a href=&quot;http://crowdflower.com/&quot;&gt;Crowdflower&lt;/a&gt;. We&amp;#8217;ve experimented with these other solutions, and while they have their own benefits, we found that a custom pool fit our needs best for a few reasons:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;In-house judges can provide high-quality work as well, but they usually work standard hours (for example, 9 to 5 if they work onsite, or a relatively fixed and limited set of hours if they work from home), it can be difficult to communicate with them and schedule them for work, and it&amp;#8217;s hard to scale the hiring of more judges.&lt;/li&gt;
+&lt;li&gt;Using Crowdflower or Amazon&amp;#8217;s standard filters makes it easy to scale the workforce, but their trust algorithms aren&amp;#8217;t perfect, so an endless problem is that spammy workers get through and many of the judgments will be very poor quality. Two methods of combatting low quality are to seed gold standard examples for which you know the true response throughout your task, or to use statistical analysis to determine which workers are the good ones, but these can be time-consuming and expensive to create, and we often run tasks of a free-response researchy nature for which these solutions don&amp;#8217;t work. Another problem is that using these filters gives you a &lt;em&gt;fluid&lt;/em&gt;, constantly changing set of workers, which makes them hard to train.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;In contrast:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Our custom pool of judges work virtually all day. For many of them, this is a full-time job, and they&amp;#8217;re geographically distributed, so our tasks complete quickly at all hours; we can easily ask for thousands of judgments before lunch, and have them finished by the time we get back, which makes iterating on our experiments much easier.&lt;/li&gt;
+&lt;li&gt;We have several forums, mailing lists, and even live chatrooms set up, all of which makes it easy for judges to ask us questions and to respond to feedback. Our judges will even give &lt;em&gt;us&lt;/em&gt; suggestions on how to improve our tasks; for example, when we run categorization tasks, they&amp;#8217;ll often report helpful categories that we should add.&lt;/li&gt;
+&lt;li&gt;Since we only launch tasks on demand, and Amazon provides a ready source of workers if we ever need more, our judges are never idly twiddling their thumbs waiting for tasks or completing busywork, and our jobs are rarely backlogged.&lt;/li&gt;
+&lt;li&gt;Because our judges are culled from the best of Mechanical Turk, they&amp;#8217;re experts at the kinds of tasks we send, and can often provide higher quality at a faster rate than what even in-house judges provide. For example, they&amp;#8217;ll often use the forums and chatrooms to collaborate amongst themselves to give us the best judgments, and they&amp;#8217;re already familiar with the Firefox and Chrome scripts that help them be the most efficient at their work.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;All the benefits described above are especially valuable in this real-time search annotation case:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Having highly trusted workers means we don&amp;#8217;t need to wait for multiple annotations on a single search query to confirm  validity, so we can send responses to our backend as soon as a single judge responds. This entire pipeline is design for &lt;em&gt;real-time&lt;/em&gt;, after all, so the lower the latency on the human evaluation part, the better.&lt;/li&gt;
+&lt;li&gt;The static nature of our custom pool means that the judges are already familiar with our questions, and don&amp;#8217;t need to be trained again.&lt;/li&gt;
+&lt;li&gt;Because our workers aren&amp;#8217;t limited to a fixed schedule or location, they can work anywhere, anytime &amp;#8211; which is a requirement for this system, since global event spikes on Twitter are not beholden to a 9-to-5.&lt;/li&gt;
+&lt;li&gt;And with the multiple easy avenues of communication we have set up, it&amp;#8217;s easy for us to answer questions that might arise when we add new questions or modify existing ones.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h2&gt;Singing telegram summary&lt;/h2&gt;
+
+&lt;p&gt;Let&amp;#8217;s end with an example of the kind of top quality our workers provide, a crowdsourced singing summary we used to celebrate the project&amp;#8217;s launch.&lt;/p&gt;
+
+&lt;iframe width=&quot;640&quot; height=&quot;510&quot; src=&quot;http://www.youtube.com/embed/EIK8iVnU5EU &quot; frameborder=&quot;0&quot; allowfullscreen&gt;&lt;/iframe&gt;
+
+
+&lt;p&gt;&lt;/p&gt;
+
+&lt;p&gt;This video was created entirely by our workers, from the crowdsourced lyrics, to the crowdsourced graphics, and even the piano playing and singing. Special thank you in particular to our amazing Turker, workasaurusrex, the musician and silky smooth crooner who brought the masterpiece together.&lt;/p&gt;
+
+&lt;h2&gt;Thanks&lt;/h2&gt;
+
+&lt;p&gt;We&amp;#8217;ve described a new search annotation framework that allows us to discover search trends as soon as they happen, and hand off these searches for human feedback in real-time. From search spike to search augmentation, the entire process takes a few minutes or less, and thanks to everyone on the Revenue and Storm teams, as well as our Turkers, for helping us launch this project.&lt;/p&gt;
+</content>
+  </entry>
   
   <entry>
     <title>Edge Prediction in a Social Graph: My Solution to Facebook&#8217;s User Recommendation Contest on Kaggle</title>
@@ -5139,35 +5310,6 @@ its so          0.8916207044791409
 &lt;h1&gt;Code/Demo&lt;/h1&gt;
 
 &lt;p&gt;I put the code on &lt;a href=&quot;https://github.com/echen/unsupervised-language-identification&quot;&gt;my Github account&lt;/a&gt;, and a quick &lt;a href=&quot;http://babel-fett.heroku.com/&quot;&gt;demo app&lt;/a&gt;, trained on trigrams from tweets with lang=&amp;#8221;en&amp;#8221; according to the Twitter API, is &lt;a href=&quot;http://babel-fett.heroku.com/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
-</content>
-  </entry>
-  
-  <entry>
-    <title>Eigensheep</title>
-    <link href="http://blog.echen.me/2011/05/01/eigensheep/"/>
-    <updated>2011-05-01T15:23:31-07:00</updated>
-    <id>http://blog.echen.me/2011/05/01/eigensheep</id>
-    <content type="html">&lt;p&gt;Aaron Koblin&amp;#8217;s &lt;a href=&quot;http://www.thesheepmarket.com/&quot;&gt;Sheep Market&lt;/a&gt; visualization is an awesome use of Mechanical Turk. But it&amp;#8217;d be even more awesome if the grid were &lt;em&gt;ordered&lt;/em&gt;, so I decided to try projecting the sheep onto two dimensions.&lt;/p&gt;
-
-&lt;h1&gt;Principal Sheep Components&lt;/h1&gt;
-
-&lt;p&gt;After screenshotting the first 50 sheep from the market and normalizing their size and color, here&amp;#8217;s what a PCA projection looks like (&lt;a href=&quot;http://dl.dropbox.com/u/10506/eigensheep.png&quot;&gt;click&lt;/a&gt; for a larger view):&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/eigensheep.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/eigensheep.png&quot; alt=&quot;Projected Sheep&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Notice how the stroke widths get thicker as we move to the right (i.e., &lt;strong&gt;the first principal component seems to measure the blackness of the sheep&lt;/strong&gt;), and the amount of wool on the sheep&amp;#8217;s body increases as we move up (i.e., &lt;strong&gt;the second principal component seems to measure the wooliness of the sheep&lt;/strong&gt;).&lt;/p&gt;
-
-&lt;p&gt;It&amp;#8217;s also pretty neat how all the sheep with black heads and black legs (sheep 35, 16, 32, 31, and 19) get clumped together:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/eigensheep-black-heads.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/eigensheep-black-heads.png&quot; alt=&quot;Projected Sheep, Black Heads/Legs Circled&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;And I think the sheep on the left (next to and inside the dense cluster) seem much more poorly drawn &amp;#8211; they look more like camels, dogs, unicorns, or bugs than actual sheep.&lt;/p&gt;
-
-&lt;h1&gt;Code&lt;/h1&gt;
-
-&lt;p&gt;In a bit more detail, I used the poor man&amp;#8217;s Mechanical Turk (myself) to screenshot the first 50 sheep from the market, trying to hug the sheep as closely as possible to ensure proper alignment. Next, I used the &lt;a href=&quot;http://www.pythonware.com/products/pil/&quot;&gt;Python Imaging Library&lt;/a&gt; to resize the images to 150x150px, convert them to grayscale, and flatten them into the rows of a matrix.&lt;/p&gt;
-
-&lt;p&gt;In case anyone else wants to play with the sheep images, I put the &lt;a href=&quot;https://github.com/echen/eigensheep&quot;&gt;code&lt;/a&gt; on my &lt;a href=&quot;https://github.com/echen/eigensheep&quot;&gt;Github&lt;/a&gt; account.&lt;/p&gt;
 </content>
   </entry>
   
