@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2013-01-08T13:24:52-08:00</updated>
+  <updated>2013-01-10T11:38:52-08:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -17,7 +17,7 @@
     <link href="http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation/"/>
     <updated>2013-01-08T13:08:00-08:00</updated>
     <id>http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation</id>
-    <content type="html">&lt;p&gt;&lt;em&gt;(This is a repost of an entry that &lt;a href=&quot;https://twitter.com/alpa&quot;&gt;Alpa Jain&lt;/a&gt; and I wrote for the &lt;a href=&quot;http://engineering.twitter.com/2013/01/improving-twitter-search-with-real-time.html&quot;&gt;Twitter Engineering Blog&lt;/a&gt;.)&lt;/em&gt;&lt;/p&gt;
+    <content type="html">&lt;p&gt;&lt;em&gt;(This is a post from the &lt;a href=&quot;http://engineering.twitter.com/2013/01/improving-twitter-search-with-real-time.html&quot;&gt;Twitter Engineering Blog&lt;/a&gt; that I wrote with &lt;a href=&quot;https://twitter.com/alpa&quot;&gt;Alpa Jain&lt;/a&gt;.)&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;One of the magical things about Twitter is that it opens a window to the world &amp;#8211; in &lt;strong&gt;real-time&lt;/strong&gt;. An event happens, and just seconds later, it&amp;#8217;s shared for people across the planet to see.&lt;/p&gt;
 
@@ -179,7 +179,7 @@
 
 &lt;h2&gt;Thanks&lt;/h2&gt;
 
-&lt;p&gt;We&amp;#8217;ve described a new search annotation framework that allows us to discover search trends as soon as they happen, and hand off these searches for human feedback in real-time. From search spike to search augmentation, the entire process takes a few minutes or less, and thanks to everyone on the Revenue and Storm teams, as well as our Turkers, for helping us launch this project.&lt;/p&gt;
+&lt;p&gt;Thanks to everyone on the Revenue and Storm teams, as well as our Turkers, for helping us launch this project.&lt;/p&gt;
 </content>
   </entry>
   
