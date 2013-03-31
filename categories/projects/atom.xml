@@ -4,7 +4,7 @@
   <title><![CDATA[Category: projects | Edwin Chen's Blog]]></title>
   <link href="http://blog.echen.me/categories/projects/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2013-01-10T11:38:52-08:00</updated>
+  <updated>2013-03-31T16:41:11-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name><![CDATA[Edwin Chen]]></name>
@@ -12,47 +12,6 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
-  
-  <entry>
-    <title type="html"><![CDATA[Visualizing Miss USA 2011: Should Evolution be Taught in Schools?]]></title>
-    <link href="http://blog.echen.me/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/"/>
-    <updated>2011-07-09T13:02:05-07:00</updated>
-    <id>http://blog.echen.me/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools</id>
-    <content type="html"><![CDATA[<p><strong>tl;dr</strong> Should evolution be taught in schools? Go <a href="http://miss-usa-evolution.heroku.com">here</a> to visualize what the Miss USA contestants think.</p>
-
-<h1>The Visualization</h1>
-
-<p>Education is an area sorely in need of data crunching, so when I ran across <a href="http://www.youtube.com/watch?v=9QBv2CFTSWU&amp;feature=player_embedded#at=56">an amusing video</a> satirizing the Miss USA contestants' thoughts on teaching evolution, I thought it would be fun to transcribe <a href="youtube=http://www.youtube.com/watch?v=UkBmhM0R2A0&amp;feature=youtu.be#at=41">the original video</a> and visualize the data.</p>
-
-<p>So after some tedious transcription, I built <a href="http://miss-usa-evolution.heroku.com">this app</a> to categorize and visualize the responses in various ways. (Mouseover states to see transcriptions, and click to jump to each contestant's response in the video.)</p>
-
-<h1>Example Maps</h1>
-
-<p>Here are some examples of the generated maps.</p>
-
-<p>First, we can look at which contestants believe in evolution (Miss California -- the winner! -- is the only contestant who explicitly states she believes in evolution; the red states explicitly state they do not believe in evolution; the grey states don't make clear what they believe):</p>
-
-<p><a href="http://miss-usa-evolution.heroku.com/?column=believes"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/believe-evolution.png" alt="Believe Evolution" /></a></p>
-
-<p>We can also see which contestants believe evolution should be taught in schools (green states say yes, red states say no, grey states say maybe or that it should be a choice):</p>
-
-<p><a href="http://miss-usa-evolution.heroku.com/?column=should_teach"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/teach-evolution.png" alt="Teach Evolution" /></a></p>
-
-<p>Here is a rough Darwin-friendliness score I assigned to each response (worst in dark red to best in dark green):</p>
-
-<p><a href="http://miss-usa-evolution.heroku.com/?column=score"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/score.png" alt="Score" /></a></p>
-
-<p>This map shows which contestants believe schools should teach creationism:</p>
-
-<p><a href="http://miss-usa-evolution.heroku.com/?column=teach_creationism"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/teach-creationism.png" alt="Teach Creationism" /></a></p>
-
-<p>And this map shows which contestants mention science in their response:</p>
-
-<p><a href="http://miss-usa-evolution.heroku.com/?column=mentions_science"><img src="http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/mention-science.png" alt="Mention Science" /></a></p>
-
-<p>So while there aren't any striking patterns (I was hoping for a bright swath of red across the most religious states), the data's still fun to look at, and it's helpful to see that Alabama, whose <a href="http://www.youtube.com/watch?v=UkBmhM0R2A0&amp;feature=youtu.be#at=42">strongly anti-evolution</a> candidate is the only one colored red in both of the first two maps, does seem to be a bit of an outlier with respect to the rest of the nation.</p>
-]]></content>
-  </entry>
   
   <entry>
     <title type="html"><![CDATA[Topic Modeling the Sarah Palin Emails]]></title>
@@ -100,175 +59,6 @@
 <p>In a future post, I'll perhaps see if we can glean any interesting patterns from the email topics. For example, for a quick graph now, if we look at the percentage of emails in the <a href="http://sarah-palin.heroku.com/topics/19">Trig/Family/Inspiration topic</a> across time, we see that there's a spike in April 2008 -- exactly (and unsurprisingly) the month in which Trig was born.</p>
 
 <p><a href="http://dl.dropbox.com/u/10506/blog/palin-browser/trig-topic.png"><img src="http://dl.dropbox.com/u/10506/blog/palin-browser/trig-topic.png" alt="Trig" /></a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Spork: Spoon or Fork?]]></title>
-    <link href="http://blog.echen.me/2011/06/14/spork-spoon-or-fork/"/>
-    <updated>2011-06-14T23:32:04-07:00</updated>
-    <id>http://blog.echen.me/2011/06/14/spork-spoon-or-fork</id>
-    <content type="html"><![CDATA[<p>There's <a href="http://www.youtube.com/watch?v=ruJ76-o5lxU">an adorable scene</a> in <em>WALL-E</em> where, unable to decide whether a spork belongs with his spoon collection or fork collection, WALL-E enters an infinite loop and spontaneously combusts*.</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif"><img src="http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif" alt="Spork" /></a></p>
-
-<p>This led me to the following timeless question: is a spork more spoon or fork?</p>
-
-<p>To answer, I did a little digging. First, I pulled images of spoons and forks from <a href="http://www.bing.com/images">Bing</a> (natch) and used these to train a spoon-vs.-fork SVM (using the excellent <a href="http://scikit-learn.sourceforge.net/">scikit-learn</a> package).</p>
-
-<p>Using leave-one-out cross-validation, the classifier showed roughly 85% accuracy: 4 out of 20 spoons were misclassified as forks, and 2 out of 20 forks were misclassified as spoons. Not bad, considering the limited dataset and lack of tuning.</p>
-
-<p>Finally, I applied the classifier to my spork images.</p>
-
-<p>The results? 2 out of 20 sporks were classified as forks and the remaining 18 were classified as spoons, thereby definitively proving that <strong>a spork is 10% fork and 90% spoon</strong>.</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/spork/spork-decomposition.png"><img src="http://dl.dropbox.com/u/10506/blog/spork/spork-decomposition.png" alt="Spork Decomposition" /></a></p>
-
-<p>*Not really.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[TWSS: Building a That's What She Said Classifier]]></title>
-    <link href="http://blog.echen.me/2011/05/05/twss-building-a-thats-what-she-said-classifier/"/>
-    <updated>2011-05-05T00:09:17-07:00</updated>
-    <id>http://blog.echen.me/2011/05/05/twss-building-a-thats-what-she-said-classifier</id>
-    <content type="html"><![CDATA[<p>There's been a <a href="www.cs.washington.edu/homes/brun/pubs/pubs/Kiddon11.pdf">fun paper</a> on <a href="http://www.urbandictionary.com/define.php?term=that's%20what%20she%20said">That's What She Said</a> identification making the rounds recently, so I spent some time over the weekend building my own classifier.</p>
-
-<p><strong>tl;dr</strong> A simple unigram Naive Bayes model works pretty well, with performance on the lines of 0.969 precision and 0.823 recall. There's a demo <a href="http://twss-classifier.heroku.com/">here</a>. I also ran the classifier over some fairy tale text.</p>
-
-<h1>Naive Bayes Classifier</h1>
-
-<p>To start, I used a super simple Naive Bayes classifier, trained on unigrams (with add-one smoothing). (See the appendix at the end for details.)</p>
-
-<h2>Unigram vs. Bigram Model</h2>
-
-<p>Here are the most predictive features, after training a Naive Bayes model with unigrams:</p>
-
-<pre><code>unigram         p(twss|unigram)
-pull            0.9724889822144924
-bigger          0.9614677503890157
-wet             0.959004244327654
-hard            0.9527628206878138
-stick           0.9505783678914388
-hole            0.9443870318715991
-oh              0.9432941279908561
-replied         0.943294127990856
-fast            0.943294127990856
-longer          0.9397415371025485
-</code></pre>
-
-<p>Just to compare, here are some of the most predictive features in a bigram model (I added START and END tokens to the beginning and end of each sentence, in order to have some contextual features):</p>
-
-<pre><code>bigram          p(twss|bigram)
-it in           0.9801434151851175
-START wow       0.9705079286853889
-START oh        0.9473580156961879
-its too         0.9350522640444204
-pull out        0.9187779331523677
-too big         0.9187779331523677
-START man       0.9113755525471394
-hard END        0.9113755525471394
-put it          0.9071442285463515
-that thing      0.9024886021363793
-stick it        0.9024886021363793
-my god          0.9024886021363793
-go in           0.8916207044791409
-START ugh       0.8916207044791409
-make it         0.8916207044791409
-its so          0.8916207044791409
-</code></pre>
-
-<p>Amusingly, sentences starting with <em>wow</em>, <em>oh</em>, and <em>ugh</em>, tend to be good candidates for TWSS sentences, as well as sentences containing <em>it's too</em> and <em>it's so</em>.</p>
-
-<p>Here's a precision-recall curve comparing the two models. We see that, on our datasets, a unigram classifier handily beats a bigram classifier:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/twss/precision-recall.png"><img src="http://dl.dropbox.com/u/10506/blog/twss/precision-recall.png" alt="Precision-Recall" /></a></p>
-
-<h1>Darling it's better</h1>
-
-<p>Although our classifier gives excellent performance on our test set, one question is how well it generalizes to other sources of data.</p>
-
-<p>I didn't have another set of positive examples to draw from, but I took a set of fairy tales on Project Gutenberg to form a new batch of negative examples. On this new set of fairy tale sentences, the classifier misclassified only 81 out of 912 of the examples (assuming they should all be classified as "not TWSS"), which is a pretty low error rate of 8.89%.</p>
-
-<p>What do these misclassifications look like? Here are some of the false positives it made:</p>
-
-<h2>Aladdin</h2>
-
-<ul>
-<li>"The African magician carries it carefully wrapt up in his bosom," said the princess; "and this I can assure you, because he pulled it out before me, and showed it to me in triumph."</li>
-<li>It is vanished; but I had no concern in its removal.</li>
-<li>"My son," said he, "what a man you are to do such surprising things always in the twinkling of an eye!"</li>
-<li>"Sire," replied Aladdin, "I have not the least reason to complain of your conduct, since you did nothing but what your duty required."</li>
-<li>"With your leave, mother," replied Aladdin, "I shall now take care how I sell a lamp which may be so serviceable both to you and me."</li>
-</ul>
-
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png"><img src="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png" alt="http://dl.dropbox.com/u/10506/blog/twss/aladdin.png" /></a></p>
-
-<h2>Hansel and Gretel</h2>
-
-<ul>
-<li>"Oh dear," he said, "do let me go and see the hunt; I cannot restrain myself."</li>
-<li>When they awoke it was dark night, and poor Grethel began to cry, and said, "Oh, how shall we get out of the wood?" But Hansel comforted her.</li>
-<li>"But remember," she said, "I must lock the cottage door against those huntsmen, so when you come back in the evening, and knock, I shall not admit you, unless you say, 'Dear little sister let me in.'</li>
-</ul>
-
-
-<h2>Snow White</h2>
-
-<ul>
-<li>One was too long, another too short; so she tried them all till she came to the seventh, and that was so comfortable that she laid herself down, and was soon fast asleep.</li>
-<li>"Oh yes, I will try," said Snow-white.</li>
-</ul>
-
-
-<p>Note that a lot of these really are TWSS sentences! (Now we know where <a href="http://www.snopes.com/disney/films/mermaid.asp">those Disney artists</a> got their inspiration.) So the classifier appears to generalize surprisingly well.</p>
-
-<h1>A Demo</h1>
-
-<p>I created <a href="http://twss-classifier.heroku.com/">a small Sinatra app</a> to play around with the classifier, and deployed it <a href="http://twss-classifier.heroku.com/">here</a>. I also put the code <a href="https://github.com/echen/twss-classifier">on Github</a>.</p>
-
-<h1>Appendix: Details</h1>
-
-<h2>Datasets</h2>
-
-<p>To grab some TWSS examples, my first thought was to turn to <a href="http://search.twitter.com/search?q=twss">twitter</a>. However, the twitter data turned out to be incredibly noisy (lots of junk obscuring not terribly funny examples), so taking a cue from the K&amp;B paper, I pulled data from three sources:</p>
-
-<ul>
-<li>First, I scraped <a href="http://twssstories.com">twss stories</a> for positive training data (sentences for which a TWSS response is appropriate). Since only the last part in quotes from each submission is truly relevant to being a TWSS, I kept the quote and threw away the rest of each submission.</li>
-<li>Next, I scraped <a href="http://textsfromlastnight.com">Texts from Last Night</a> and <a href="http://www.fmylife.com">FMyLife</a> for negative training data. Since TWSS jokes are usually made in response to <em>sentences</em> (the last sentence you say), I split each submission into sentences, and each sentence formed a single negative training example.</li>
-</ul>
-
-
-<p>Finally, I normalized each sentence by converting to lowercase and removing any punctuation.</p>
-
-<h2>The Algorithm</h2>
-
-<p>To train and test the classifier, I used the examples I gathered to form training and test sets, each consisting of:</p>
-
-<ul>
-<li>1000 positive examples from twss stories.</li>
-<li>500 negative examples from Texts from Last Night.</li>
-<li>500 negative examples from FMyLife.</li>
-</ul>
-
-
-<h2>Performance of the Unigram Model</h2>
-
-<p>Since we want to optimize for precision (we hope the things we classify as TWSS sentences really are TWSS sentences) over recall (it's fine if we don't always respond TWSS to every TWSS sentence), let's use 0.99 probability as our threshold for classifying a sentence as TWSS. (This is equivalent to setting a low prior for the probability of being a TWSS.)</p>
-
-<p>With this threshold, a unigram Naive Bayes classifier has the following performance on a test set:</p>
-
-<ul>
-<li>True positives: 823</li>
-<li>False negatives: 177</li>
-<li>True negatives: 974</li>
-<li>False positives: 26</li>
-<li>Precision = 0.969</li>
-<li>Recall = 0.823</li>
-</ul>
-
 ]]></content>
   </entry>
   
@@ -363,6 +153,162 @@ its so          0.8916207044791409
 <h1>Code/Demo</h1>
 
 <p>I put the code on <a href="https://github.com/echen/unsupervised-language-identification">my Github account</a>, and a quick <a href="http://babel-fett.heroku.com/">demo app</a>, trained on trigrams from tweets with lang="en" according to the Twitter API, is <a href="http://babel-fett.heroku.com/">here</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Kickstarter Data Analysis: Success and Pricing]]></title>
+    <link href="http://blog.echen.me/2011/04/25/kickstarter-data-analysis-success-and-pricing/"/>
+    <updated>2011-04-25T21:19:40-07:00</updated>
+    <id>http://blog.echen.me/2011/04/25/kickstarter-data-analysis-success-and-pricing</id>
+    <content type="html"><![CDATA[<p><a href="http://www.kickstarter.com/">Kickstarter</a> is an online crowdfunding platform for launching creative projects. When starting a new project, project owners specify a deadline and the minimum amount of money they need to raise. They receive the money (less a transaction fee) only if they reach or exceed that minimum; otherwise, no money changes hands.</p>
+
+<p>What's particularly fun about Kickstarter is that in contrast to <a href="http://www.kiva.org/">that other microfinance site</a>, Kickstarter projects don't ask for loans; instead, patrons receive pre-specified rewards unique to each project. For example, someone donating money to help an artist record an album might receive a digital copy of the album if they donate 20 dollars, or a digital copy plus a signed physical cd if they donate 50 dollars.</p>
+
+<p>There are <a href="http://www.kickstarter.com/discover/hall-of-fame?ref=sidebar">a bunch</a> of <a href="http://www.kickstarter.com/projects/1104350651/tiktok-lunatik-multi-touch-watch-kits">neat</a> <a href="http://www.kickstarter.com/projects/2024077040/neil-gaimans-the-price">projects</a>, and I'm tempted to put one of my own on there soon, so I thought it would be fun to gather some data from the site and see what makes a project successful.</p>
+
+<h1>Categories</h1>
+
+<p>I started by scraping the categories section.</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png" alt="Successful projects by category" /></a></p>
+
+<p>In true indie fashion, the artsy categories tend to dominate. (I'm surprised/disappointed how little love the Technology category gets.)</p>
+
+<h1>Ending Soon</h1>
+
+<p>The categories section really only provides a history of <em>successful</em> projects, though, so to get some data on unsuccessful projects as well, I took a look at the <a href="http://www.kickstarter.com/discover/ending-soon?ref=sidebar">Ending Soon</a> section of projects whose deadlines are about to pass.</p>
+
+<p>It looks like about 50% of all Kickstarter projects get successfully funded by the deadline:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png" alt="Successful projects as deadline approaches" /></a></p>
+
+<p>Interestingly, most of the final funding seems to happen in the final few days: with just 5 days left, only about 20% of all projects have been funded. (In other words, with just 5 days left, 60% of the projects that will eventually be successful are still unfunded.) So the approaching deadline seems to really spur people to donate. I wonder if it's because of increased publicity in the final few days (the project owners begging everyone for help!) or if it's simply procrastination in action (perhaps people want to wait to see if their donation is really necessary)?</p>
+
+<p>Lesson: if you're still not fully funded with only a couple days remaining, don't despair.</p>
+
+<h1>Success vs. Failure</h1>
+
+<p>What factors lead a project to succeed? Are there any quantitative differences between projects that eventually get funded and those that don't?</p>
+
+<p>Two simple (if kind of obvious) things I noticed are that unsuccessful projects tend to require a larger amount of money:</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png" alt="Unsuccessful projects tend to ask for more money" /></a></p>
+
+<p>and unsuccessful projects also tend to raise less money in absolute terms (i.e., it's not just that they ask for too much money to reach their goal -- they're simply not receiving enough money as well):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png" alt="Unsuccessful projects received less money" /></a></p>
+
+<p>Not terribly surprising, but it's good to confirm (and I'm still working on finding other predictors).</p>
+
+<h1>Pledge Rewards</h1>
+
+<p>There's a lot of interesting work in behavioral economics on pricing and choice -- for example, the <a href="http://youarenotsosmart.com/2010/07/27/anchoring-effect/">anchoring effect</a> suggests that when building a menu, you should <a href="http://www.neurosciencemarketing.com/blog/articles/neuro-menus-and-restaurant-psychology.htm">include an expensive item</a> to make other menu items look reasonably priced in comparison, and the <a href="http://en.wikipedia.org/wiki/The_Paradox_of_Choice:_Why_More_Is_Less">paradox of choice </a> suggests that too many choices lead to a decision freeze -- so one aspect of the Kickstarter data I was especially interested in was how pricing of rewards affects donations. For example, does pricing the lowest reward at 25 dollars lead to more money donated (people don't lowball at 5 dollars instead) or less money donated (25 dollars is more money than most people are willing to give)? And what happens if a new reward at 5 dollars is added -- again, does it lead to more money (now people can donate something they can afford) or less money (the people that would have paid 25 dollars switch to a 5 dollar donation)?</p>
+
+<p>First, here's a look at the total number of pledges at each price. (More accurately, it's the number of claimed rewards at each price.) [Update: the original version of this graph was wrong, but I've since fixed it.]</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png" alt="Pledge Amounts" /></a></p>
+
+<p>Surprisingly, 5 dollar and 1 dollar donations are actually not the most common contribution.</p>
+
+<p>To investigate pricing effects, I started by looking at all (successful) projects that had a reward priced at 1 dollar, and compared the number of donations at 1 dollar with the number of donations at the next lowest reward.</p>
+
+<p>Up to about 15-20 dollars, there's a steady increase in the proportion of people who choose the second reward over the first reward, but after that, the proportion decreases.</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png" alt="Anchoring" /></a></p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png" alt="Anchoring with Regression Lines" /></a></p>
+
+<p>So this perhaps suggests that if you're going to price your lowest reward at 1 dollar, your next reward should cost roughly 20 dollars (or slightly more, to maximize your total revenue). Pricing above 20 dollars is a little too expensive for the folks who want to support you, but aren't rich enough to throw gads of money; maybe rewards below 20 dollars aren't good enough to merit the higher donation.</p>
+
+<p>Next, I'm planning on digging a little deeper into pricing effects and what makes a project successful, so I'll hopefully have some more Kickstarter analysis in a future post. In the meantime, in case anyone else wants to take a look, I put the data onto <a href="https://github.com/echen/kickstarter-data-analysis">my Github account</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Hacker News Analysis]]></title>
+    <link href="http://blog.echen.me/2011/03/14/hacker-news-analysis/"/>
+    <updated>2011-03-14T04:27:32-07:00</updated>
+    <id>http://blog.echen.me/2011/03/14/hacker-news-analysis</id>
+    <content type="html"><![CDATA[<p>I was playing around with the <a href="http://api.ihackernews.com/?db">Hacker News database</a> <a href="http://ronnieroller.com/">Ronnie Roller</a> made (thanks!), so I thought I'd post some of the things I looked at.</p>
+
+<h1>Activity on the Site</h1>
+
+<p>My first question was how activity on the site has increased over time. I looked at number of posts, points on posts, comments on posts, and number of users.</p>
+
+<h2>Posts</h2>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/posts_by_month.png" alt="Hacker News Posts by Month" /></p>
+
+<p>This looks like a strong linear fit, with an increase of 292 posts every month.</p>
+
+<h2>Comments</h2>
+
+<p>For comments, I fit a quadratic regression:</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/comments_by_month.png" alt="Hacker News Comments by Month" /></p>
+
+<h2>Points</h2>
+
+<p>A quadratic regression was also a better fit for points by month:</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/points_by_month.png" alt="Hacker News Points by Month" /></p>
+
+<h2>Users</h2>
+
+<p>And again for the number of distinct users with a submission:</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/users.png" alt="Hacker News Users by Month" /></p>
+
+<h1>Points and Comments</h1>
+
+<p>My next question was how points and comments related. Intuitively, posts with more points should have more comments, but it's nice to check (maybe really good posts are kind of boring, so don't lead to much discussion).</p>
+
+<p>First, I plotted the points and comments of each individual post:</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/all_points_vs_comments.png" alt="All Points vs. Comments" /></p>
+
+<p>As expected, there’s an overall positive correlation between points and comments. Interestingly, there are quite a few high-points posts with no comments.</p>
+
+<p>The plot’s quite noisy, though, so let’s try cleaning it up a bit, by taking the median number of comments per points level (and removing posts at the higher end, where we have little data):</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/points_vs_median_comments.png" alt="Points vs. Median Comments" /></p>
+
+<p>We see that posts with more points do tend to have more comments. Also, variance in number of comments is indicated by size and color, so (unsurprisingly) posts with more points have larger variance in their number of comments.</p>
+
+<h1>Quality of Posts</h1>
+
+<p>Another question was whether the quality of posts has degraded over time.</p>
+
+<p>First, I computed a normalized "score" for each post, where a post's score is defined as the number of points divided by the number of distinct users who made a submission in the same month. (The denominator is a rough proxy for the number of active users, and the goal of the score is to provide a way to compare posts across time.)</p>
+
+<p>While the median score has declined over time (as perhaps should be expected, since only a fixed number of items can reach the front page):</p>
+
+<p><a href="http://dl.dropbox.com/u/10506/blog/hn-analysis/median-score.png"><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/median-score.png" alt="Median Score" /></a></p>
+
+<p>the absolute <em>number</em> of quality posts, defined as posts with a score greater than the (admittedly arbitrarily chosen) threshold 0.01, has increased (until possibly a dip starting in 2010):</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/num_quality_posts2.png" alt="Number of Quality Posts" /></p>
+
+<p>(Of course, without some further analysis, it's not clear how well this score measures quality of posts, so take these numbers with a grain of salt.)</p>
+
+<h1>Company Trends</h1>
+
+<p>Also, I wanted to see how certain topics have trended over time, so I looked at how mentions of some of the big-name companies (Google, Facebook, Microsoft, Yahoo, Twitter, Apple) have changed. For each company, I plotted the percentage of posts with the company's name in the title, and also made a smoothed plot comparing all six at the end. Note that Microsoft and Yahoo seem to be trending slightly downward, and Apple seems to be trending upward.</p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_microsoft.png" alt="Mentions of Microsoft" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_yahoo.png" alt="Mentions of Yahoo" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_google.png" alt="Mentions of Google" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_facebook.png" alt="Mentions of Facebook" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_twitter.png" alt="Mentions of Twitter" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/pct_apple.png" alt="Mentions of Apple" /></p>
+
+<p><img src="http://dl.dropbox.com/u/10506/blog/hn-analysis/all_trends2.png" alt="All Trends" /></p>
 ]]></content>
   </entry>
   

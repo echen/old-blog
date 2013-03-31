@@ -9,7 +9,7 @@
   <meta name="author" content="Edwin Chen">
 
   
-  <meta name="description" content="Aaron Koblin&#8217;s Sheep Market visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were ordered, &hellip;">
+  <meta name="description" content="Introduction Suppose you see two drunks (i.e., two random walks) wandering around. The drunks don&#8217;t know each other (they&#8217;re independent &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -74,466 +74,6 @@
     <div id="content">
       <div class="blog-index">
   
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/05/01/eigensheep/">Eigensheep</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-05-01T15:23:31-07:00" pubdate data-updated="true">May 1<span>st</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Aaron Koblin&#8217;s <a href="http://www.thesheepmarket.com/">Sheep Market</a> visualization is an awesome use of Mechanical Turk. But it&#8217;d be even more awesome if the grid were <em>ordered</em>, so I decided to try projecting the sheep onto two dimensions.</p>
-
-<h1>Principal Sheep Components</h1>
-
-<p>After screenshotting the first 50 sheep from the market and normalizing their size and color, here&#8217;s what a PCA projection looks like (<a href="http://dl.dropbox.com/u/10506/eigensheep.png">click</a> for a larger view):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/eigensheep.png"><img src="http://dl.dropbox.com/u/10506/eigensheep.png" alt="Projected Sheep" /></a></p>
-
-<p>Notice how the stroke widths get thicker as we move to the right (i.e., <strong>the first principal component seems to measure the blackness of the sheep</strong>), and the amount of wool on the sheep&#8217;s body increases as we move up (i.e., <strong>the second principal component seems to measure the wooliness of the sheep</strong>).</p>
-
-<p>It&#8217;s also pretty neat how all the sheep with black heads and black legs (sheep 35, 16, 32, 31, and 19) get clumped together:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png"><img src="http://dl.dropbox.com/u/10506/eigensheep-black-heads.png" alt="Projected Sheep, Black Heads/Legs Circled" /></a></p>
-
-<p>And I think the sheep on the left (next to and inside the dense cluster) seem much more poorly drawn &#8211; they look more like camels, dogs, unicorns, or bugs than actual sheep.</p>
-
-<h1>Code</h1>
-
-<p>In a bit more detail, I used the poor man&#8217;s Mechanical Turk (myself) to screenshot the first 50 sheep from the market, trying to hug the sheep as closely as possible to ensure proper alignment. Next, I used the <a href="http://www.pythonware.com/products/pil/">Python Imaging Library</a> to resize the images to 150x150px, convert them to grayscale, and flatten them into the rows of a matrix.</p>
-
-<p>In case anyone else wants to play with the sheep images, I put the <a href="https://github.com/echen/eigensheep">code</a> on my <a href="https://github.com/echen/eigensheep">Github</a> account.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/04/27/choosing-a-machine-learning-classifier/">Choosing a Machine Learning Classifier</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-27T18:43:15-07:00" pubdate data-updated="true">Apr 27<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best bet is to test out a couple different ones (making sure to try different parameters within each algorithm as well), and select the best one by cross-validation. But if you&#8217;re simply looking for a &#8220;good enough&#8221; algorithm for your problem, or a place to start, here are some general guidelines I&#8217;ve found to work well over the years.</p>
-
-<h1>How large is your training set?</h1>
-
-<p>If your training set is small, high bias/low variance classifiers (e.g., Naive Bayes) have an advantage over low bias/high variance classifiers (e.g., kNN), since the latter will overfit. But low bias/high variance classifiers start to win out as your training set grows (they have lower asymptotic error), since high bias classifiers aren&#8217;t powerful enough to provide accurate models.</p>
-
-<p>You can also think of this as a generative model vs. discriminative model distinction.</p>
-
-<h1>Advantages of some particular algorithms</h1>
-
-<p><strong>Advantages of Naive Bayes:</strong> Super simple, you&#8217;re just doing a bunch of counts. If the NB conditional independence assumption actually holds, a Naive Bayes classifier will converge quicker than discriminative models like logistic regression, so you need less training data. And even if the NB assumption doesn&#8217;t hold, a NB classifier still often does a great job in practice. A good bet if  want something fast and easy that performs pretty well. Its main disadvantage is that it can&#8217;t learn interactions between features (e.g., it can&#8217;t learn that although you love movies with Brad Pitt and Tom Cruise, you hate movies where they&#8217;re together).</p>
-
-<p><strong>Advantages of Logistic Regression:</strong> Lots of ways to regularize your model, and you don&#8217;t have to worry as much about your features being correlated, like you do in Naive Bayes. You also have a nice probabilistic interpretation, unlike decision trees or SVMs, and you can easily update your model to take in new data (using an online gradient descent method), again unlike decision trees or SVMs. Use it if you want a probabilistic framework (e.g., to easily adjust classification thresholds, to say when you&#8217;re unsure, or to get confidence intervals) or if you expect to receive more training data in the future that you want to be able to quickly incorporate into your model.</p>
-
-<p><strong>Advantages of Decision Trees:</strong> Easy to interpret and explain (for some people &#8211; I&#8217;m not sure I fall into this camp). They easily handle feature interactions and they&#8217;re non-parametric, so you don&#8217;t have to worry about outliers or whether the data is linearly separable (e.g., decision trees easily take care of cases where you have class A at the low end of some feature x, class B in the mid-range of feature x, and A again at the high end). One disadvantage is that they don&#8217;t support online learning, so you have to rebuild your tree when new examples come on. Another disadvantage is that they easily overfit, but that&#8217;s where ensemble methods like random forests (or boosted trees) come in. Plus, random forests are often the winner for lots of problems in classification (usually slightly ahead of SVMs, I believe), they&#8217;re fast and scalable, and you don&#8217;t have to worry about tuning a bunch of parameters like you do with SVMs, so they seem to be quite popular these days.</p>
-
-<p><strong>Advantages of SVMs:</strong> High accuracy, nice theoretical guarantees regarding overfitting, and with an appropriate kernel they can work well even if you&#8217;re data isn&#8217;t linearly separable in the base feature space. Especially popular in text classification problems where very high-dimensional spaces are the norm. Memory-intensive, hard to interpret, and kind of annoying to run and tune, though, so I think random forests are starting to steal the crown.</p>
-
-<h1>But&#8230;</h1>
-
-<p>Recall, though, that better data often beats better algorithms, and designing good features goes a long way. And if you have a huge dataset, then whichever classification algorithm you use might not matter so much in terms of classification performance (so choose your algorithm based on speed or ease of use instead).</p>
-
-<p>And to reiterate what I said above, if you really care about accuracy, you should definitely try a bunch of different classifiers and select the best one by cross-validation. Or, to take a lesson from the Netflix Prize (and Middle Earth), just use an ensemble method to choose them all.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/04/25/kickstarter-data-analysis-success-and-pricing/">Kickstarter Data Analysis: Success and Pricing</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-25T21:19:40-07:00" pubdate data-updated="true">Apr 25<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><a href="http://www.kickstarter.com/">Kickstarter</a> is an online crowdfunding platform for launching creative projects. When starting a new project, project owners specify a deadline and the minimum amount of money they need to raise. They receive the money (less a transaction fee) only if they reach or exceed that minimum; otherwise, no money changes hands.</p>
-
-<p>What&#8217;s particularly fun about Kickstarter is that in contrast to <a href="http://www.kiva.org/">that other microfinance site</a>, Kickstarter projects don&#8217;t ask for loans; instead, patrons receive pre-specified rewards unique to each project. For example, someone donating money to help an artist record an album might receive a digital copy of the album if they donate 20 dollars, or a digital copy plus a signed physical cd if they donate 50 dollars.</p>
-
-<p>There are <a href="http://www.kickstarter.com/discover/hall-of-fame?ref=sidebar">a bunch</a> of <a href="http://www.kickstarter.com/projects/1104350651/tiktok-lunatik-multi-touch-watch-kits">neat</a> <a href="http://www.kickstarter.com/projects/2024077040/neil-gaimans-the-price">projects</a>, and I&#8217;m tempted to put one of my own on there soon, so I thought it would be fun to gather some data from the site and see what makes a project successful.</p>
-
-<h1>Categories</h1>
-
-<p>I started by scraping the categories section.</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png" alt="Successful projects by category" /></a></p>
-
-<p>In true indie fashion, the artsy categories tend to dominate. (I&#8217;m surprised/disappointed how little love the Technology category gets.)</p>
-
-<h1>Ending Soon</h1>
-
-<p>The categories section really only provides a history of <em>successful</em> projects, though, so to get some data on unsuccessful projects as well, I took a look at the <a href="http://www.kickstarter.com/discover/ending-soon?ref=sidebar">Ending Soon</a> section of projects whose deadlines are about to pass.</p>
-
-<p>It looks like about 50% of all Kickstarter projects get successfully funded by the deadline:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png" alt="Successful projects as deadline approaches" /></a></p>
-
-<p>Interestingly, most of the final funding seems to happen in the final few days: with just 5 days left, only about 20% of all projects have been funded. (In other words, with just 5 days left, 60% of the projects that will eventually be successful are still unfunded.) So the approaching deadline seems to really spur people to donate. I wonder if it&#8217;s because of increased publicity in the final few days (the project owners begging everyone for help!) or if it&#8217;s simply procrastination in action (perhaps people want to wait to see if their donation is really necessary)?</p>
-
-<p>Lesson: if you&#8217;re still not fully funded with only a couple days remaining, don&#8217;t despair.</p>
-
-<h1>Success vs. Failure</h1>
-
-<p>What factors lead a project to succeed? Are there any quantitative differences between projects that eventually get funded and those that don&#8217;t?</p>
-
-<p>Two simple (if kind of obvious) things I noticed are that unsuccessful projects tend to require a larger amount of money:</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png" alt="Unsuccessful projects tend to ask for more money" /></a></p>
-
-<p>and unsuccessful projects also tend to raise less money in absolute terms (i.e., it&#8217;s not just that they ask for too much money to reach their goal &#8211; they&#8217;re simply not receiving enough money as well):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png" alt="Unsuccessful projects received less money" /></a></p>
-
-<p>Not terribly surprising, but it&#8217;s good to confirm (and I&#8217;m still working on finding other predictors).</p>
-
-<h1>Pledge Rewards</h1>
-
-<p>There&#8217;s a lot of interesting work in behavioral economics on pricing and choice &#8211; for example, the <a href="http://youarenotsosmart.com/2010/07/27/anchoring-effect/">anchoring effect</a> suggests that when building a menu, you should <a href="http://www.neurosciencemarketing.com/blog/articles/neuro-menus-and-restaurant-psychology.htm">include an expensive item</a> to make other menu items look reasonably priced in comparison, and the <a href="http://en.wikipedia.org/wiki/The_Paradox_of_Choice:_Why_More_Is_Less">paradox of choice </a> suggests that too many choices lead to a decision freeze &#8211; so one aspect of the Kickstarter data I was especially interested in was how pricing of rewards affects donations. For example, does pricing the lowest reward at 25 dollars lead to more money donated (people don&#8217;t lowball at 5 dollars instead) or less money donated (25 dollars is more money than most people are willing to give)? And what happens if a new reward at 5 dollars is added &#8211; again, does it lead to more money (now people can donate something they can afford) or less money (the people that would have paid 25 dollars switch to a 5 dollar donation)?</p>
-
-<p>First, here&#8217;s a look at the total number of pledges at each price. (More accurately, it&#8217;s the number of claimed rewards at each price.) [Update: the original version of this graph was wrong, but I&#8217;ve since fixed it.]</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png" alt="Pledge Amounts" /></a></p>
-
-<p>Surprisingly, 5 dollar and 1 dollar donations are actually not the most common contribution.</p>
-
-<p>To investigate pricing effects, I started by looking at all (successful) projects that had a reward priced at 1 dollar, and compared the number of donations at 1 dollar with the number of donations at the next lowest reward.</p>
-
-<p>Up to about 15-20 dollars, there&#8217;s a steady increase in the proportion of people who choose the second reward over the first reward, but after that, the proportion decreases.</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png" alt="Anchoring" /></a></p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png"><img src="http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png" alt="Anchoring with Regression Lines" /></a></p>
-
-<p>So this perhaps suggests that if you&#8217;re going to price your lowest reward at 1 dollar, your next reward should cost roughly 20 dollars (or slightly more, to maximize your total revenue). Pricing above 20 dollars is a little too expensive for the folks who want to support you, but aren&#8217;t rich enough to throw gads of money; maybe rewards below 20 dollars aren&#8217;t good enough to merit the higher donation.</p>
-
-<p>Next, I&#8217;m planning on digging a little deeper into pricing effects and what makes a project successful, so I&#8217;ll hopefully have some more Kickstarter analysis in a future post. In the meantime, in case anyone else wants to take a look, I put the data onto <a href="https://github.com/echen/kickstarter-data-analysis">my Github account</a>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/04/21/a-mathematical-introduction-to-least-angle-regression/">A Mathematical Introduction to Least Angle Regression</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-21T00:16:36-07:00" pubdate data-updated="true">Apr 21<span>st</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>(For a layman&#8217;s introduction, see <a href="http://blog.echen.me/2011/03/14/least-angle-regression-for-the-hungry-layman/">here</a>.)</p>
-
-<p>Least Angle Regression (aka LARS) is a <strong>model selection method</strong> for linear regression (when you&#8217;re worried about overfitting or want your model to be easily interpretable). To motivate it, let&#8217;s consider some other model selection methods:</p>
-
-<ul>
-<li><strong>Forward selection</strong> starts with no variables in the model, and at each step it adds to the model the variable with the most explanatory power, stopping if the explanatory power falls below some threshold. This is a fast and simple method, but it can also be too greedy: we fully add variables at each step, so correlated predictors don&#8217;t get much of a chance to be included in the model. (For example, suppose we want to build a model for the deliciousness of a PB&amp;J sandwich, and two of our variables are the amount of peanut butter and the amount of jelly. We&#8217;d like both variables to appear in our model, but since amount of peanut butter is (let&#8217;s assume) strongly correlated with the amount of jelly, once we fully add peanut butter to our model, jelly doesn&#8217;t add much explanatory power anymore, and so it&#8217;s unlikely to be added.)</li>
-<li><strong>Forward stagewise regression</strong> tries to remedy the greediness of forward selection by only partially adding variables. Whereas forward selection finds the variable with the most explanatory power and goes all out in adding it to the model, forward stagewise finds the variable with the most explanatory power and updates its weight by only epsilon in the correct direction. (So we might first increase the weight of peanut butter a little bit, then increase the weight of peanut butter again, then increase the weight of jelly, then increase the weight of bread, and then increase the weight of peanut butter once more.) The problem now is that we have to make a ton of updates, so forward stagewise can be very inefficient.</li>
-</ul>
-
-
-<p>LARS, then, is essentially forward stagewise made fast. Instead of making tiny hops in the direction of one variable at a time, LARS makes optimally-sized leaps in optimal directions. These directions are chosen to make equal angles (equal correlations) with each of the variables currently in our model. (We like peanut butter best, so we start eating it first; as we eat more, we get a little sick of it, so jelly starts looking equally appetizing, and we start eating peanut butter and jelly simultaneously; later, we add bread to the mix, etc.)</p>
-
-<p>In more detail, LARS works as follows:</p>
-
-<ul>
-<li>Assume for simplicity that we&#8217;ve standardized our explanatory variables to have zero mean and unit variance, and that our response variable also has zero mean.</li>
-<li>Start with no variables in your model.</li>
-<li>Find the variable $ x_1 $ most correlated with the residual. (Note that the variable most correlated with the residual is equivalently the one that makes the least angle with the residual, whence the name.)</li>
-<li>Move in the direction of this variable until some other variable $ x_2 $ is just as correlated.</li>
-<li>At this point, start moving in a direction such that the residual stays equally correlated with $ x_1 $ and $ x_2 $ (i.e., so that the residual makes equal angles with both variables), and keep moving until some variable $ x_3 $ becomes equally correlated with our residual.</li>
-<li>And so on, stopping when we&#8217;ve decided our model is big enough.</li>
-</ul>
-
-
-<p>For example, consider the following image (slightly simplified from the <a href="http://www.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf">original LARS paper</a>; $x_1, x_2$ are our variables, and $y$ is our response):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png"><img src="http://dl.dropbox.com/u/10506/blog/lars/lars-example.png" alt="LARS Example" /></a></p>
-
-<p>Our model starts at $ \hat{\mu_0} $.</p>
-
-<ul>
-<li>The residual (the green line) makes a smaller angle with $ x_1 $ than with $ x_2 $, so we start moving in the direction of $ x_1 $.
-At $ \hat{\mu_1} $, the residual now makes equal angles with $ x_1, x_2 $, and so we start moving in a new direction that preserves this equiangularity/equicorrelation.</li>
-<li>If there were more variables, we&#8217;d change directions again once a new variable made equal angles with our residual, and so on.</li>
-</ul>
-
-
-<p>So when should you use LARS, as opposed to some other regularization method like lasso? There&#8217;s not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don&#8217;t usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/04/18/twifferences-between-californians-and-new-yorkers/">Twifferences Between Californians and New Yorkers</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-04-18T03:41:39-07:00" pubdate data-updated="true">Apr 18<span>th</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>How do people in Silicon Valley compare to those in New York City? For a data-driven answer, I pulled a couple days&#8217; worth of Twitter data around the two areas.</p>
-
-<h2>Silicon Valley vs. NYC</h2>
-
-<p>So let&#8217;s take a look. To compare the two places, I trained a simple Naive Bayes model on user profiles. Here are the words most predictive of being from Silicon Valley vs. NYC:</p>
-
-<h3>Silicon Valley</h3>
-
-<pre><code>word                    Prob(Silicon Valley | word)
-cloud                   0.9053263586466359
-stanford                0.8947378473880241
-hacker                  0.8759014372329466
-dev                     0.8684686297323906
-giants                  0.8522440881548609
-mac                     0.8453052631578948
-support                 0.8453052631578948
-ux                      0.8453052631578948
-engineer                0.8321693229113796
-software                0.8223647630482606
-google                  0.8199372672025093
-yahoo                   0.8095254553623891
-ui                      0.7978356566397651
-board                   0.7978356566397651
-programmer              0.7978356566397651
-health                  0.7946855178965604
-game                    0.7846171884159925
-bike                    0.7846171884159925
-gadgets                 0.7846171884159925
-surfer                  0.7846171884159925
-lead                    0.7846171884159925
-green                   0.7758225129356634
-product                 0.7707827422373662
-engineering             0.7662790401791395
-data                    0.7662790401791395
-biz                     0.7522143788498717
-games                   0.7503363731499477
-cto                     0.7474653744372272
-startup                 0.7474653744372272
-cofounder               0.745373899785155 
-team                    0.7399904460289096
-mobile                  0.7395369397321055
-entrepreneur            0.7346495409451503
-before                  0.7320595099183198
-corporate               0.7320595099183198
-companies               0.7320595099183198
-enterprise              0.7320595099183198
-careers                 0.7320595099183197
-help                    0.7320595099183197
-jobs                    0.7226147417213892
-systems                 0.7183120188916491
-dude                    0.7183120188916491
-solutions               0.7146518581802648
-startups                0.7146518581802648
-instructor              0.7146518581802648
-founder                 0.7136727946906866
-advocate                0.7119786767011602
-community               0.7107516339869281
-local                   0.7083355385022493
-cyclist                 0.7083355385022493
-formerly                0.7083355385022493
-tech                    0.7034995094145681
-dad                     0.699465571148113 
-developer               0.6933557437157872
-evangelist              0.6886440677966102
-architect               0.6886440677966102
-experience              0.6875894616006009
-designer                0.6861009534875773
-app                     0.6861009534875773
-gamer                   0.6701428216249068
-geek                    0.6699839438296025
-friend                  0.6692937011181566
-married                 0.6692937011181566
-past                    0.6670653907496013
-yoga                    0.6670653907496013
-baseball                0.6670653907496013
-iphone                  0.65665476702241  
-guy                     0.6396064208138196
-running                 0.6323876017254413
-</code></pre>
-
-<h3>New York City</h3>
-
-<pre><code>word                    Prob(New York | word)
-bbm                     0.9235374771480804
-mets                    0.9165294616574365
-teamfollowback          0.9165294616574365
-nyu                     0.9165294616574365
-columbia                0.8848747591522158
-actress                 0.8682158330051202
-chick                   0.845920058942715 
-theatre                 0.8010386109569492
-money                   0.7935205183585313
-publishing              0.7854119457864808
-moment                  0.7854119457864808
-self                    0.7854119457864808
-ya                      0.7545697268432944
-intern                  0.7545697268432944
-makeup                  0.7512175173798283
-financial               0.7512175173798283
-studio                  0.7329822041337483
-records                 0.7329822041337483
-magazine                0.7272706101537029
-history                 0.7249169653720938
-fashion                 0.718105290117341 
-myself                  0.7118622174381054
-soul                    0.7072308553828924
-peace                   0.7072308553828924
-dancer                  0.7017521519889981
-night                   0.687114269683935 
-president               0.6871142696839349
-event                   0.6577157178660937
-dreams                  0.6577157178660937
-model                   0.6577157178660937
-read                    0.6577157178660937
-journalism              0.6577157178660937
-filmmaker               0.6530588061027995
-news                    0.6466488313151225
-mother                  0.6466488313151224
-entertainment           0.6466488313151224
-party                   0.640842613712599 
-political               0.640842613712599 
-producer                0.6372663804691904
-communications          0.6222197132211811
-actor                   0.6169228655604573
-journalist              0.616094753936313 
-website                 0.6133083363295495
-radio                   0.6133083363295495
-executive               0.6058707124010555
-</code></pre>
-
-<p>Some findings:</p>
-
-<ul>
-<li>Silicon Valley is much more <strong>tech</strong>- (<em>cloud, hacker, dev, engineer, software, programmer</em>) and <strong>startup</strong>-driven (<em>startup, entrepreneur, founder</em>). New York is much more into <strong>arts/entertainment</strong> (<em>actress, theatre, publishing, studio, records, magazine, journalism, filmmaker, news</em>) and <strong>finance</strong> (<em>money, financial</em>). (Another way to look at it: Silicon Valley higher-ups call themselves <em>ctos</em> and <em>founders</em> and sit on <em>boards</em>, while New York higher-ups call themselves <em>presidents</em> and <em>executives</em>.)</li>
-<li>New Yorkers care a lot about <strong>looks</strong> (<em>makeup, fashion</em>). Silicon Valley folks care a lot about <strong>sports</strong>, <strong>health</strong>, and the <strong>outdoors</strong> (<em>bike, surfer, cyclist, yoga, running, health</em>).</li>
-<li>Silicon Valley folks describe themselves through their <strong>past</strong> (<em>before, formerly, past, former</em>). New Yorkers describe themselves through their <strong>future</strong> (<em>dreams</em>).</li>
-<li>Silicon Valley is big on <strong>community</strong> (<em>support, team, help, helping, community</em>). New York is focused on the <strong>individual</strong> (<em>self, myself</em>).</li>
-<li>Silicon Valley has a larger proportion of <strong>men</strong> (<em>dad, geek, dude, guy</em>). New York has the <strong>women</strong> (<em>mother, chick</em>).</li>
-<li>New York uses BlackBerrys (<em>bbm</em> is short for BlackBerry Messenger), while Silicon Valley uses <em>iPhones</em>.</li>
-<li>Silicon Valley is more into the <strong>locavore</strong> movement (<em>green, local</em>).</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
   
   
     <article>
@@ -621,180 +161,6 @@ $ \Delta Y_t = \alpha_2 (Y_{t-1} - \beta X_{t-1}) + v_t $</p>
 <h1>Summary</h1>
 
 <p>So, just to summarize a bit, cointegration is an equilibrium relationship between time series that individually aren&#8217;t in equilbrium (you can kind of contrast this with (Pearson) correlation, which describes a linear relationship), and it&#8217;s useful because it allows us to incorporate both short-term dynamics (deviations from equilibrium) and long-run expectations (corrections to equilibrium).</p>
-</div>
-  
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2011/03/22/harry-potter-and-the-keyword-chaos-unsupervised-statistically-significant-phrases/">Unsupervised Statistically Significant Phrases</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2011-03-22T04:20:23-07:00" pubdate data-updated="true">Mar 22<span>nd</span>, 2011</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>One of my all-time favorite graphs is the following visualization of the distribution of the primes (showing that the primes are more spread out than the random, clumpy points of a Poisson process):</p>
-
-<p><a href="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png"><img src="http://dl.dropbox.com/u/10506/blog/harry-potter-chaos/prime-chaos.png" alt="Distribution of Primes" /></a></p>
-
-<p>So I was pretty intrigued when I ran across <a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">this paper</a> (<a href="http://bioinfo2.ugr.es/Publicaciones/PRE09.pdf">Level statistics of words: Finding keywords in literary texts and symbolic sequences</a>) using similar quantumish, random matrixish ideas to extract the important phrases from a text.</p>
-
-<h1>The Paper</h1>
-
-<p>Statistical phrase extraction (e.g., the &#8220;statistically improbable phrases&#8221; you see on Amazon) is usually done by comparing a target text against a baseline corpus. The authors of this paper, however, describe an <em>unsupervised</em> phrase extraction method given only the target text itself, by making use of the spatial distribution of the phrases (which gets thrown out in typical bag-of-word models).</p>
-
-<p>The idea is that uninformative words and phrases (e.g., &#8220;the&#8221; and &#8220;but&#8221;) have a more random and uniform distribution than important words and phrases (e.g., names of main characters), which will tend to form clusters. (Funnily, the quantum chaos paper containing the primes graph reverses these characterizations: there, the primes are the ones that are repellent and spread out, while the random numbers are the ones that form clusters.)</p>
-
-<p>Thus, the cluster-tendency of a phrase should be a reasonable measure of its importance.</p>
-
-<h1>Implementation</h1>
-
-<p>I wrote a quick Ruby script to calculate the level statistics on the first Harry Potter book.</p>
-
-<p>Here are the top 25 unigrams extracted (ordered using the sigma_normalized statistic from the paper; I played around with the paper&#8217;s C number as well, but it didn&#8217;t give as good results):</p>
-
-<pre><code>phrase  count   sigma_normalized
-dudley  117     5.886458836973907
-vernon  105     5.425462371919648
-uncle   121     4.96291028279975
-yeh     100     4.483340310689477
-mirror  46      4.4123632519944564
-platform        20      3.7698278374021283
-wood    53      3.698871282864937
-aunt    65      3.682665094335877
-hagrid  336     3.532997146829891
-ter     78      3.4935220547292394
-petunia 57      3.3847272743671764
-dragon  31      3.319790040957389
-fang    16      3.1175440675916763
-unicorn 22      3.109138726006347
-bludgers        13      3.0336322222301035
-o       31      2.973718095050078
-malfoy  112     2.965094959118159
-voldemort       31      2.957883190702609
-percy   36      2.946348443571833
-path    12      2.9430416987716383
-dursley 54      2.9266934668788025
-christmas       25      2.926196222714648
-anythin 13      2.8753724174699626
-quirrell        91      2.8351538706894868
-crate   12      2.8171552951153913
-</code></pre>
-
-<p>It looks more impressive when you compare with the bottom 25 unigrams (filtered to counts of at least 50, to make the unigrams more comparable to those above):</p>
-
-<pre><code>phrase  count   sigma_normalized
-few     55      0.858973690529759
-seemed  72      0.8660034944771483
-might   54      0.8691077527153204
-after   68      0.8700202208036406
-way     94      0.8893865470583092
-come    95      0.8897833973429081
-before  107     0.9158168210798949
-good    82      0.9208260024379561
-suddenly        69      0.9223289856683224
-only    111     0.9262797404590966
-put     58      0.9320218173468643
-must    57      0.932224843054271
-while   60      0.9367996846919046
-asked   60      0.9386801898266576
-left    82      0.9509973378264027
-trying  65      0.9511509393516154
-saw     62      0.9524243012100968
-even    105     0.9563651096306485
-really  73      0.9569234100328665
-voice   59      0.957685122636835
-away    71      0.9611639088841413
-where   100     0.9657416499349912
-every   53      0.9659213894654203
-harrys  113     0.9746316711628271
-long    71      0.9794359046955133
-</code></pre>
-
-<p>Similarly, here are the top bigrams:</p>
-
-<pre><code>phrase  count   sigma_normalized
-uncle vernon    97      5.2050164080560615
-the mirror      35      3.8911699122647163
-professor mcgonagall    89      3.570490871211533
-aunt petunia    52      3.3541554249859917
-the library     21      3.2822285085324374
-nine and        13      3.052813340938423
-the twins       12      3.0493973437585256
-the potters     12      2.962214857171763
-the boy 26      2.86158988074687
-said hagrid     89      2.76691520812392
-the stone       48      2.7118270594517413
-and dudley      15      2.705365860880404
-the giant       15      2.682345959043539
-the troll       18      2.6613701424473386
-mr dursley      30      2.607508647153971
-said uncle      13      2.5996349710103055
-sorcerers stone 14      2.564840300637567
-the quaffle     16      2.533417641354809
-said dumbledore 27      2.5200215250194193
-said hermione   42      2.509101121058932
-and threequarters       9       2.4248478008322967
-the crate       9       2.377194502184057
-the cloak       22      2.368960931129895
-the forest      23      2.3607725433338675
-mr potter       12      2.3429313549690285
-</code></pre>
-
-<p>And the bottom bigrams (filtered to counts of at least 25):</p>
-
-<pre><code>phrase  count   sigma_normalized
-for a   38      0.6706459452115997
-the way 34      0.7417616427971635
-to harry        31      0.7671160112200728
-a few   45      0.7699093885203201
-off the 32      0.7949383886682402
-to him  27      0.7958792937430593
-was going       36      0.811227023007951
-up to   39      0.8122786875347693
-but it  32      0.8336661901803439
-up the  40      0.8365345579027479
-if you  34      0.8422559552361845
-which was       28      0.8552087965411528
-of course       35      0.8621365585531023
-by the  43      0.8625237028663237
-the other       52      0.8876800348745395
-with a  55      0.8903321479589525
- and    51      0.9016112133824481
-his face        31      0.9018554880700214
-and he  47      0.9038362537361607
-with the        56      0.9048625952654603
-but i   32      0.9110050643857517
-had to  43      0.9235463968235097
-at last 28      0.9255524776918606
-i know  27      0.9294114876847764
-he could        47      0.9358967550241238
-</code></pre>
-
-<p>So interestingly, while the method doesn&#8217;t do a great job of capturing the most important phrases (I&#8217;m not really sure why it should, in any case, as I&#8217;d guess main characters and themes would appear pretty evenly throughout the text), it does seem to pick out minor characters and objects (like the Dudleys), which seems to make a bit more sense.</p>
 </div>
   
   
@@ -1214,9 +580,471 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
 
     </article>
   
-  <div class="pagination">
+  
+    <article>
+      
+  <header>
     
-      <a class="prev" href="/page/4/">&larr; Older</a>
+      <h1 class="entry-title"><a href="/2011/03/14/laymans-introduction-to-random-forests/">Layman&#8217;s Introduction to Random Forests</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:25:46-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Suppose you&#8217;re very indecisive, so whenever you want to watch a movie, you ask your friend Willow if she thinks you&#8217;ll like it. In order to answer, Willow first needs to figure out what movies you like, so you give her a bunch of movies and tell her whether you liked each one or not (i.e., you give her a labeled training set). Then, when you ask her if she thinks you&#8217;ll like movie X or not, she plays a 20 questions-like game with IMDB, asking questions like &#8220;Is X a romantic movie?&#8221;, &#8220;Does Johnny Depp star in X?&#8221;, and so on. She asks more informative questions first (i.e., she maximizes the information gain of each question), and gives you a yes/no answer at the end.</p>
+
+<p>Thus, <strong>Willow is a decision tree for your movie preferences</strong>.</p>
+
+<p>But Willow is only human, so she doesn&#8217;t always generalize your preferences very well (i.e., she overfits). In order to get more accurate recommendations, you&#8217;d like to ask a bunch of your friends, and watch movie X if most of them say they think you&#8217;ll like it. That is, instead of asking only Willow, you want to ask Woody, Apple, and Cartman as well, and they vote on whether you&#8217;ll like a movie (i.e., <strong>you build an ensemble classifier</strong>, aka a forest in this case).</p>
+
+<p>Now you don&#8217;t want each of your friends to do the same thing and give you the same answer, so you first give each of them slightly different data. After all, you&#8217;re not absolutely sure of your preferences yourself &#8211; you told Willow you loved Titanic, but maybe you were just happy that day because it was your birthday, so maybe some of your friends shouldn&#8217;t use the fact that you liked Titanic in making their recommendations. Or maybe you told her you loved Cinderella, but actually you <em>really really</em> loved it, so some of your friends should give Cinderella more weight. So instead of giving your friends the same data you gave Willow, you give them slightly perturbed versions. You don&#8217;t change your love/hate decisions, you just say you love/hate some movies a little more or less (formally, <strong>you give each of your friends a bootstrapped version of your original training data</strong>). For example, whereas you told Willow that you liked Black Swan and Harry Potter and disliked Avatar, you tell Woody that you liked Black Swan so much you watched it twice, you disliked Avatar, and don&#8217;t mention Harry Potter at all.</p>
+
+<p>By using this ensemble, you hope that while each of your friends gives somewhat idiosyncratic recommendations (Willow thinks you like vampire movies more than you do, Woody thinks you like Pixar movies, and Cartman thinks you just hate everything), the errors get canceled out in the majority. Thus, <strong>your friends now form a bagged (bootstrap aggregated) forest of your movie preferences</strong>.</p>
+
+<p>There&#8217;s still one problem with your data, however. While you loved both Titanic and Inception, it wasn&#8217;t because you like movies that star Leonardio DiCaprio. Maybe you liked both movies for other reasons. Thus, you don&#8217;t want your friends to all base their recommendations on whether Leo is in a movie or not. So when each friend asks IMDB a question, only a random subset of the possible questions is allowed (i.e., <strong>when you&#8217;re building a decision tree, at each node you use some randomness in selecting the attribute to split on</strong>, say by randomly selecting an attribute or by selecting an attribute from a random subset). This means your friends aren&#8217;t allowed to ask whether Leonardo DiCaprio is in the movie whenever they want. So whereas previously you injected randomness at the data level, by perturbing your movie preferences slightly, now you&#8217;re injecting randomness at the model level, by making your friends ask different questions at different times.</p>
+
+<p>And so <strong>your friends now form a random forest</strong>.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/03/14/laymans-introduction-to-measure-theory/">Layman&#8217;s Introduction to Measure Theory</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:24:37-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Measure theory studies ways of generalizing the notions of length/area/volume. Even in 2 dimensions, it might not be clear how to measure the area of the following fairly tame shape:</p>
+
+<p><img src="http://d2o7bfz2il9cb7.cloudfront.net/main-qimg-809c3bdb18539dfa2917ee766a0a6159" alt="What's the area of this shape?" /></p>
+
+<p>much less the &#8220;area&#8221; of even weirder shapes in higher dimensions or different spaces entirely.</p>
+
+<p>For example, suppose you want to measure the length of a book (so that you can get a good sense of how long it takes to read). What&#8217;s a good measure? One possibility is to measure a book&#8217;s length in <em>pages</em>. Since books provide page counts, this is a fairly easy measure to get. However, different versions of the same book (e.g., hardcover and paperback versions) tend to have different page counts, so this page measure doesn&#8217;t satisfy the nice property of version invariance (which we would like to have, since hardcover and paperback versions of the same book take the same time to read). Also, not all books even have page counts (think Kindle books), so this measure doesn&#8217;t allow us to measure the length of all books we might want to read.</p>
+
+<p>Another, possibly better measure is to measure a book&#8217;s length in terms of the number of <em>words</em> it contains. Now we do have version invariance (hardcover and paperback versions contain the same number of words) and we can measure the length of Kindle books as well. We can even do things like add two books together, and the measure/number of words of the concatenated books will pleasantly equal the sum of the measures/number of words of each book alone.</p>
+
+<p>However, what happens when we try to measure a picture book&#8217;s length in words? We can&#8217;t &#8211; picture books are too pathological. Maybe we could say that a picture book has measure zero (since a picture book has no words), but then we get unhappy things like books of measure zero taking a really long time to read (imagine a really long picture book). So maybe a better option is to say that picture books are simply unmeasurable. Whenever someone asks for the length of a picture book, we ignore them, and this way our measure will continue to be a good approximation of reading time and we get to keep our other nice properties as well.</p>
+
+<p>Similarly, measure theory asks questions like:</p>
+
+<ul>
+<li>How do we define a measure on our space? (Jordan measure and Lebesgue measure are two different options in Euclidean space.)</li>
+<li>What properties does our measure satisfy? (For example, does it satisfy translational invariance, rotational invariance, additivity?)</li>
+<li>Which objects are measurable/which objects can we say it&#8217;s okay not to measure in order to preserve nice properties of our measure? (The Banach-Tarski ball can be rigidly reassembled into two copies of the same shape and size as the original, so we don&#8217;t want it to be measurable, since then we would lose additivity properties.)</li>
+</ul>
+
+
+<p>And once we&#8217;ve defined a &#8220;generalized area&#8221; (our measure), we can try to generalize other mathematical concepts as well. For example, recall that the (Riemann) integral that you learn in calculus measures the area under a curve. What happens if we replace the &#8220;area&#8221; in the Riemann integral with our new, generalized measure (e.g., to get the Lebesgue integral)? Measure theory also helps make certain probability statements mathematically precise (e.g., we can say exactly what it means that a fair coin flipped infinitely often will &#8220;almost never&#8221; land heads more than 50% of the time).</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/03/14/summary-scalable-collaborative-filtering-with-jointly-derived-neighborhood-interpolation-weights/">Netflix Prize Summary: Scalable Collaborative Filtering with Jointly Derived Neighborhood Interpolation Weights</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:23:04-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually, I hope to have a more integrated tutorial, but here&#8217;s a rough draft for now.)</p>
+
+<p>This is a summary of Bell and Koren&#8217;s 2007 <a href="public.research.att.com/~volinsky/netflix/BellKorICDM07.pdf">Scalable Collaborative Filtering with Jointly Derived Neighborhood Interpolation Weights</a> paper.</p>
+
+<p><strong>tl;dr</strong> This paper&#8217;s main innovation is deriving neighborhood weights by solving a least squares problem, instead of using a standard similarity function to compute weights.</p>
+
+<p>This paper improves upon the standard neighborhood approach to collaborative filtering in three areas: better data normalization, better neighbor weights (this is the key section), and better use of user data. I&#8217;ll first review the standard neighborhood approach, and follow with a description of these enhancements.</p>
+
+<h2>Background: Standard Neighborhood Approach to Collaborative Filtering</h2>
+
+<p>Recall that there are two types of neighborhood approaches:</p>
+
+<ul>
+<li>User-based approaches: to predict user i&#8217;s rating of item j, take the users most similar to user i, and perform a weighted average of their ratings of item j.</li>
+<li>Item-based approaches: to predict user i&#8217;s rating of item j, perform a weighted average of user i&#8217;s ratings of items similar to item j.</li>
+</ul>
+
+
+<p>For example, to predict how you would rate the first Harry Potter movie, the user-based approach looks at how your friends rated the first Harry Potter movie, while the item-based approach looks at how you rated movies like Lord of the Rings and Twilight.</p>
+
+<h2>Better Data Normalization</h2>
+
+<p>Suppose I ask my friend Chris whether I should watch the latest Twilight movie. He tells me he would rate it 4.0/5 stars. Great, that&#8217;s a high rating, so that means I should watch it &#8211; or does it? It turns out that Chris is a super cheerful guy who&#8217;s never met a movie he didn&#8217;t like, and his average rating for a movie is actually 4.5/5 stars. So Twilight is actually less than average for him, and hence 4.0/5 stars from Chris isn&#8217;t actually that hearty a recommendation.</p>
+
+<p>As another example, suppose you look at doctor ratings on Yelp. They&#8217;re abnormally high: the average is far from 3/5 stars. Why is this? Maybe it&#8217;s harder for people to change doctors than it is to go to a new restaurant, so people might not want to rate a doctor poorly when they know they&#8217;ll have to see the doctor again. Thus, an average rating of 5 stars on a McDonalds restaurant is much more impressive than an average of 5 stars on Dr. Joe.</p>
+
+<p>The lesson is that when using existing ratings, we should normalize out these types of effects, so that ratings are as comparable as possible.</p>
+
+<p>Another way of thinking about this is that we are simply building a regression model. That is, for each user u, we have a model
+$r_{ui} = (\sum \theta_u x_{ui}) + SpecificRating$, where the $x_{ui}$ are common explanatory variables and we want to estimate $\theta_u$; and similarly for each item i. Once we&#8217;ve estimated the $\theta_u$, we can use the fancier neighborhood models on the specific ratings.</p>
+
+<p>For example, suppose we want to predict Bob&#8217;s rating of Titanic. We&#8217;ve built a regression model with two explanatory variables, whether the movie was Oscar-nominated (1 if so, -1 if not) and whether the movie contains Kate Winslet (1 if so, -1 if not), and we&#8217;ve determined that Bob&#8217;s weights on these two variables are -2 (Bob tends to hate Oscar movies) and +1.5 (Bob likes Kate Winslet). Similarly, his friend John has weights +1 and -0.5 for these two variables (John likes Oscars, but dislikes Kate Winslet). So if we know that John rated Titanic a 4, then we have 4 = 1(1) + -0.5(1) + (John&#8217;s specific rating), so John&#8217;s specific rating of Titanic is 3.5. If we use John&#8217;s rating alone to estimate Bob&#8217;s, we might guess that Bob would rate Titanic -2(1) + 1.5(1) + (John&#8217;s specific rating) = 3.0.</p>
+
+<p>To estimate the $\theta_u$, we actually perform this estimation in sequence: each explanatory variable is used to model the <em>residual</em> from the previous explanatory variable. Also, instead of using the maximum-likelihood unbiased estimator $\hat{\theta_u} = \frac{\sum r_{ui} x_{ui}}{x _ {ui} ^ 2}$, we shrink the weights to prevent overfitting. From a Bayesian point of view, the shrinkage arises from a hierarchical model where the true $\theta_u \sim N(\mu, \sigma^2)$, and $\hat{\theta_u} | \theta_u \sim N(\theta_u, \sigma_u^2)$, leading to $E(\theta_u | \hat{\theta_u}) = \frac{\sigma^2 \hat{\theta_u} + \sigma_u^2 \mu}{\sigma^2 + \sigma_u^2}$.</p>
+
+<p>In practice, the explanatory variables Bell and Koren found to work well included the overall mean of all ratings, each movie&#8217;s specific mean, each user&#8217;s specific mean, time since movie release, time since user join, and number of ratings for each movie.</p>
+
+<h2>Better Neighbor Weights</h2>
+
+<p>Let&#8217;s consider some deficiencies of the neighborhood approach:</p>
+
+<ul>
+<li>Suppose I want to use the first LOTR movie to predict ratings of the first Harry Potter movie. To do this, I need to say how much weight the first LOTR movie should have in this prediction. But how do I choose this weight? Standard neighborhood approaches essentially pick arbitrary similarity functions (e.g., Pearson correlation, cosine distance) as the weight, possibly testing several similarity functions to see which gives the best performance, but is there a more principled approach to choosing weights?</li>
+<li>The standard neighborhood approach ignores the fact that neighbors aren&#8217;t independent. For example, suppose all three LOTR movies are neighbors of the first HP movie. Since the three LOTR movies are so similar to each other, the standard approach is overcounting their information. Here&#8217;s an analogy: suppose I ask five of my friends where I should eat tonight. Three of them live together (boyfriend, girlfriend, and roommate), and they all recently took a trip together to Japan and are sick of Japanese food, so they vehemently recommend against sushi. Thus, my friends&#8217; recommendations have a stronger bias than would appear if I asked five friends who didn&#8217;t know each other at all.</li>
+</ul>
+
+
+<p>We&#8217;ll see how using an optimization method to derive weights (as opposed to deriving weights via a similarity function) overcomes these two limitations.</p>
+
+<p>Recall our problem: we want to predict $r_{ui}$, user u&#8217;s rating of item i, and what we have is a set $N(i; u)$ of K neighbors of item i that user u has also rated. (These K neighbors are selected via a similarity function, as is standard.) So what we want to do is find weights $w_{ij}$ such that $r_{ui} = \sum_{j \in N(i; u) w_{ij} r_{uj}}$. A natural approach, then, is simply to choose our weights to minimize $\min_w \sum_{v \neq u} \left( r_{vi} - \sum_{j \in N(i; u)} w_{ij} r_{vj}\right)^2$.</p>
+
+<p>Notice how this optimization solves our two problems above: it&#8217;s not only a more principled approach (we choose our weights by minimizing squared error), but by deriving weights simultaneously, we overcome interaction effects.</p>
+
+<p>Differentiating our cost function, we find that the optimal weights satisfy the equation $Aw = b$, where A is a $K \times K$ matrix defined by $A_{jk} = \sum_{v \neq u} r_{vj} r_{vk}$ and $b$ is a vector defined by $b_j = \sum_{v \neq u} r_{vj} r_{vi}$.</p>
+
+<p>However, not all users have rated every movie, so some of the ratings may be missing from the above formulas. So we should instead use an estimate of A and b, such as $\bar{A}_{jk} = \frac{\sum_{v \in U(j,k)} r_{vj} r_{vk}}{|U(j, k)|}$, where $U(j, k)$ is the set of users who rated both j and k, and similarly for b. To avoid overfitting, we should further modify by shrinking to a common mean: $\hat{A}_{jk} = \frac{|U(J,K)|\bar{A}_{jk} + \beta A_{\mu}}{|U(j,k)| + \beta}$, where $\beta$ is a shrinkage parameter and $A_{\mu}$ is the mean over all $\bar{A}$, and similarly for b.</p>
+
+<p>Note that another benefit of our optimization-derived weights is that the weights of neighbors are no longer constrained to sum to 1. Thus, if an item simply has no strong neighbors, the neighbors&#8217; prediction will have only a small effect.</p>
+
+<p>Also, when engineering these methods in practice, we should precompute all item-item similarities and all entries in the matrix $A$.</p>
+
+<h2>Better Use of User Data</h2>
+
+<p>Neighborhood models typically follow the item-based approach for two reasons:</p>
+
+<ul>
+<li>There are typically many more users than items, and new users come in much more frequently than new items, so it is easier to compute all pairs of item-item similarities.</li>
+<li>Users have diverse tastes, so they aren&#8217;t as similar to each other. For example, Alice and Eve may both like horror movies, but disagree on comedies.</li>
+</ul>
+
+
+<p>But there are various reasons we might want to use a user-based approach <em>in addition to</em> an item-based approach (say, a user hasn&#8217;t rated many items yet, but we can find similar users based on other types of data, such as browsing history; or, we want to predict user u&#8217;s rating on item i, but user u hasn&#8217;t rated any items similar to i), so let&#8217;s see if we can get around these limitations.</p>
+
+<p>To get around the first limitation, we can project users into a lower-dimensional space (say, by using a singular value decomposition), where we can use a space-partitioning data structure (e.g., a kd-tree) or a nearest-neighbor algorithm (e.g., locality sensitive hashing) to find neighboring users.</p>
+
+<p>To get around the second limitation &#8211; that a user u may be predictive of user v for some items, but less so for others &#8211; we incorporate item-item similarity into our weighting method. That is, when using the user-neighborhood model to predict user u&#8217;s rating on item i, we give higher weight to items similar to i, by choosing the weights to minimize $\min_w \sum_{j \neq i} s_{ij} \left( r_{uj} - \sum_{v \in N(u, i)} w_{uv} r_{vj} \right)^2,$ where the $s_{ij}$ are item-item similarities.</p>
+
+<h2>Appendix: Shrinkage</h2>
+
+<p>Parameter shrinkage is used a couple times in the paper, so let&#8217;s explain what it means.</p>
+
+<p>Suppose that we want to estimate the probability of a coin. If we flip it once and see heads, then the maximum-likelihood estimate of heads is 1. But (as is typical for maximum-likelihood estimates), this is severe overfitting, and what we should do instead is shrink this maximum-likelihood estimate to a prior estimate of the probability of heads, say 1/2. (Note that shrinkage doesn&#8217;t necessarily mean decreasing the number, just moving it towards a prior estimate).</p>
+
+<p>How should we perform this shrinkage? If our maximum-likelihood estimate of our parameter $\theta$ is $x$ and our prior mean is $\mu$, a natural estimation of $\theta$ is to use a weighted mean $\alpha x + (1 - \alpha)\mu$, where $\alpha$ is some measure of the degree of belief in our maximum likelihood estimate.</p>
+
+<p>This weighted average approach has several interpretations:</p>
+
+<ul>
+<li>We can also view it as a shrinkage of our maximum likelihood estimate to our prior mean: $\alpha x + (1 - \alpha)\mu = x + (1 - \alpha) (\mu - x)$</li>
+<li>We can also view it as a Bayesian posterior: if we use a prior $\theta \sim N(\mu, \tau)$ (where $\tau$ is the precision of our Gaussian, not the variance) and a conditional distribution $x | \theta \sim N(\theta, \tau_x)$, then the posterior mean of $\theta$ is $\theta = \frac{\tau_x}{\tau_x + \tau}x + \frac{\tau}{\tau_x + \tau}\mu,$ which is equivalent to the form above.</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/03/14/summary-factorization-meets-the-neighborhood/">Netflix Prize Summary: Factorization Meets the Neighborhood</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:21:52-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>(Way back when, I went through all the Netflix prize papers. I&#8217;m now (very slowly) trying to clean up my notes and put them online. Eventually, I hope to have a more integrated tutorial, but here&#8217;s a rough draft for now.)</p>
+
+<p>This is a summary of Koren&#8217;s 2008 <a href="public.research.att.com/~volinsky/netflix/kdd08koren.pdf">Factorization Meets the Neighborhood: a Multifaceted Collaborative Filtering Model</a>.</p>
+
+<p>There are two approaches to collaborative filtering: neighborhood methods and latent factor models.</p>
+
+<ul>
+<li>Neighborhood models are most effective at detecting very localized relationships (e.g., that people who like X-Men also like Spiderman), but poor at detecting a user&#8217;s overall signals.</li>
+<li>Latent factor models are best at estimating overall structure (e.g., that a user likes horror movies), but are poor at detecting strong associations among small sets of closely related items.</li>
+</ul>
+
+
+<p>Since the two approaches have complementary strengths and weaknesses, we should integrate the two; this integration is the focus of this paper.</p>
+
+<h1>Preliminaries</h1>
+
+<p>As mentioned in previous papers, we should normalize out common effects from movies. Throughout the rest of this paper, Koren uses a baseline estimate of overall rating mean + user deviation from average + movie deviation from average for the rating of user i on movie i; estimation of the latter two parameters are done by solving a regularized least squares problem.</p>
+
+<p>Koren then describes using a binary matrix (1 for rated, 0 for not rated) as a source of implicit feedback. This is useful because the mere fact that a user rated many science fiction movies (say) suggests that the user likes science fiction movies.</p>
+
+<h1>A Neighborhood Model</h1>
+
+<p>Recall the previous paper, where we modeled each rating $r_{ui}$ as</p>
+
+<p>$$r_{ui} = b_{ui}+ \sum_{N \in N(i; u)} (r_{uj} - b_{uj}) w_{ij},$$</p>
+
+<p>where $N(i; u)$ is the k items most similar to i among the items user u rated, and the $w_{ij}$ are parameters to be learned by solving a regularized least squares problem.</p>
+
+<p>This paper makes several enhancements to that model. First, we replace $N(i; u)$ with $R^k(i; u)$, the intersection of the k items most similar to i (among all items) intersected with the items user u rated. Also, we denote by $N^k(i; u)$ the intersection of the k items most similar to i with the items user u has provided implicit feedback for. This gives us</p>
+
+<p>$$r_{ui} = b_{ui} + \sum_{j \in R^k(i; u)} (r_{uj} - b_{uj}) w_{ij} + \sum_{j \in N^k(i; u)} c_{ij},$$</p>
+
+<p>where the $c_{ij}$ are another set of parameters to learn.</p>
+
+<p>Notice that by taking the intersection of the k items most similar to i with the items user u rated (giving perhaps a set of size less than k), rather than taking the k items most similar to i among the items user u rated, we let our model be influenced not only by what a user rates, but also by what a user does not rate. For example, if a user does not rate LOTR 1 or LOTR 2, his predicted rating for LOTR 3 is penalized.</p>
+
+<p>This implies that our current model encourages greater deviations from baseline estimates for users that provided many ratings or plenty of implicit feedback. In other words, for well-modeled users with a lot of input, we are willing to predict quirkier and less common recommendations; users we have less information about, on the other hand, receive safer, baseline estimates.</p>
+
+<p>Nonetheless, this dichotomy between power users and newbie users is perhaps overemphasized by our current model, so we moderate the dichotomy by modifying our model to be</p>
+
+<p>$$r_{ui} = b_{ui} + |R^k(i; u)|^{-0.5} \sum_{j \in R^k(i; u)} (r_{uj} - b_{uj}) w_{ij} + |N^k(i; u)|^{-0.5} \sum_{j \in N^k(i; u)} c_{ij}.$$</p>
+
+<p>Parameters are determined by solving a regularized least squares problem.</p>
+
+<h1>Latent Factor Models Revisited</h1>
+
+<p>Typical SVD approaches are based on the following rule:</p>
+
+<p>$$r_{ui} = b_{ui} + p_u^T q_i,$$</p>
+
+<p>where $p_u$ is a user-factors vector and $q_i$ is an item-factors vector. We describe two enhancements.</p>
+
+<h2>Asymmetric-SVD</h2>
+
+<p>One suggestion is to replace $p_u$ with</p>
+
+<p>$$|R(u)|^{-0.5} + \sum_{j \in R(u)} (r_{uj} - b_{uj}) x_j + |N(u)|^{-0.5} \sum_{j \in N(u)} y_j,$$</p>
+
+<p>where $R(u)$ is the set of items user u has rated, and $N(u)$ is the set of items user u has provided implicit feedback for. In other words, this model represents users through the items they prefer, rather than expressing users in a latent feature space. This model has several advantages:</p>
+
+<ul>
+<li>Asymmetric-SVD does not parameterize users, so we do not need to wait to retrain the model when a user comes in. Instead, we can handle new users as soon as they provide feedback.</li>
+<li>Predictions are a direct function of past feedback, so we can easily explain predictions. (When using a pure latent feature solution, however, explainability is difficult.)</li>
+</ul>
+
+
+<p>As usual, parameters are learned via a regularized least-squares minimization.</p>
+
+<h2>SVD++</h2>
+
+<p>Another approach is to continue modeling users as latent features, while adding implicit feedback. Thus, we replace $p_u$ with $p_u + |N(u)|^{-0.5} \sum_{j \in N(u)} y_j$. While we lose the easily explainability and immediate feedback of the Asymmetric-SVD model, this approach is likely more accurate.</p>
+
+<h1>An Integrated Model</h1>
+
+<p>An integrated model incorporating baseline estimates, the neighborhood approach, and the latent factor approach is as follows:</p>
+
+<p>$$r_{ui} = \left[\mu + b_u + b_i\right] +\left[q_i^T \big(p_u + \sqrt{|N(u)|}\sum_{j \in N(u)} y_j \big)\right] + \left[\sqrt{|R^k(i;u)} \sum_{j \in R^k(i; u)}(r_{uj} - b_{uj})w_{ij}+\sqrt{|N^k(i;u)|} \sum_{j \in N^k(i; u)} c_{ij}\right].$$</p>
+
+<p>Note that we have used $(\mu + b_u + b_i)$ as our baseline estimate. We also used the SVD++ model, but we could use the Asymmetric-SVD model instead.</p>
+
+<p>This rule provides a 3-tier model for recommendations:</p>
+
+<ul>
+<li>The first baseline group describes general properties of the item and user. For example, it may say that &#8220;The Sixth Sense&#8221; movie is known to be a good movie in general, and that Joe rates like the average user.</li>
+<li>The next latent factor group may say that since &#8220;The Sixth Sense&#8221; and Joe rate high on the Psychological Thrillers Scale, Joe may like The Sixth Sense because he likes this genre of movies in general.</li>
+<li>The final neighborhood tier makes fine-grained adjustments that are hard to file, such as the fact that Joe rated low the movie &#8220;Signs&#8221;, a similar psychological thriller by the same director.</li>
+</ul>
+
+
+<p>As usual, model parameters are determined by minimizing the regularized squared error function through gradient descent.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/03/14/topological-combinatorics-and-the-evasiveness-conjecture/">Topological Combinatorics and the Evasiveness Conjecture</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-03-14T04:17:41-07:00" pubdate data-updated="true">Mar 14<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The Kahn, Saks, and Sturtevant approach to the Evasiveness Conjecture (see the original paper <a href="http://www.springerlink.com/index/R521072311641L41.pdf">here</a>) is an epic application of pure mathematics to computer science. I&#8217;ll give an overview of the approach here, and probably try to add some more information on the problem in other posts.</p>
+
+<p><strong>tl;dr</strong> The KSS approach provides an algebraic-topological attack to a combinatorial hypothesis, and reduces a graph complexity problem to a problem of contractibility and (not) finding fixed points.</p>
+
+<p>First, the Evasiveness Conjecture states that any (non-trivial) monotone graph property is evasive. In other words, if you&#8217;re trying to figure out whether an undirected n-vertex graph satisfies a certain property (e.g., whether the graph contains a triangle or is connected), and this property is monotone (meaning that if you add more edges to the graph, then it still satisfies the property), then if all you&#8217;re allowed to do is ask questions of the form &#8220;Is edge (i, j) in the graph?&#8221;, then you need to query for every single edge before you can determine whether the graph satisfies the property or not. For example, if you want to figure out whether a graph G contains a clique of size 5, then you need to know whether each of the n(n-1)/2 possible edges is in the graph or not before you can answer for certain.</p>
+
+<p>Next, given any monotone graph property on n-vertex graphs, we can associate it with a simplicial complex S (basically, an n-dimensional structure formed by gluing together a bunch of hypertriangles), by taking the complex to be the set of all n-vertex graphs that don&#8217;t satisfy the property.</p>
+
+<p>Kahn, Saks, and Sturtevant then prove that if a monotone graph property is not evasive, then its associated simplicial complex is contractible, and thus (by the Lefschetz Fixed-Point theorem) any auto-simplicial map on the complex (a function from the complex to itself that preserves faces) has a fixed point.</p>
+
+<p>Thus, we can prove that a monotone graph property is evasive by finding a simplicial map that has no fixed point (which we can do by showing that no orbit of the map is a face of the complex). This approach has been used to prove things like the evasiveness of graph properties when the number of vertices is prime or a prime power, and the evasiveness of all bipartite graph properties.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2011/02/15/an-overview-of-item-to-item-collaborative-filtering-with-amazons-recommendation-system/">Item-to-Item Collaborative Filtering with Amazon&#8217;s Recommendation System</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2011-02-15T04:15:11-08:00" pubdate data-updated="true">Feb 15<span>th</span>, 2011</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Introduction</h1>
+
+<p>In making its product recommendations, Amazon makes heavy use of an item-to-item collaborative filtering approach. This essentially means that for each item X, Amazon builds a neighborhood of related items S(X); whenever you buy/look at an item, Amazon then recommends you items from that item&#8217;s neighborhood. That&#8217;s why when you sign in to Amazon and look at the front page, your recommendations are mostly of the form &#8220;You viewed&#8230; Customers who viewed this also viewed&#8230;&#8221;.</p>
+
+<h1>Other approaches.</h1>
+
+<p>The item-to-item approach can be contrasted to:</p>
+
+<ul>
+<li><strong>A user-to-user collaborative filtering approach</strong>. This finds users similar to you (e.g., it could find users who bought a lot of items in common with you), and suggest items that they&#8217;ve bought but you haven&#8217;t.</li>
+<li><strong>A global, latent factorization approach</strong>. Rather than looking at individual items in isolation (in the item-to-item approach, if you and I both buy a book X, Amazon will make essentially the same recommendations based on X, regardless of what we&#8217;ve bought in the past), a global approach would look at all the items you&#8217;ve bought, and try to detect properties that characterize what you like. For example, if you buy a lot of science fiction books and also a lot of romance books, a global-approach algorithm might try to recommend you books with both science fiction and romance elements.</li>
+</ul>
+
+
+<h1>Pros/cons of the item-to-item approach:</h1>
+
+<ul>
+<li><strong>Pros over the user-to-user approach</strong>: Amazon (and most applications) has many more users than items, so it&#8217;s computationally simpler to find similar items than it is to find similar users. Finding similar users is also a difficult algorithmic task, since individual users often have a very wide range of tastes, but individual items usually belong to relatively few genres.</li>
+<li><strong>Pros over the factorization approach</strong>: Simpler to implement. Faster to update recommendations: as soon as you buy a new book, Amazon can make a new recommendation in the item-to-item approach, whereas a factorization approach would have to wait until the factorization has been recomputed. The item-to-item approach can also be more easily leveraged in several areas, not only in the recommendations made to you, but also in the &#8220;similar items/other customers also bought&#8221; section when you look at a particular item.</li>
+<li><strong>Cons of the item-to-item approach</strong>: You don&#8217;t get very much diversity or surprise in item-to-item recommendations, so recommendations tend to be kind of &#8220;obvious&#8221; and boring.</li>
+</ul>
+
+
+<h1>How to find similar items</h1>
+
+<p>Since the item-to-item approach makes crucial use of similar items, here&#8217;s a high-level view of how to do it. First, associate each item with the set of users who have bought/looked at it. The similarity between any two items could then be a normalized measure of the number of users they have in common (i.e., the Jaccard index) or the cosine distance between the two items (imagine each item as a vector, with a 1 in the ith element if user i has bought it, and 0 otherwise).</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -1229,9 +1057,7 @@ let&#8217;s also describe the k-means algorithm using <a href="http://en.wikiped
     <section>
   <h1>Edwin Chen</h1>
   
-  <p>Data scientist at Twitter. Previously math and linguistics at MIT, quantitative trading at Clarium Capital, research in theoretical computer science, NLP at Microsoft Research, fieldwork in Iceland, recommendation systems at Meta Interfaces, search at Bing.</p>
-  
-  <p>I like machine learning, crowdsourcing, visualization, large-scale data analysis.</p>  
+  <p>Quant at Google/YouTube. Previously math and linguistics at MIT, research in NLP and complexity theory, speech recognition at Microsoft Research, quantitative trading at Clarium Capital, ads quality at Twitter.</p>
   
   <p>Email: hello[at]echen.me<br/>
   Twitter: <a href="https://twitter.com/#!/echen">@echen</a><br/>

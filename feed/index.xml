@@ -4,7 +4,7 @@
   <title>Edwin Chen&#8217;s Blog</title>
   <link href="http://blog.echen.me/atom.xml" rel="self"/>
   <link href="http://blog.echen.me/"/>
-  <updated>2013-01-10T11:38:52-08:00</updated>
+  <updated>2013-03-31T16:41:11-07:00</updated>
   <id>http://blog.echen.me/</id>
   <author>
     <name>Edwin Chen</name>
@@ -19,7 +19,7 @@
     <id>http://blog.echen.me/2013/01/08/improving-twitter-search-with-real-time-human-computation</id>
     <content type="html">&lt;p&gt;&lt;em&gt;(This is a post from the &lt;a href=&quot;http://engineering.twitter.com/2013/01/improving-twitter-search-with-real-time.html&quot;&gt;Twitter Engineering Blog&lt;/a&gt; that I wrote with &lt;a href=&quot;https://twitter.com/alpa&quot;&gt;Alpa Jain&lt;/a&gt;.)&lt;/em&gt;&lt;/p&gt;
 
-&lt;p&gt;One of the magical things about Twitter is that it opens a window to the world &amp;#8211; in &lt;strong&gt;real-time&lt;/strong&gt;. An event happens, and just seconds later, it&amp;#8217;s shared for people across the planet to see.&lt;/p&gt;
+&lt;p&gt;One of the magical things about Twitter is that it opens a window to the world in &lt;strong&gt;real-time&lt;/strong&gt;. An event happens, and just seconds later, it&amp;#8217;s shared for people across the planet to see.&lt;/p&gt;
 
 &lt;p&gt;Consider, for example, what happened when Flight 1549 crashed in the Hudson.&lt;/p&gt;
 
@@ -54,7 +54,7 @@
 &lt;br /&gt;
 
 
-&lt;p&gt;When each of these events happened, people &lt;em&gt;instantly&lt;/em&gt; came to Twitter &amp;#8211; and, in particular, Twitter search &amp;#8211; to discover what was happening.&lt;/p&gt;
+&lt;p&gt;When each of these events happened, people instantly came to Twitter &amp;#8211; and, in particular, Twitter search &amp;#8211; to discover what was happening.&lt;/p&gt;
 
 &lt;p&gt;From a search and advertising perspective, however, these sudden events pose several challenges:&lt;/p&gt;
 
@@ -64,7 +64,7 @@
 &lt;/ol&gt;
 
 
-&lt;p&gt;So an event happens, people instantly come to Twitter to search for the event, and we need to teach our systems what these queries mean as quickly as we can &amp;#8211; because in just a few hours, those searches will be gone.&lt;/p&gt;
+&lt;p&gt;So an event happens, people instantly come to Twitter to search for the event, and we need to teach our systems what these queries mean as quickly as we can, because in just a few hours those searches will be gone.&lt;/p&gt;
 
 &lt;p&gt;How do we do this? We&amp;#8217;ll describe a novel real-time human computation engine we built that allows us to find search queries as soon as they&amp;#8217;re trending, send these queries to real humans to be judged, and finally incorporate these human annotations into our backend models.&lt;/p&gt;
 
@@ -4961,47 +4961,6 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
   </entry>
   
   <entry>
-    <title>Visualizing Miss USA 2011: Should Evolution be Taught in Schools?</title>
-    <link href="http://blog.echen.me/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools/"/>
-    <updated>2011-07-09T13:02:05-07:00</updated>
-    <id>http://blog.echen.me/2011/07/09/visualizing-miss-usa-2011-should-evolution-be-taught-in-schools</id>
-    <content type="html">&lt;p&gt;&lt;strong&gt;tl;dr&lt;/strong&gt; Should evolution be taught in schools? Go &lt;a href=&quot;http://miss-usa-evolution.heroku.com&quot;&gt;here&lt;/a&gt; to visualize what the Miss USA contestants think.&lt;/p&gt;
-
-&lt;h1&gt;The Visualization&lt;/h1&gt;
-
-&lt;p&gt;Education is an area sorely in need of data crunching, so when I ran across &lt;a href=&quot;http://www.youtube.com/watch?v=9QBv2CFTSWU&amp;amp;feature=player_embedded#at=56&quot;&gt;an amusing video&lt;/a&gt; satirizing the Miss USA contestants&amp;#8217; thoughts on teaching evolution, I thought it would be fun to transcribe &lt;a href=&quot;youtube=http://www.youtube.com/watch?v=UkBmhM0R2A0&amp;amp;feature=youtu.be#at=41&quot;&gt;the original video&lt;/a&gt; and visualize the data.&lt;/p&gt;
-
-&lt;p&gt;So after some tedious transcription, I built &lt;a href=&quot;http://miss-usa-evolution.heroku.com&quot;&gt;this app&lt;/a&gt; to categorize and visualize the responses in various ways. (Mouseover states to see transcriptions, and click to jump to each contestant&amp;#8217;s response in the video.)&lt;/p&gt;
-
-&lt;h1&gt;Example Maps&lt;/h1&gt;
-
-&lt;p&gt;Here are some examples of the generated maps.&lt;/p&gt;
-
-&lt;p&gt;First, we can look at which contestants believe in evolution (Miss California &amp;#8211; the winner! &amp;#8211; is the only contestant who explicitly states she believes in evolution; the red states explicitly state they do not believe in evolution; the grey states don&amp;#8217;t make clear what they believe):&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://miss-usa-evolution.heroku.com/?column=believes&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/believe-evolution.png&quot; alt=&quot;Believe Evolution&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;We can also see which contestants believe evolution should be taught in schools (green states say yes, red states say no, grey states say maybe or that it should be a choice):&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://miss-usa-evolution.heroku.com/?column=should_teach&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/teach-evolution.png&quot; alt=&quot;Teach Evolution&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;Here is a rough Darwin-friendliness score I assigned to each response (worst in dark red to best in dark green):&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://miss-usa-evolution.heroku.com/?column=score&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/score.png&quot; alt=&quot;Score&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;This map shows which contestants believe schools should teach creationism:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://miss-usa-evolution.heroku.com/?column=teach_creationism&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/teach-creationism.png&quot; alt=&quot;Teach Creationism&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;And this map shows which contestants mention science in their response:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://miss-usa-evolution.heroku.com/?column=mentions_science&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/miss-usa-evolution/mention-science.png&quot; alt=&quot;Mention Science&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;So while there aren&amp;#8217;t any striking patterns (I was hoping for a bright swath of red across the most religious states), the data&amp;#8217;s still fun to look at, and it&amp;#8217;s helpful to see that Alabama, whose &lt;a href=&quot;http://www.youtube.com/watch?v=UkBmhM0R2A0&amp;amp;feature=youtu.be#at=42&quot;&gt;strongly anti-evolution&lt;/a&gt; candidate is the only one colored red in both of the first two maps, does seem to be a bit of an outlier with respect to the rest of the nation.&lt;/p&gt;
-</content>
-  </entry>
-  
-  <entry>
     <title>Topic Modeling the Sarah Palin Emails</title>
     <link href="http://blog.echen.me/2011/06/27/topic-modeling-the-sarah-palin-emails/"/>
     <updated>2011-06-27T17:19:42-07:00</updated>
@@ -5047,175 +5006,6 @@ Glitter         -4.44685751     -2.81563804     -2.91540988
 &lt;p&gt;In a future post, I&amp;#8217;ll perhaps see if we can glean any interesting patterns from the email topics. For example, for a quick graph now, if we look at the percentage of emails in the &lt;a href=&quot;http://sarah-palin.heroku.com/topics/19&quot;&gt;Trig/Family/Inspiration topic&lt;/a&gt; across time, we see that there&amp;#8217;s a spike in April 2008 &amp;#8211; exactly (and unsurprisingly) the month in which Trig was born.&lt;/p&gt;
 
 &lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/palin-browser/trig-topic.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/palin-browser/trig-topic.png&quot; alt=&quot;Trig&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-</content>
-  </entry>
-  
-  <entry>
-    <title>Spork: Spoon or Fork?</title>
-    <link href="http://blog.echen.me/2011/06/14/spork-spoon-or-fork/"/>
-    <updated>2011-06-14T23:32:04-07:00</updated>
-    <id>http://blog.echen.me/2011/06/14/spork-spoon-or-fork</id>
-    <content type="html">&lt;p&gt;There&amp;#8217;s &lt;a href=&quot;http://www.youtube.com/watch?v=ruJ76-o5lxU&quot;&gt;an adorable scene&lt;/a&gt; in &lt;em&gt;WALL-E&lt;/em&gt; where, unable to decide whether a spork belongs with his spoon collection or fork collection, WALL-E enters an infinite loop and spontaneously combusts*.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/spork/spork-indecision-2.gif&quot; alt=&quot;Spork&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;This led me to the following timeless question: is a spork more spoon or fork?&lt;/p&gt;
-
-&lt;p&gt;To answer, I did a little digging. First, I pulled images of spoons and forks from &lt;a href=&quot;http://www.bing.com/images&quot;&gt;Bing&lt;/a&gt; (natch) and used these to train a spoon-vs.-fork SVM (using the excellent &lt;a href=&quot;http://scikit-learn.sourceforge.net/&quot;&gt;scikit-learn&lt;/a&gt; package).&lt;/p&gt;
-
-&lt;p&gt;Using leave-one-out cross-validation, the classifier showed roughly 85% accuracy: 4 out of 20 spoons were misclassified as forks, and 2 out of 20 forks were misclassified as spoons. Not bad, considering the limited dataset and lack of tuning.&lt;/p&gt;
-
-&lt;p&gt;Finally, I applied the classifier to my spork images.&lt;/p&gt;
-
-&lt;p&gt;The results? 2 out of 20 sporks were classified as forks and the remaining 18 were classified as spoons, thereby definitively proving that &lt;strong&gt;a spork is 10% fork and 90% spoon&lt;/strong&gt;.&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/spork/spork-decomposition.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/spork/spork-decomposition.png&quot; alt=&quot;Spork Decomposition&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;*Not really.&lt;/p&gt;
-</content>
-  </entry>
-  
-  <entry>
-    <title>TWSS: Building a That&#8217;s What She Said Classifier</title>
-    <link href="http://blog.echen.me/2011/05/05/twss-building-a-thats-what-she-said-classifier/"/>
-    <updated>2011-05-05T00:09:17-07:00</updated>
-    <id>http://blog.echen.me/2011/05/05/twss-building-a-thats-what-she-said-classifier</id>
-    <content type="html">&lt;p&gt;There&amp;#8217;s been a &lt;a href=&quot;www.cs.washington.edu/homes/brun/pubs/pubs/Kiddon11.pdf&quot;&gt;fun paper&lt;/a&gt; on &lt;a href=&quot;http://www.urbandictionary.com/define.php?term=that&#8217;s%20what%20she%20said&quot;&gt;That&amp;#8217;s What She Said&lt;/a&gt; identification making the rounds recently, so I spent some time over the weekend building my own classifier.&lt;/p&gt;
-
-&lt;p&gt;&lt;strong&gt;tl;dr&lt;/strong&gt; A simple unigram Naive Bayes model works pretty well, with performance on the lines of 0.969 precision and 0.823 recall. There&amp;#8217;s a demo &lt;a href=&quot;http://twss-classifier.heroku.com/&quot;&gt;here&lt;/a&gt;. I also ran the classifier over some fairy tale text.&lt;/p&gt;
-
-&lt;h1&gt;Naive Bayes Classifier&lt;/h1&gt;
-
-&lt;p&gt;To start, I used a super simple Naive Bayes classifier, trained on unigrams (with add-one smoothing). (See the appendix at the end for details.)&lt;/p&gt;
-
-&lt;h2&gt;Unigram vs. Bigram Model&lt;/h2&gt;
-
-&lt;p&gt;Here are the most predictive features, after training a Naive Bayes model with unigrams:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;unigram         p(twss|unigram)
-pull            0.9724889822144924
-bigger          0.9614677503890157
-wet             0.959004244327654
-hard            0.9527628206878138
-stick           0.9505783678914388
-hole            0.9443870318715991
-oh              0.9432941279908561
-replied         0.943294127990856
-fast            0.943294127990856
-longer          0.9397415371025485
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Just to compare, here are some of the most predictive features in a bigram model (I added START and END tokens to the beginning and end of each sentence, in order to have some contextual features):&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;bigram          p(twss|bigram)
-it in           0.9801434151851175
-START wow       0.9705079286853889
-START oh        0.9473580156961879
-its too         0.9350522640444204
-pull out        0.9187779331523677
-too big         0.9187779331523677
-START man       0.9113755525471394
-hard END        0.9113755525471394
-put it          0.9071442285463515
-that thing      0.9024886021363793
-stick it        0.9024886021363793
-my god          0.9024886021363793
-go in           0.8916207044791409
-START ugh       0.8916207044791409
-make it         0.8916207044791409
-its so          0.8916207044791409
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Amusingly, sentences starting with &lt;em&gt;wow&lt;/em&gt;, &lt;em&gt;oh&lt;/em&gt;, and &lt;em&gt;ugh&lt;/em&gt;, tend to be good candidates for TWSS sentences, as well as sentences containing &lt;em&gt;it&amp;#8217;s too&lt;/em&gt; and &lt;em&gt;it&amp;#8217;s so&lt;/em&gt;.&lt;/p&gt;
-
-&lt;p&gt;Here&amp;#8217;s a precision-recall curve comparing the two models. We see that, on our datasets, a unigram classifier handily beats a bigram classifier:&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/twss/precision-recall.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/twss/precision-recall.png&quot; alt=&quot;Precision-Recall&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;h1&gt;Darling it&amp;#8217;s better&lt;/h1&gt;
-
-&lt;p&gt;Although our classifier gives excellent performance on our test set, one question is how well it generalizes to other sources of data.&lt;/p&gt;
-
-&lt;p&gt;I didn&amp;#8217;t have another set of positive examples to draw from, but I took a set of fairy tales on Project Gutenberg to form a new batch of negative examples. On this new set of fairy tale sentences, the classifier misclassified only 81 out of 912 of the examples (assuming they should all be classified as &amp;#8220;not TWSS&amp;#8221;), which is a pretty low error rate of 8.89%.&lt;/p&gt;
-
-&lt;p&gt;What do these misclassifications look like? Here are some of the false positives it made:&lt;/p&gt;
-
-&lt;h2&gt;Aladdin&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&amp;#8220;The African magician carries it carefully wrapt up in his bosom,&amp;#8221; said the princess; &amp;#8220;and this I can assure you, because he pulled it out before me, and showed it to me in triumph.&amp;#8221;&lt;/li&gt;
-&lt;li&gt;It is vanished; but I had no concern in its removal.&lt;/li&gt;
-&lt;li&gt;&amp;#8220;My son,&amp;#8221; said he, &amp;#8220;what a man you are to do such surprising things always in the twinkling of an eye!&amp;#8221;&lt;/li&gt;
-&lt;li&gt;&amp;#8220;Sire,&amp;#8221; replied Aladdin, &amp;#8220;I have not the least reason to complain of your conduct, since you did nothing but what your duty required.&amp;#8221;&lt;/li&gt;
-&lt;li&gt;&amp;#8220;With your leave, mother,&amp;#8221; replied Aladdin, &amp;#8220;I shall now take care how I sell a lamp which may be so serviceable both to you and me.&amp;#8221;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/twss/aladdin.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/twss/aladdin.png&quot; alt=&quot;http://dl.dropbox.com/u/10506/blog/twss/aladdin.png&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2&gt;Hansel and Gretel&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;&amp;#8220;Oh dear,&amp;#8221; he said, &amp;#8220;do let me go and see the hunt; I cannot restrain myself.&amp;#8221;&lt;/li&gt;
-&lt;li&gt;When they awoke it was dark night, and poor Grethel began to cry, and said, &amp;#8220;Oh, how shall we get out of the wood?&amp;#8221; But Hansel comforted her.&lt;/li&gt;
-&lt;li&gt;&amp;#8220;But remember,&amp;#8221; she said, &amp;#8220;I must lock the cottage door against those huntsmen, so when you come back in the evening, and knock, I shall not admit you, unless you say, &amp;#8216;Dear little sister let me in.&amp;#8217;&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h2&gt;Snow White&lt;/h2&gt;
-
-&lt;ul&gt;
-&lt;li&gt;One was too long, another too short; so she tried them all till she came to the seventh, and that was so comfortable that she laid herself down, and was soon fast asleep.&lt;/li&gt;
-&lt;li&gt;&amp;#8220;Oh yes, I will try,&amp;#8221; said Snow-white.&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;p&gt;Note that a lot of these really are TWSS sentences! (Now we know where &lt;a href=&quot;http://www.snopes.com/disney/films/mermaid.asp&quot;&gt;those Disney artists&lt;/a&gt; got their inspiration.) So the classifier appears to generalize surprisingly well.&lt;/p&gt;
-
-&lt;h1&gt;A Demo&lt;/h1&gt;
-
-&lt;p&gt;I created &lt;a href=&quot;http://twss-classifier.heroku.com/&quot;&gt;a small Sinatra app&lt;/a&gt; to play around with the classifier, and deployed it &lt;a href=&quot;http://twss-classifier.heroku.com/&quot;&gt;here&lt;/a&gt;. I also put the code &lt;a href=&quot;https://github.com/echen/twss-classifier&quot;&gt;on Github&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h1&gt;Appendix: Details&lt;/h1&gt;
-
-&lt;h2&gt;Datasets&lt;/h2&gt;
-
-&lt;p&gt;To grab some TWSS examples, my first thought was to turn to &lt;a href=&quot;http://search.twitter.com/search?q=twss&quot;&gt;twitter&lt;/a&gt;. However, the twitter data turned out to be incredibly noisy (lots of junk obscuring not terribly funny examples), so taking a cue from the K&amp;amp;B paper, I pulled data from three sources:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;First, I scraped &lt;a href=&quot;http://twssstories.com&quot;&gt;twss stories&lt;/a&gt; for positive training data (sentences for which a TWSS response is appropriate). Since only the last part in quotes from each submission is truly relevant to being a TWSS, I kept the quote and threw away the rest of each submission.&lt;/li&gt;
-&lt;li&gt;Next, I scraped &lt;a href=&quot;http://textsfromlastnight.com&quot;&gt;Texts from Last Night&lt;/a&gt; and &lt;a href=&quot;http://www.fmylife.com&quot;&gt;FMyLife&lt;/a&gt; for negative training data. Since TWSS jokes are usually made in response to &lt;em&gt;sentences&lt;/em&gt; (the last sentence you say), I split each submission into sentences, and each sentence formed a single negative training example.&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;p&gt;Finally, I normalized each sentence by converting to lowercase and removing any punctuation.&lt;/p&gt;
-
-&lt;h2&gt;The Algorithm&lt;/h2&gt;
-
-&lt;p&gt;To train and test the classifier, I used the examples I gathered to form training and test sets, each consisting of:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;1000 positive examples from twss stories.&lt;/li&gt;
-&lt;li&gt;500 negative examples from Texts from Last Night.&lt;/li&gt;
-&lt;li&gt;500 negative examples from FMyLife.&lt;/li&gt;
-&lt;/ul&gt;
-
-
-&lt;h2&gt;Performance of the Unigram Model&lt;/h2&gt;
-
-&lt;p&gt;Since we want to optimize for precision (we hope the things we classify as TWSS sentences really are TWSS sentences) over recall (it&amp;#8217;s fine if we don&amp;#8217;t always respond TWSS to every TWSS sentence), let&amp;#8217;s use 0.99 probability as our threshold for classifying a sentence as TWSS. (This is equivalent to setting a low prior for the probability of being a TWSS.)&lt;/p&gt;
-
-&lt;p&gt;With this threshold, a unigram Naive Bayes classifier has the following performance on a test set:&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;True positives: 823&lt;/li&gt;
-&lt;li&gt;False negatives: 177&lt;/li&gt;
-&lt;li&gt;True negatives: 974&lt;/li&gt;
-&lt;li&gt;False positives: 26&lt;/li&gt;
-&lt;li&gt;Precision = 0.969&lt;/li&gt;
-&lt;li&gt;Recall = 0.823&lt;/li&gt;
-&lt;/ul&gt;
-
 </content>
   </entry>
   
@@ -5310,6 +5100,152 @@ its so          0.8916207044791409
 &lt;h1&gt;Code/Demo&lt;/h1&gt;
 
 &lt;p&gt;I put the code on &lt;a href=&quot;https://github.com/echen/unsupervised-language-identification&quot;&gt;my Github account&lt;/a&gt;, and a quick &lt;a href=&quot;http://babel-fett.heroku.com/&quot;&gt;demo app&lt;/a&gt;, trained on trigrams from tweets with lang=&amp;#8221;en&amp;#8221; according to the Twitter API, is &lt;a href=&quot;http://babel-fett.heroku.com/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>Choosing a Machine Learning Classifier</title>
+    <link href="http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier/"/>
+    <updated>2011-04-27T18:43:15-07:00</updated>
+    <id>http://blog.echen.me/2011/04/27/choosing-a-machine-learning-classifier</id>
+    <content type="html">&lt;p&gt;How do you know what machine learning algorithm to choose for your classification problem? Of course, if you really care about accuracy, your best bet is to test out a couple different ones (making sure to try different parameters within each algorithm as well), and select the best one by cross-validation. But if you&amp;#8217;re simply looking for a &amp;#8220;good enough&amp;#8221; algorithm for your problem, or a place to start, here are some general guidelines I&amp;#8217;ve found to work well over the years.&lt;/p&gt;
+
+&lt;h1&gt;How large is your training set?&lt;/h1&gt;
+
+&lt;p&gt;If your training set is small, high bias/low variance classifiers (e.g., Naive Bayes) have an advantage over low bias/high variance classifiers (e.g., kNN), since the latter will overfit. But low bias/high variance classifiers start to win out as your training set grows (they have lower asymptotic error), since high bias classifiers aren&amp;#8217;t powerful enough to provide accurate models.&lt;/p&gt;
+
+&lt;p&gt;You can also think of this as a generative model vs. discriminative model distinction.&lt;/p&gt;
+
+&lt;h1&gt;Advantages of some particular algorithms&lt;/h1&gt;
+
+&lt;p&gt;&lt;strong&gt;Advantages of Naive Bayes:&lt;/strong&gt; Super simple, you&amp;#8217;re just doing a bunch of counts. If the NB conditional independence assumption actually holds, a Naive Bayes classifier will converge quicker than discriminative models like logistic regression, so you need less training data. And even if the NB assumption doesn&amp;#8217;t hold, a NB classifier still often does a great job in practice. A good bet if  want something fast and easy that performs pretty well. Its main disadvantage is that it can&amp;#8217;t learn interactions between features (e.g., it can&amp;#8217;t learn that although you love movies with Brad Pitt and Tom Cruise, you hate movies where they&amp;#8217;re together).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Advantages of Logistic Regression:&lt;/strong&gt; Lots of ways to regularize your model, and you don&amp;#8217;t have to worry as much about your features being correlated, like you do in Naive Bayes. You also have a nice probabilistic interpretation, unlike decision trees or SVMs, and you can easily update your model to take in new data (using an online gradient descent method), again unlike decision trees or SVMs. Use it if you want a probabilistic framework (e.g., to easily adjust classification thresholds, to say when you&amp;#8217;re unsure, or to get confidence intervals) or if you expect to receive more training data in the future that you want to be able to quickly incorporate into your model.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Advantages of Decision Trees:&lt;/strong&gt; Easy to interpret and explain (for some people &amp;#8211; I&amp;#8217;m not sure I fall into this camp). They easily handle feature interactions and they&amp;#8217;re non-parametric, so you don&amp;#8217;t have to worry about outliers or whether the data is linearly separable (e.g., decision trees easily take care of cases where you have class A at the low end of some feature x, class B in the mid-range of feature x, and A again at the high end). One disadvantage is that they don&amp;#8217;t support online learning, so you have to rebuild your tree when new examples come on. Another disadvantage is that they easily overfit, but that&amp;#8217;s where ensemble methods like random forests (or boosted trees) come in. Plus, random forests are often the winner for lots of problems in classification (usually slightly ahead of SVMs, I believe), they&amp;#8217;re fast and scalable, and you don&amp;#8217;t have to worry about tuning a bunch of parameters like you do with SVMs, so they seem to be quite popular these days.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Advantages of SVMs:&lt;/strong&gt; High accuracy, nice theoretical guarantees regarding overfitting, and with an appropriate kernel they can work well even if you&amp;#8217;re data isn&amp;#8217;t linearly separable in the base feature space. Especially popular in text classification problems where very high-dimensional spaces are the norm. Memory-intensive, hard to interpret, and kind of annoying to run and tune, though, so I think random forests are starting to steal the crown.&lt;/p&gt;
+
+&lt;h1&gt;But&amp;#8230;&lt;/h1&gt;
+
+&lt;p&gt;Recall, though, that better data often beats better algorithms, and designing good features goes a long way. And if you have a huge dataset, then whichever classification algorithm you use might not matter so much in terms of classification performance (so choose your algorithm based on speed or ease of use instead).&lt;/p&gt;
+
+&lt;p&gt;And to reiterate what I said above, if you really care about accuracy, you should definitely try a bunch of different classifiers and select the best one by cross-validation. Or, to take a lesson from the Netflix Prize (and Middle Earth), just use an ensemble method to choose them all.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>Kickstarter Data Analysis: Success and Pricing</title>
+    <link href="http://blog.echen.me/2011/04/25/kickstarter-data-analysis-success-and-pricing/"/>
+    <updated>2011-04-25T21:19:40-07:00</updated>
+    <id>http://blog.echen.me/2011/04/25/kickstarter-data-analysis-success-and-pricing</id>
+    <content type="html">&lt;p&gt;&lt;a href=&quot;http://www.kickstarter.com/&quot;&gt;Kickstarter&lt;/a&gt; is an online crowdfunding platform for launching creative projects. When starting a new project, project owners specify a deadline and the minimum amount of money they need to raise. They receive the money (less a transaction fee) only if they reach or exceed that minimum; otherwise, no money changes hands.&lt;/p&gt;
+
+&lt;p&gt;What&amp;#8217;s particularly fun about Kickstarter is that in contrast to &lt;a href=&quot;http://www.kiva.org/&quot;&gt;that other microfinance site&lt;/a&gt;, Kickstarter projects don&amp;#8217;t ask for loans; instead, patrons receive pre-specified rewards unique to each project. For example, someone donating money to help an artist record an album might receive a digital copy of the album if they donate 20 dollars, or a digital copy plus a signed physical cd if they donate 50 dollars.&lt;/p&gt;
+
+&lt;p&gt;There are &lt;a href=&quot;http://www.kickstarter.com/discover/hall-of-fame?ref=sidebar&quot;&gt;a bunch&lt;/a&gt; of &lt;a href=&quot;http://www.kickstarter.com/projects/1104350651/tiktok-lunatik-multi-touch-watch-kits&quot;&gt;neat&lt;/a&gt; &lt;a href=&quot;http://www.kickstarter.com/projects/2024077040/neil-gaimans-the-price&quot;&gt;projects&lt;/a&gt;, and I&amp;#8217;m tempted to put one of my own on there soon, so I thought it would be fun to gather some data from the site and see what makes a project successful.&lt;/p&gt;
+
+&lt;h1&gt;Categories&lt;/h1&gt;
+
+&lt;p&gt;I started by scraping the categories section.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-projects-by-category.png&quot; alt=&quot;Successful projects by category&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;In true indie fashion, the artsy categories tend to dominate. (I&amp;#8217;m surprised/disappointed how little love the Technology category gets.)&lt;/p&gt;
+
+&lt;h1&gt;Ending Soon&lt;/h1&gt;
+
+&lt;p&gt;The categories section really only provides a history of &lt;em&gt;successful&lt;/em&gt; projects, though, so to get some data on unsuccessful projects as well, I took a look at the &lt;a href=&quot;http://www.kickstarter.com/discover/ending-soon?ref=sidebar&quot;&gt;Ending Soon&lt;/a&gt; section of projects whose deadlines are about to pass.&lt;/p&gt;
+
+&lt;p&gt;It looks like about 50% of all Kickstarter projects get successfully funded by the deadline:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/ending-soon-success.png&quot; alt=&quot;Successful projects as deadline approaches&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Interestingly, most of the final funding seems to happen in the final few days: with just 5 days left, only about 20% of all projects have been funded. (In other words, with just 5 days left, 60% of the projects that will eventually be successful are still unfunded.) So the approaching deadline seems to really spur people to donate. I wonder if it&amp;#8217;s because of increased publicity in the final few days (the project owners begging everyone for help!) or if it&amp;#8217;s simply procrastination in action (perhaps people want to wait to see if their donation is really necessary)?&lt;/p&gt;
+
+&lt;p&gt;Lesson: if you&amp;#8217;re still not fully funded with only a couple days remaining, don&amp;#8217;t despair.&lt;/p&gt;
+
+&lt;h1&gt;Success vs. Failure&lt;/h1&gt;
+
+&lt;p&gt;What factors lead a project to succeed? Are there any quantitative differences between projects that eventually get funded and those that don&amp;#8217;t?&lt;/p&gt;
+
+&lt;p&gt;Two simple (if kind of obvious) things I noticed are that unsuccessful projects tend to require a larger amount of money:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-goal.png&quot; alt=&quot;Unsuccessful projects tend to ask for more money&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;and unsuccessful projects also tend to raise less money in absolute terms (i.e., it&amp;#8217;s not just that they ask for too much money to reach their goal &amp;#8211; they&amp;#8217;re simply not receiving enough money as well):&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/successful-vs-unsuccessful-amount-pledged.png&quot; alt=&quot;Unsuccessful projects received less money&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Not terribly surprising, but it&amp;#8217;s good to confirm (and I&amp;#8217;m still working on finding other predictors).&lt;/p&gt;
+
+&lt;h1&gt;Pledge Rewards&lt;/h1&gt;
+
+&lt;p&gt;There&amp;#8217;s a lot of interesting work in behavioral economics on pricing and choice &amp;#8211; for example, the &lt;a href=&quot;http://youarenotsosmart.com/2010/07/27/anchoring-effect/&quot;&gt;anchoring effect&lt;/a&gt; suggests that when building a menu, you should &lt;a href=&quot;http://www.neurosciencemarketing.com/blog/articles/neuro-menus-and-restaurant-psychology.htm&quot;&gt;include an expensive item&lt;/a&gt; to make other menu items look reasonably priced in comparison, and the &lt;a href=&quot;http://en.wikipedia.org/wiki/The_Paradox_of_Choice:_Why_More_Is_Less&quot;&gt;paradox of choice &lt;/a&gt; suggests that too many choices lead to a decision freeze &amp;#8211; so one aspect of the Kickstarter data I was especially interested in was how pricing of rewards affects donations. For example, does pricing the lowest reward at 25 dollars lead to more money donated (people don&amp;#8217;t lowball at 5 dollars instead) or less money donated (25 dollars is more money than most people are willing to give)? And what happens if a new reward at 5 dollars is added &amp;#8211; again, does it lead to more money (now people can donate something they can afford) or less money (the people that would have paid 25 dollars switch to a 5 dollar donation)?&lt;/p&gt;
+
+&lt;p&gt;First, here&amp;#8217;s a look at the total number of pledges at each price. (More accurately, it&amp;#8217;s the number of claimed rewards at each price.) [Update: the original version of this graph was wrong, but I&amp;#8217;ve since fixed it.]&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/pledge%20amounts.png&quot; alt=&quot;Pledge Amounts&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Surprisingly, 5 dollar and 1 dollar donations are actually not the most common contribution.&lt;/p&gt;
+
+&lt;p&gt;To investigate pricing effects, I started by looking at all (successful) projects that had a reward priced at 1 dollar, and compared the number of donations at 1 dollar with the number of donations at the next lowest reward.&lt;/p&gt;
+
+&lt;p&gt;Up to about 15-20 dollars, there&amp;#8217;s a steady increase in the proportion of people who choose the second reward over the first reward, but after that, the proportion decreases.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring.png&quot; alt=&quot;Anchoring&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/kickstarter/anchoring-abline-b.png&quot; alt=&quot;Anchoring with Regression Lines&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;So this perhaps suggests that if you&amp;#8217;re going to price your lowest reward at 1 dollar, your next reward should cost roughly 20 dollars (or slightly more, to maximize your total revenue). Pricing above 20 dollars is a little too expensive for the folks who want to support you, but aren&amp;#8217;t rich enough to throw gads of money; maybe rewards below 20 dollars aren&amp;#8217;t good enough to merit the higher donation.&lt;/p&gt;
+
+&lt;p&gt;Next, I&amp;#8217;m planning on digging a little deeper into pricing effects and what makes a project successful, so I&amp;#8217;ll hopefully have some more Kickstarter analysis in a future post. In the meantime, in case anyone else wants to take a look, I put the data onto &lt;a href=&quot;https://github.com/echen/kickstarter-data-analysis&quot;&gt;my Github account&lt;/a&gt;.&lt;/p&gt;
+</content>
+  </entry>
+  
+  <entry>
+    <title>A Mathematical Introduction to Least Angle Regression</title>
+    <link href="http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression/"/>
+    <updated>2011-04-21T00:16:36-07:00</updated>
+    <id>http://blog.echen.me/2011/04/21/a-mathematical-introduction-to-least-angle-regression</id>
+    <content type="html">&lt;p&gt;(For a layman&amp;#8217;s introduction, see &lt;a href=&quot;http://blog.echen.me/2011/03/14/least-angle-regression-for-the-hungry-layman/&quot;&gt;here&lt;/a&gt;.)&lt;/p&gt;
+
+&lt;p&gt;Least Angle Regression (aka LARS) is a &lt;strong&gt;model selection method&lt;/strong&gt; for linear regression (when you&amp;#8217;re worried about overfitting or want your model to be easily interpretable). To motivate it, let&amp;#8217;s consider some other model selection methods:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Forward selection&lt;/strong&gt; starts with no variables in the model, and at each step it adds to the model the variable with the most explanatory power, stopping if the explanatory power falls below some threshold. This is a fast and simple method, but it can also be too greedy: we fully add variables at each step, so correlated predictors don&amp;#8217;t get much of a chance to be included in the model. (For example, suppose we want to build a model for the deliciousness of a PB&amp;amp;J sandwich, and two of our variables are the amount of peanut butter and the amount of jelly. We&amp;#8217;d like both variables to appear in our model, but since amount of peanut butter is (let&amp;#8217;s assume) strongly correlated with the amount of jelly, once we fully add peanut butter to our model, jelly doesn&amp;#8217;t add much explanatory power anymore, and so it&amp;#8217;s unlikely to be added.)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Forward stagewise regression&lt;/strong&gt; tries to remedy the greediness of forward selection by only partially adding variables. Whereas forward selection finds the variable with the most explanatory power and goes all out in adding it to the model, forward stagewise finds the variable with the most explanatory power and updates its weight by only epsilon in the correct direction. (So we might first increase the weight of peanut butter a little bit, then increase the weight of peanut butter again, then increase the weight of jelly, then increase the weight of bread, and then increase the weight of peanut butter once more.) The problem now is that we have to make a ton of updates, so forward stagewise can be very inefficient.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;LARS, then, is essentially forward stagewise made fast. Instead of making tiny hops in the direction of one variable at a time, LARS makes optimally-sized leaps in optimal directions. These directions are chosen to make equal angles (equal correlations) with each of the variables currently in our model. (We like peanut butter best, so we start eating it first; as we eat more, we get a little sick of it, so jelly starts looking equally appetizing, and we start eating peanut butter and jelly simultaneously; later, we add bread to the mix, etc.)&lt;/p&gt;
+
+&lt;p&gt;In more detail, LARS works as follows:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Assume for simplicity that we&amp;#8217;ve standardized our explanatory variables to have zero mean and unit variance, and that our response variable also has zero mean.&lt;/li&gt;
+&lt;li&gt;Start with no variables in your model.&lt;/li&gt;
+&lt;li&gt;Find the variable $ x_1 $ most correlated with the residual. (Note that the variable most correlated with the residual is equivalently the one that makes the least angle with the residual, whence the name.)&lt;/li&gt;
+&lt;li&gt;Move in the direction of this variable until some other variable $ x_2 $ is just as correlated.&lt;/li&gt;
+&lt;li&gt;At this point, start moving in a direction such that the residual stays equally correlated with $ x_1 $ and $ x_2 $ (i.e., so that the residual makes equal angles with both variables), and keep moving until some variable $ x_3 $ becomes equally correlated with our residual.&lt;/li&gt;
+&lt;li&gt;And so on, stopping when we&amp;#8217;ve decided our model is big enough.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;For example, consider the following image (slightly simplified from the &lt;a href=&quot;http://www.stanford.edu/~hastie/Papers/LARS/LeastAngle_2002.pdf&quot;&gt;original LARS paper&lt;/a&gt;; $x_1, x_2$ are our variables, and $y$ is our response):&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;http://dl.dropbox.com/u/10506/blog/lars/lars-example.png&quot;&gt;&lt;img src=&quot;http://dl.dropbox.com/u/10506/blog/lars/lars-example.png&quot; alt=&quot;LARS Example&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;Our model starts at $ \hat{\mu_0} $.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;The residual (the green line) makes a smaller angle with $ x_1 $ than with $ x_2 $, so we start moving in the direction of $ x_1 $.
+At $ \hat{\mu_1} $, the residual now makes equal angles with $ x_1, x_2 $, and so we start moving in a new direction that preserves this equiangularity/equicorrelation.&lt;/li&gt;
+&lt;li&gt;If there were more variables, we&amp;#8217;d change directions again once a new variable made equal angles with our residual, and so on.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;So when should you use LARS, as opposed to some other regularization method like lasso? There&amp;#8217;s not really a clear-cut answer, but LARS tends to give very similar results as both lasso and forward stagewise (in fact, slight modifications to LARS give you lasso and forward stagewise), so I tend to just use lasso when I do these kinds of things, since the justifications for lasso make a little more sense to me. In fact, I don&amp;#8217;t usually even think of LARS as a model selection method in its own right, but rather as a way to efficiently implement lasso (especially if you want to compute the full regularization path).&lt;/p&gt;
 </content>
   </entry>
   
